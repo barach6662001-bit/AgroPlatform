@@ -9,6 +9,20 @@
 
 ---
 
+## 🖥️ Фронтенд
+
+React 18 + TypeScript приложение находится в директории [`frontend/`](./frontend/).
+
+```bash
+cd frontend
+npm install
+npm run dev   # http://localhost:3000
+```
+
+Подробнее — см. [frontend/README.md](./frontend/README.md).
+
+---
+
 ## 🛠️ Технологический стек
 
 | Технология | Назначение |
