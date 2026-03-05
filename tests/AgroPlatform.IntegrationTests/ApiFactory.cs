@@ -1,9 +1,12 @@
+using System.Threading.RateLimiting;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Infrastructure.Persistence;
 using AgroPlatform.Infrastructure.Persistence.Interceptors;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -41,6 +44,13 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
                     sp.GetRequiredService<AuditableEntityInterceptor>(),
                     sp.GetRequiredService<SoftDeleteInterceptor>(),
                     sp.GetRequiredService<TenantInterceptor>());
+            });
+
+            // Disable rate limiting in tests
+            services.PostConfigure<RateLimiterOptions>(options =>
+            {
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
+                    _ => RateLimitPartition.GetNoLimiter("test"));
             });
 
             // Replace JWT auth with test authentication scheme
