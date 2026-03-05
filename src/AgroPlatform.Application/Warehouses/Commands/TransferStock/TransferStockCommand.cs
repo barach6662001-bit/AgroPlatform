@@ -6,6 +6,7 @@ public record TransferStockCommand(
     Guid SourceWarehouseId,
     Guid DestinationWarehouseId,
     Guid ItemId,
+    Guid? BatchId,
     decimal Quantity,
     string UnitCode,
     string? Note

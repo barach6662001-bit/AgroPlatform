@@ -16,7 +16,13 @@ public class GetBalanceHandler : IRequestHandler<GetBalanceQuery, List<BalanceDt
     public async Task<List<BalanceDto>> Handle(GetBalanceQuery request, CancellationToken cancellationToken)
     {
         var query = _context.StockBalances
-            .Where(b => b.WarehouseId == request.WarehouseId);
+            .Include(b => b.Warehouse)
+            .Include(b => b.Item)
+            .Include(b => b.Batch)
+            .AsQueryable();
+
+        if (request.WarehouseId.HasValue)
+            query = query.Where(b => b.WarehouseId == request.WarehouseId.Value);
 
         if (request.ItemId.HasValue)
             query = query.Where(b => b.ItemId == request.ItemId.Value);
@@ -25,8 +31,12 @@ public class GetBalanceHandler : IRequestHandler<GetBalanceQuery, List<BalanceDt
             .Select(b => new BalanceDto
             {
                 WarehouseId = b.WarehouseId,
+                WarehouseName = b.Warehouse.Name,
                 ItemId = b.ItemId,
+                ItemName = b.Item.Name,
+                ItemCode = b.Item.Code,
                 BatchId = b.BatchId,
+                BatchCode = b.Batch != null ? b.Batch.Code : null,
                 BalanceBase = b.BalanceBase,
                 BaseUnit = b.BaseUnit,
                 LastUpdatedUtc = b.LastUpdatedUtc
