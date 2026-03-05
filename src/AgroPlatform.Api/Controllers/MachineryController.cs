@@ -8,11 +8,13 @@ using AgroPlatform.Application.Machinery.Queries.GetMachines;
 using AgroPlatform.Application.Machinery.Queries.GetMachineSummary;
 using AgroPlatform.Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgroPlatform.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/machinery")]
 public class MachineryController : ControllerBase
 {

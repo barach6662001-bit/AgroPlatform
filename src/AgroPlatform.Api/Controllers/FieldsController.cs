@@ -9,11 +9,13 @@ using AgroPlatform.Application.Fields.Queries.GetFieldById;
 using AgroPlatform.Application.Fields.Queries.GetFields;
 using AgroPlatform.Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgroPlatform.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/fields")]
 public class FieldsController : ControllerBase
 {

@@ -11,6 +11,18 @@ public class TenantMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        // Skip tenant requirement for auth endpoints
+        if (context.Request.Path.StartsWithSegments("/api/auth", StringComparison.OrdinalIgnoreCase))
+        {
+            if (context.Request.Headers.TryGetValue("X-Tenant-Id", out var authTenantIdValue)
+                && Guid.TryParse(authTenantIdValue, out var authTenantId))
+            {
+                context.Items["TenantId"] = authTenantId;
+            }
+            await _next(context);
+            return;
+        }
+
         if (!context.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValue))
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;

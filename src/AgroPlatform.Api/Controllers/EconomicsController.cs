@@ -2,11 +2,13 @@ using AgroPlatform.Application.Economics.Commands.CreateCostRecord;
 using AgroPlatform.Application.Economics.Commands.DeleteCostRecord;
 using AgroPlatform.Application.Economics.Queries.GetCostRecords;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgroPlatform.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/economics")]
 public class EconomicsController : ControllerBase
 {
