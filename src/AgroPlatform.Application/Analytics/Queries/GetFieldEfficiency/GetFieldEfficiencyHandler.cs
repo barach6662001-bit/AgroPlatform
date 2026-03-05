@@ -51,7 +51,6 @@ public class GetFieldEfficiencyHandler : IRequestHandler<GetFieldEfficiencyQuery
         return fields.Select(f =>
         {
             var costs = costMap.GetValueOrDefault(f.Id, 0m);
-            var area = f.AreaHectares > 0 ? f.AreaHectares : 1m;
             return new FieldEfficiencyDto
             {
                 FieldId = f.Id,
@@ -60,7 +59,7 @@ public class GetFieldEfficiencyHandler : IRequestHandler<GetFieldEfficiencyQuery
                 CurrentCrop = f.CurrentCrop?.ToString(),
                 OperationsCount = opCountMap.GetValueOrDefault(f.Id, 0),
                 TotalCosts = costs,
-                CostPerHectare = Math.Round(costs / area, 2),
+                CostPerHectare = f.AreaHectares > 0 ? Math.Round(costs / f.AreaHectares, 2) : 0m,
                 YieldPerHectare = yieldMap.GetValueOrDefault(f.Id)
             };
         })
