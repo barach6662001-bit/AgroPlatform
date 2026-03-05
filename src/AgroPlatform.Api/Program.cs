@@ -1,8 +1,10 @@
+using System.Threading.RateLimiting;
 using AgroPlatform.Api.Middleware;
 using AgroPlatform.Application;
 using AgroPlatform.Infrastructure;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using OpenTelemetry.Metrics;
 using Serilog;
@@ -40,17 +42,66 @@ try
 
     builder.Services.AddCors(options =>
     {
+        var allowedOrigins = builder.Configuration
+            .GetSection("Cors:AllowedOrigins")
+            .Get<string[]>() ?? [];
+
+        if (allowedOrigins.Length == 0)
+        {
+            Log.Warning("No CORS allowed origins configured (Cors:AllowedOrigins). Cross-origin browser requests will be blocked.");
+        }
+
         options.AddDefaultPolicy(policy =>
         {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyHeader()
+                  .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
         });
+    });
+
+    var rateLimitOptions = builder.Configuration.GetSection("RateLimiting");
+    var readPermitLimit = rateLimitOptions.GetValue("ReadPermitLimit", 100);
+    var writePermitLimit = rateLimitOptions.GetValue("WritePermitLimit", 30);
+    var windowSeconds = rateLimitOptions.GetValue("WindowSeconds", 60);
+    var segmentsPerWindow = rateLimitOptions.GetValue("SegmentsPerWindow", 3);
+
+    builder.Services.AddRateLimiter(limiterOptions =>
+    {
+        limiterOptions.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+        {
+            var ip = context.Connection.RemoteIpAddress?.ToString() ?? context.Connection.Id;
+            var method = context.Request.Method;
+
+            if (HttpMethods.IsPost(method) || HttpMethods.IsPut(method) ||
+                HttpMethods.IsPatch(method) || HttpMethods.IsDelete(method))
+            {
+                return RateLimitPartition.GetSlidingWindowLimiter(
+                    $"writes_{ip}",
+                    _ => new SlidingWindowRateLimiterOptions
+                    {
+                        PermitLimit = writePermitLimit,
+                        Window = TimeSpan.FromSeconds(windowSeconds),
+                        SegmentsPerWindow = segmentsPerWindow
+                    });
+            }
+
+            return RateLimitPartition.GetSlidingWindowLimiter(
+                $"reads_{ip}",
+                _ => new SlidingWindowRateLimiterOptions
+                {
+                    PermitLimit = readPermitLimit,
+                    Window = TimeSpan.FromSeconds(windowSeconds),
+                    SegmentsPerWindow = segmentsPerWindow
+                });
+        });
+
+        limiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     });
 
     var app = builder.Build();
 
     app.UseMiddleware<ExceptionHandlingMiddleware>();
+    app.UseMiddleware<SecurityHeadersMiddleware>();
 
     app.UseSerilogRequestLogging(options =>
     {
@@ -71,6 +122,7 @@ try
 
     app.UseCors();
     app.UseHttpsRedirection();
+    app.UseRateLimiter();
     app.UseMiddleware<TenantMiddleware>();
     app.UseAuthentication();
     app.UseAuthorization();
