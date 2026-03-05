@@ -1,14 +1,15 @@
 using AgroPlatform.Domain.Enums;
 
-namespace AgroPlatform.Application.Warehouses.DTOs;
+namespace AgroPlatform.Application.Warehouses.Queries.GetMoveHistory;
 
-public class StockMoveDto
+public class MoveHistoryDto
 {
     public Guid Id { get; set; }
     public Guid WarehouseId { get; set; }
     public string WarehouseName { get; set; } = string.Empty;
     public Guid ItemId { get; set; }
     public string ItemName { get; set; } = string.Empty;
+    public string ItemCode { get; set; } = string.Empty;
     public StockMoveType MoveType { get; set; }
     public decimal Quantity { get; set; }
     public string UnitCode { get; set; } = string.Empty;
