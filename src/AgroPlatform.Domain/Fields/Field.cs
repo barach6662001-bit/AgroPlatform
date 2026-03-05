@@ -17,4 +17,5 @@ public class Field : AuditableEntity
 
     public ICollection<FieldCropHistory> CropHistory { get; set; } = new List<FieldCropHistory>();
     public ICollection<AgroOperation> Operations { get; set; } = new List<AgroOperation>();
+    public ICollection<CropRotationPlan> RotationPlans { get; set; } = new List<CropRotationPlan>();
 }
