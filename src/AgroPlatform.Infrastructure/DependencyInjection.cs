@@ -57,7 +57,8 @@ public static class DependencyInjection
         .AddDefaultTokenProviders();
 
         var jwtSettings = configuration.GetSection("JwtSettings");
-        var key = jwtSettings["Key"] ?? "default-secret-key-for-development-minimum-32-characters!!";
+        var key = jwtSettings["Key"]
+            ?? throw new InvalidOperationException("JwtSettings:Key is not configured.");
 
         services.AddAuthentication(options =>
         {
