@@ -113,6 +113,74 @@ public class WarehousesControllerTests : IntegrationTestBase
     }
 
     [Fact]
+    public async Task IssueStock_WithInsufficientBalance_Returns422_WithProblemBody()
+    {
+        var warehouseId = await CreateWarehouseAsync("Insuf422 Warehouse");
+        var itemId = await CreateItemAsync("INSUF422-001");
+
+        var response = await PostAsync("/api/warehouses/issue", new
+        {
+            warehouseId,
+            itemId,
+            quantity = 9999.0,
+            unitCode = "kg"
+        });
+
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        response.Content.Headers.ContentType!.MediaType.Should().Be("application/problem+json");
+
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        body.GetProperty("status").GetInt32().Should().Be(422);
+        body.GetProperty("title").GetString().Should().Be("Insufficient Balance");
+        body.GetProperty("detail").GetString().Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task IssueStock_WithNonExistentWarehouse_Returns404_WithProblemBody()
+    {
+        var nonExistentWarehouseId = Guid.NewGuid();
+        var itemId = await CreateItemAsync($"NE-ITEM-{Guid.NewGuid():N}"[..14]);
+
+        var response = await PostAsync("/api/warehouses/issue", new
+        {
+            warehouseId = nonExistentWarehouseId,
+            itemId,
+            quantity = 10.0,
+            unitCode = "kg"
+        });
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.Content.Headers.ContentType!.MediaType.Should().Be("application/problem+json");
+
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        body.GetProperty("status").GetInt32().Should().Be(404);
+        body.GetProperty("title").GetString().Should().Be("Not Found");
+    }
+
+    [Fact]
+    public async Task CreateWarehouseItem_WithDuplicateCode_Returns409_WithProblemBody()
+    {
+        var code = $"DUP-{Guid.NewGuid():N}"[..12];
+        await CreateItemAsync(code);
+
+        var response = await PostAsync("/api/warehouses/items", new
+        {
+            name = "Duplicate Item",
+            code,
+            category = "Grain",
+            baseUnit = "kg"
+        });
+
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.Content.Headers.ContentType!.MediaType.Should().Be("application/problem+json");
+
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        body.GetProperty("status").GetInt32().Should().Be(409);
+        body.GetProperty("title").GetString().Should().Be("Conflict");
+        body.GetProperty("detail").GetString().Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
     public async Task TransferStock_ReturnsOk()
     {
         var sourceId = await CreateWarehouseAsync("Source Warehouse");
