@@ -41,7 +41,13 @@ public class ExceptionHandlingMiddleware
         };
 
         if (statusCode == StatusCodes.Status500InternalServerError)
-            _logger.LogError(exception, "Unhandled exception occurred");
+        {
+            var traceId = context.TraceIdentifier;
+            context.Items.TryGetValue("TenantId", out var tenantId);
+            _logger.LogError(exception,
+                "Unhandled exception occurred. TraceId={TraceId} TenantId={TenantId} Path={Path}",
+                traceId, tenantId, context.Request.Path);
+        }
 
         var problemDetails = new ProblemDetails
         {
