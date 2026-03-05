@@ -1,0 +1,31 @@
+using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Economics;
+using AgroPlatform.Domain.Fields;
+using AgroPlatform.Domain.Machinery;
+using AgroPlatform.Domain.Users;
+using AgroPlatform.Domain.Warehouses;
+using Microsoft.EntityFrameworkCore;
+
+namespace AgroPlatform.Application.Common.Interfaces;
+
+public interface IAppDbContext
+{
+    DbSet<Warehouse> Warehouses { get; }
+    DbSet<WarehouseItem> WarehouseItems { get; }
+    DbSet<StockMove> StockMoves { get; }
+    DbSet<StockBalance> StockBalances { get; }
+    DbSet<Batch> Batches { get; }
+    DbSet<Field> Fields { get; }
+    DbSet<FieldCropHistory> FieldCropHistories { get; }
+    DbSet<CropRotationPlan> CropRotationPlans { get; }
+    DbSet<AgroOperation> AgroOperations { get; }
+    DbSet<AgroOperationResource> AgroOperationResources { get; }
+    DbSet<AgroOperationMachinery> AgroOperationMachineries { get; }
+    DbSet<Machine> Machines { get; }
+    DbSet<MachineWorkLog> MachineWorkLogs { get; }
+    DbSet<FuelLog> FuelLogs { get; }
+    DbSet<CostRecord> CostRecords { get; }
+    DbSet<Tenant> Tenants { get; }
+
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+}
