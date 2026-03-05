@@ -87,7 +87,7 @@ public class FieldsController : ControllerBase
     public async Task<IActionResult> PlanRotation([FromBody] PlanRotationCommand command, CancellationToken cancellationToken)
     {
         var id = await _sender.Send(command, cancellationToken);
-        return Ok(new { id });
+        return CreatedAtAction(nameof(GetField), new { id = command.FieldId }, new { id });
     }
 
     [HttpDelete("rotation-plans/{planId:guid}")]

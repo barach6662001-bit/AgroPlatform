@@ -47,7 +47,8 @@ public class ExceptionHandlingMiddleware
         {
             Status = statusCode,
             Title = title,
-            Detail = statusCode == StatusCodes.Status500InternalServerError ? null : exception.Message
+            Detail = statusCode == StatusCodes.Status500InternalServerError ? null : exception.Message,
+            Instance = context.Request.Path
         };
 
         if (errors != null)
