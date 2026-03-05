@@ -11,11 +11,13 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
 {
     private readonly IAppDbContext _context;
     private readonly IDateTimeService _dateTime;
+    private readonly IStockBalanceService _stockBalance;
 
-    public ReceiptStockHandler(IAppDbContext context, IDateTimeService dateTime)
+    public ReceiptStockHandler(IAppDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance)
     {
         _context = context;
         _dateTime = dateTime;
+        _stockBalance = stockBalance;
     }
 
     public async Task<Guid> Handle(ReceiptStockCommand request, CancellationToken cancellationToken)
@@ -53,32 +55,7 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
 
         _context.StockMoves.Add(move);
 
-        // Upsert StockBalance
-        var balance = await _context.StockBalances
-            .FirstOrDefaultAsync(b =>
-                b.WarehouseId == request.WarehouseId &&
-                b.ItemId == request.ItemId &&
-                b.BatchId == request.BatchId,
-                cancellationToken);
-
-        if (balance == null)
-        {
-            balance = new StockBalance
-            {
-                WarehouseId = request.WarehouseId,
-                ItemId = request.ItemId,
-                BatchId = request.BatchId,
-                BalanceBase = request.Quantity,
-                BaseUnit = request.UnitCode,
-                LastUpdatedUtc = _dateTime.UtcNow
-            };
-            _context.StockBalances.Add(balance);
-        }
-        else
-        {
-            balance.BalanceBase += request.Quantity;
-            balance.LastUpdatedUtc = _dateTime.UtcNow;
-        }
+        await _stockBalance.IncreaseBalance(request.WarehouseId, request.ItemId, request.BatchId, request.Quantity, request.UnitCode, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
         return move.Id;

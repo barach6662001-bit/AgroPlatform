@@ -1,4 +1,6 @@
 using AgroPlatform.Application.Common.Behaviors;
+using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Warehouses.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,8 @@ public static class DependencyInjection
         });
 
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+
+        services.AddScoped<IStockBalanceService, StockBalanceService>();
 
         return services;
     }

@@ -11,11 +11,13 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
 {
     private readonly IAppDbContext _context;
     private readonly IDateTimeService _dateTime;
+    private readonly IStockBalanceService _stockBalance;
 
-    public InventoryAdjustHandler(IAppDbContext context, IDateTimeService dateTime)
+    public InventoryAdjustHandler(IAppDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance)
     {
         _context = context;
         _dateTime = dateTime;
+        _stockBalance = stockBalance;
     }
 
     public async Task<InventoryAdjustResultDto> Handle(InventoryAdjustCommand request, CancellationToken cancellationToken)
@@ -29,16 +31,15 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
         _ = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);
 
-        var balance = await _context.StockBalances
+        var currentBalance = await _context.StockBalances
             .FirstOrDefaultAsync(b =>
                 b.WarehouseId == request.WarehouseId &&
                 b.ItemId == request.ItemId &&
                 b.BatchId == request.BatchId,
                 cancellationToken);
 
-        var currentBalance = balance?.BalanceBase ?? 0m;
-        var difference = request.ActualQuantity - currentBalance;
-        var now = _dateTime.UtcNow;
+        var currentQty = currentBalance?.BalanceBase ?? 0m;
+        var difference = request.ActualQuantity - currentQty;
 
         Guid? moveId = null;
 
@@ -64,24 +65,7 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
             moveId = move.Id;
         }
 
-        if (balance == null)
-        {
-            balance = new StockBalance
-            {
-                WarehouseId = request.WarehouseId,
-                ItemId = request.ItemId,
-                BatchId = request.BatchId,
-                BalanceBase = request.ActualQuantity,
-                BaseUnit = request.UnitCode,
-                LastUpdatedUtc = now
-            };
-            _context.StockBalances.Add(balance);
-        }
-        else
-        {
-            balance.BalanceBase = request.ActualQuantity;
-            balance.LastUpdatedUtc = now;
-        }
+        await _stockBalance.SetBalance(request.WarehouseId, request.ItemId, request.BatchId, request.ActualQuantity, request.UnitCode, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

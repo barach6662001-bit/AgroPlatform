@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.Warehouses.Commands.IssueStock;
+using AgroPlatform.Application.Warehouses.Services;
 using AgroPlatform.Domain.Warehouses;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -10,19 +11,23 @@ namespace AgroPlatform.UnitTests.Warehouses;
 
 public class IssueStockHandlerTests
 {
-    private static IAppDbContext CreateDbContext()
+    private static (IAppDbContext context, IStockBalanceService stockBalance) CreateDependencies()
     {
         var options = new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new TestDbContext(options);
+        var context = new TestDbContext(options);
+        var dateTime = Substitute.For<IDateTimeService>();
+        dateTime.UtcNow.Returns(DateTime.UtcNow);
+        var stockBalance = new StockBalanceService(context, dateTime);
+        return (context, stockBalance);
     }
 
     [Fact]
     public async Task Handle_SufficientBalance_CreatesIssueAndDecreasesBalance()
     {
         // Arrange
-        var context = CreateDbContext();
+        var (context, stockBalance) = CreateDependencies();
         var dateTime = Substitute.For<IDateTimeService>();
         dateTime.UtcNow.Returns(DateTime.UtcNow);
 
@@ -42,8 +47,8 @@ public class IssueStockHandlerTests
         context.StockBalances.Add(balance);
         await context.SaveChangesAsync();
 
-        var handler = new IssueStockHandler(context, dateTime);
-        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null);
+        var handler = new IssueStockHandler(context, dateTime, stockBalance);
+        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null);
 
         // Act
         var moveId = await handler.Handle(command, CancellationToken.None);
@@ -60,7 +65,7 @@ public class IssueStockHandlerTests
     public async Task Handle_InsufficientBalance_ThrowsConflictException()
     {
         // Arrange
-        var context = CreateDbContext();
+        var (context, stockBalance) = CreateDependencies();
         var dateTime = Substitute.For<IDateTimeService>();
         dateTime.UtcNow.Returns(DateTime.UtcNow);
 
@@ -80,21 +85,21 @@ public class IssueStockHandlerTests
         context.StockBalances.Add(balance);
         await context.SaveChangesAsync();
 
-        var handler = new IssueStockHandler(context, dateTime);
-        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null);
+        var handler = new IssueStockHandler(context, dateTime, stockBalance);
+        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null);
 
         // Act
         var act = () => handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<ConflictException>().WithMessage("*Insufficient*");
+        await act.Should().ThrowAsync<InsufficientBalanceException>();
     }
 
     [Fact]
     public async Task Handle_NoBalance_ThrowsConflictException()
     {
         // Arrange
-        var context = CreateDbContext();
+        var (context, stockBalance) = CreateDependencies();
         var dateTime = Substitute.For<IDateTimeService>();
         dateTime.UtcNow.Returns(DateTime.UtcNow);
 
@@ -104,13 +109,13 @@ public class IssueStockHandlerTests
         context.WarehouseItems.Add(item);
         await context.SaveChangesAsync();
 
-        var handler = new IssueStockHandler(context, dateTime);
-        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 10m, "kg", null);
+        var handler = new IssueStockHandler(context, dateTime, stockBalance);
+        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 10m, "kg", null, null);
 
         // Act
         var act = () => handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<ConflictException>();
+        await act.Should().ThrowAsync<InsufficientBalanceException>();
     }
 }

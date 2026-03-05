@@ -11,15 +11,26 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
 {
     private readonly IAppDbContext _context;
     private readonly IDateTimeService _dateTime;
+    private readonly IStockBalanceService _stockBalance;
 
-    public IssueStockHandler(IAppDbContext context, IDateTimeService dateTime)
+    public IssueStockHandler(IAppDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance)
     {
         _context = context;
         _dateTime = dateTime;
+        _stockBalance = stockBalance;
     }
 
     public async Task<Guid> Handle(IssueStockCommand request, CancellationToken cancellationToken)
     {
+        // Idempotency check
+        if (!string.IsNullOrEmpty(request.ClientOperationId))
+        {
+            var existing = await _context.StockMoves
+                .FirstOrDefaultAsync(m => m.ClientOperationId == request.ClientOperationId, cancellationToken);
+            if (existing != null)
+                return existing.Id;
+        }
+
         var warehouse = await _context.Warehouses.FindAsync(new object[] { request.WarehouseId }, cancellationToken)
             ?? throw new NotFoundException(nameof(Warehouse), request.WarehouseId);
 
@@ -28,16 +39,6 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
 
         _ = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);
-
-        var balance = await _context.StockBalances
-            .FirstOrDefaultAsync(b =>
-                b.WarehouseId == request.WarehouseId &&
-                b.ItemId == request.ItemId &&
-                b.BatchId == request.BatchId,
-                cancellationToken);
-
-        if (balance == null || balance.BalanceBase < request.Quantity)
-            throw new ConflictException("Insufficient stock balance.");
 
         var move = new StockMove
         {
@@ -48,13 +49,13 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
             Quantity = request.Quantity,
             UnitCode = request.UnitCode,
             QuantityBase = request.Quantity,
-            Note = request.Note
+            Note = request.Note,
+            ClientOperationId = request.ClientOperationId
         };
 
         _context.StockMoves.Add(move);
 
-        balance.BalanceBase -= request.Quantity;
-        balance.LastUpdatedUtc = _dateTime.UtcNow;
+        await _stockBalance.DecreaseBalance(request.WarehouseId, request.ItemId, request.BatchId, request.Quantity, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
         return move.Id;
