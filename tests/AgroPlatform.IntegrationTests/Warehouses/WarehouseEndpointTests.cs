@@ -8,10 +8,12 @@ namespace AgroPlatform.IntegrationTests.Warehouses;
 public class WarehouseEndpointTests : IClassFixture<ApiFactory>
 {
     private readonly HttpClient _client;
+    private readonly ApiFactory _factory;
     private static readonly Guid TestTenantId = Guid.NewGuid();
 
     public WarehouseEndpointTests(ApiFactory factory)
     {
+        _factory = factory;
         _client = factory.CreateClient();
         _client.DefaultRequestHeaders.Add("X-Tenant-Id", TestTenantId.ToString());
     }
@@ -85,7 +87,7 @@ public class WarehouseEndpointTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task MissingTenantHeader_ReturnsBadRequest()
     {
-        var clientWithoutTenant = new HttpClient { BaseAddress = _client.BaseAddress };
+        var clientWithoutTenant = _factory.CreateClient();
         var response = await clientWithoutTenant.GetAsync("/api/warehouses");
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }

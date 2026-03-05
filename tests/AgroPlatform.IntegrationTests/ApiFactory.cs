@@ -1,9 +1,13 @@
+using AgroPlatform.Domain.Users;
 using AgroPlatform.Infrastructure.Persistence;
+using AgroPlatform.Infrastructure.Persistence.Interceptors;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Testcontainers.PostgreSql;
 
 namespace AgroPlatform.IntegrationTests;
@@ -17,6 +21,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         .WithPassword("agroplatform_test")
         .Build();
 
+    public static readonly Guid TenantId = new Guid("00000000-0000-0000-0000-000000000002");
+
     public async Task InitializeAsync()
     {
         await _postgres.StartAsync();
@@ -28,14 +34,48 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
 
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(_postgres.GetConnectionString()));
+            services.AddDbContext<AppDbContext>((sp, options) =>
+            {
+                options.UseNpgsql(_postgres.GetConnectionString());
+                options.AddInterceptors(
+                    sp.GetRequiredService<AuditableEntityInterceptor>(),
+                    sp.GetRequiredService<SoftDeleteInterceptor>(),
+                    sp.GetRequiredService<TenantInterceptor>());
+            });
 
-            var sp = services.BuildServiceProvider();
-            using var scope = sp.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            db.Database.EnsureCreated();
+            // Replace JWT auth with test authentication scheme
+            services.AddAuthentication()
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
+
+            services.PostConfigure<AuthenticationOptions>(options =>
+            {
+                options.DefaultAuthenticateScheme = "Test";
+                options.DefaultChallengeScheme = "Test";
+                options.DefaultScheme = "Test";
+                options.DefaultForbidScheme = "Test";
+                options.DefaultSignInScheme = "Test";
+                options.DefaultSignOutScheme = "Test";
+            });
         });
+    }
+
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        var host = base.CreateHost(builder);
+
+        using var scope = host.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.EnsureCreated();
+
+        db.Tenants.Add(new Tenant
+        {
+            Id = TenantId,
+            Name = "API Test Tenant",
+            IsActive = true
+        });
+        db.SaveChanges();
+
+        return host;
     }
 
     public new async Task DisposeAsync()
