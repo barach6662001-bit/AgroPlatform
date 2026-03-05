@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+
 namespace AgroPlatform.Api.Middleware;
 
 public class TenantMiddleware
@@ -25,21 +28,45 @@ public class TenantMiddleware
 
         if (!context.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValue))
         {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync("{\"detail\":\"X-Tenant-Id header is required.\"}");
+            await WriteProblemAsync(context, StatusCodes.Status400BadRequest,
+                "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                "Missing Tenant Header",
+                "X-Tenant-Id header is required.");
             return;
         }
 
         if (!Guid.TryParse(tenantIdValue, out var tenantId))
         {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync("{\"detail\":\"X-Tenant-Id header must be a valid GUID.\"}");
+            await WriteProblemAsync(context, StatusCodes.Status400BadRequest,
+                "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                "Invalid Tenant Header",
+                "X-Tenant-Id header must be a valid GUID.");
             return;
         }
 
         context.Items["TenantId"] = tenantId;
         await _next(context);
+    }
+
+    private static async Task WriteProblemAsync(HttpContext context, int statusCode, string type, string title, string detail)
+    {
+        var problem = new ProblemDetails
+        {
+            Type = type,
+            Title = title,
+            Status = statusCode,
+            Detail = detail,
+            Instance = context.Request.Path
+        };
+
+        context.Response.StatusCode = statusCode;
+        context.Response.ContentType = "application/problem+json";
+
+        var json = JsonSerializer.Serialize(problem, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+
+        await context.Response.WriteAsync(json);
     }
 }

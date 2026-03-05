@@ -104,7 +104,7 @@ public class FieldsControllerTests : IntegrationTestBase
     }
 
     [Fact]
-    public async Task PlanRotation_ReturnsOk()
+    public async Task PlanRotation_ReturnsCreated()
     {
         var fieldId = await CreateFieldAsync("Rotation Plan Field");
 
@@ -116,6 +116,6 @@ public class FieldsControllerTests : IntegrationTestBase
             notes = "Test rotation"
         });
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 }
