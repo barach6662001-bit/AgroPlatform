@@ -11,17 +11,28 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
 {
     private readonly IAppDbContext _context;
     private readonly IDateTimeService _dateTime;
+    private readonly IStockBalanceService _stockBalance;
 
-    public TransferStockHandler(IAppDbContext context, IDateTimeService dateTime)
+    public TransferStockHandler(IAppDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance)
     {
         _context = context;
         _dateTime = dateTime;
+        _stockBalance = stockBalance;
     }
 
     public async Task<Guid> Handle(TransferStockCommand request, CancellationToken cancellationToken)
     {
         if (request.SourceWarehouseId == request.DestinationWarehouseId)
             throw new ConflictException("Source and destination warehouses must be different.");
+
+        // Idempotency check
+        if (!string.IsNullOrEmpty(request.ClientOperationId))
+        {
+            var existing = await _context.StockMoves
+                .FirstOrDefaultAsync(m => m.ClientOperationId == request.ClientOperationId, cancellationToken);
+            if (existing != null)
+                return existing.OperationId ?? existing.Id;
+        }
 
         var sourceWarehouse = await _context.Warehouses.FindAsync(new object[] { request.SourceWarehouseId }, cancellationToken)
             ?? throw new NotFoundException(nameof(Warehouse), request.SourceWarehouseId);
@@ -38,18 +49,7 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
         _ = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);
 
-        var sourceBalance = await _context.StockBalances
-            .FirstOrDefaultAsync(b =>
-                b.WarehouseId == request.SourceWarehouseId &&
-                b.ItemId == request.ItemId &&
-                b.BatchId == request.BatchId,
-                cancellationToken);
-
-        if (sourceBalance == null || sourceBalance.BalanceBase < request.Quantity)
-            throw new ConflictException("Insufficient stock balance in source warehouse.");
-
         var operationId = Guid.NewGuid();
-        var now = _dateTime.UtcNow;
 
         var transferOut = new StockMove
         {
@@ -61,7 +61,8 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
             Quantity = request.Quantity,
             UnitCode = request.UnitCode,
             QuantityBase = request.Quantity,
-            Note = request.Note
+            Note = request.Note,
+            ClientOperationId = request.ClientOperationId
         };
 
         var transferIn = new StockMove
@@ -80,36 +81,8 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
         _context.StockMoves.Add(transferOut);
         _context.StockMoves.Add(transferIn);
 
-        // Update source balance
-        sourceBalance.BalanceBase -= request.Quantity;
-        sourceBalance.LastUpdatedUtc = now;
-
-        // Upsert destination balance
-        var destBalance = await _context.StockBalances
-            .FirstOrDefaultAsync(b =>
-                b.WarehouseId == request.DestinationWarehouseId &&
-                b.ItemId == request.ItemId &&
-                b.BatchId == request.BatchId,
-                cancellationToken);
-
-        if (destBalance == null)
-        {
-            destBalance = new StockBalance
-            {
-                WarehouseId = request.DestinationWarehouseId,
-                ItemId = request.ItemId,
-                BatchId = request.BatchId,
-                BalanceBase = request.Quantity,
-                BaseUnit = request.UnitCode,
-                LastUpdatedUtc = now
-            };
-            _context.StockBalances.Add(destBalance);
-        }
-        else
-        {
-            destBalance.BalanceBase += request.Quantity;
-            destBalance.LastUpdatedUtc = now;
-        }
+        await _stockBalance.DecreaseBalance(request.SourceWarehouseId, request.ItemId, request.BatchId, request.Quantity, cancellationToken);
+        await _stockBalance.IncreaseBalance(request.DestinationWarehouseId, request.ItemId, request.BatchId, request.Quantity, request.UnitCode, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
         return operationId;
