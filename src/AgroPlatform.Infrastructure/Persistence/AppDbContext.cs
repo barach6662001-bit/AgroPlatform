@@ -12,7 +12,13 @@ namespace AgroPlatform.Infrastructure.Persistence;
 
 public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+    private readonly Guid _tenantId;
+
+    public AppDbContext(DbContextOptions<AppDbContext> options, ITenantService tenantService)
+        : base(options)
+    {
+        _tenantId = tenantService.GetTenantId();
+    }
 
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
     public DbSet<WarehouseItem> WarehouseItems => Set<WarehouseItem>();
@@ -35,5 +41,21 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        // Combined tenant + soft-delete query filters (overrides individual configs)
+        builder.Entity<Field>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
+        builder.Entity<FieldCropHistory>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
+        builder.Entity<CropRotationPlan>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
+        builder.Entity<AgroOperation>().HasQueryFilter(o => !o.IsDeleted && o.TenantId == _tenantId);
+        builder.Entity<AgroOperationResource>().HasQueryFilter(r => !r.IsDeleted && r.TenantId == _tenantId);
+        builder.Entity<AgroOperationMachinery>().HasQueryFilter(m => !m.IsDeleted && m.TenantId == _tenantId);
+        builder.Entity<Machine>().HasQueryFilter(m => !m.IsDeleted && m.TenantId == _tenantId);
+        builder.Entity<MachineWorkLog>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
+        builder.Entity<FuelLog>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
+        builder.Entity<CostRecord>().HasQueryFilter(c => !c.IsDeleted && c.TenantId == _tenantId);
+        builder.Entity<Warehouse>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
+        builder.Entity<WarehouseItem>().HasQueryFilter(i => !i.IsDeleted && i.TenantId == _tenantId);
+        builder.Entity<StockMove>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
+        builder.Entity<Batch>().HasQueryFilter(b => !b.IsDeleted && b.TenantId == _tenantId);
     }
 }

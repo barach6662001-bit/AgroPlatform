@@ -2,11 +2,13 @@ using AgroPlatform.Application.Analytics.Queries.GetDashboard;
 using AgroPlatform.Application.Analytics.Queries.GetFieldEfficiency;
 using AgroPlatform.Application.Analytics.Queries.GetResourceConsumption;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgroPlatform.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/analytics")]
 public class AnalyticsController : ControllerBase
 {

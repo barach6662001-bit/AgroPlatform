@@ -10,11 +10,13 @@ using AgroPlatform.Application.Warehouses.Queries.GetWarehouses;
 using AgroPlatform.Application.Warehouses.Queries.GetWarehouseItems;
 using AgroPlatform.Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgroPlatform.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/warehouses")]
 public class WarehousesController : ControllerBase
 {

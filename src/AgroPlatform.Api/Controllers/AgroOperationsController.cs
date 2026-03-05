@@ -12,11 +12,13 @@ using AgroPlatform.Application.AgroOperations.Queries.GetAgroOperationById;
 using AgroPlatform.Application.AgroOperations.Queries.GetAgroOperations;
 using AgroPlatform.Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgroPlatform.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/agro-operations")]
 public class AgroOperationsController : ControllerBase
 {
