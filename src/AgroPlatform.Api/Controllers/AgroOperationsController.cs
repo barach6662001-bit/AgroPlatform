@@ -106,6 +106,8 @@ public class AgroOperationsController : ControllerBase
     /// <summary>
     /// Marks an agro-operation as completed. Triggers automatic stock deduction
     /// for all attached resources with actual quantities set.
+    /// Returns 409 Conflict if the operation is already completed.
+    /// Returns 422 Unprocessable Entity if a resource has insufficient stock balance.
     /// </summary>
     /// <param name="id">Operation ID (must match the ID in the request body).</param>
     /// <param name="command">Completion data (completion date).</param>

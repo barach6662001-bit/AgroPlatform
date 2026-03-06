@@ -7,8 +7,8 @@ namespace AgroPlatform.Api.OpenApi;
 
 /// <summary>
 /// Adds standard ProblemDetails error responses to every Swagger operation:
-/// 401 and 403 for endpoints requiring authorization, 422 for write operations,
-/// 500 for all operations.
+/// 401 and 403 for endpoints requiring authorization, 400 for write operations (POST/PUT/PATCH),
+/// 404 for endpoints with route ID parameters, and 500 for all operations.
 /// </summary>
 public class ProblemDetailsOperationFilter : IOperationFilter
 {
