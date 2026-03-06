@@ -52,6 +52,16 @@ export default function MachineryList() {
     }
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+    setLoading(true);
+    getMachines({ type: typeFilter, status: statusFilter, search: value || undefined, page: 1, pageSize })
+      .then(setResult)
+      .catch(() => message.error(t.machinery.loadError))
+      .finally(() => setLoading(false));
+  };
+
   const columns = [
     { title: t.machinery.name, dataIndex: 'name', key: 'name', sorter: (a: MachineDto, b: MachineDto) => a.name.localeCompare(b.name) },
     { title: t.machinery.invNumber, dataIndex: 'inventoryNumber', key: 'inventoryNumber' },
@@ -80,7 +90,7 @@ export default function MachineryList() {
           placeholder={t.machinery.searchPlaceholder}
           prefix={<SearchOutlined />}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
           style={{ width: 280 }}
         />
         <Select

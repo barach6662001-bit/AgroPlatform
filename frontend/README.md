@@ -9,7 +9,7 @@ React 18 + TypeScript + Vite додаток для управління агро
 - **Ant Design 5** — UI компоненти (Modal, Form, Table, Select, DatePicker...)
 - **React Router v6** — маршрутизація
 - **Axios** — HTTP клієнт з JWT + X-Tenant-Id interceptors
-- **Zustand** — управление станом (auth + i18n)
+- **Zustand** — управління станом (auth + i18n)
 - **Recharts** — графіки та аналітика
 - **React Leaflet** — карти полів (GeoJSON)
 

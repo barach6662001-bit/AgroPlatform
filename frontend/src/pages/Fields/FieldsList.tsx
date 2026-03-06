@@ -20,15 +20,21 @@ export default function FieldsList() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const load = (p = page, ps = pageSize) => {
+  const load = (p = page, ps = pageSize, s = search) => {
     setLoading(true);
-    getFields({ page: p, pageSize: ps })
+    getFields({ page: p, pageSize: ps, search: s || undefined })
       .then(setResult)
       .catch(() => message.error(t.fields.loadError))
       .finally(() => setLoading(false));
   };
 
   useEffect(() => { load(); }, [page, pageSize]);
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+    load(1, pageSize, value);
+  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -50,18 +56,11 @@ export default function FieldsList() {
       setModalOpen(false);
       load();
     } catch {
-      message.error(t.fields.deleteError);
+      message.error(t.fields.createError);
     } finally {
       setSaving(false);
     }
   };
-
-  const items = result?.items ?? [];
-  const filtered = items.filter(
-    (f) =>
-      f.name.toLowerCase().includes(search.toLowerCase()) ||
-      (f.cadastralNumber ?? '').toLowerCase().includes(search.toLowerCase())
-  );
 
   const columns = [
     { title: t.fields.name, dataIndex: 'name', key: 'name', sorter: (a: FieldDto, b: FieldDto) => a.name.localeCompare(b.name) },
@@ -93,7 +92,7 @@ export default function FieldsList() {
           placeholder={t.fields.searchPlaceholder}
           prefix={<SearchOutlined />}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
           style={{ width: 320 }}
         />
         <Button
@@ -106,7 +105,7 @@ export default function FieldsList() {
         </Button>
       </Space>
       <Table
-        dataSource={filtered}
+        dataSource={result?.items ?? []}
         columns={columns}
         rowKey="id"
         loading={loading}

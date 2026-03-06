@@ -107,6 +107,7 @@ const uk = {
     addField: 'Додати поле',
     createField: 'Створити поле',
     createSuccess: 'Поле створено',
+    createError: 'Помилка створення поля',
     searchPlaceholder: 'Пошук за назвою або кадастровим номером',
     notSeeded: 'Не засіяно',
     loadError: 'Помилка завантаження полів',

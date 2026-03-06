@@ -109,6 +109,7 @@ const en: Translations = {
     addField: 'Add Field',
     createField: 'Create Field',
     createSuccess: 'Field created',
+    createError: 'Error creating field',
     searchPlaceholder: 'Search by name or cadastral number',
     notSeeded: 'Not seeded',
     loadError: 'Error loading fields',
