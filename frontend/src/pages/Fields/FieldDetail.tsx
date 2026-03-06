@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space } from 'antd';
+import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import type { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
-import { getFieldById } from '../../api/fields';
-import type { FieldDetailDto, CropHistoryDto } from '../../types/field';
+import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan } from '../../api/fields';
+import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 
@@ -15,15 +15,67 @@ export default function FieldDetail() {
   const navigate = useNavigate();
   const [field, setField] = useState<FieldDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [planModalOpen, setPlanModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [assignForm] = Form.useForm();
+  const [planForm] = Form.useForm();
   const { t } = useTranslation();
 
-  useEffect(() => {
+  const load = () => {
     if (!id) return;
     getFieldById(id)
       .then(setField)
       .catch(() => message.error(t.fields.notFound))
       .finally(() => setLoading(false));
-  }, [id]);
+  };
+
+  useEffect(() => { load(); }, [id]);
+
+  const handleAssignCrop = async () => {
+    try {
+      const values = await assignForm.validateFields();
+      setSaving(true);
+      await assignCrop({ fieldId: id!, ...values });
+      message.success(t.fields.assignCropSuccess);
+      assignForm.resetFields();
+      setAssignModalOpen(false);
+      setLoading(true);
+      load();
+    } catch {
+      message.error(t.fields.assignCropError);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddPlan = async () => {
+    try {
+      const values = await planForm.validateFields();
+      setSaving(true);
+      await createRotationPlan({ fieldId: id!, ...values });
+      message.success(t.fields.addRotationPlanSuccess);
+      planForm.resetFields();
+      setPlanModalOpen(false);
+      setLoading(true);
+      load();
+    } catch {
+      message.error(t.fields.addRotationPlanError);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeletePlan = async (planId: string) => {
+    try {
+      await deleteRotationPlan(planId);
+      message.success(t.fields.deleteRotationPlanSuccess);
+      setLoading(true);
+      load();
+    } catch {
+      message.error(t.fields.deleteRotationPlanError);
+    }
+  };
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
   if (!field) return null;
@@ -35,6 +87,8 @@ export default function FieldDetail() {
     // ignore parse error
   }
 
+  const cropOptions = Object.entries(t.crops).map(([k, v]) => ({ value: k as CropType, label: v }));
+
   const historyColumns = [
     { title: t.fields.year, dataIndex: 'year', key: 'year', sorter: (a: CropHistoryDto, b: CropHistoryDto) => a.year - b.year },
     { title: t.fields.crop, dataIndex: 'cropType', key: 'cropType', render: (v: string) => <Tag color="green">{t.crops[v as keyof typeof t.crops] || v}</Tag> },
@@ -42,11 +96,33 @@ export default function FieldDetail() {
     { title: t.fields.notes, dataIndex: 'notes', key: 'notes', render: (v: string) => v || '—' },
   ];
 
+  const planColumns = [
+    { title: t.fields.plannedYear, dataIndex: 'plannedYear', key: 'plannedYear' },
+    { title: t.fields.plannedCrop, dataIndex: 'plannedCrop', key: 'plannedCrop', render: (v: string) => <Tag color="blue">{t.crops[v as keyof typeof t.crops] || v}</Tag> },
+    { title: t.fields.notes, dataIndex: 'notes', key: 'notes', render: (v: string) => v || '—' },
+    {
+      title: t.common.actions, key: 'actions',
+      render: (_: unknown, record: CropRotationPlanDto) => (
+        <Popconfirm title={t.common.confirm} onConfirm={() => handleDeletePlan(record.id)}>
+          <Button size="small" danger icon={<DeleteOutlined />} />
+        </Popconfirm>
+      ),
+    },
+  ];
+
   return (
     <div>
-      <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/fields')} style={{ marginBottom: 16 }}>
-        {t.fields.backToList}
-      </Button>
+      <Space style={{ marginBottom: 16 }}>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/fields')}>
+          {t.fields.backToList}
+        </Button>
+        <Button icon={<PlusOutlined />} onClick={() => setAssignModalOpen(true)} style={{ background: '#52c41a', borderColor: '#52c41a', color: '#fff' }}>
+          {t.fields.assignCrop}
+        </Button>
+        <Button icon={<PlusOutlined />} onClick={() => setPlanModalOpen(true)}>
+          {t.fields.addRotationPlan}
+        </Button>
+      </Space>
       <PageHeader title={field.name} subtitle={t.fields.areaSubtitle.replace('{{area}}', field.areaHectares.toFixed(2))} />
 
       <Row gutter={[16, 16]}>
@@ -91,6 +167,62 @@ export default function FieldDetail() {
           locale={{ emptyText: t.fields.cropHistoryEmpty }}
         />
       </Card>
+
+      <Card title={t.fields.rotationPlans} style={{ marginTop: 16 }}>
+        <Table
+          dataSource={field.rotationPlans}
+          columns={planColumns}
+          rowKey="id"
+          pagination={{ pageSize: 10 }}
+          locale={{ emptyText: t.fields.rotationPlansEmpty }}
+        />
+      </Card>
+
+      {/* Assign Crop Modal */}
+      <Modal
+        title={t.fields.assignCrop}
+        open={assignModalOpen}
+        onOk={handleAssignCrop}
+        onCancel={() => { setAssignModalOpen(false); assignForm.resetFields(); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+      >
+        <Form form={assignForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="cropType" label={t.fields.crop} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={cropOptions} />
+          </Form.Item>
+          <Form.Item name="year" label={t.fields.cropYear} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="notes" label={t.fields.notes}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Add Rotation Plan Modal */}
+      <Modal
+        title={t.fields.addRotationPlan}
+        open={planModalOpen}
+        onOk={handleAddPlan}
+        onCancel={() => { setPlanModalOpen(false); planForm.resetFields(); }}
+        okText={t.common.add}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+      >
+        <Form form={planForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="plannedCrop" label={t.fields.plannedCrop} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={cropOptions} />
+          </Form.Item>
+          <Form.Item name="plannedYear" label={t.fields.plannedYear} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="notes" label={t.fields.notes}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

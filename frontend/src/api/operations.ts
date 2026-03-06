@@ -1,12 +1,15 @@
 import apiClient from './axios';
 import type { AgroOperationDto, AgroOperationDetailDto } from '../types/operation';
+import type { PaginatedResult } from '../types/common';
 
 export const getOperations = (params?: {
   fieldId?: string;
   operationType?: string;
   isCompleted?: boolean;
+  page?: number;
+  pageSize?: number;
 }) =>
-  apiClient.get<AgroOperationDto[]>('/api/agro-operations', { params }).then((r) => r.data);
+  apiClient.get<PaginatedResult<AgroOperationDto>>('/api/agro-operations', { params }).then((r) => r.data);
 
 export const getOperationById = (id: string) =>
   apiClient
@@ -15,3 +18,31 @@ export const getOperationById = (id: string) =>
 
 export const completeOperation = (id: string) =>
   apiClient.post(`/api/agro-operations/${id}/complete`).then((r) => r.data);
+
+export const createOperation = (data: {
+  fieldId: string;
+  operationType: string;
+  plannedDate: string;
+  description?: string;
+  areaProcessed?: number;
+}) =>
+  apiClient.post<AgroOperationDto>('/api/agro-operations', data).then((r) => r.data);
+
+export const updateOperation = (id: string, data: Partial<AgroOperationDto>) =>
+  apiClient.put<AgroOperationDto>(`/api/agro-operations/${id}`, data).then((r) => r.data);
+
+export const deleteOperation = (id: string) =>
+  apiClient.delete(`/api/agro-operations/${id}`);
+
+export const addResource = (operationId: string, data: {
+  warehouseItemId: string;
+  plannedQuantity: number;
+  unit: string;
+}) =>
+  apiClient.post(`/api/agro-operations/${operationId}/resources`, data).then((r) => r.data);
+
+export const addMachinery = (operationId: string, data: {
+  machineId: string;
+  hoursPlanned?: number;
+}) =>
+  apiClient.post(`/api/agro-operations/${operationId}/machinery`, data).then((r) => r.data);

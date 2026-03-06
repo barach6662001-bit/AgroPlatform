@@ -1,23 +1,49 @@
 import { useEffect, useState } from 'react';
-import { Table, Badge, message } from 'antd';
+import { Table, Badge, message, Button, Space, Modal, Form, Input } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getWarehouses } from '../../api/warehouses';
+import { getWarehouses, createWarehouse } from '../../api/warehouses';
 import type { WarehouseDto } from '../../types/warehouse';
+import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 
 export default function WarehousesList() {
-  const [warehouses, setWarehouses] = useState<WarehouseDto[]>([]);
+  const [result, setResult] = useState<PaginatedResult<WarehouseDto> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  useEffect(() => {
-    getWarehouses()
-      .then(setWarehouses)
+  const load = (p = page, ps = pageSize) => {
+    setLoading(true);
+    getWarehouses({ page: p, pageSize: ps })
+      .then(setResult)
       .catch(() => message.error(t.warehouses.loadError))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { load(); }, [page, pageSize]);
+
+  const handleCreate = async () => {
+    try {
+      const values = await form.validateFields();
+      setSaving(true);
+      await createWarehouse(values);
+      message.success(t.warehouses.createSuccess);
+      form.resetFields();
+      setModalOpen(false);
+      load();
+    } catch {
+      message.error(t.warehouses.createError);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const columns = [
     { title: t.warehouses.name, dataIndex: 'name', key: 'name', sorter: (a: WarehouseDto, b: WarehouseDto) => a.name.localeCompare(b.name) },
@@ -39,15 +65,49 @@ export default function WarehousesList() {
   return (
     <div>
       <PageHeader title={t.warehouses.title} subtitle={t.warehouses.subtitle} />
+      <Space style={{ marginBottom: 16 }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          style={{ background: '#52c41a', borderColor: '#52c41a' }}
+          onClick={() => setModalOpen(true)}
+        >
+          {t.warehouses.createWarehouse}
+        </Button>
+      </Space>
       <Table
-        dataSource={warehouses}
+        dataSource={result?.items ?? []}
         columns={columns}
         rowKey="id"
         loading={loading}
-        pagination={{ pageSize: 15 }}
+        pagination={{
+          current: page,
+          pageSize,
+          total: result?.totalCount ?? 0,
+          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+        }}
         onRow={(record) => ({ onClick: () => navigate(`/warehouses?warehouse=${record.id}`) })}
         rowClassName={() => 'clickable-row'}
       />
+
+      <Modal
+        title={t.warehouses.createWarehouse}
+        open={modalOpen}
+        onOk={handleCreate}
+        onCancel={() => { setModalOpen(false); form.resetFields(); }}
+        okText={t.common.create}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+      >
+        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="name" label={t.warehouses.name} rules={[{ required: true, message: t.common.required }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="location" label={t.warehouses.location}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
