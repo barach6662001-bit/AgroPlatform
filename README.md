@@ -2,138 +2,87 @@
 
 [![CI](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml/badge.svg)](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Цифровая платформа управления агропредприятием** — Digital platform for agricultural enterprise management.
+**Цифровая платформа управления агропредприятием** — комплексное решение для управления складом, полями, агрооперациями, техникой, экономикой и аналитикой сельскохозяйственного предприятия.
 
 ---
 
-## 🚀 Quick Start (English)
+## 🚀 Быстрый старт
 
-### Prerequisites
-
-| Requirement | Minimum version |
-|-------------|----------------|
-| [.NET SDK](https://dotnet.microsoft.com/download/dotnet/8.0) | 8.0 |
-| [PostgreSQL](https://www.postgresql.org/download/) | 15 (or Docker) |
-| [Docker](https://docs.docker.com/get-docker/) | any (optional) |
-
-### Run locally
+### Вариант A — Docker Compose (рекомендуется)
 
 ```bash
-# 1. Clone
 git clone https://github.com/barach6662001-bit/AgroPlatform.git
 cd AgroPlatform
-
-# 2. Start PostgreSQL via Docker Compose
-docker-compose up -d
-
-# 3. Apply migrations
-dotnet ef database update -p src/AgroPlatform.Infrastructure -s src/AgroPlatform.Api
-
-# 4. Run the API  (Development environment enables Swagger automatically)
-dotnet run --project src/AgroPlatform.Api
-
-# 5. Open Swagger UI
-#    http://localhost:5224/swagger
-```
-
-### Run tests
-
-```bash
-dotnet test                                       # all tests
-dotnet test tests/AgroPlatform.UnitTests          # unit tests only
-dotnet test tests/AgroPlatform.IntegrationTests   # integration tests (needs Docker)
-```
-
-### How to authenticate in Swagger
-
-1. Call `POST /api/auth/login` and copy the `token` from the response.
-2. Click **Authorize** 🔒 in Swagger UI, paste the token (no `Bearer ` prefix), click **Authorize**.
-3. Add the `X-Tenant-Id: <uuid>` header to every request (see [docs/tenancy.md](docs/tenancy.md)).
-
-### Key environment variables / settings
-
-| Setting | Description |
-|---------|-------------|
-| `ConnectionStrings__DefaultConnection` | PostgreSQL connection string |
-| `JwtSettings__Key` | HMAC signing key (min 32 chars) |
-| `JwtSettings__Issuer` | JWT issuer (default `AgroPlatform`) |
-| `JwtSettings__Audience` | JWT audience (default `AgroPlatform`) |
-| `Swagger__Enabled` | Force-enable Swagger UI outside Development (`true`/`false`) |
-| `Cors__AllowedOrigins` | JSON array of allowed CORS origins |
-
-Copy `src/AgroPlatform.Api/appsettings.Development.example.json` to
-`appsettings.Development.json` and fill in your values.
-
-### Run with Docker Compose (full-stack)
-
-This starts both PostgreSQL **and** the API container from a single command:
-
-```bash
-# Build the API image and start all services
 docker-compose up --build -d
-
-# View live logs
-docker-compose logs -f api
-
-# Stop everything
-docker-compose down
+# API:     http://localhost:8080
+# Swagger: http://localhost:8080/swagger
 ```
 
-The API will be available at **`http://localhost:8080`**.
-
-> **Note:** The `JwtSettings__Key` in `docker-compose.yml` is a placeholder for local use.
-> Replace it with a strong secret (≥ 32 characters) before deploying to any shared environment.
-
-#### Running database migrations
-
-Run migrations from the host while the `postgres` container is up:
+### Вариант B — Локальный .NET + Docker PostgreSQL
 
 ```bash
+# 1. Поднять только PostgreSQL
 docker-compose up -d postgres
+
+# 2. Применить миграции
 dotnet ef database update -p src/AgroPlatform.Infrastructure -s src/AgroPlatform.Api
+
+# 3. Запустить API
+dotnet run --project src/AgroPlatform.Api
+# API:     http://localhost:5224
+# Swagger: http://localhost:5224/swagger
 ```
 
-### Developer docs
-
-| Document | Description |
-|----------|-------------|
-| [docs/local-development.md](docs/local-development.md) | Full local setup guide |
-| [docs/auth.md](docs/auth.md) | JWT authentication details |
-| [docs/tenancy.md](docs/tenancy.md) | Multi-tenancy and `X-Tenant-Id` header |
-
----
-
-
-## 🖥️ Фронтенд
-
-React 18 + TypeScript приложение находится в директории [`frontend/`](./frontend/).
+### Вариант C — Фронтенд (отдельно)
 
 ```bash
 cd frontend
+cp .env.example .env
+# Установите VITE_API_URL=http://localhost:8080 (или 5224, если запускаете локально)
 npm install
-npm run dev   # http://localhost:3000
+npm run dev
+# Фронтенд: http://localhost:3000
 ```
 
-Подробнее — см. [frontend/README.md](./frontend/README.md).
+---
+
+## 🔐 Аутентификация в Swagger
+
+1. `POST /api/auth/register` — зарегистрироваться
+2. `POST /api/auth/login` — получить JWT токен
+3. Нажать **Authorize** 🔒 → вставить токен (без `Bearer `)
+4. Добавить заголовок `X-Tenant-Id: <uuid>` к запросам (подробнее — [docs/tenancy.md](docs/tenancy.md))
+
+---
+
+## ⚙️ Конфигурация
+
+| Переменная | Описание | Значение по умолчанию |
+|---|---|---|
+| `ConnectionStrings__DefaultConnection` | PostgreSQL connection string | см. docker-compose.yml |
+| `JwtSettings__Key` | HMAC ключ подписи JWT (≥ 32 символа) | placeholder в docker-compose |
+| `JwtSettings__Issuer` | Издатель JWT | `AgroPlatform` |
+| `JwtSettings__Audience` | Аудитория JWT | `AgroPlatform` |
+| `Cors__AllowedOrigins__0` | Разрешённый CORS origin | `http://localhost:3000` |
+| `Swagger__Enabled` | Включить Swagger вне Development | `false` |
+| `RateLimiting__ReadPermitLimit` | Лимит GET запросов / окно | `100` |
+| `RateLimiting__WritePermitLimit` | Лимит POST/PUT/DELETE / окно | `30` |
+
+> **Важно:** Замените `JwtSettings__Key` на надёжный секрет (≥ 32 символа) перед деплоем в любое общее окружение.
 
 ---
 
 ## 🛠️ Технологический стек
 
-| Технология | Назначение |
-|------------|-----------|
-| .NET 8 / ASP.NET Core Web API | Серверная платформа |
-| PostgreSQL + Entity Framework Core 8 | База данных и ORM |
-| Clean Architecture | Архитектурный паттерн (Domain → Application → Infrastructure → API) |
-| MediatR | CQRS паттерн |
-| FluentValidation | Валидация входных данных |
-| Serilog | Структурированное логирование |
-| ASP.NET Identity + JWT | Аутентификация и авторизация |
-| Multi-tenant архитектура | Изоляция данных по TenantId |
-| xUnit + FluentAssertions | Тестирование |
-| Docker / Docker Compose | Контейнеризация API и PostgreSQL |
+| Слой | Технологии |
+|------|-----------|
+| **Backend** | .NET 8, ASP.NET Core Web API, EF Core 8, PostgreSQL 16, MediatR, FluentValidation, Serilog, JWT, xUnit |
+| **Frontend** | React 18, TypeScript, Vite, Ant Design 5, Zustand, Recharts, Leaflet |
+| **Инфраструктура** | Docker, Docker Compose, GitHub Actions, Testcontainers |
 
 ---
 
@@ -141,14 +90,21 @@ npm run dev   # http://localhost:3000
 
 ```
 src/
-├── AgroPlatform.Api/            — Web API, контроллеры, middleware
-├── AgroPlatform.Application/    — Бизнес-логика, CQRS handlers, DTOs, validators
-├── AgroPlatform.Domain/         — Доменные модели, enums, интерфейсы
-└── AgroPlatform.Infrastructure/ — EF Core, PostgreSQL, Identity, конфигурации
+├── AgroPlatform.Api/            — Web API, контроллеры, middleware, Swagger
+├── AgroPlatform.Application/    — CQRS handlers, DTOs, validators, пагинация
+├── AgroPlatform.Domain/         — Доменные модели, enums
+└── AgroPlatform.Infrastructure/ — EF Core, PostgreSQL, Identity, JWT, interceptors
+
+frontend/
+├── src/api/          — Axios клиент
+├── src/components/   — UI компоненты
+├── src/pages/        — Страницы модулей
+├── src/stores/       — Zustand
+└── src/types/        — TypeScript типы
 
 tests/
-├── AgroPlatform.UnitTests/        — Юнит-тесты
-└── AgroPlatform.IntegrationTests/ — Интеграционные тесты
+├── AgroPlatform.UnitTests/
+└── AgroPlatform.IntegrationTests/
 ```
 
 ---
@@ -177,8 +133,13 @@ tests/
 
 ## 🌐 API Endpoints
 
+> Все list-эндпоинты поддерживают пагинацию: `?page=1&pageSize=20`
+
 | Метод | URL | Описание |
 |-------|-----|----------|
+| **🔑 Аутентификация** | | |
+| POST | `/api/auth/register` | Зарегистрироваться |
+| POST | `/api/auth/login` | Получить JWT токен |
 | **📦 Склад** | | |
 | POST | `/api/warehouses` | Создать склад |
 | GET | `/api/warehouses` | Список складов |
@@ -230,114 +191,19 @@ tests/
 | GET | `/api/analytics/dashboard` | Сводный Dashboard |
 | GET | `/api/analytics/resource-consumption` | Расход ресурсов |
 | GET | `/api/analytics/field-efficiency` | Эффективность полей |
-
----
-
-## 🚀 Быстрый старт
-
-### Предварительные требования
-
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- PostgreSQL 15+
-- Docker (опционально, для запуска PostgreSQL через Docker Compose)
-
-### Шаги установки
-
-1. **Клонировать репозиторий:**
-   ```bash
-   git clone https://github.com/barach6662001-bit/AgroPlatform.git
-   cd AgroPlatform
-   ```
-
-2. **Запустить PostgreSQL** (или использовать Docker Compose):
-   ```bash
-   docker-compose up -d
-   ```
-
-3. **Настроить подключение к базе данных** в `src/AgroPlatform.Api/appsettings.json`:
-   ```json
-   {
-     "ConnectionStrings": {
-       "DefaultConnection": "Host=localhost;Port=5432;Database=agroplatform;Username=postgres;Password=<YOUR_PASSWORD>"
-     }
-   }
-   ```
-
-4. **Применить миграции:**
-   ```bash
-   dotnet ef database update -p src/AgroPlatform.Infrastructure -s src/AgroPlatform.Api
-   ```
-
-5. **Запустить приложение:**
-   ```bash
-   dotnet run --project src/AgroPlatform.Api
-   ```
-
-6. **Открыть Swagger UI:**
-   ```
-   http://localhost:5000/swagger
-   ```
-
----
-
-## ⚙️ Конфигурация
-
-Ключевые секции `appsettings.json`:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "<строка подключения к PostgreSQL>"
-  },
-  "Jwt": {
-    "Key": "<секретный ключ>",
-    "Issuer": "<издатель токена>",
-    "Audience": "<аудитория токена>"
-  },
-  "Serilog": {
-    "MinimumLevel": "Information"
-  }
-}
-```
-
-| Параметр | Описание |
-|----------|----------|
-| `ConnectionStrings:DefaultConnection` | Строка подключения к PostgreSQL |
-| `Jwt:Key` | Секретный ключ для подписи JWT |
-| `Jwt:Issuer` | Издатель JWT токена |
-| `Jwt:Audience` | Аудитория JWT токена |
-| `Serilog` | Конфигурация структурированного логирования |
-
----
-
-## 🏢 Multi-Tenant
-
-Платформа поддерживает мультиарендность с изоляцией данных на уровне базы данных:
-
-- **Заголовок запроса:** `X-Tenant-Id`
-- Все данные изолированы по `TenantId`
-- Middleware автоматически применяет фильтрацию при каждом запросе
+| **❤️ Health Checks** | | |
+| GET | `/health/live` | Liveness probe |
+| GET | `/health/ready` | Readiness probe (проверка базы данных) |
 
 ---
 
 ## 🧪 Тесты
 
 ```bash
-# Запустить все тесты
-dotnet test
-
-# Только юнит-тесты
-dotnet test tests/AgroPlatform.UnitTests
-
-# Только интеграционные тесты
-dotnet test tests/AgroPlatform.IntegrationTests
+dotnet test                                       # все тесты
+dotnet test tests/AgroPlatform.UnitTests          # unit
+dotnet test tests/AgroPlatform.IntegrationTests   # integration (нужен Docker)
 ```
-
-Стек тестирования:
-- **xUnit** — фреймворк тестирования
-- **FluentAssertions** — читаемые assertions
-- **InMemory DB** — изоляция юнит-тестов
-- **WebApplicationFactory** — интеграционные тесты
 
 ---
 
