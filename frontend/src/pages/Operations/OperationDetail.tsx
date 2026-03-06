@@ -5,23 +5,20 @@ import { ArrowLeftOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { getOperationById, completeOperation } from '../../api/operations';
 import type { AgroOperationDetailDto, AgroOperationResourceDto, AgroOperationMachineryDto } from '../../types/operation';
 import PageHeader from '../../components/PageHeader';
-
-const operationTypeLabels: Record<string, string> = {
-  Sowing: 'Посев', Fertilizing: 'Удобрение', PlantProtection: 'СЗР',
-  SoilTillage: 'Обработка почвы', Harvesting: 'Уборка',
-};
+import { useTranslation } from '../../i18n';
 
 export default function OperationDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [op, setOp] = useState<AgroOperationDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t, lang } = useTranslation();
 
   const load = () => {
     if (!id) return;
     getOperationById(id)
       .then(setOp)
-      .catch(() => message.error('Операция не найдена'))
+      .catch(() => message.error(t.operations.operationNotFound))
       .finally(() => setLoading(false));
   };
 
@@ -31,10 +28,10 @@ export default function OperationDetail() {
     if (!id) return;
     try {
       await completeOperation(id);
-      message.success('Операция завершена');
+      message.success(t.operations.operationCompleted);
       load();
     } catch {
-      message.error('Ошибка завершения операции');
+      message.error(t.operations.completeError);
     }
   };
 
@@ -42,67 +39,67 @@ export default function OperationDetail() {
   if (!op) return null;
 
   const resourceColumns = [
-    { title: 'Товар', dataIndex: 'itemName', key: 'itemName' },
-    { title: 'Плановое кол-во', dataIndex: 'plannedQuantity', key: 'plannedQuantity', render: (v: number, r: AgroOperationResourceDto) => `${v} ${r.unit}` },
-    { title: 'Фактическое кол-во', dataIndex: 'actualQuantity', key: 'actualQuantity', render: (v: number, r: AgroOperationResourceDto) => v ? `${v} ${r.unit}` : '—' },
+    { title: t.warehouses.item, dataIndex: 'itemName', key: 'itemName' },
+    { title: t.operations.plannedQty, dataIndex: 'plannedQuantity', key: 'plannedQuantity', render: (v: number, r: AgroOperationResourceDto) => `${v} ${r.unit}` },
+    { title: t.operations.actualQty, dataIndex: 'actualQuantity', key: 'actualQuantity', render: (v: number, r: AgroOperationResourceDto) => v ? `${v} ${r.unit}` : '—' },
   ];
 
   const machineryColumns = [
-    { title: 'Техника', dataIndex: 'machineName', key: 'machineName' },
-    { title: 'Плановые часы', dataIndex: 'hoursPlanned', key: 'hoursPlanned', render: (v: number) => v ? `${v} ч` : '—' },
-    { title: 'Фактические часы', dataIndex: 'hoursActual', key: 'hoursActual', render: (v: number) => v ? `${v} ч` : '—' },
+    { title: t.operations.machineName, dataIndex: 'machineName', key: 'machineName' },
+    { title: t.operations.hoursPlanned, dataIndex: 'hoursPlanned', key: 'hoursPlanned', render: (v: number) => v ? `${v} ${lang === 'uk' ? 'год' : 'h'}` : '—' },
+    { title: t.operations.hoursActual, dataIndex: 'hoursActual', key: 'hoursActual', render: (v: number) => v ? `${v} ${lang === 'uk' ? 'год' : 'h'}` : '—' },
   ];
 
   return (
     <div>
       <Space style={{ marginBottom: 16 }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/operations')}>Назад</Button>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/operations')}>{t.operations.back}</Button>
         {!op.isCompleted && (
           <Button type="primary" icon={<CheckCircleOutlined />} onClick={handleComplete} style={{ background: '#52c41a', borderColor: '#52c41a' }}>
-            Завершить операцию
+            {t.operations.completeOperation}
           </Button>
         )}
       </Space>
       <PageHeader
-        title={`${operationTypeLabels[op.operationType] || op.operationType} — ${op.fieldName}`}
-        subtitle={op.isCompleted ? 'Завершена' : 'В работе'}
+        title={`${t.operationTypes[op.operationType as keyof typeof t.operationTypes] || op.operationType} — ${op.fieldName}`}
+        subtitle={op.isCompleted ? t.operations.completed : t.operations.inProgress}
       />
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <Card title="Детали операции">
+          <Card title={t.operations.operationDetails}>
             <Descriptions column={1} bordered>
-              <Descriptions.Item label="Поле">{op.fieldName}</Descriptions.Item>
-              <Descriptions.Item label="Тип">{operationTypeLabels[op.operationType] || op.operationType}</Descriptions.Item>
-              <Descriptions.Item label="Статус">
-                {op.isCompleted ? <Tag color="success">Завершена</Tag> : <Tag color="processing">В работе</Tag>}
+              <Descriptions.Item label={t.operations.field}>{op.fieldName}</Descriptions.Item>
+              <Descriptions.Item label={t.operations.type}>{t.operationTypes[op.operationType as keyof typeof t.operationTypes] || op.operationType}</Descriptions.Item>
+              <Descriptions.Item label={t.operations.status}>
+                {op.isCompleted ? <Tag color="success">{t.operations.completed}</Tag> : <Tag color="processing">{t.operations.inProgress}</Tag>}
               </Descriptions.Item>
-              <Descriptions.Item label="Плановая дата">{new Date(op.plannedDate).toLocaleDateString('ru-RU')}</Descriptions.Item>
-              <Descriptions.Item label="Дата завершения">{op.completedDate ? new Date(op.completedDate).toLocaleDateString('ru-RU') : '—'}</Descriptions.Item>
-              <Descriptions.Item label="Площадь (га)">{op.areaProcessed ? op.areaProcessed.toFixed(2) : '—'}</Descriptions.Item>
-              <Descriptions.Item label="Описание">{op.description || '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.operations.plannedDate}>{new Date(op.plannedDate).toLocaleDateString()}</Descriptions.Item>
+              <Descriptions.Item label={t.operations.completedDate}>{op.completedDate ? new Date(op.completedDate).toLocaleDateString() : '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.operations.area}>{op.areaProcessed ? op.areaProcessed.toFixed(2) : '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.operations.description}>{op.description || '—'}</Descriptions.Item>
             </Descriptions>
           </Card>
         </Col>
       </Row>
 
-      <Card title="Ресурсы" style={{ marginTop: 16 }}>
+      <Card title={t.operations.resources} style={{ marginTop: 16 }}>
         <Table
           dataSource={op.resources}
           columns={resourceColumns}
           rowKey="id"
           pagination={false}
-          locale={{ emptyText: 'Ресурсы не добавлены' }}
+          locale={{ emptyText: t.operations.resourcesEmpty }}
         />
       </Card>
 
-      <Card title="Задействованная техника" style={{ marginTop: 16 }}>
+      <Card title={t.operations.machinery} style={{ marginTop: 16 }}>
         <Table
           dataSource={op.machineryUsed}
           columns={machineryColumns}
           rowKey="id"
           pagination={false}
-          locale={{ emptyText: 'Техника не привязана' }}
+          locale={{ emptyText: t.operations.machineryEmpty }}
         />
       </Card>
     </div>

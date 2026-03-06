@@ -3,12 +3,14 @@ import { Table, Select, Space, message, Tag } from 'antd';
 import { getBalances, getWarehouses } from '../../api/warehouses';
 import type { BalanceDto, WarehouseDto } from '../../types/warehouse';
 import PageHeader from '../../components/PageHeader';
+import { useTranslation } from '../../i18n';
 
 export default function WarehouseItems() {
   const [balances, setBalances] = useState<BalanceDto[]>([]);
   const [warehouses, setWarehouses] = useState<WarehouseDto[]>([]);
   const [selectedWarehouse, setSelectedWarehouse] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     Promise.all([getWarehouses(), getBalances()])
@@ -16,7 +18,7 @@ export default function WarehouseItems() {
         setWarehouses(wh);
         setBalances(bal);
       })
-      .catch(() => message.error('Ошибка загрузки данных'))
+      .catch(() => message.error(t.warehouses.loadDataError))
       .finally(() => setLoading(false));
   }, []);
 
@@ -25,17 +27,17 @@ export default function WarehouseItems() {
     setLoading(true);
     getBalances(val ? { warehouseId: val } : {})
       .then(setBalances)
-      .catch(() => message.error('Ошибка'))
+      .catch(() => message.error(t.warehouses.loadError2))
       .finally(() => setLoading(false));
   };
 
   const columns = [
-    { title: 'Склад', dataIndex: 'warehouseName', key: 'warehouseName', sorter: (a: BalanceDto, b: BalanceDto) => a.warehouseName.localeCompare(b.warehouseName) },
-    { title: 'Товар', dataIndex: 'itemName', key: 'itemName', sorter: (a: BalanceDto, b: BalanceDto) => a.itemName.localeCompare(b.itemName) },
-    { title: 'Код', dataIndex: 'itemCode', key: 'itemCode' },
-    { title: 'Партия', dataIndex: 'batchCode', key: 'batchCode', render: (v: string) => v ? <Tag>{v}</Tag> : '—' },
+    { title: t.warehouses.warehouse, dataIndex: 'warehouseName', key: 'warehouseName', sorter: (a: BalanceDto, b: BalanceDto) => a.warehouseName.localeCompare(b.warehouseName) },
+    { title: t.warehouses.item, dataIndex: 'itemName', key: 'itemName', sorter: (a: BalanceDto, b: BalanceDto) => a.itemName.localeCompare(b.itemName) },
+    { title: t.warehouses.code, dataIndex: 'itemCode', key: 'itemCode' },
+    { title: t.warehouses.batch, dataIndex: 'batchCode', key: 'batchCode', render: (v: string) => v ? <Tag>{v}</Tag> : '—' },
     {
-      title: 'Остаток', key: 'balance',
+      title: t.warehouses.balance, key: 'balance',
       render: (_: unknown, r: BalanceDto) => (
         <span>
           <strong style={{ color: r.balanceBase > 0 ? '#52c41a' : '#f5222d' }}>
@@ -46,17 +48,17 @@ export default function WarehouseItems() {
       ),
     },
     {
-      title: 'Обновлено', dataIndex: 'lastUpdatedUtc', key: 'lastUpdatedUtc',
-      render: (v: string) => new Date(v).toLocaleDateString('ru-RU'),
+      title: t.warehouses.updated, dataIndex: 'lastUpdatedUtc', key: 'lastUpdatedUtc',
+      render: (v: string) => new Date(v).toLocaleDateString(),
     },
   ];
 
   return (
     <div>
-      <PageHeader title="Остатки на складах" subtitle="Текущие товарные запасы" />
+      <PageHeader title={t.warehouses.itemsTitle} subtitle={t.warehouses.itemsSubtitle} />
       <Space style={{ marginBottom: 16 }}>
         <Select
-          placeholder="Все склады"
+          placeholder={t.warehouses.allWarehouses}
           allowClear
           style={{ width: 240 }}
           options={warehouses.map((w) => ({ value: w.id, label: w.name }))}
@@ -69,7 +71,7 @@ export default function WarehouseItems() {
         columns={columns}
         rowKey={(r) => `${r.warehouseId}-${r.itemId}-${r.batchId}`}
         loading={loading}
-        pagination={{ pageSize: 20, showTotal: (total) => `Всего позиций: ${total}` }}
+        pagination={{ pageSize: 20, showTotal: (total) => t.warehouses.totalItems.replace('{{count}}', String(total)) }}
       />
     </div>
   );

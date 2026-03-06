@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
-import ruRU from 'antd/locale/ru_RU';
+import ukUA from 'antd/locale/uk_UA';
+import enUS from 'antd/locale/en_US';
+import { useTranslation } from './i18n';
 import AppLayout from './components/Layout/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
@@ -17,9 +19,10 @@ import MachineDetail from './pages/Machinery/MachineDetail';
 import CostRecords from './pages/Economics/CostRecords';
 
 export default function App() {
+  const { lang } = useTranslation();
   return (
     <ConfigProvider
-      locale={ruRU}
+      locale={lang === 'uk' ? ukUA : enUS}
       theme={{
         token: {
           colorPrimary: '#52c41a',

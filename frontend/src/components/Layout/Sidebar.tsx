@@ -8,19 +8,21 @@ import {
   DollarOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-const menuItems = [
-  { key: '/', label: 'Главная', icon: <DashboardOutlined /> },
-  { key: '/fields', label: 'Поля', icon: <AimOutlined /> },
-  { key: '/warehouses', label: 'Склад', icon: <InboxOutlined /> },
-  { key: '/operations', label: 'Операции', icon: <ToolOutlined /> },
-  { key: '/machinery', label: 'Техника', icon: <CarOutlined /> },
-  { key: '/economics', label: 'Экономика', icon: <DollarOutlined /> },
-];
+import { useTranslation } from '../../i18n';
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
+
+  const menuItems = [
+    { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined /> },
+    { key: '/fields', label: t.nav.fields, icon: <AimOutlined /> },
+    { key: '/warehouses', label: t.nav.warehouses, icon: <InboxOutlined /> },
+    { key: '/operations', label: t.nav.operations, icon: <ToolOutlined /> },
+    { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined /> },
+    { key: '/economics', label: t.nav.economics, icon: <DollarOutlined /> },
+  ];
 
   const selectedKey =
     menuItems

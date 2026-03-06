@@ -1,9 +1,10 @@
-import { Layout, Button, Space, Typography, Avatar } from 'antd';
+import { Layout, Button, Space, Typography, Avatar, Dropdown } from 'antd';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useAuthStore } from '../../stores/authStore';
+import { useTranslation } from '../../i18n';
 
 const { Header, Sider, Content } = Layout;
 
@@ -11,11 +12,17 @@ export default function AppLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const { email, role, logout } = useAuthStore();
   const navigate = useNavigate();
+  const { t, lang, setLang } = useTranslation();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  const langMenuItems = [
+    { key: 'uk', label: '🇺🇦 Українська' },
+    { key: 'en', label: '🇬🇧 English' },
+  ];
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -40,7 +47,7 @@ export default function AppLayout() {
               strong
               style={{ color: '#52c41a', fontSize: 18, whiteSpace: 'nowrap' }}
             >
-              🌾 АгроПлатформа
+              {t.app.name}
             </Typography.Text>
           )}
           {collapsed && (
@@ -63,6 +70,17 @@ export default function AppLayout() {
           }}
         >
           <Space>
+            <Dropdown
+              menu={{
+                items: langMenuItems,
+                selectedKeys: [lang],
+                onClick: ({ key }) => setLang(key as 'uk' | 'en'),
+              }}
+            >
+              <Button type="text" style={{ fontWeight: 600 }}>
+                {lang === 'uk' ? '🇺🇦 UA' : '🇬🇧 EN'}
+              </Button>
+            </Dropdown>
             <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#52c41a' }} />
             <Typography.Text strong>{email}</Typography.Text>
             {role && (
@@ -76,7 +94,7 @@ export default function AppLayout() {
               onClick={handleLogout}
               danger
             >
-              Выйти
+              {t.auth.logout}
             </Button>
           </Space>
         </Header>
