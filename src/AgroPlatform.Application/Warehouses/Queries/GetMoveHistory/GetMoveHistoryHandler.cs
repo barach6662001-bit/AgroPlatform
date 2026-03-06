@@ -1,10 +1,11 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Common.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Application.Warehouses.Queries.GetMoveHistory;
 
-public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, List<MoveHistoryDto>>
+public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, PaginatedResult<MoveHistoryDto>>
 {
     private readonly IAppDbContext _context;
 
@@ -13,7 +14,7 @@ public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, List<M
         _context = context;
     }
 
-    public async Task<List<MoveHistoryDto>> Handle(GetMoveHistoryQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<MoveHistoryDto>> Handle(GetMoveHistoryQuery request, CancellationToken cancellationToken)
     {
         var query = _context.StockMoves
             .Include(m => m.Warehouse)
@@ -39,7 +40,9 @@ public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, List<M
         var page = request.Page < 1 ? 1 : request.Page;
         var pageSize = request.PageSize < 1 ? 20 : request.PageSize;
 
-        return await query
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
             .OrderByDescending(m => m.CreatedAtUtc)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -61,5 +64,13 @@ public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, List<M
                 CreatedAtUtc = m.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
+
+        return new PaginatedResult<MoveHistoryDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 }

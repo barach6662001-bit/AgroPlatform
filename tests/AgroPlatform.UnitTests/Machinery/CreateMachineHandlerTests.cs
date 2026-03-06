@@ -96,7 +96,7 @@ public class CreateMachineHandlerTests
         var handler = new GetMachinesHandler(context);
         var result = await handler.Handle(new GetMachinesQuery(null, null, null), CancellationToken.None);
 
-        result.Should().HaveCount(3);
+        result.Items.Should().HaveCount(3);
     }
 
     [Fact]
@@ -111,8 +111,8 @@ public class CreateMachineHandlerTests
         var handler = new GetMachinesHandler(context);
         var result = await handler.Handle(new GetMachinesQuery(MachineryType.Tractor, null, null), CancellationToken.None);
 
-        result.Should().HaveCount(2);
-        result.Should().AllSatisfy(m => m.Type.Should().Be(MachineryType.Tractor));
+        result.Items.Should().HaveCount(2);
+        result.Items.Should().AllSatisfy(m => m.Type.Should().Be(MachineryType.Tractor));
     }
 
     [Fact]
@@ -126,8 +126,8 @@ public class CreateMachineHandlerTests
         var handler = new GetMachinesHandler(context);
         var result = await handler.Handle(new GetMachinesQuery(null, MachineryStatus.Active, null), CancellationToken.None);
 
-        result.Should().HaveCount(1);
-        result[0].Name.Should().Be("Active Tractor");
+        result.Items.Should().HaveCount(1);
+        result.Items[0].Name.Should().Be("Active Tractor");
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class CreateMachineHandlerTests
         var handler = new GetMachinesHandler(context);
         var result = await handler.Handle(new GetMachinesQuery(null, null, "john"), CancellationToken.None);
 
-        result.Should().HaveCount(1);
-        result[0].Name.Should().Be("John Deere 7R");
+        result.Items.Should().HaveCount(1);
+        result.Items[0].Name.Should().Be("John Deere 7R");
     }
 }

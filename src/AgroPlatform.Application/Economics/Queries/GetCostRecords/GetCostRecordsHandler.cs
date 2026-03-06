@@ -1,11 +1,12 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Common.Models;
 using AgroPlatform.Application.Economics.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Application.Economics.Queries.GetCostRecords;
 
-public class GetCostRecordsHandler : IRequestHandler<GetCostRecordsQuery, List<CostRecordDto>>
+public class GetCostRecordsHandler : IRequestHandler<GetCostRecordsQuery, PaginatedResult<CostRecordDto>>
 {
     private readonly IAppDbContext _context;
 
@@ -14,7 +15,7 @@ public class GetCostRecordsHandler : IRequestHandler<GetCostRecordsQuery, List<C
         _context = context;
     }
 
-    public async Task<List<CostRecordDto>> Handle(GetCostRecordsQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<CostRecordDto>> Handle(GetCostRecordsQuery request, CancellationToken cancellationToken)
     {
         var query = _context.CostRecords.AsQueryable();
 
@@ -33,8 +34,12 @@ public class GetCostRecordsHandler : IRequestHandler<GetCostRecordsQuery, List<C
         if (request.DateTo.HasValue)
             query = query.Where(c => c.Date <= request.DateTo.Value);
 
-        return await query
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
             .OrderByDescending(c => c.Date)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(c => new CostRecordDto
             {
                 Id = c.Id,
@@ -47,5 +52,13 @@ public class GetCostRecordsHandler : IRequestHandler<GetCostRecordsQuery, List<C
                 Description = c.Description
             })
             .ToListAsync(cancellationToken);
+
+        return new PaginatedResult<CostRecordDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize
+        };
     }
 }
