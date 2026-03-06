@@ -85,4 +85,49 @@ public class TenantIsolationTests : IntegrationTestBase
         // Assert: Tenant B can create the same code (no conflict across tenant boundary)
         createResponseB.StatusCode.Should().Be(HttpStatusCode.Created);
     }
+
+    [Fact]
+    public async Task StockBalanceCreatedForTenantA_IsNotVisibleToTenantB()
+    {
+        // Arrange: create a warehouse and item under Tenant A, then receipt stock
+        var warehouseResponse = await PostAsync("/api/warehouses", new
+        {
+            name = $"TenantA Balance Warehouse {Guid.NewGuid():N}"[..30],
+            location = "Location A"
+        });
+        warehouseResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        var warehouseResult = await warehouseResponse.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        var warehouseId = warehouseResult.GetProperty("id").GetGuid();
+
+        var itemCode = $"BAL-{Guid.NewGuid():N}"[..12];
+        var itemResponse = await PostAsync("/api/warehouses/items", new
+        {
+            name = "TenantA Balance Item",
+            code = itemCode,
+            category = "Grain",
+            baseUnit = "kg"
+        });
+        itemResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        var itemResult = await itemResponse.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        var itemId = itemResult.GetProperty("id").GetGuid();
+
+        var receiptResponse = await PostAsync("/api/warehouses/receipt", new
+        {
+            warehouseId,
+            itemId,
+            quantity = 100m,
+            unitCode = "kg"
+        });
+        receiptResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Act: query balances under Tenant B
+        var clientB = CreateTenantBClient();
+        var responseBBalances = await clientB.GetAsync("/api/warehouses/balances");
+
+        // Assert: Tenant B cannot see Tenant A's stock balance
+        responseBBalances.StatusCode.Should().Be(HttpStatusCode.OK);
+        var balancesB = await responseBBalances.Content.ReadFromJsonAsync<JsonElement[]>(JsonOptions);
+        balancesB.Should().NotBeNull();
+        balancesB!.Should().NotContain(b => b.GetProperty("warehouseId").GetGuid() == warehouseId);
+    }
 }
