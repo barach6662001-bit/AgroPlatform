@@ -4,11 +4,78 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Цифровая платформа управления агропредприятием**
-
-Централизованная система для управления полями, складом, техникой, агрооперациями и экономикой сельскохозяйственного предприятия. Масштабируется от 1000 до 5000+ гектаров.
+**Цифровая платформа управления агропредприятием** — Digital platform for agricultural enterprise management.
 
 ---
+
+## 🚀 Quick Start (English)
+
+### Prerequisites
+
+| Requirement | Minimum version |
+|-------------|----------------|
+| [.NET SDK](https://dotnet.microsoft.com/download/dotnet/8.0) | 8.0 |
+| [PostgreSQL](https://www.postgresql.org/download/) | 15 (or Docker) |
+| [Docker](https://docs.docker.com/get-docker/) | any (optional) |
+
+### Run locally
+
+```bash
+# 1. Clone
+git clone https://github.com/barach6662001-bit/AgroPlatform.git
+cd AgroPlatform
+
+# 2. Start PostgreSQL via Docker Compose
+docker-compose up -d
+
+# 3. Apply migrations
+dotnet ef database update -p src/AgroPlatform.Infrastructure -s src/AgroPlatform.Api
+
+# 4. Run the API  (Development environment enables Swagger automatically)
+dotnet run --project src/AgroPlatform.Api
+
+# 5. Open Swagger UI
+#    http://localhost:5224/swagger
+```
+
+### Run tests
+
+```bash
+dotnet test                                       # all tests
+dotnet test tests/AgroPlatform.UnitTests          # unit tests only
+dotnet test tests/AgroPlatform.IntegrationTests   # integration tests (needs Docker)
+```
+
+### How to authenticate in Swagger
+
+1. Call `POST /api/auth/login` and copy the `token` from the response.
+2. Click **Authorize** 🔒 in Swagger UI, paste the token (no `Bearer ` prefix), click **Authorize**.
+3. Add the `X-Tenant-Id: <uuid>` header to every request (see [docs/tenancy.md](docs/tenancy.md)).
+
+### Key environment variables / settings
+
+| Setting | Description |
+|---------|-------------|
+| `ConnectionStrings__DefaultConnection` | PostgreSQL connection string |
+| `JwtSettings__Key` | HMAC signing key (min 32 chars) |
+| `JwtSettings__Issuer` | JWT issuer (default `AgroPlatform`) |
+| `JwtSettings__Audience` | JWT audience (default `AgroPlatform`) |
+| `Swagger__Enabled` | Force-enable Swagger UI outside Development (`true`/`false`) |
+| `Cors__AllowedOrigins` | JSON array of allowed CORS origins |
+
+Copy `src/AgroPlatform.Api/appsettings.Development.example.json` to
+`appsettings.Development.json` and fill in your values.
+
+### Developer docs
+
+| Document | Description |
+|----------|-------------|
+| [docs/local-development.md](docs/local-development.md) | Full local setup guide |
+| [docs/auth.md](docs/auth.md) | JWT authentication details |
+| [docs/tenancy.md](docs/tenancy.md) | Multi-tenancy and `X-Tenant-Id` header |
+
+---
+
 
 ## 🖥️ Фронтенд
 
