@@ -56,6 +56,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<Warehouse>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
         builder.Entity<WarehouseItem>().HasQueryFilter(i => !i.IsDeleted && i.TenantId == _tenantId);
         builder.Entity<StockMove>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
+        builder.Entity<StockBalance>().HasQueryFilter(sb => !sb.IsDeleted && sb.TenantId == _tenantId);
         builder.Entity<Batch>().HasQueryFilter(b => !b.IsDeleted && b.TenantId == _tenantId);
     }
 }
