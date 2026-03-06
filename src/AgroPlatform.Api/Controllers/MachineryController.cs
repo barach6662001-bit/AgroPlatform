@@ -36,6 +36,7 @@ public class MachineryController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created machine.</returns>
     [HttpPost]
+    [Authorize(Roles = "Administrator,Manager")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateMachine([FromBody] CreateMachineCommand command, CancellationToken cancellationToken)
     {
@@ -93,6 +94,7 @@ public class MachineryController : ControllerBase
     /// <param name="command">Updated machine data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateMachine(Guid id, [FromBody] UpdateMachineCommand command, CancellationToken cancellationToken)
@@ -108,6 +110,7 @@ public class MachineryController : ControllerBase
     /// <param name="id">Machine ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteMachine(Guid id, CancellationToken cancellationToken)
@@ -122,6 +125,7 @@ public class MachineryController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created work-log entry.</returns>
     [HttpPost("{id:guid}/work-logs")]
+    [Authorize(Roles = "Administrator,Manager")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> AddWorkLog(Guid id, [FromBody] AddWorkLogCommand command, CancellationToken cancellationToken)
     {
@@ -138,6 +142,7 @@ public class MachineryController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created fuel-log entry.</returns>
     [HttpPost("{id:guid}/fuel-logs")]
+    [Authorize(Roles = "Administrator,Manager")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> AddFuelLog(Guid id, [FromBody] AddFuelLogCommand command, CancellationToken cancellationToken)
     {

@@ -29,6 +29,7 @@ public class EconomicsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created cost record.</returns>
     [HttpPost("cost-records")]
+    [Authorize(Roles = "Administrator,Manager,Director")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateCostRecord([FromBody] CreateCostRecordCommand command, CancellationToken cancellationToken)
     {
@@ -67,6 +68,7 @@ public class EconomicsController : ControllerBase
     /// <param name="id">Cost record ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("cost-records/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Director")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteCostRecord(Guid id, CancellationToken cancellationToken)

@@ -102,7 +102,7 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
             new Claim(ClaimTypes.NameIdentifier, TestUserId.ToString()),
             new Claim(ClaimTypes.Name, "testuser@example.com"),
             new Claim(ClaimTypes.Email, "testuser@example.com"),
-            new Claim(ClaimTypes.Role, "Admin"),
+            new Claim(ClaimTypes.Role, "Administrator"),
             new Claim("TenantId", TestTenantId.ToString()),
         };
 
