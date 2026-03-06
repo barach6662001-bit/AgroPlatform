@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Table, Button, Spin, message, Row, Col, Statistic, Badge } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { getMachineById } from '../../api/machinery';
+import { Card, Descriptions, Table, Button, Spin, message, Row, Col, Statistic, Badge, Modal, Form, Input, InputNumber, DatePicker, Space, Select } from 'antd';
+import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { getMachineById, addWorkLog, addFuelLog } from '../../api/machinery';
+import { getFields } from '../../api/fields';
 import type { MachineDetailDto, WorkLogDto, FuelLogDto } from '../../types/machinery';
+import type { FieldDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 
@@ -14,18 +16,69 @@ export default function MachineDetail() {
   const navigate = useNavigate();
   const [machine, setMachine] = useState<MachineDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fields, setFields] = useState<FieldDto[]>([]);
+  const [workLogOpen, setWorkLogOpen] = useState(false);
+  const [fuelLogOpen, setFuelLogOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [workForm] = Form.useForm();
+  const [fuelForm] = Form.useForm();
   const { t } = useTranslation();
 
-  useEffect(() => {
+  const load = () => {
     if (!id) return;
     getMachineById(id)
       .then(setMachine)
       .catch(() => message.error(t.machinery.notFound))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    load();
+    getFields({ page: 1, pageSize: 100 })
+      .then((r) => setFields(r.items))
+      .catch(() => {/* ignore */});
   }, [id]);
+
+  const handleWorkLog = async () => {
+    try {
+      const values = await workForm.validateFields();
+      setSaving(true);
+      const date = values.date ? (values.date as { toISOString: () => string }).toISOString() : new Date().toISOString();
+      await addWorkLog(id!, { ...values, date });
+      message.success(t.machinery.workLogSuccess);
+      workForm.resetFields();
+      setWorkLogOpen(false);
+      setLoading(true);
+      load();
+    } catch {
+      message.error(t.machinery.workLogError);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleFuelLog = async () => {
+    try {
+      const values = await fuelForm.validateFields();
+      setSaving(true);
+      const date = values.date ? (values.date as { toISOString: () => string }).toISOString() : new Date().toISOString();
+      await addFuelLog(id!, { ...values, date });
+      message.success(t.machinery.fuelLogSuccess);
+      fuelForm.resetFields();
+      setFuelLogOpen(false);
+      setLoading(true);
+      load();
+    } catch {
+      message.error(t.machinery.fuelLogError);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
   if (!machine) return null;
+
+  const fieldOptions = fields.map((f) => ({ value: f.id, label: f.name }));
 
   const workLogColumns = [
     { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
@@ -43,9 +96,17 @@ export default function MachineDetail() {
 
   return (
     <div>
-      <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/machinery')} style={{ marginBottom: 16 }}>
-        {t.machinery.back}
-      </Button>
+      <Space style={{ marginBottom: 16 }}>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/machinery')}>
+          {t.machinery.back}
+        </Button>
+        <Button icon={<PlusOutlined />} style={{ background: '#52c41a', borderColor: '#52c41a', color: '#fff' }} onClick={() => setWorkLogOpen(true)}>
+          {t.machinery.logWork}
+        </Button>
+        <Button icon={<PlusOutlined />} onClick={() => setFuelLogOpen(true)}>
+          {t.machinery.logFuel}
+        </Button>
+      </Space>
       <PageHeader title={machine.name} subtitle={`${t.machineryTypes[machine.type as keyof typeof t.machineryTypes] || machine.type} | ${machine.inventoryNumber}`} />
 
       <Row gutter={[16, 16]}>
@@ -88,6 +149,58 @@ export default function MachineDetail() {
       <Card title={t.machinery.fuelLog} style={{ marginTop: 16 }}>
         <Table dataSource={machine.recentFuelLogs} columns={fuelLogColumns} rowKey="id" pagination={{ pageSize: 10 }} locale={{ emptyText: t.machinery.fuelLogEmpty }} />
       </Card>
+
+      {/* Work Log Modal */}
+      <Modal
+        title={t.machinery.logWork}
+        open={workLogOpen}
+        onOk={handleWorkLog}
+        onCancel={() => { setWorkLogOpen(false); workForm.resetFields(); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+      >
+        <Form form={workForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="date" label={t.machinery.date} rules={[{ required: true, message: t.common.required }]}>
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="hoursWorked" label={t.machinery.hoursWorked} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="fieldId" label={t.machinery.fieldName}>
+            <Select options={fieldOptions} allowClear showSearch optionFilterProp="label" />
+          </Form.Item>
+          <Form.Item name="notes" label={t.machinery.notes}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Fuel Log Modal */}
+      <Modal
+        title={t.machinery.logFuel}
+        open={fuelLogOpen}
+        onOk={handleFuelLog}
+        onCancel={() => { setFuelLogOpen(false); fuelForm.resetFields(); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+      >
+        <Form form={fuelForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="date" label={t.machinery.date} rules={[{ required: true, message: t.common.required }]}>
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="liters" label={t.machinery.litersLabel} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="pricePerLiter" label={t.machinery.pricePerLiter}>
+            <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="notes" label={t.machinery.notes}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

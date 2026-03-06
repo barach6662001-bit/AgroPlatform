@@ -1,28 +1,34 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Tag, Input, message, Popconfirm } from 'antd';
+import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, InputNumber } from 'antd';
 import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getFields, deleteField } from '../../api/fields';
+import { getFields, deleteField, createField } from '../../api/fields';
 import type { FieldDto } from '../../types/field';
+import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 
 export default function FieldsList() {
-  const [fields, setFields] = useState<FieldDto[]>([]);
+  const [result, setResult] = useState<PaginatedResult<FieldDto> | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const load = () => {
+  const load = (p = page, ps = pageSize) => {
     setLoading(true);
-    getFields()
-      .then(setFields)
+    getFields({ page: p, pageSize: ps })
+      .then(setResult)
       .catch(() => message.error(t.fields.loadError))
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [page, pageSize]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -34,7 +40,24 @@ export default function FieldsList() {
     }
   };
 
-  const filtered = fields.filter(
+  const handleCreate = async () => {
+    try {
+      const values = await form.validateFields();
+      setSaving(true);
+      await createField(values);
+      message.success(t.fields.createSuccess);
+      form.resetFields();
+      setModalOpen(false);
+      load();
+    } catch {
+      message.error(t.fields.deleteError);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const items = result?.items ?? [];
+  const filtered = items.filter(
     (f) =>
       f.name.toLowerCase().includes(search.toLowerCase()) ||
       (f.cadastralNumber ?? '').toLowerCase().includes(search.toLowerCase())
@@ -73,7 +96,12 @@ export default function FieldsList() {
           onChange={(e) => setSearch(e.target.value)}
           style={{ width: 320 }}
         />
-        <Button type="primary" icon={<PlusOutlined />} style={{ background: '#52c41a', borderColor: '#52c41a' }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          style={{ background: '#52c41a', borderColor: '#52c41a' }}
+          onClick={() => setModalOpen(true)}
+        >
           {t.fields.addField}
         </Button>
       </Space>
@@ -82,8 +110,42 @@ export default function FieldsList() {
         columns={columns}
         rowKey="id"
         loading={loading}
-        pagination={{ pageSize: 15, showTotal: (total) => `${t.fields.total.replace('{{count}}', String(total))}` }}
+        pagination={{
+          current: page,
+          pageSize,
+          total: result?.totalCount ?? 0,
+          showTotal: (total) => t.fields.total.replace('{{count}}', String(total)),
+          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+        }}
       />
+
+      <Modal
+        title={t.fields.createField}
+        open={modalOpen}
+        onOk={handleCreate}
+        onCancel={() => { setModalOpen(false); form.resetFields(); }}
+        okText={t.common.create}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+      >
+        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="name" label={t.fields.name} rules={[{ required: true, message: t.common.required }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="cadastralNumber" label={t.fields.cadastralNumber}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="areaHectares" label={t.fields.area} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="soilType" label={t.fields.soilType}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="notes" label={t.fields.notes}>
+            <Input.TextArea rows={3} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

@@ -1,8 +1,9 @@
 import apiClient from './axios';
-import type { FieldDto, FieldDetailDto } from '../types/field';
+import type { FieldDto, FieldDetailDto, CropType } from '../types/field';
+import type { PaginatedResult } from '../types/common';
 
-export const getFields = () =>
-  apiClient.get<FieldDto[]>('/api/fields').then((r) => r.data);
+export const getFields = (params?: { page?: number; pageSize?: number; search?: string }) =>
+  apiClient.get<PaginatedResult<FieldDto>>('/api/fields', { params }).then((r) => r.data);
 
 export const getFieldById = (id: string) =>
   apiClient.get<FieldDetailDto>(`/api/fields/${id}`).then((r) => r.data);
@@ -15,3 +16,15 @@ export const updateField = (id: string, data: Partial<FieldDto>) =>
 
 export const deleteField = (id: string) =>
   apiClient.delete(`/api/fields/${id}`);
+
+export const assignCrop = (data: { fieldId: string; cropType: CropType; year: number; notes?: string }) =>
+  apiClient.post('/api/fields/assign-crop', data).then((r) => r.data);
+
+export const updateCropYield = (id: string, data: { yieldTonnesPerHa: number; notes?: string }) =>
+  apiClient.put(`/api/fields/crop-history/${id}/yield`, data).then((r) => r.data);
+
+export const createRotationPlan = (data: { fieldId: string; plannedCrop: CropType; plannedYear: number; notes?: string }) =>
+  apiClient.post('/api/fields/rotation-plans', data).then((r) => r.data);
+
+export const deleteRotationPlan = (id: string) =>
+  apiClient.delete(`/api/fields/rotation-plans/${id}`);
