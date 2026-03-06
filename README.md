@@ -66,6 +66,35 @@ dotnet test tests/AgroPlatform.IntegrationTests   # integration tests (needs Doc
 Copy `src/AgroPlatform.Api/appsettings.Development.example.json` to
 `appsettings.Development.json` and fill in your values.
 
+### Run with Docker Compose (full-stack)
+
+This starts both PostgreSQL **and** the API container from a single command:
+
+```bash
+# Build the API image and start all services
+docker-compose up --build -d
+
+# View live logs
+docker-compose logs -f api
+
+# Stop everything
+docker-compose down
+```
+
+The API will be available at **`http://localhost:8080`**.
+
+> **Note:** The `JwtSettings__Key` in `docker-compose.yml` is a placeholder for local use.
+> Replace it with a strong secret (≥ 32 characters) before deploying to any shared environment.
+
+#### Running database migrations
+
+Run migrations from the host while the `postgres` container is up:
+
+```bash
+docker-compose up -d postgres
+dotnet ef database update -p src/AgroPlatform.Infrastructure -s src/AgroPlatform.Api
+```
+
 ### Developer docs
 
 | Document | Description |
@@ -104,7 +133,7 @@ npm run dev   # http://localhost:3000
 | ASP.NET Identity + JWT | Аутентификация и авторизация |
 | Multi-tenant архитектура | Изоляция данных по TenantId |
 | xUnit + FluentAssertions | Тестирование |
-| Docker Compose | Контейнеризация PostgreSQL |
+| Docker / Docker Compose | Контейнеризация API и PostgreSQL |
 
 ---
 
