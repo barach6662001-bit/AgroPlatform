@@ -126,8 +126,9 @@ public class TenantIsolationTests : IntegrationTestBase
 
         // Assert: Tenant B cannot see Tenant A's stock balance
         responseBBalances.StatusCode.Should().Be(HttpStatusCode.OK);
-        var balancesB = await responseBBalances.Content.ReadFromJsonAsync<JsonElement[]>(JsonOptions);
-        balancesB.Should().NotBeNull();
-        balancesB!.Should().NotContain(b => b.GetProperty("warehouseId").GetGuid() == warehouseId);
+        var balancesPayload = await responseBBalances.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        balancesPayload.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        var balancesB = balancesPayload.GetProperty("items").EnumerateArray().ToList();
+        balancesB.Should().NotContain(b => b.GetProperty("warehouseId").GetGuid() == warehouseId);
     }
 }
