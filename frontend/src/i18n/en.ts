@@ -76,7 +76,6 @@ const en: Translations = {
     Soybean: 'Soybean',
     Rapeseed: 'Rapeseed',
     SugarBeet: 'Sugar Beet',
-    SugarBeetShort: 'Sugar Beet',
     Potato: 'Potato',
     Fallow: 'Fallow',
     Other: 'Other',

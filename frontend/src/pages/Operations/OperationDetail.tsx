@@ -39,7 +39,7 @@ export default function OperationDetail() {
   if (!op) return null;
 
   const resourceColumns = [
-    { title: t.operations.machineName, dataIndex: 'itemName', key: 'itemName' },
+    { title: t.warehouses.item, dataIndex: 'itemName', key: 'itemName' },
     { title: t.operations.plannedQty, dataIndex: 'plannedQuantity', key: 'plannedQuantity', render: (v: number, r: AgroOperationResourceDto) => `${v} ${r.unit}` },
     { title: t.operations.actualQty, dataIndex: 'actualQuantity', key: 'actualQuantity', render: (v: number, r: AgroOperationResourceDto) => v ? `${v} ${r.unit}` : '—' },
   ];

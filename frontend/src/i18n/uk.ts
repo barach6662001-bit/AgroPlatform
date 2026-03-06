@@ -74,7 +74,6 @@ const uk = {
     Soybean: 'Соя',
     Rapeseed: 'Ріпак',
     SugarBeet: 'Цукровий буряк',
-    SugarBeetShort: 'Цукр. буряк',
     Potato: 'Картопля',
     Fallow: 'Пар',
     Other: 'Інше',
