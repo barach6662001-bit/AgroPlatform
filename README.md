@@ -1,5 +1,6 @@
 # 🌾 AgroPlatform
 
+[![CI](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml/badge.svg)](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -241,6 +242,39 @@ dotnet test tests/AgroPlatform.IntegrationTests
 - **FluentAssertions** — читаемые assertions
 - **InMemory DB** — изоляция юнит-тестов
 - **WebApplicationFactory** — интеграционные тесты
+
+---
+
+## 🔧 Сборка и публикация
+
+```bash
+# Сборка (Release)
+dotnet build --configuration Release
+
+# Публикация API
+dotnet publish src/AgroPlatform.Api --configuration Release --output ./publish/api
+
+# Запустить из артефакта
+dotnet publish/api/AgroPlatform.Api.dll
+```
+
+---
+
+## 🤖 CI/CD
+
+GitHub Actions автоматически запускается на каждый push в `main` и на каждый Pull Request:
+
+| Шаг | Описание |
+|-----|----------|
+| Restore | Восстановление NuGet зависимостей (с кешем) |
+| Build | Сборка всего решения в конфигурации Release |
+| Warn-as-error | Строгая проверка предупреждений в Domain и Application |
+| Unit tests | Юнит-тесты с покрытием кода (Cobertura XML) |
+| Integration tests | Интеграционные тесты (Testcontainers + PostgreSQL) |
+| Artifacts | Загрузка результатов тестов, покрытия и API-артефакта |
+| Vulnerability scan | `dotnet list package --vulnerable` (не критичный шаг) |
+
+Артефакты сборки хранятся 7 дней и доступны на вкладке **Actions → Artifacts**.
 
 ---
 
