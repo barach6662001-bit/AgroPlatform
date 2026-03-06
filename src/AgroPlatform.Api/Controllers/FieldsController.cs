@@ -45,7 +45,7 @@ public class FieldsController : ControllerBase
         return CreatedAtAction(nameof(GetField), new { id }, new { id });
     }
 
-    /// <summary>Returns a list of fields, optionally filtered by current crop or search term.</summary>
+    /// <summary>Returns a paginated list of fields, optionally filtered by current crop or search term.</summary>
     /// <param name="currentCrop">Optional crop type filter.</param>
     /// <param name="searchTerm">Optional free-text search (name, cadastral number).</param>
     /// <param name="page">Page number (1-based, default 1).</param>

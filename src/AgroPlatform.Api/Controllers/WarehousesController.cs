@@ -69,7 +69,7 @@ public class WarehousesController : ControllerBase
         return CreatedAtAction(nameof(GetWarehouseItems), new { }, new { id });
     }
 
-    /// <summary>Returns a list of stock items, optionally filtered by category.</summary>
+    /// <summary>Returns a paginated list of stock items, optionally filtered by category.</summary>
     /// <param name="category">Optional category filter.</param>
     /// <param name="page">Page number (1-based, default 1).</param>
     /// <param name="pageSize">Page size (default 20).</param>
@@ -133,7 +133,7 @@ public class WarehousesController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Returns current stock balances, optionally filtered by warehouse and/or item.</summary>
+    /// <summary>Returns paginated current stock balances, optionally filtered by warehouse and/or item.</summary>
     /// <param name="warehouseId">Optional warehouse filter.</param>
     /// <param name="itemId">Optional item filter.</param>
     /// <param name="page">Page number (1-based, default 1).</param>

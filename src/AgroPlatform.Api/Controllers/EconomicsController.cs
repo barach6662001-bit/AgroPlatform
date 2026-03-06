@@ -38,7 +38,7 @@ public class EconomicsController : ControllerBase
     }
 
     /// <summary>
-    /// Returns a list of cost records filtered by category, field, operation and/or date range.
+    /// Returns a paginated list of cost records filtered by category, field, operation and/or date range.
     /// </summary>
     /// <param name="category">Optional category filter.</param>
     /// <param name="fieldId">Optional field filter.</param>

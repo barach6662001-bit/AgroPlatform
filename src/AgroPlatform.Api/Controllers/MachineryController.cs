@@ -44,7 +44,7 @@ public class MachineryController : ControllerBase
         return CreatedAtAction(nameof(GetMachine), new { id }, new { id });
     }
 
-    /// <summary>Returns a list of machines, optionally filtered by type, status or search text.</summary>
+    /// <summary>Returns a paginated list of machines, optionally filtered by type, status or search text.</summary>
     /// <param name="type">Optional machinery type filter.</param>
     /// <param name="status">Optional machinery status filter.</param>
     /// <param name="search">Optional free-text search (name).</param>
