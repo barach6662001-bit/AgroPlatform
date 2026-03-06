@@ -25,38 +25,19 @@ import {
 import { getDashboard } from '../api/analytics';
 import type { DashboardDto } from '../types/analytics';
 import PageHeader from '../components/PageHeader';
+import { useTranslation } from '../i18n';
 
 const COLORS = ['#52c41a', '#1890ff', '#faad14', '#f5222d', '#722ed1', '#13c2c2', '#eb2f96', '#fa8c16'];
-
-const operationTypeLabels: Record<string, string> = {
-  Sowing: 'Посев',
-  Fertilizing: 'Удобрение',
-  PlantProtection: 'СЗР',
-  SoilTillage: 'Обработка',
-  Harvesting: 'Уборка',
-};
-
-const cropLabels: Record<string, string> = {
-  Wheat: 'Пшеница',
-  Barley: 'Ячмень',
-  Corn: 'Кукуруза',
-  Sunflower: 'Подсолнечник',
-  Soybean: 'Соя',
-  Rapeseed: 'Рапс',
-  SugarBeet: 'Сахарная свёкла',
-  Potato: 'Картофель',
-  Fallow: 'Пар',
-  Other: 'Другое',
-};
 
 export default function Dashboard() {
   const [data, setData] = useState<DashboardDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     getDashboard()
       .then(setData)
-      .catch(() => message.error('Не удалось загрузить данные'))
+      .catch(() => message.error(t.dashboard.loadError))
       .finally(() => setLoading(false));
   }, []);
 
@@ -64,12 +45,12 @@ export default function Dashboard() {
   if (!data) return null;
 
   const operationsData = Object.entries(data.operationsByType).map(([type, count]) => ({
-    name: operationTypeLabels[type] || type,
+    name: t.operationTypes[type as keyof typeof t.operationTypes] || type,
     value: count,
   }));
 
   const areaData = Object.entries(data.areaByCrop).map(([crop, area]) => ({
-    name: cropLabels[crop] || crop,
+    name: t.crops[crop as keyof typeof t.crops] || crop,
     area: Number(area.toFixed(1)),
   }));
 
@@ -80,13 +61,13 @@ export default function Dashboard() {
 
   return (
     <div>
-      <PageHeader title="Главная панель" subtitle="Сводка по всему предприятию" />
+      <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
 
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={4}>
           <Card>
             <Statistic
-              title="Полей"
+              title={t.dashboard.fields}
               value={data.totalFields}
               prefix={<AimOutlined />}
               valueStyle={{ color: '#52c41a' }}
@@ -96,7 +77,7 @@ export default function Dashboard() {
         <Col xs={24} sm={12} lg={5}>
           <Card>
             <Statistic
-              title="Площадь (га)"
+              title={t.dashboard.area}
               value={data.totalAreaHectares}
               precision={1}
               valueStyle={{ color: '#52c41a' }}
@@ -106,17 +87,17 @@ export default function Dashboard() {
         <Col xs={24} sm={12} lg={5}>
           <Card>
             <Statistic
-              title="Операции"
+              title={t.dashboard.operations}
               value={data.totalOperations}
               prefix={<ToolOutlined />}
-              suffix={<Typography.Text type="secondary" style={{ fontSize: 12 }}>{` / ${data.completedOperations} завершено`}</Typography.Text>}
+              suffix={<Typography.Text type="secondary" style={{ fontSize: 12 }}>{` / ${data.completedOperations} ${t.dashboard.completed}`}</Typography.Text>}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={5}>
           <Card>
             <Statistic
-              title="Техника (активная)"
+              title={t.dashboard.activeMachinery}
               value={data.activeMachines}
               suffix={`/ ${data.totalMachines}`}
               prefix={<CarOutlined />}
@@ -127,7 +108,7 @@ export default function Dashboard() {
         <Col xs={24} sm={12} lg={5}>
           <Card>
             <Statistic
-              title="Затраты (UAH)"
+              title={t.dashboard.costs}
               value={data.totalCosts}
               precision={0}
               prefix={<DollarOutlined />}
@@ -141,7 +122,7 @@ export default function Dashboard() {
         <Col xs={24} sm={12} lg={8}>
           <Card>
             <Statistic
-              title="Склады"
+              title={t.dashboard.warehouses}
               value={data.totalWarehouses}
               prefix={<InboxOutlined />}
             />
@@ -150,7 +131,7 @@ export default function Dashboard() {
         <Col xs={24} sm={12} lg={8}>
           <Card>
             <Statistic
-              title="Наработка техники (ч)"
+              title={t.dashboard.hoursWorked}
               value={data.totalHoursWorked}
               precision={1}
             />
@@ -159,7 +140,7 @@ export default function Dashboard() {
         <Col xs={24} sm={12} lg={8}>
           <Card>
             <Statistic
-              title="Топливо (л)"
+              title={t.dashboard.fuelConsumed}
               value={data.totalFuelConsumed}
               precision={1}
             />
@@ -170,7 +151,7 @@ export default function Dashboard() {
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         {operationsData.length > 0 && (
           <Col xs={24} lg={8}>
-            <Card title="Операции по типам">
+            <Card title={t.dashboard.operationsByType}>
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
                   <Pie data={operationsData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
@@ -187,14 +168,14 @@ export default function Dashboard() {
 
         {areaData.length > 0 && (
           <Col xs={24} lg={8}>
-            <Card title="Площадь по культурам (га)">
+            <Card title={t.dashboard.areaByCrop}>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={areaData} margin={{ top: 5, right: 10, left: 0, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" angle={-30} textAnchor="end" interval={0} tick={{ fontSize: 11 }} />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="area" fill="#52c41a" name="Площадь (га)" />
+                  <Bar dataKey="area" fill="#52c41a" name={t.dashboard.areaHa} />
                 </BarChart>
               </ResponsiveContainer>
             </Card>
@@ -203,7 +184,7 @@ export default function Dashboard() {
 
         {costTrendData.length > 0 && (
           <Col xs={24} lg={8}>
-            <Card title="Тренд затрат">
+            <Card title={t.dashboard.costTrend}>
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={costTrendData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -211,7 +192,7 @@ export default function Dashboard() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="cost" stroke="#f5222d" name="Затраты (UAH)" strokeWidth={2} />
+                  <Line type="monotone" dataKey="cost" stroke="#f5222d" name={t.dashboard.costsUAH} strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </Card>
@@ -221,7 +202,7 @@ export default function Dashboard() {
         {operationsData.length === 0 && areaData.length === 0 && costTrendData.length === 0 && (
           <Col span={24}>
             <Card>
-              <Typography.Text type="secondary">Данные для графиков пока недоступны. Добавьте поля, операции и затраты, чтобы увидеть аналитику.</Typography.Text>
+              <Typography.Text type="secondary">{t.dashboard.noChartData}</Typography.Text>
             </Card>
           </Col>
         )}

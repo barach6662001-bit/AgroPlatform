@@ -5,16 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { getMachines } from '../../api/machinery';
 import type { MachineDto, MachineryType, MachineryStatus } from '../../types/machinery';
 import PageHeader from '../../components/PageHeader';
+import { useTranslation } from '../../i18n';
 
-const typeLabels: Record<string, string> = {
-  Tractor: 'Трактор', Combine: 'Комбайн', Sprayer: 'Опрыскиватель',
-  Seeder: 'Сеялка', Cultivator: 'Культиватор', Truck: 'Грузовик', Other: 'Другое',
-};
 const statusColors: Record<string, string> = {
   Active: 'success', UnderRepair: 'warning', Decommissioned: 'error',
-};
-const statusLabels: Record<string, string> = {
-  Active: 'Активна', UnderRepair: 'В ремонте', Decommissioned: 'Списана',
 };
 
 export default function MachineryList() {
@@ -24,12 +18,13 @@ export default function MachineryList() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const load = () => {
     setLoading(true);
     getMachines({ type: typeFilter, status: statusFilter, search })
       .then(setMachines)
-      .catch(() => message.error('Ошибка загрузки'))
+      .catch(() => message.error(t.machinery.loadError))
       .finally(() => setLoading(false));
   };
 
@@ -41,20 +36,20 @@ export default function MachineryList() {
   );
 
   const columns = [
-    { title: 'Название', dataIndex: 'name', key: 'name', sorter: (a: MachineDto, b: MachineDto) => a.name.localeCompare(b.name) },
-    { title: 'Инв. номер', dataIndex: 'inventoryNumber', key: 'inventoryNumber' },
-    { title: 'Тип', dataIndex: 'type', key: 'type', render: (v: MachineryType) => typeLabels[v] || v },
-    { title: 'Марка/Модель', key: 'brandModel', render: (_: unknown, r: MachineDto) => [r.brand, r.model].filter(Boolean).join(' ') || '—' },
-    { title: 'Год', dataIndex: 'year', key: 'year', render: (v: number) => v || '—' },
+    { title: t.machinery.name, dataIndex: 'name', key: 'name', sorter: (a: MachineDto, b: MachineDto) => a.name.localeCompare(b.name) },
+    { title: t.machinery.invNumber, dataIndex: 'inventoryNumber', key: 'inventoryNumber' },
+    { title: t.machinery.type, dataIndex: 'type', key: 'type', render: (v: MachineryType) => t.machineryTypes[v as keyof typeof t.machineryTypes] || v },
+    { title: t.machinery.brandModel, key: 'brandModel', render: (_: unknown, r: MachineDto) => [r.brand, r.model].filter(Boolean).join(' ') || '—' },
+    { title: t.machinery.year, dataIndex: 'year', key: 'year', render: (v: number) => v || '—' },
     {
-      title: 'Статус', dataIndex: 'status', key: 'status',
-      render: (v: MachineryStatus) => <Badge status={statusColors[v] as 'success' | 'warning' | 'error'} text={statusLabels[v] || v} />,
+      title: t.machinery.status, dataIndex: 'status', key: 'status',
+      render: (v: MachineryStatus) => <Badge status={statusColors[v] as 'success' | 'warning' | 'error'} text={t.machineryStatuses[v as keyof typeof t.machineryStatuses] || v} />,
     },
     {
-      title: 'Действия', key: 'actions',
+      title: t.machinery.actions, key: 'actions',
       render: (_: unknown, record: MachineDto) => (
         <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/machinery/${record.id}`)}>
-          Детали
+          {t.machinery.details}
         </Button>
       ),
     },
@@ -62,30 +57,30 @@ export default function MachineryList() {
 
   return (
     <div>
-      <PageHeader title="Техника" subtitle="Парк сельскохозяйственной техники" />
+      <PageHeader title={t.machinery.title} subtitle={t.machinery.subtitle} />
       <Space style={{ marginBottom: 16 }}>
         <Input
-          placeholder="Поиск по названию или номеру"
+          placeholder={t.machinery.searchPlaceholder}
           prefix={<SearchOutlined />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ width: 280 }}
         />
         <Select
-          placeholder="Тип"
+          placeholder={t.machinery.typeFilter}
           allowClear
           style={{ width: 160 }}
           value={typeFilter}
           onChange={setTypeFilter}
-          options={Object.entries(typeLabels).map(([k, v]) => ({ value: k, label: v }))}
+          options={Object.entries(t.machineryTypes).map(([k, v]) => ({ value: k, label: v }))}
         />
         <Select
-          placeholder="Статус"
+          placeholder={t.machinery.statusFilter}
           allowClear
           style={{ width: 160 }}
           value={statusFilter}
           onChange={setStatusFilter}
-          options={Object.entries(statusLabels).map(([k, v]) => ({ value: k, label: v }))}
+          options={Object.entries(t.machineryStatuses).map(([k, v]) => ({ value: k, label: v }))}
         />
       </Space>
       <Table

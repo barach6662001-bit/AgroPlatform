@@ -5,26 +5,22 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { getMachineById } from '../../api/machinery';
 import type { MachineDetailDto, WorkLogDto, FuelLogDto } from '../../types/machinery';
 import PageHeader from '../../components/PageHeader';
+import { useTranslation } from '../../i18n';
 
-const typeLabels: Record<string, string> = {
-  Tractor: 'Трактор', Combine: 'Комбайн', Sprayer: 'Опрыскиватель',
-  Seeder: 'Сеялка', Cultivator: 'Культиватор', Truck: 'Грузовик', Other: 'Другое',
-};
 const statusColors: Record<string, string> = { Active: 'success', UnderRepair: 'warning', Decommissioned: 'error' };
-const statusLabels: Record<string, string> = { Active: 'Активна', UnderRepair: 'В ремонте', Decommissioned: 'Списана' };
-const fuelLabels: Record<string, string> = { Diesel: 'Дизель', Gasoline: 'Бензин', Electric: 'Электро', Gas: 'Газ' };
 
 export default function MachineDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [machine, setMachine] = useState<MachineDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!id) return;
     getMachineById(id)
       .then(setMachine)
-      .catch(() => message.error('Техника не найдена'))
+      .catch(() => message.error(t.machinery.notFound))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -32,40 +28,40 @@ export default function MachineDetail() {
   if (!machine) return null;
 
   const workLogColumns = [
-    { title: 'Дата', dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString('ru-RU') },
-    { title: 'Наработка (ч)', dataIndex: 'hoursWorked', key: 'hoursWorked', render: (v: number) => v.toFixed(2) },
-    { title: 'Поле', dataIndex: 'fieldName', key: 'fieldName', render: (v: string) => v || '—' },
-    { title: 'Заметки', dataIndex: 'notes', key: 'notes', render: (v: string) => v || '—' },
+    { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
+    { title: t.machinery.hours, dataIndex: 'hoursWorked', key: 'hoursWorked', render: (v: number) => v.toFixed(2) },
+    { title: t.machinery.fieldName, dataIndex: 'fieldName', key: 'fieldName', render: (v: string) => v || '—' },
+    { title: t.machinery.notes, dataIndex: 'notes', key: 'notes', render: (v: string) => v || '—' },
   ];
 
   const fuelLogColumns = [
-    { title: 'Дата', dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString('ru-RU') },
-    { title: 'Литры', dataIndex: 'liters', key: 'liters', render: (v: number) => v.toFixed(2) },
-    { title: 'Цена/л', dataIndex: 'pricePerLiter', key: 'pricePerLiter', render: (v: number) => v ? v.toFixed(2) : '—' },
-    { title: 'Итого', dataIndex: 'totalCost', key: 'totalCost', render: (v: number) => v ? `${v.toFixed(2)} UAH` : '—' },
+    { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
+    { title: t.machinery.liters, dataIndex: 'liters', key: 'liters', render: (v: number) => v.toFixed(2) },
+    { title: t.machinery.pricePerLiter, dataIndex: 'pricePerLiter', key: 'pricePerLiter', render: (v: number) => v ? v.toFixed(2) : '—' },
+    { title: t.machinery.total, dataIndex: 'totalCost', key: 'totalCost', render: (v: number) => v ? `${v.toFixed(2)} UAH` : '—' },
   ];
 
   return (
     <div>
       <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/machinery')} style={{ marginBottom: 16 }}>
-        Назад
+        {t.machinery.back}
       </Button>
-      <PageHeader title={machine.name} subtitle={`${typeLabels[machine.type] || machine.type} | ${machine.inventoryNumber}`} />
+      <PageHeader title={machine.name} subtitle={`${t.machineryTypes[machine.type as keyof typeof t.machineryTypes] || machine.type} | ${machine.inventoryNumber}`} />
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <Card title="Информация о технике">
+          <Card title={t.machinery.machineInfo}>
             <Descriptions column={1} bordered>
-              <Descriptions.Item label="Инвентарный номер">{machine.inventoryNumber}</Descriptions.Item>
-              <Descriptions.Item label="Тип">{typeLabels[machine.type] || machine.type}</Descriptions.Item>
-              <Descriptions.Item label="Марка">{machine.brand || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Модель">{machine.model || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Год">{machine.year || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Статус">
-                <Badge status={statusColors[machine.status] as 'success' | 'warning' | 'error'} text={statusLabels[machine.status] || machine.status} />
+              <Descriptions.Item label={t.machinery.invNumberFull}>{machine.inventoryNumber}</Descriptions.Item>
+              <Descriptions.Item label={t.machinery.type}>{t.machineryTypes[machine.type as keyof typeof t.machineryTypes] || machine.type}</Descriptions.Item>
+              <Descriptions.Item label={t.machinery.brand}>{machine.brand || '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.machinery.model}>{machine.model || '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.machinery.year}>{machine.year || '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.machinery.status}>
+                <Badge status={statusColors[machine.status] as 'success' | 'warning' | 'error'} text={t.machineryStatuses[machine.status as keyof typeof t.machineryStatuses] || machine.status} />
               </Descriptions.Item>
-              <Descriptions.Item label="Вид топлива">{fuelLabels[machine.fuelType] || machine.fuelType}</Descriptions.Item>
-              <Descriptions.Item label="Расход топлива (л/ч)">{machine.fuelConsumptionPerHour || '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.machinery.fuelType}>{t.fuelTypes[machine.fuelType as keyof typeof t.fuelTypes] || machine.fuelType}</Descriptions.Item>
+              <Descriptions.Item label={t.machinery.fuelConsumption}>{machine.fuelConsumptionPerHour || '—'}</Descriptions.Item>
             </Descriptions>
           </Card>
         </Col>
@@ -73,24 +69,24 @@ export default function MachineDetail() {
           <Row gutter={[16, 16]}>
             <Col span={12}>
               <Card>
-                <Statistic title="Всего наработано (ч)" value={machine.totalHoursWorked} precision={1} valueStyle={{ color: '#1890ff' }} />
+                <Statistic title={t.machinery.totalHours} value={machine.totalHoursWorked} precision={1} valueStyle={{ color: '#1890ff' }} />
               </Card>
             </Col>
             <Col span={12}>
               <Card>
-                <Statistic title="Всего топлива (л)" value={machine.totalFuelConsumed} precision={1} valueStyle={{ color: '#faad14' }} />
+                <Statistic title={t.machinery.totalFuel} value={machine.totalFuelConsumed} precision={1} valueStyle={{ color: '#faad14' }} />
               </Card>
             </Col>
           </Row>
         </Col>
       </Row>
 
-      <Card title="Журнал наработки" style={{ marginTop: 16 }}>
-        <Table dataSource={machine.recentWorkLogs} columns={workLogColumns} rowKey="id" pagination={{ pageSize: 10 }} locale={{ emptyText: 'Наработок нет' }} />
+      <Card title={t.machinery.workLog} style={{ marginTop: 16 }}>
+        <Table dataSource={machine.recentWorkLogs} columns={workLogColumns} rowKey="id" pagination={{ pageSize: 10 }} locale={{ emptyText: t.machinery.workLogEmpty }} />
       </Card>
 
-      <Card title="Журнал заправок" style={{ marginTop: 16 }}>
-        <Table dataSource={machine.recentFuelLogs} columns={fuelLogColumns} rowKey="id" pagination={{ pageSize: 10 }} locale={{ emptyText: 'Заправок нет' }} />
+      <Card title={t.machinery.fuelLog} style={{ marginTop: 16 }}>
+        <Table dataSource={machine.recentFuelLogs} columns={fuelLogColumns} rowKey="id" pagination={{ pageSize: 10 }} locale={{ emptyText: t.machinery.fuelLogEmpty }} />
       </Card>
     </div>
   );

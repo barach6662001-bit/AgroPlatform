@@ -8,24 +8,20 @@ import 'leaflet/dist/leaflet.css';
 import { getFieldById } from '../../api/fields';
 import type { FieldDetailDto, CropHistoryDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
-
-const cropLabels: Record<string, string> = {
-  Wheat: 'Пшеница', Barley: 'Ячмень', Corn: 'Кукуруза', Sunflower: 'Подсолнечник',
-  Soybean: 'Соя', Rapeseed: 'Рапс', SugarBeet: 'Сах. свёкла', Potato: 'Картофель',
-  Fallow: 'Пар', Other: 'Другое',
-};
+import { useTranslation } from '../../i18n';
 
 export default function FieldDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [field, setField] = useState<FieldDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!id) return;
     getFieldById(id)
       .then(setField)
-      .catch(() => message.error('Поле не найдено'))
+      .catch(() => message.error(t.fields.notFound))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -40,39 +36,39 @@ export default function FieldDetail() {
   }
 
   const historyColumns = [
-    { title: 'Год', dataIndex: 'year', key: 'year', sorter: (a: CropHistoryDto, b: CropHistoryDto) => a.year - b.year },
-    { title: 'Культура', dataIndex: 'cropType', key: 'cropType', render: (v: string) => <Tag color="green">{cropLabels[v] || v}</Tag> },
-    { title: 'Урожайность (т/га)', dataIndex: 'yieldTonnesPerHa', key: 'yieldTonnesPerHa', render: (v: number) => v ? v.toFixed(2) : '—' },
-    { title: 'Заметки', dataIndex: 'notes', key: 'notes', render: (v: string) => v || '—' },
+    { title: t.fields.year, dataIndex: 'year', key: 'year', sorter: (a: CropHistoryDto, b: CropHistoryDto) => a.year - b.year },
+    { title: t.fields.crop, dataIndex: 'cropType', key: 'cropType', render: (v: string) => <Tag color="green">{t.crops[v as keyof typeof t.crops] || v}</Tag> },
+    { title: t.fields.yieldPerHa, dataIndex: 'yieldTonnesPerHa', key: 'yieldTonnesPerHa', render: (v: number) => v ? v.toFixed(2) : '—' },
+    { title: t.fields.notes, dataIndex: 'notes', key: 'notes', render: (v: string) => v || '—' },
   ];
 
   return (
     <div>
       <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/fields')} style={{ marginBottom: 16 }}>
-        Назад к списку
+        {t.fields.backToList}
       </Button>
-      <PageHeader title={field.name} subtitle={`Площадь: ${field.areaHectares.toFixed(2)} га`} />
+      <PageHeader title={field.name} subtitle={t.fields.areaSubtitle.replace('{{area}}', field.areaHectares.toFixed(2))} />
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <Card title="Информация о поле">
+          <Card title={t.fields.fieldInfo}>
             <Descriptions column={1} bordered>
-              <Descriptions.Item label="Кадастровый номер">{field.cadastralNumber || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Площадь (га)">{field.areaHectares.toFixed(2)}</Descriptions.Item>
-              <Descriptions.Item label="Тип почвы">{field.soilType || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Текущая культура">
+              <Descriptions.Item label={t.fields.cadastralNumber}>{field.cadastralNumber || '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.fields.area}>{field.areaHectares.toFixed(2)}</Descriptions.Item>
+              <Descriptions.Item label={t.fields.soilType}>{field.soilType || '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.fields.currentCrop}>
                 {field.currentCrop ? (
-                  <Tag color="green">{cropLabels[field.currentCrop] || field.currentCrop}{field.currentCropYear ? ` (${field.currentCropYear})` : ''}</Tag>
-                ) : 'Не засеяно'}
+                  <Tag color="green">{t.crops[field.currentCrop as keyof typeof t.crops] || field.currentCrop}{field.currentCropYear ? ` (${field.currentCropYear})` : ''}</Tag>
+                ) : t.fields.notSeeded}
               </Descriptions.Item>
-              <Descriptions.Item label="Заметки">{field.notes || '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.fields.notes}>{field.notes || '—'}</Descriptions.Item>
             </Descriptions>
           </Card>
         </Col>
 
         {geoJsonData && (
           <Col xs={24} lg={12}>
-            <Card title="Карта поля" styles={{ body: { padding: 0 } }}>
+            <Card title={t.fields.fieldMap} styles={{ body: { padding: 0 } }}>
               <MapContainer
                 style={{ height: 300, width: '100%' }}
                 center={[48.5, 35.0]}
@@ -86,13 +82,13 @@ export default function FieldDetail() {
         )}
       </Row>
 
-      <Card title="История культур" style={{ marginTop: 16 }}>
+      <Card title={t.fields.cropHistory} style={{ marginTop: 16 }}>
         <Table
           dataSource={field.cropHistory}
           columns={historyColumns}
           rowKey="id"
           pagination={{ pageSize: 10 }}
-          locale={{ emptyText: 'История культур пуста' }}
+          locale={{ emptyText: t.fields.cropHistoryEmpty }}
         />
       </Card>
     </div>
