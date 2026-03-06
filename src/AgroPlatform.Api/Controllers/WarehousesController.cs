@@ -38,6 +38,7 @@ public class WarehousesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created warehouse.</returns>
     [HttpPost]
+    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateWarehouse([FromBody] CreateWarehouseCommand command, CancellationToken cancellationToken)
     {
@@ -60,6 +61,7 @@ public class WarehousesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created item.</returns>
     [HttpPost("items")]
+    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateWarehouseItem([FromBody] CreateWarehouseItemCommand command, CancellationToken cancellationToken)
     {
@@ -83,6 +85,7 @@ public class WarehousesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created stock movement record.</returns>
     [HttpPost("receipt")]
+    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> ReceiptStock([FromBody] ReceiptStockCommand command, CancellationToken cancellationToken)
     {
@@ -95,6 +98,7 @@ public class WarehousesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created stock movement record.</returns>
     [HttpPost("issue")]
+    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> IssueStock([FromBody] IssueStockCommand command, CancellationToken cancellationToken)
     {
@@ -107,6 +111,7 @@ public class WarehousesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The operation ID of the transfer.</returns>
     [HttpPost("transfer")]
+    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> TransferStock([FromBody] TransferStockCommand command, CancellationToken cancellationToken)
     {
@@ -118,6 +123,7 @@ public class WarehousesController : ControllerBase
     /// <param name="command">Adjustment data (item, counted quantity).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPost("inventory")]
+    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> InventoryAdjust([FromBody] InventoryAdjustCommand command, CancellationToken cancellationToken)
     {

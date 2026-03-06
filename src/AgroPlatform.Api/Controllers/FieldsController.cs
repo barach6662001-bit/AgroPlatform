@@ -37,6 +37,7 @@ public class FieldsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created field.</returns>
     [HttpPost]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateField([FromBody] CreateFieldCommand command, CancellationToken cancellationToken)
     {
@@ -75,6 +76,7 @@ public class FieldsController : ControllerBase
     /// <param name="command">Updated field data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateField(Guid id, [FromBody] UpdateFieldCommand command, CancellationToken cancellationToken)
@@ -90,6 +92,7 @@ public class FieldsController : ControllerBase
     /// <param name="id">Field ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteField(Guid id, CancellationToken cancellationToken)
@@ -103,6 +106,7 @@ public class FieldsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created crop history entry.</returns>
     [HttpPost("assign-crop")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> AssignCrop([FromBody] AssignCropCommand command, CancellationToken cancellationToken)
     {
@@ -115,6 +119,7 @@ public class FieldsController : ControllerBase
     /// <param name="command">Yield data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("crop-history/{cropHistoryId:guid}/yield")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateYield(Guid cropHistoryId, [FromBody] UpdateYieldCommand command, CancellationToken cancellationToken)
@@ -131,6 +136,7 @@ public class FieldsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created rotation plan.</returns>
     [HttpPost("rotation-plans")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> PlanRotation([FromBody] PlanRotationCommand command, CancellationToken cancellationToken)
     {
@@ -142,6 +148,7 @@ public class FieldsController : ControllerBase
     /// <param name="planId">Rotation plan ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("rotation-plans/{planId:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteRotationPlan(Guid planId, CancellationToken cancellationToken)
