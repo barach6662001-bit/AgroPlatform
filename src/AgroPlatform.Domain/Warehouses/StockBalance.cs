@@ -2,7 +2,7 @@ using AgroPlatform.Domain.Common;
 
 namespace AgroPlatform.Domain.Warehouses;
 
-public class StockBalance : BaseEntity
+public class StockBalance : AuditableEntity
 {
     public Guid WarehouseId { get; set; }
     public Guid ItemId { get; set; }
