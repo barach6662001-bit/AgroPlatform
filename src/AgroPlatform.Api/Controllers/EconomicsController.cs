@@ -45,6 +45,8 @@ public class EconomicsController : ControllerBase
     /// <param name="agroOperationId">Optional agro-operation filter.</param>
     /// <param name="dateFrom">Start of the date range (inclusive).</param>
     /// <param name="dateTo">End of the date range (inclusive).</param>
+    /// <param name="page">Page number (1-based, default 1).</param>
+    /// <param name="pageSize">Page size (default 20).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet("cost-records")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -54,9 +56,11 @@ public class EconomicsController : ControllerBase
         [FromQuery] Guid? agroOperationId,
         [FromQuery] DateTime? dateFrom,
         [FromQuery] DateTime? dateTo,
-        CancellationToken cancellationToken)
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetCostRecordsQuery(category, fieldId, agroOperationId, dateFrom, dateTo), cancellationToken);
+        var result = await _sender.Send(new GetCostRecordsQuery(category, fieldId, agroOperationId, dateFrom, dateTo, page, pageSize), cancellationToken);
         return Ok(result);
     }
 

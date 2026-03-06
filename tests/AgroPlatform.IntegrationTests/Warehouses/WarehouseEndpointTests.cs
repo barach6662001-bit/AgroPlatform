@@ -56,10 +56,10 @@ public class WarehouseEndpointTests : IClassFixture<ApiFactory>
         // 4. Check balance
         var balanceResponse = await _client.GetAsync($"/api/warehouses/balances?warehouseId={warehouseId}&itemId={itemId}");
         balanceResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var balances = await balanceResponse.Content.ReadFromJsonAsync<JsonElement[]>();
-        balances.Should().NotBeNull();
-        balances!.Length.Should().Be(1);
-        balances[0].GetProperty("balanceBase").GetDecimal().Should().Be(100m);
+        var balances = await balanceResponse.Content.ReadFromJsonAsync<JsonElement>();
+        balances.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        balances.GetProperty("items").GetArrayLength().Should().Be(1);
+        balances.GetProperty("items")[0].GetProperty("balanceBase").GetDecimal().Should().Be(100m);
 
         // 5. Issue stock
         var issueResponse = await _client.PostAsJsonAsync("/api/warehouses/issue", new
@@ -73,8 +73,8 @@ public class WarehouseEndpointTests : IClassFixture<ApiFactory>
 
         // 6. Check balance after issue
         var balanceAfterIssueResponse = await _client.GetAsync($"/api/warehouses/balances?warehouseId={warehouseId}&itemId={itemId}");
-        var balancesAfterIssue = await balanceAfterIssueResponse.Content.ReadFromJsonAsync<JsonElement[]>();
-        balancesAfterIssue![0].GetProperty("balanceBase").GetDecimal().Should().Be(70m);
+        var balancesAfterIssue = await balanceAfterIssueResponse.Content.ReadFromJsonAsync<JsonElement>();
+        balancesAfterIssue.GetProperty("items")[0].GetProperty("balanceBase").GetDecimal().Should().Be(70m);
     }
 
     [Fact]

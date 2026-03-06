@@ -1,3 +1,4 @@
+using AgroPlatform.Application.Common.Models;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 
@@ -9,6 +10,6 @@ public record GetMoveHistoryQuery(
     DateTime? DateFrom,
     DateTime? DateTo,
     StockMoveType? MoveType,
-    int Page,
-    int PageSize
-) : IRequest<List<MoveHistoryDto>>;
+    int Page = 1,
+    int PageSize = 20
+) : IRequest<PaginatedResult<MoveHistoryDto>>;

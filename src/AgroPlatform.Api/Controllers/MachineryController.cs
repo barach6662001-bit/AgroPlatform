@@ -48,6 +48,8 @@ public class MachineryController : ControllerBase
     /// <param name="type">Optional machinery type filter.</param>
     /// <param name="status">Optional machinery status filter.</param>
     /// <param name="search">Optional free-text search (name).</param>
+    /// <param name="page">Page number (1-based, default 1).</param>
+    /// <param name="pageSize">Page size (default 20).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -55,9 +57,11 @@ public class MachineryController : ControllerBase
         [FromQuery] MachineryType? type,
         [FromQuery] MachineryStatus? status,
         [FromQuery] string? search,
-        CancellationToken cancellationToken)
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetMachinesQuery(type, status, search), cancellationToken);
+        var result = await _sender.Send(new GetMachinesQuery(type, status, search, page, pageSize), cancellationToken);
         return Ok(result);
     }
 

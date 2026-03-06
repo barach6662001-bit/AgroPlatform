@@ -48,12 +48,14 @@ public class FieldsController : ControllerBase
     /// <summary>Returns a list of fields, optionally filtered by current crop or search term.</summary>
     /// <param name="currentCrop">Optional crop type filter.</param>
     /// <param name="searchTerm">Optional free-text search (name, cadastral number).</param>
+    /// <param name="page">Page number (1-based, default 1).</param>
+    /// <param name="pageSize">Page size (default 20).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetFields([FromQuery] CropType? currentCrop, [FromQuery] string? searchTerm, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetFields([FromQuery] CropType? currentCrop, [FromQuery] string? searchTerm, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetFieldsQuery(currentCrop, searchTerm), cancellationToken);
+        var result = await _sender.Send(new GetFieldsQuery(currentCrop, searchTerm, page, pageSize), cancellationToken);
         return Ok(result);
     }
 

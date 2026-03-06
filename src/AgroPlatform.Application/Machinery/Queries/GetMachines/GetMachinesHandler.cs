@@ -1,11 +1,12 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Common.Models;
 using AgroPlatform.Application.Machinery.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Application.Machinery.Queries.GetMachines;
 
-public class GetMachinesHandler : IRequestHandler<GetMachinesQuery, List<MachineDto>>
+public class GetMachinesHandler : IRequestHandler<GetMachinesQuery, PaginatedResult<MachineDto>>
 {
     private readonly IAppDbContext _context;
 
@@ -14,7 +15,7 @@ public class GetMachinesHandler : IRequestHandler<GetMachinesQuery, List<Machine
         _context = context;
     }
 
-    public async Task<List<MachineDto>> Handle(GetMachinesQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<MachineDto>> Handle(GetMachinesQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Machines.AsQueryable();
 
@@ -34,8 +35,12 @@ public class GetMachinesHandler : IRequestHandler<GetMachinesQuery, List<Machine
                 (m.Model != null && m.Model.ToLower().Contains(term)));
         }
 
-        return await query
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
             .OrderBy(m => m.Name)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(m => new MachineDto
             {
                 Id = m.Id,
@@ -50,5 +55,13 @@ public class GetMachinesHandler : IRequestHandler<GetMachinesQuery, List<Machine
                 FuelConsumptionPerHour = m.FuelConsumptionPerHour
             })
             .ToListAsync(cancellationToken);
+
+        return new PaginatedResult<MachineDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize
+        };
     }
 }

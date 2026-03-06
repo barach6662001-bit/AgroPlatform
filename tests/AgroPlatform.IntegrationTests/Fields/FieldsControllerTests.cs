@@ -44,10 +44,10 @@ public class FieldsControllerTests : IntegrationTestBase
     {
         await CreateFieldAsync("GetFields Test Field");
 
-        var result = await GetAsync<JsonElement[]>("/api/fields");
+        var result = await GetAsync<JsonElement>("/api/fields");
 
-        result.Should().NotBeNull();
-        result!.Should().NotBeEmpty();
+        result.ValueKind.Should().NotBe(JsonValueKind.Null);
+        result.GetProperty("items").GetArrayLength().Should().BeGreaterThan(0);
     }
 
     [Fact]
