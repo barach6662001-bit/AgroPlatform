@@ -47,10 +47,10 @@ public class EconomicsControllerTests : IntegrationTestBase
     {
         await CreateCostRecordAsync("Pesticides");
 
-        var result = await GetAsync<JsonElement[]>("/api/economics/cost-records");
+        var result = await GetAsync<JsonElement>("/api/economics/cost-records");
 
-        result.Should().NotBeNull();
-        result!.Should().NotBeEmpty();
+        result.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        result.GetProperty("items").GetArrayLength().Should().BeGreaterThan(0);
     }
 
     [Fact]

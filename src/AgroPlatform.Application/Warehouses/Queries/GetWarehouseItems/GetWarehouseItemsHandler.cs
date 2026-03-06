@@ -1,10 +1,11 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Common.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Application.Warehouses.Queries.GetWarehouseItems;
 
-public class GetWarehouseItemsHandler : IRequestHandler<GetWarehouseItemsQuery, List<WarehouseItemDto>>
+public class GetWarehouseItemsHandler : IRequestHandler<GetWarehouseItemsQuery, PaginatedResult<WarehouseItemDto>>
 {
     private readonly IAppDbContext _context;
 
@@ -13,14 +14,22 @@ public class GetWarehouseItemsHandler : IRequestHandler<GetWarehouseItemsQuery, 
         _context = context;
     }
 
-    public async Task<List<WarehouseItemDto>> Handle(GetWarehouseItemsQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<WarehouseItemDto>> Handle(GetWarehouseItemsQuery request, CancellationToken cancellationToken)
     {
         var query = _context.WarehouseItems.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.Category))
             query = query.Where(i => i.Category == request.Category);
 
-        return await query
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var page = request.Page < 1 ? 1 : request.Page;
+        var pageSize = request.PageSize < 1 ? 20 : request.PageSize;
+
+        var items = await query
+            .OrderBy(i => i.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(i => new WarehouseItemDto
             {
                 Id = i.Id,
@@ -31,5 +40,13 @@ public class GetWarehouseItemsHandler : IRequestHandler<GetWarehouseItemsQuery, 
                 Description = i.Description
             })
             .ToListAsync(cancellationToken);
+
+        return new PaginatedResult<WarehouseItemDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 }

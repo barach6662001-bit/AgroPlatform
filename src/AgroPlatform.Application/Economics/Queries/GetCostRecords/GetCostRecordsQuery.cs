@@ -1,3 +1,4 @@
+using AgroPlatform.Application.Common.Models;
 using AgroPlatform.Application.Economics.DTOs;
 using MediatR;
 
@@ -8,5 +9,7 @@ public record GetCostRecordsQuery(
     Guid? FieldId,
     Guid? AgroOperationId,
     DateTime? DateFrom,
-    DateTime? DateTo
-) : IRequest<List<CostRecordDto>>;
+    DateTime? DateTo,
+    int Page = 1,
+    int PageSize = 20
+) : IRequest<PaginatedResult<CostRecordDto>>;

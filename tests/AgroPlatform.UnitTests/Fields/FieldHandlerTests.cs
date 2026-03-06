@@ -296,7 +296,7 @@ public class FieldHandlerTests
         var handler = new GetFieldsHandler(context);
         var result = await handler.Handle(new GetFieldsQuery(null, null), CancellationToken.None);
 
-        result.Should().HaveCount(2);
+        result.Items.Should().HaveCount(2);
     }
 
     [Fact]
@@ -310,8 +310,8 @@ public class FieldHandlerTests
         var handler = new GetFieldsHandler(context);
         var result = await handler.Handle(new GetFieldsQuery(CropType.Wheat, null), CancellationToken.None);
 
-        result.Should().HaveCount(1);
-        result[0].Name.Should().Be("Wheat Field");
+        result.Items.Should().HaveCount(1);
+        result.Items[0].Name.Should().Be("Wheat Field");
     }
 
     [Fact]
@@ -325,7 +325,7 @@ public class FieldHandlerTests
         var handler = new GetFieldsHandler(context);
         var result = await handler.Handle(new GetFieldsQuery(null, "north"), CancellationToken.None);
 
-        result.Should().HaveCount(1);
-        result[0].Name.Should().Be("North Wheat");
+        result.Items.Should().HaveCount(1);
+        result.Items[0].Name.Should().Be("North Wheat");
     }
 }

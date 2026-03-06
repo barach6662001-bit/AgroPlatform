@@ -67,14 +67,16 @@ public class WarehousesController : ControllerBase
         return CreatedAtAction(nameof(GetWarehouseItems), new { }, new { id });
     }
 
-    /// <summary>Returns a list of stock items, optionally filtered by category.</summary>
+    /// <summary>Returns a paginated list of stock items, optionally filtered by category.</summary>
     /// <param name="category">Optional category filter.</param>
+    /// <param name="page">Page number (1-based, default 1).</param>
+    /// <param name="pageSize">Page size (default 20).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet("items")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetWarehouseItems([FromQuery] string? category, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetWarehouseItems([FromQuery] string? category, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetWarehouseItemsQuery(category), cancellationToken);
+        var result = await _sender.Send(new GetWarehouseItemsQuery(category, page, pageSize), cancellationToken);
         return Ok(result);
     }
 
@@ -125,15 +127,17 @@ public class WarehousesController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Returns current stock balances, optionally filtered by warehouse and/or item.</summary>
+    /// <summary>Returns paginated current stock balances, optionally filtered by warehouse and/or item.</summary>
     /// <param name="warehouseId">Optional warehouse filter.</param>
     /// <param name="itemId">Optional item filter.</param>
+    /// <param name="page">Page number (1-based, default 1).</param>
+    /// <param name="pageSize">Page size (default 20).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet("balances")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetBalances([FromQuery] Guid? warehouseId, [FromQuery] Guid? itemId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetBalances([FromQuery] Guid? warehouseId, [FromQuery] Guid? itemId, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetBalanceQuery(warehouseId, itemId), cancellationToken);
+        var result = await _sender.Send(new GetBalanceQuery(warehouseId, itemId, page, pageSize), cancellationToken);
         return Ok(result);
     }
 

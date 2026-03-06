@@ -49,10 +49,10 @@ public class MachineryControllerTests : IntegrationTestBase
     {
         await CreateMachineAsync("GetMachines Tractor");
 
-        var result = await GetAsync<JsonElement[]>("/api/machinery");
+        var result = await GetAsync<JsonElement>("/api/machinery");
 
-        result.Should().NotBeNull();
-        result!.Should().NotBeEmpty();
+        result.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        result.GetProperty("items").GetArrayLength().Should().BeGreaterThan(0);
     }
 
     [Fact]

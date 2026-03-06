@@ -221,11 +221,12 @@ public class WarehousesControllerTests : IntegrationTestBase
             unitCode = "kg"
         });
 
-        var balances = await GetAsync<JsonElement[]>($"/api/warehouses/balances?warehouseId={warehouseId}&itemId={itemId}");
+        var result = await GetAsync<JsonElement>($"/api/warehouses/balances?warehouseId={warehouseId}&itemId={itemId}");
 
-        balances.Should().NotBeNull();
-        balances!.Should().HaveCount(1);
-        balances![0].GetProperty("balanceBase").GetDecimal().Should().Be(75m);
+        result.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        var items = result.GetProperty("items");
+        items.GetArrayLength().Should().Be(1);
+        items[0].GetProperty("balanceBase").GetDecimal().Should().Be(75m);
     }
 
     [Fact]
@@ -249,9 +250,9 @@ public class WarehousesControllerTests : IntegrationTestBase
             unitCode = "kg"
         });
 
-        var moves = await GetAsync<JsonElement[]>($"/api/warehouses/moves?warehouseId={warehouseId}&itemId={itemId}");
+        var result = await GetAsync<JsonElement>($"/api/warehouses/moves?warehouseId={warehouseId}&itemId={itemId}");
 
-        moves.Should().NotBeNull();
-        moves!.Length.Should().Be(2);
+        result.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        result.GetProperty("items").GetArrayLength().Should().Be(2);
     }
 }
