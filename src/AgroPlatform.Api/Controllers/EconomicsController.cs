@@ -7,26 +7,46 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AgroPlatform.Api.Controllers;
 
+/// <summary>
+/// Manages cost records — tracks farm expenses by category, field and agro-operation.
+/// </summary>
 [ApiController]
 [Authorize]
 [Route("api/economics")]
+[Produces("application/json")]
 public class EconomicsController : ControllerBase
 {
     private readonly ISender _sender;
 
+    /// <summary>Initializes a new instance of <see cref="EconomicsController"/>.</summary>
     public EconomicsController(ISender sender)
     {
         _sender = sender;
     }
 
+    /// <summary>Records a new cost entry.</summary>
+    /// <param name="command">Cost record data (amount, category, optional field and operation).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The ID of the created cost record.</returns>
     [HttpPost("cost-records")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateCostRecord([FromBody] CreateCostRecordCommand command, CancellationToken cancellationToken)
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetCostRecords), new { }, new { id });
     }
 
+    /// <summary>
+    /// Returns a list of cost records filtered by category, field, operation and/or date range.
+    /// </summary>
+    /// <param name="category">Optional category filter.</param>
+    /// <param name="fieldId">Optional field filter.</param>
+    /// <param name="agroOperationId">Optional agro-operation filter.</param>
+    /// <param name="dateFrom">Start of the date range (inclusive).</param>
+    /// <param name="dateTo">End of the date range (inclusive).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet("cost-records")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCostRecords(
         [FromQuery] string? category,
         [FromQuery] Guid? fieldId,
@@ -39,7 +59,12 @@ public class EconomicsController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Deletes a cost record.</summary>
+    /// <param name="id">Cost record ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("cost-records/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteCostRecord(Guid id, CancellationToken cancellationToken)
     {
         await _sender.Send(new DeleteCostRecordCommand(id), cancellationToken);

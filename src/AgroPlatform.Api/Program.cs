@@ -1,11 +1,14 @@
+using System.Reflection;
 using System.Threading.RateLimiting;
 using AgroPlatform.Api.Middleware;
+using AgroPlatform.Api.OpenApi;
 using AgroPlatform.Application;
 using AgroPlatform.Infrastructure;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.OpenApi.Models;
 using OpenTelemetry.Metrics;
 using Serilog;
 using System.Text.Json.Serialization;
@@ -27,7 +30,73 @@ try
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "AgroPlatform API",
+            Version = "v1",
+            Description = """
+                Digital platform for agricultural enterprise management.
+
+                Centralised system for managing fields, warehouses, machinery,
+                agro-operations and farm economics. Scales from 1 000 to 5 000+ hectares.
+
+                **Multi-tenancy:** every request must include the `X-Tenant-Id` header
+                (UUID of the tenant). Requests without a valid tenant ID will be rejected.
+
+                **Authentication:** obtain a JWT token via `POST /api/auth/login` and
+                supply it using the **Authorize** button (Bearer scheme).
+                """,
+            Contact = new OpenApiContact
+            {
+                Name = "AgroPlatform",
+                Url = new Uri("https://github.com/barach6662001-bit/AgroPlatform")
+            },
+            License = new OpenApiLicense
+            {
+                Name = "MIT",
+                Url = new Uri("https://opensource.org/licenses/MIT")
+            }
+        });
+
+        // JWT Bearer security definition
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Name = "Authorization",
+            Description = "Enter the JWT token obtained from POST /api/auth/login. " +
+                          "Do **not** include the 'Bearer ' prefix — Swagger adds it automatically."
+        });
+
+        // Apply Bearer auth globally (endpoints without [AllowAnonymous] require it)
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+
+        // Include XML doc comments generated from C# /// summaries
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        if (File.Exists(xmlPath))
+            options.IncludeXmlComments(xmlPath);
+
+        // Automatically document common ProblemDetails error responses
+        options.OperationFilter<ProblemDetailsOperationFilter>();
+    });
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -114,10 +183,18 @@ try
         };
     });
 
-    if (app.Environment.IsDevelopment())
+    // Swagger is enabled in Development by default; set Swagger:Enabled=true to enable in other environments.
+    var swaggerEnabled = builder.Configuration.GetValue<bool?>("Swagger:Enabled")
+        ?? builder.Environment.IsDevelopment();
+
+    if (swaggerEnabled)
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "AgroPlatform API v1");
+            options.DocumentTitle = "AgroPlatform API";
+        });
     }
 
     app.UseCors();
