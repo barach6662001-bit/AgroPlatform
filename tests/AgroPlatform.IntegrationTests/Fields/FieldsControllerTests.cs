@@ -46,7 +46,7 @@ public class FieldsControllerTests : IntegrationTestBase
 
         var result = await GetAsync<JsonElement>("/api/fields");
 
-        result.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        result.ValueKind.Should().NotBe(JsonValueKind.Null);
         result.GetProperty("items").GetArrayLength().Should().BeGreaterThan(0);
     }
 

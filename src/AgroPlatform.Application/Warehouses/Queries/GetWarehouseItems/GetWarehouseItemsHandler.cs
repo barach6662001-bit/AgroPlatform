@@ -23,13 +23,10 @@ public class GetWarehouseItemsHandler : IRequestHandler<GetWarehouseItemsQuery, 
 
         var totalCount = await query.CountAsync(cancellationToken);
 
-        var page = request.Page < 1 ? 1 : request.Page;
-        var pageSize = request.PageSize < 1 ? 20 : request.PageSize;
-
         var items = await query
             .OrderBy(i => i.Name)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(i => new WarehouseItemDto
             {
                 Id = i.Id,
@@ -45,8 +42,8 @@ public class GetWarehouseItemsHandler : IRequestHandler<GetWarehouseItemsQuery, 
         {
             Items = items,
             TotalCount = totalCount,
-            Page = page,
-            PageSize = pageSize
+            Page = request.Page,
+            PageSize = request.PageSize
         };
     }
 }

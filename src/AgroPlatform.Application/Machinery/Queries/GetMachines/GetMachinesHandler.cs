@@ -37,13 +37,10 @@ public class GetMachinesHandler : IRequestHandler<GetMachinesQuery, PaginatedRes
 
         var totalCount = await query.CountAsync(cancellationToken);
 
-        var page = request.Page < 1 ? 1 : request.Page;
-        var pageSize = request.PageSize < 1 ? 20 : request.PageSize;
-
         var items = await query
             .OrderBy(m => m.Name)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(m => new MachineDto
             {
                 Id = m.Id,
@@ -63,8 +60,8 @@ public class GetMachinesHandler : IRequestHandler<GetMachinesQuery, PaginatedRes
         {
             Items = items,
             TotalCount = totalCount,
-            Page = page,
-            PageSize = pageSize
+            Page = request.Page,
+            PageSize = request.PageSize
         };
     }
 }

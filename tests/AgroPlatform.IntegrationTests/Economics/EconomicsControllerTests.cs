@@ -49,7 +49,7 @@ public class EconomicsControllerTests : IntegrationTestBase
 
         var result = await GetAsync<JsonElement>("/api/economics/cost-records");
 
-        result.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        result.ValueKind.Should().NotBe(JsonValueKind.Null);
         result.GetProperty("items").GetArrayLength().Should().BeGreaterThan(0);
     }
 

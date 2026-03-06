@@ -42,6 +42,8 @@ public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, Pagina
         var page = request.Page < 1 ? 1 : request.Page;
         var pageSize = request.PageSize < 1 ? 20 : request.PageSize;
 
+        var totalCount = await query.CountAsync(cancellationToken);
+
         var items = await query
             .OrderByDescending(m => m.CreatedAtUtc)
             .Skip((page - 1) * pageSize)

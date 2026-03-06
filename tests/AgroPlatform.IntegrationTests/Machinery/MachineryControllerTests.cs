@@ -51,7 +51,7 @@ public class MachineryControllerTests : IntegrationTestBase
 
         var result = await GetAsync<JsonElement>("/api/machinery");
 
-        result.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        result.ValueKind.Should().NotBe(JsonValueKind.Null);
         result.GetProperty("items").GetArrayLength().Should().BeGreaterThan(0);
     }
 

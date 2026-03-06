@@ -29,7 +29,8 @@ public class GetFieldsHandlerTests
         var handler = new GetFieldsHandler(context);
         var result = await handler.Handle(new GetFieldsQuery(null, null), CancellationToken.None);
 
-        result.Should().HaveCount(3);
+        result.Items.Should().HaveCount(3);
+        result.TotalCount.Should().Be(3);
     }
 
     [Fact]
@@ -44,8 +45,9 @@ public class GetFieldsHandlerTests
         var handler = new GetFieldsHandler(context);
         var result = await handler.Handle(new GetFieldsQuery(CropType.Corn, null), CancellationToken.None);
 
-        result.Should().HaveCount(2);
-        result.Should().AllSatisfy(f => f.CurrentCrop.Should().Be(CropType.Corn));
+        result.Items.Should().HaveCount(2);
+        result.TotalCount.Should().Be(2);
+        result.Items.Should().AllSatisfy(f => f.CurrentCrop.Should().Be(CropType.Corn));
     }
 
     [Fact]
@@ -58,7 +60,8 @@ public class GetFieldsHandlerTests
         var handler = new GetFieldsHandler(context);
         var result = await handler.Handle(new GetFieldsQuery(CropType.Sunflower, null), CancellationToken.None);
 
-        result.Should().BeEmpty();
+        result.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
     }
 
     [Fact]
@@ -73,8 +76,8 @@ public class GetFieldsHandlerTests
         var handler = new GetFieldsHandler(context);
         var result = await handler.Handle(new GetFieldsQuery(null, "northern"), CancellationToken.None);
 
-        result.Should().HaveCount(2);
-        result.Should().AllSatisfy(f => f.Name.ToLower().Should().Contain("northern"));
+        result.Items.Should().HaveCount(2);
+        result.Items.Should().AllSatisfy(f => f.Name.ToLower().Should().Contain("northern"));
     }
 
     [Fact]
@@ -88,8 +91,8 @@ public class GetFieldsHandlerTests
         var handler = new GetFieldsHandler(context);
         var result = await handler.Handle(new GetFieldsQuery(null, "kd-"), CancellationToken.None);
 
-        result.Should().HaveCount(1);
-        result[0].Name.Should().Be("Plot A");
+        result.Items.Should().HaveCount(1);
+        result.Items[0].Name.Should().Be("Plot A");
     }
 
     [Fact]
@@ -104,7 +107,27 @@ public class GetFieldsHandlerTests
         var handler = new GetFieldsHandler(context);
         var result = await handler.Handle(new GetFieldsQuery(CropType.Wheat, "north"), CancellationToken.None);
 
-        result.Should().HaveCount(1);
-        result[0].Name.Should().Be("North Wheat");
+        result.Items.Should().HaveCount(1);
+        result.Items[0].Name.Should().Be("North Wheat");
+    }
+
+    [Fact]
+    public async Task GetFields_Pagination_ReturnsCorrectPage()
+    {
+        var context = CreateDbContext();
+        for (int i = 1; i <= 25; i++)
+            context.Fields.Add(new Field { Name = $"Field {i:D2}", AreaHectares = 10m });
+        await context.SaveChangesAsync();
+
+        var handler = new GetFieldsHandler(context);
+        var result = await handler.Handle(new GetFieldsQuery(null, null, Page: 2, PageSize: 10), CancellationToken.None);
+
+        result.Items.Should().HaveCount(10);
+        result.TotalCount.Should().Be(25);
+        result.Page.Should().Be(2);
+        result.PageSize.Should().Be(10);
+        result.TotalPages.Should().Be(3);
+        result.HasPreviousPage.Should().BeTrue();
+        result.HasNextPage.Should().BeTrue();
     }
 }

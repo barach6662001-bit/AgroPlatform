@@ -30,13 +30,11 @@ public class GetBalanceHandler : IRequestHandler<GetBalanceQuery, PaginatedResul
 
         var totalCount = await query.CountAsync(cancellationToken);
 
-        var page = request.Page < 1 ? 1 : request.Page;
-        var pageSize = request.PageSize < 1 ? 20 : request.PageSize;
-
         var items = await query
             .OrderBy(b => b.Warehouse.Name)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .ThenBy(b => b.Item.Name)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(b => new BalanceDto
             {
                 WarehouseId = b.WarehouseId,
@@ -56,8 +54,8 @@ public class GetBalanceHandler : IRequestHandler<GetBalanceQuery, PaginatedResul
         {
             Items = items,
             TotalCount = totalCount,
-            Page = page,
-            PageSize = pageSize
+            Page = request.Page,
+            PageSize = request.PageSize
         };
     }
 }

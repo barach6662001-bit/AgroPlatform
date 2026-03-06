@@ -32,13 +32,10 @@ public class GetFieldsHandler : IRequestHandler<GetFieldsQuery, PaginatedResult<
 
         var totalCount = await query.CountAsync(cancellationToken);
 
-        var page = request.Page < 1 ? 1 : request.Page;
-        var pageSize = request.PageSize < 1 ? 20 : request.PageSize;
-
         var items = await query
             .OrderBy(f => f.Name)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(f => new FieldDto
             {
                 Id = f.Id,
@@ -56,8 +53,8 @@ public class GetFieldsHandler : IRequestHandler<GetFieldsQuery, PaginatedResult<
         {
             Items = items,
             TotalCount = totalCount,
-            Page = page,
-            PageSize = pageSize
+            Page = request.Page,
+            PageSize = request.PageSize
         };
     }
 }
