@@ -7,7 +7,7 @@ interface AuthState {
   role: string | null;
   tenantId: string | null;
   isAuthenticated: boolean;
-  setAuth: (token: string, email: string, role: string) => void;
+  setAuth: (token: string, email: string, role: string, tenantId: string) => void;
   setTenantId: (tenantId: string) => void;
   logout: () => void;
 }
@@ -20,8 +20,8 @@ export const useAuthStore = create<AuthState>()(
       role: null,
       tenantId: null,
       isAuthenticated: false,
-      setAuth: (token, email, role) =>
-        set({ token, email, role, isAuthenticated: true }),
+      setAuth: (token, email, role, tenantId) =>
+        set({ token, email, role, tenantId, isAuthenticated: true }),
       setTenantId: (tenantId) => set({ tenantId }),
       logout: () =>
         set({ token: null, email: null, role: null, tenantId: null, isAuthenticated: false }),

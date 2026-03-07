@@ -12,12 +12,14 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthResponse>
     private readonly UserManager<AppUser> _userManager;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly ITenantService _tenantService;
+    private readonly IAppDbContext _db;
 
-    public RegisterHandler(UserManager<AppUser> userManager, IJwtTokenService jwtTokenService, ITenantService tenantService)
+    public RegisterHandler(UserManager<AppUser> userManager, IJwtTokenService jwtTokenService, ITenantService tenantService, IAppDbContext db)
     {
         _userManager = userManager;
         _jwtTokenService = jwtTokenService;
         _tenantService = tenantService;
+        _db = db;
     }
 
     public async Task<AuthResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -26,6 +28,15 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthResponse>
         if (existing != null)
             throw new ConflictException($"User with email '{request.Email}' already exists.");
 
+        var tenantId = _tenantService.GetTenantId();
+        if (tenantId == Guid.Empty)
+        {
+            var tenant = new Tenant { Name = request.Email };
+            _db.Tenants.Add(tenant);
+            await _db.SaveChangesAsync(cancellationToken);
+            tenantId = tenant.Id;
+        }
+
         var user = new AppUser
         {
             UserName = request.Email,
@@ -33,7 +44,7 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthResponse>
             FirstName = request.FirstName,
             LastName = request.LastName,
             Role = request.Role,
-            TenantId = _tenantService.GetTenantId(),
+            TenantId = tenantId,
             IsActive = true
         };
 
@@ -46,6 +57,6 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthResponse>
         }
 
         var (token, expiresAt) = _jwtTokenService.GenerateToken(user);
-        return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt);
+        return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt, tenantId);
     }
 }

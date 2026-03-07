@@ -3,6 +3,7 @@ export interface AuthResponse {
   email: string;
   role: string;
   expiresAt: string;
+  tenantId: string;
 }
 
 export interface LoginRequest {
