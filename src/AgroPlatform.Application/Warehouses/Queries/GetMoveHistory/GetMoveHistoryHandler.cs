@@ -37,8 +37,6 @@ public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, Pagina
         if (request.MoveType.HasValue)
             query = query.Where(m => m.MoveType == request.MoveType.Value);
 
-        var totalCount = await query.CountAsync(cancellationToken);
-
         var page = request.Page < 1 ? 1 : request.Page;
         var pageSize = request.PageSize < 1 ? 20 : request.PageSize;
 
