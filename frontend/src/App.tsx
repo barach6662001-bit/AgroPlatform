@@ -17,6 +17,8 @@ import OperationDetail from './pages/Operations/OperationDetail';
 import MachineryList from './pages/Machinery/MachineryList';
 import MachineDetail from './pages/Machinery/MachineDetail';
 import CostRecords from './pages/Economics/CostRecords';
+import ResourceConsumption from './pages/Analytics/ResourceConsumption';
+import FieldEfficiency from './pages/Analytics/FieldEfficiency';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -51,6 +53,8 @@ export default function App() {
             <Route path="/machinery" element={<MachineryList />} />
             <Route path="/machinery/:id" element={<MachineDetail />} />
             <Route path="/economics" element={<CostRecords />} />
+            <Route path="/analytics/resources" element={<ResourceConsumption />} />
+            <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
