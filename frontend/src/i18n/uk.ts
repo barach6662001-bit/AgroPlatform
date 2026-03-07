@@ -322,6 +322,17 @@ const uk = {
     Equipment: 'Техніка',
     Other: 'Інше',
   },
+  errors: {
+    notFound: 'Сторінку не знайдено',
+    notFoundDesc: 'Вибачте, сторінка, яку ви шукаєте, не існує.',
+    serverError: 'Помилка сервера',
+    serverErrorDesc: 'Вибачте, щось пішло не так. Спробуйте ще раз пізніше.',
+    accessDenied: 'Доступ заборонено',
+    accessDeniedDesc: 'Вибачте, у вас немає доступу до цієї сторінки.',
+    backHome: 'На головну',
+    reload: 'Перезавантажити сторінку',
+    tryAgain: 'Спробувати знову',
+  },
 } as const;
 
 export default uk;

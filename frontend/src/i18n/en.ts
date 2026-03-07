@@ -324,6 +324,17 @@ const en: Translations = {
     Equipment: 'Equipment',
     Other: 'Other',
   },
+  errors: {
+    notFound: 'Page Not Found',
+    notFoundDesc: 'Sorry, the page you are looking for does not exist.',
+    serverError: 'Server Error',
+    serverErrorDesc: 'Sorry, something went wrong. Please try again later.',
+    accessDenied: 'Access Denied',
+    accessDeniedDesc: 'Sorry, you are not authorized to access this page.',
+    backHome: 'Back to Home',
+    reload: 'Reload Page',
+    tryAgain: 'Try Again',
+  },
 };
 
 export default en;

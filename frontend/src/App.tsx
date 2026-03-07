@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import ukUA from 'antd/locale/uk_UA';
 import enUS from 'antd/locale/en_US';
@@ -17,6 +17,8 @@ import OperationDetail from './pages/Operations/OperationDetail';
 import MachineryList from './pages/Machinery/MachineryList';
 import MachineDetail from './pages/Machinery/MachineDetail';
 import CostRecords from './pages/Economics/CostRecords';
+import NotFound from './pages/NotFound';
+import AccessDenied from './pages/AccessDenied';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -34,6 +36,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/access-denied" element={<AccessDenied />} />
           <Route
             element={
               <ProtectedRoute>
@@ -51,8 +54,8 @@ export default function App() {
             <Route path="/machinery" element={<MachineryList />} />
             <Route path="/machinery/:id" element={<MachineDetail />} />
             <Route path="/economics" element={<CostRecords />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>
