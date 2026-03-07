@@ -28,6 +28,6 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
             throw new ForbiddenException("Invalid credentials.");
 
         var (token, expiresAt) = _jwtTokenService.GenerateToken(user);
-        return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt);
+        return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt, user.TenantId);
     }
 }

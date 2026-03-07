@@ -13,7 +13,7 @@ export default function Login() {
   const onFinish = async (values: { email: string; password: string }) => {
     try {
       const data = await login(values);
-      setAuth(data.token, data.email, data.role);
+      setAuth(data.token, data.email, data.role, data.tenantId);
       message.success(t.auth.welcomeMessage);
       navigate('/');
     } catch {

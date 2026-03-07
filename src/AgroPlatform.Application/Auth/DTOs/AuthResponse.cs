@@ -4,5 +4,6 @@ public record AuthResponse(
     string Token,
     string Email,
     string Role,
-    DateTime ExpiresAt
+    DateTime ExpiresAt,
+    Guid TenantId
 );
