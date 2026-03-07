@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Space } from 'antd';
 import { ArrowLeftOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { getOperationById, completeOperation } from '../../api/operations';
-import type { AgroOperationDetailDto, AgroOperationResourceDto, AgroOperationMachineryDto } from '../../types/operation';
+import type { AgroOperationDetailDto, AgroOperationResourceDto } from '../../types/operation';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 
