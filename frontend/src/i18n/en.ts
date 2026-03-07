@@ -140,6 +140,9 @@ const en: Translations = {
     deleteRotationPlanError: 'Error deleting plan',
     plannedCrop: 'Planned crop',
     plannedYear: 'Year',
+    mapView: 'Map',
+    listView: 'List',
+    noCoordinates: 'No coordinates available',
   },
   warehouses: {
     title: 'Warehouses',

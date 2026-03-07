@@ -138,6 +138,9 @@ const uk = {
     deleteRotationPlanError: 'Помилка видалення плану',
     plannedCrop: 'Планована культура',
     plannedYear: 'Рік',
+    mapView: 'Карта',
+    listView: 'Список',
+    noCoordinates: 'Координати відсутні',
   },
   warehouses: {
     title: 'Склади',

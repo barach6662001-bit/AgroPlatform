@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, InputNumber } from 'antd';
-import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, InputNumber, Segmented } from 'antd';
+import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getFields, deleteField, createField } from '../../api/fields';
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import FieldMap from '../../components/Map/FieldMap';
 import { useTranslation } from '../../i18n';
 
 export default function FieldsList() {
@@ -16,6 +17,7 @@ export default function FieldsList() {
   const [pageSize, setPageSize] = useState(15);
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -103,20 +105,33 @@ export default function FieldsList() {
         >
           {t.fields.addField}
         </Button>
+        <Segmented
+          value={viewMode}
+          onChange={(v) => setViewMode(v as 'list' | 'map')}
+          options={[
+            { value: 'list', icon: <UnorderedListOutlined />, label: t.fields.listView },
+            { value: 'map', icon: <GlobalOutlined />, label: t.fields.mapView },
+          ]}
+        />
       </Space>
-      <Table
-        dataSource={result?.items ?? []}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total: result?.totalCount ?? 0,
-          showTotal: (total) => t.fields.total.replace('{{count}}', String(total)),
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-        }}
-      />
+
+      {viewMode === 'map' ? (
+        <FieldMap fields={result?.items ?? []} height={500} />
+      ) : (
+        <Table
+          dataSource={result?.items ?? []}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            current: page,
+            pageSize,
+            total: result?.totalCount ?? 0,
+            showTotal: (total) => t.fields.total.replace('{{count}}', String(total)),
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+          }}
+        />
+      )}
 
       <Modal
         title={t.fields.createField}
