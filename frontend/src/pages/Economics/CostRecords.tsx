@@ -6,6 +6,7 @@ import type { CostRecordDto } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { useRole } from '../../hooks/useRole';
 
 const { RangePicker } = DatePicker;
 
@@ -26,6 +27,10 @@ export default function CostRecords() {
   const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const { hasRole } = useRole();
+
+  const canCreate = hasRole(['Administrator', 'Manager']);
+  const canDelete = hasRole(['Administrator', 'Manager']);
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
@@ -91,11 +96,11 @@ export default function CostRecords() {
     { title: t.economics.description, dataIndex: 'description', key: 'description', render: (v: string) => v || '—' },
     {
       title: t.common.actions, key: 'actions',
-      render: (_: unknown, record: CostRecordDto) => (
+      render: (_: unknown, record: CostRecordDto) => canDelete ? (
         <Popconfirm title={t.economics.deleteConfirm} onConfirm={() => handleDelete(record.id)}>
           <Button size="small" danger icon={<DeleteOutlined />} />
         </Popconfirm>
-      ),
+      ) : null,
     },
   ];
 
@@ -117,14 +122,16 @@ export default function CostRecords() {
           }
           placeholder={[t.economics.dateFrom, t.economics.dateTo]}
         />
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          style={{ background: '#52c41a', borderColor: '#52c41a' }}
-          onClick={() => setModalOpen(true)}
-        >
-          {t.economics.createRecord}
-        </Button>
+        {canCreate && (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            style={{ background: '#52c41a', borderColor: '#52c41a' }}
+            onClick={() => setModalOpen(true)}
+          >
+            {t.economics.createRecord}
+          </Button>
+        )}
       </Space>
       <Table
         dataSource={records}

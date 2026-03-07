@@ -324,6 +324,11 @@ const en: Translations = {
     Equipment: 'Equipment',
     Other: 'Other',
   },
+  accessDenied: {
+    title: 'Access Denied',
+    subtitle: 'You do not have permission to view this page.',
+    backHome: 'Back to Home',
+  },
 };
 
 export default en;

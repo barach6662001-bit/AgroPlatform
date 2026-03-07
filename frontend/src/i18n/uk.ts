@@ -322,6 +322,11 @@ const uk = {
     Equipment: 'Техніка',
     Other: 'Інше',
   },
+  accessDenied: {
+    title: 'Доступ заборонено',
+    subtitle: 'У вас немає прав для перегляду цієї сторінки.',
+    backHome: 'Назад на головну',
+  },
 } as const;
 
 export default uk;

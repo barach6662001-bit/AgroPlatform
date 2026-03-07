@@ -7,6 +7,7 @@ import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { useRole } from '../../hooks/useRole';
 
 export default function FieldsList() {
   const [result, setResult] = useState<PaginatedResult<FieldDto> | null>(null);
@@ -19,6 +20,10 @@ export default function FieldsList() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { hasRole } = useRole();
+
+  const canCreate = hasRole(['Administrator', 'Manager']);
+  const canDelete = hasRole(['Administrator', 'Manager']);
 
   const load = (p = page, ps = pageSize, s = search) => {
     setLoading(true);
@@ -76,9 +81,11 @@ export default function FieldsList() {
       render: (_: unknown, record: FieldDto) => (
         <Space>
           <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/fields/${record.id}`)}>{t.fields.details}</Button>
-          <Popconfirm title={t.fields.deleteField} onConfirm={() => handleDelete(record.id)}>
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
+          {canDelete && (
+            <Popconfirm title={t.fields.deleteField} onConfirm={() => handleDelete(record.id)}>
+              <Button size="small" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
@@ -95,14 +102,16 @@ export default function FieldsList() {
           onChange={(e) => handleSearchChange(e.target.value)}
           style={{ width: 320 }}
         />
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          style={{ background: '#52c41a', borderColor: '#52c41a' }}
-          onClick={() => setModalOpen(true)}
-        >
-          {t.fields.addField}
-        </Button>
+        {canCreate && (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            style={{ background: '#52c41a', borderColor: '#52c41a' }}
+            onClick={() => setModalOpen(true)}
+          >
+            {t.fields.addField}
+          </Button>
+        )}
       </Space>
       <Table
         dataSource={result?.items ?? []}

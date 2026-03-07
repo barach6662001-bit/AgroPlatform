@@ -7,6 +7,7 @@ import type { MachineDto, MachineryType, MachineryStatus } from '../../types/mac
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { useRole } from '../../hooks/useRole';
 
 const statusColors: Record<string, string> = {
   Active: 'success', UnderRepair: 'warning', Decommissioned: 'error',
@@ -25,6 +26,9 @@ export default function MachineryList() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { hasRole } = useRole();
+
+  const canCreate = hasRole(['Administrator', 'Manager']);
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
@@ -109,14 +113,16 @@ export default function MachineryList() {
           onChange={setStatusFilter}
           options={Object.entries(t.machineryStatuses).map(([k, v]) => ({ value: k, label: v }))}
         />
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          style={{ background: '#52c41a', borderColor: '#52c41a' }}
-          onClick={() => setModalOpen(true)}
-        >
-          {t.machinery.createMachine}
-        </Button>
+        {canCreate && (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            style={{ background: '#52c41a', borderColor: '#52c41a' }}
+            onClick={() => setModalOpen(true)}
+          >
+            {t.machinery.createMachine}
+          </Button>
+        )}
       </Space>
       <Table
         dataSource={result?.items ?? []}
