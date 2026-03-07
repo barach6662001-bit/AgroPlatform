@@ -6,6 +6,9 @@ import {
   ToolOutlined,
   CarOutlined,
   DollarOutlined,
+  BarChartOutlined,
+  FireOutlined,
+  FundOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -22,22 +25,46 @@ export default function Sidebar() {
     { key: '/operations', label: t.nav.operations, icon: <ToolOutlined /> },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined /> },
     { key: '/economics', label: t.nav.economics, icon: <DollarOutlined /> },
+    {
+      key: '/analytics',
+      label: t.nav.analytics,
+      icon: <BarChartOutlined />,
+      children: [
+        { key: '/analytics/resources', label: t.nav.resourceConsumption, icon: <FireOutlined /> },
+        { key: '/analytics/fields', label: t.nav.fieldEfficiency, icon: <FundOutlined /> },
+      ],
+    },
+  ];
+
+  const flatKeys = [
+    '/',
+    '/fields',
+    '/warehouses',
+    '/operations',
+    '/machinery',
+    '/economics',
+    '/analytics/resources',
+    '/analytics/fields',
   ];
 
   const selectedKey =
-    menuItems
+    flatKeys
       .slice()
       .reverse()
-      .find((item) => location.pathname.startsWith(item.key) || location.pathname === item.key)
-      ?.key ?? '/';
+      .find((key) => location.pathname === key || (key !== '/' && location.pathname.startsWith(key))) ?? '/';
+
+  const openKeys = location.pathname.startsWith('/analytics') ? ['/analytics'] : [];
 
   return (
     <Menu
       theme="dark"
       mode="inline"
       selectedKeys={[selectedKey]}
+      defaultOpenKeys={openKeys}
       items={menuItems}
-      onClick={({ key }) => navigate(key)}
+      onClick={({ key }) => {
+        if (key !== '/analytics') navigate(key);
+      }}
       style={{ borderRight: 0 }}
     />
   );
