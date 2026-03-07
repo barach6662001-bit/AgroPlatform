@@ -4,7 +4,7 @@ import { Card, Descriptions, Table, Button, Spin, message, Row, Col, Statistic, 
 import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import { getMachineById, addWorkLog, addFuelLog } from '../../api/machinery';
 import { getFields } from '../../api/fields';
-import type { MachineDetailDto, WorkLogDto, FuelLogDto } from '../../types/machinery';
+import type { MachineDetailDto } from '../../types/machinery';
 import type { FieldDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
