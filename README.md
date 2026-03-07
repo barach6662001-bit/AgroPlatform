@@ -41,8 +41,9 @@ dotnet run --project src/AgroPlatform.Api
 
 ```bash
 cd frontend
-cp .env.example .env
-# Установите VITE_API_URL=http://localhost:8080 (или 5224, если запускаете локально)
+# .env.development уже содержит VITE_API_URL=http://localhost:5224 для локальной разработки.
+# Для работы с Docker (API на порту 8080) создайте файл frontend/.env.local:
+#   VITE_API_URL=http://localhost:8080
 npm install
 npm run dev
 # Фронтенд: http://localhost:3000
