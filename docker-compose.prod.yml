@@ -1,0 +1,46 @@
+# docker-compose.prod.yml — production overrides
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  nginx-proxy:
+    image: nginx:1.27-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - certbot-etc:/etc/letsencrypt:ro
+      - certbot-var:/var/lib/letsencrypt
+      - certbot-webroot:/var/www/certbot:ro
+    depends_on:
+      api:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - agro-network
+
+  certbot:
+    image: certbot/certbot:v2.11.0
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - certbot-webroot:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - agro-network
+
+  # Override: remove direct port exposure in production
+  api:
+    ports: !override
+      - "8080"  # internal only, no host binding
+
+  frontend:
+    ports: !override
+      - "80"  # internal only, no host binding
+
+volumes:
+  certbot-etc:
+  certbot-var:
+  certbot-webroot:
