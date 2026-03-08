@@ -346,6 +346,20 @@ const uk = {
     apply: 'Застосувати',
     loadError: 'Помилка завантаження даних',
   },
+  errors: {
+    notFound: 'Сторінку не знайдено',
+    notFoundDesc: 'Вибачте, сторінка, яку ви шукаєте, не існує.',
+    serverError: 'Помилка сервера',
+    serverErrorDesc: 'Вибачте, щось пішло не так.',
+    backHome: 'На головну',
+    reload: 'Перезавантажити',
+    tryAgain: 'Спробувати ще раз',
+  },
+  accessDenied: {
+    title: 'Доступ заборонено',
+    subtitle: 'У вас немає прав для перегляду цієї сторінки.',
+    backHome: 'На головну',
+  },
 } as const;
 
 export default uk;

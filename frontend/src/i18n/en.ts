@@ -348,6 +348,20 @@ const en: Translations = {
     apply: 'Apply',
     loadError: 'Failed to load data',
   },
+  errors: {
+    notFound: 'Page Not Found',
+    notFoundDesc: 'Sorry, the page you are looking for does not exist.',
+    serverError: 'Server Error',
+    serverErrorDesc: 'Sorry, something went wrong.',
+    backHome: 'Back to Home',
+    reload: 'Reload',
+    tryAgain: 'Try Again',
+  },
+  accessDenied: {
+    title: 'Access Denied',
+    subtitle: 'You do not have permission to view this page.',
+    backHome: 'Back to Home',
+  },
 };
 
 export default en;

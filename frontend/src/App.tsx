@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import ukUA from 'antd/locale/uk_UA';
 import enUS from 'antd/locale/en_US';
@@ -20,6 +20,8 @@ import MachineDetail from './pages/Machinery/MachineDetail';
 import CostRecords from './pages/Economics/CostRecords';
 import ResourceConsumption from './pages/Analytics/ResourceConsumption';
 import FieldEfficiency from './pages/Analytics/FieldEfficiency';
+import AccessDenied from './pages/AccessDenied';
+import NotFound from './pages/NotFound';
 
 export default function App() {
   const { lang } = useTranslation();

@@ -28,26 +28,6 @@ export default function Sidebar() {
     { key: '/operations', label: t.nav.operations, icon: <ToolOutlined /> },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined /> },
     { key: '/economics', label: t.nav.economics, icon: <DollarOutlined /> },
-    {
-      key: '/analytics',
-      label: t.nav.analytics,
-      icon: <BarChartOutlined />,
-      children: [
-        { key: '/analytics/resources', label: t.nav.resourceConsumption, icon: <FireOutlined /> },
-        { key: '/analytics/fields', label: t.nav.fieldEfficiency, icon: <FundOutlined /> },
-      ],
-    },
-  ];
-
-  const flatKeys = [
-    '/',
-    '/fields',
-    '/warehouses',
-    '/operations',
-    '/machinery',
-    '/economics',
-    '/analytics/resources',
-    '/analytics/fields',
   ];
 
   const analyticsChildren = [
