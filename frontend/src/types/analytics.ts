@@ -1,3 +1,20 @@
+export interface ResourceConsumptionDto {
+  resourceName: string;
+  totalQuantity: number;
+  unit: string;
+  operationType: string;
+}
+
+export interface FieldEfficiencyDto {
+  fieldId: string;
+  fieldName: string;
+  totalOperations: number;
+  completedOperations: number;
+  totalCost: number;
+  areaHectares: number;
+  costPerHectare: number;
+}
+
 export interface MonthlyCostTrendDto {
   year: number;
   month: number;

@@ -54,7 +54,7 @@ export default function App() {
             <Route path="/machinery/:id" element={<MachineDetail />} />
             <Route path="/economics" element={<CostRecords />} />
             <Route path="/analytics/resources" element={<ResourceConsumption />} />
-            <Route path="/analytics/fields" element={<FieldEfficiency />} />
+            <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

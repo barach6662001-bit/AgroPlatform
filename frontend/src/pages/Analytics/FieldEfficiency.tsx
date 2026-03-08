@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Spin, Table, message } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
+import { Table, Spin, message } from 'antd';
 import {
   BarChart,
   Bar,
@@ -24,121 +23,83 @@ export default function FieldEfficiency() {
   useEffect(() => {
     getFieldEfficiency()
       .then(setData)
-      .catch(() => message.error(t.fieldEfficiency.loadError))
+      .catch(() => message.error(t.analytics.loadError))
       .finally(() => setLoading(false));
   }, []);
 
-  const columns: ColumnsType<FieldEfficiencyDto> = [
+  const columns = [
+    { title: t.analytics.fieldName, dataIndex: 'fieldName', key: 'fieldName' },
     {
-      title: t.fieldEfficiency.field,
-      dataIndex: 'fieldName',
-      key: 'fieldName',
-      sorter: (a, b) => a.fieldName.localeCompare(b.fieldName),
+      title: t.analytics.totalOps,
+      dataIndex: 'totalOperations',
+      key: 'totalOperations',
+      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.totalOperations - b.totalOperations,
     },
     {
-      title: t.fieldEfficiency.area,
+      title: t.analytics.completedOps,
+      dataIndex: 'completedOperations',
+      key: 'completedOperations',
+      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.completedOperations - b.completedOperations,
+    },
+    {
+      title: t.analytics.areaHa,
       dataIndex: 'areaHectares',
       key: 'areaHectares',
-      align: 'right',
       render: (v: number) => v.toFixed(1),
-      sorter: (a, b) => a.areaHectares - b.areaHectares,
+      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.areaHectares - b.areaHectares,
     },
     {
-      title: t.fieldEfficiency.crop,
-      dataIndex: 'currentCrop',
-      key: 'currentCrop',
-      render: (v: string | null) =>
-        v ? (t.crops?.[v as keyof typeof t.crops] ?? v) : t.fieldEfficiency.notSeeded,
+      title: t.analytics.totalCost,
+      dataIndex: 'totalCost',
+      key: 'totalCost',
+      render: (v: number) => `${v.toFixed(2)} UAH`,
+      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.totalCost - b.totalCost,
     },
     {
-      title: t.fieldEfficiency.operations,
-      dataIndex: 'operationsCount',
-      key: 'operationsCount',
-      align: 'right',
-      sorter: (a, b) => a.operationsCount - b.operationsCount,
-    },
-    {
-      title: t.fieldEfficiency.totalCosts,
-      dataIndex: 'totalCosts',
-      key: 'totalCosts',
-      align: 'right',
-      render: (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-      sorter: (a, b) => a.totalCosts - b.totalCosts,
-    },
-    {
-      title: t.fieldEfficiency.costPerHa,
+      title: t.analytics.costPerHa,
       dataIndex: 'costPerHectare',
       key: 'costPerHectare',
-      align: 'right',
-      render: (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      sorter: (a, b) => a.costPerHectare - b.costPerHectare,
-      defaultSortOrder: 'descend',
-    },
-    {
-      title: t.fieldEfficiency.yieldPerHa,
-      dataIndex: 'yieldPerHectare',
-      key: 'yieldPerHectare',
-      align: 'right',
-      render: (v: number | null) => (v != null ? v.toFixed(2) : '—'),
-      sorter: (a, b) => (a.yieldPerHectare ?? 0) - (b.yieldPerHectare ?? 0),
+      render: (v: number) => `${v.toFixed(2)} UAH`,
+      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.costPerHectare - b.costPerHectare,
     },
   ];
 
   const chartData = data.map((item) => ({
     name: item.fieldName,
-    costPerHa: Number(item.costPerHectare.toFixed(2)),
+    [t.analytics.totalCost]: Number(item.totalCost.toFixed(2)),
   }));
 
   return (
     <div>
-      <PageHeader title={t.fieldEfficiency.title} subtitle={t.fieldEfficiency.subtitle} />
-
+      <PageHeader title={t.analytics.fieldEfficiency} subtitle={t.analytics.title} />
       {loading ? (
         <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />
       ) : (
-        <Row gutter={[16, 16]}>
+        <>
+          <Table
+            dataSource={data}
+            columns={columns}
+            rowKey="fieldId"
+            pagination={false}
+            style={{ marginBottom: 32 }}
+          />
           {chartData.length > 0 && (
-            <Col span={24}>
-              <Card title={t.fieldEfficiency.chartTitle}>
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart
-                    data={chartData}
-                    margin={{ top: 5, right: 20, left: 0, bottom: 80 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="name"
-                      angle={-35}
-                      textAnchor="end"
-                      interval={0}
-                      tick={{ fontSize: 11 }}
-                    />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend verticalAlign="top" />
-                    <Bar
-                      dataKey="costPerHa"
-                      fill="#1890ff"
-                      name={t.fieldEfficiency.costPerHa}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Card>
-            </Col>
+            <ResponsiveContainer width="100%" height={Math.max(300, chartData.length * 40)}>
+              <BarChart
+                layout="vertical"
+                data={chartData}
+                margin={{ top: 10, right: 40, left: 120, bottom: 10 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis type="category" dataKey="name" width={110} />
+                <Tooltip formatter={(v: number) => `${v.toFixed(2)} UAH`} />
+                <Legend />
+                <Bar dataKey={t.analytics.totalCost} fill="#1890ff" />
+              </BarChart>
+            </ResponsiveContainer>
           )}
-
-          <Col span={24}>
-            <Card>
-              <Table
-                rowKey="fieldId"
-                dataSource={data}
-                columns={columns}
-                pagination={{ pageSize: 20 }}
-                locale={{ emptyText: t.fieldEfficiency.noData }}
-              />
-            </Card>
-          </Col>
-        </Row>
+        </>
       )}
     </div>
   );

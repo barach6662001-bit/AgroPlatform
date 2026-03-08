@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Spin, Table, message, DatePicker } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
+import { Table, DatePicker, Space, Spin, message } from 'antd';
 import {
   BarChart,
   Bar,
@@ -11,7 +10,6 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import type { Dayjs } from 'dayjs';
 import { getResourceConsumption } from '../../api/analytics';
 import type { ResourceConsumptionDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
@@ -22,121 +20,70 @@ const { RangePicker } = DatePicker;
 export default function ResourceConsumption() {
   const [data, setData] = useState<ResourceConsumptionDto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null] | null>(null);
-  const [params, setParams] = useState<{ dateFrom?: string; dateTo?: string }>({});
+  const [dateRange, setDateRange] = useState<[string, string] | null>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
     setLoading(true);
-    getResourceConsumption(params)
+    getResourceConsumption(dateRange ? { from: dateRange[0], to: dateRange[1] } : undefined)
       .then(setData)
-      .catch(() => message.error(t.resourceConsumption.loadError))
+      .catch(() => message.error(t.analytics.loadError))
       .finally(() => setLoading(false));
-  }, [params]);
+  }, [dateRange]);
 
-  const handleDateChange = (values: [Dayjs | null, Dayjs | null] | null) => {
-    setDateRange(values);
-    setParams(
-      values?.[0] && values?.[1]
-        ? { dateFrom: values[0].toISOString(), dateTo: values[1].toISOString() }
-        : {},
-    );
-  };
-
-  const columns: ColumnsType<ResourceConsumptionDto> = [
+  const columns = [
+    { title: t.analytics.resourceName, dataIndex: 'resourceName', key: 'resourceName' },
     {
-      title: t.resourceConsumption.item,
-      dataIndex: 'itemName',
-      key: 'itemName',
-      sorter: (a, b) => a.itemName.localeCompare(b.itemName),
-    },
-    {
-      title: t.resourceConsumption.category,
-      dataIndex: 'category',
-      key: 'category',
-      sorter: (a, b) => a.category.localeCompare(b.category),
-    },
-    {
-      title: t.resourceConsumption.totalConsumed,
-      dataIndex: 'totalConsumed',
-      key: 'totalConsumed',
-      align: 'right',
+      title: t.analytics.totalQuantity,
+      dataIndex: 'totalQuantity',
+      key: 'totalQuantity',
       render: (v: number) => v.toFixed(2),
-      sorter: (a, b) => a.totalConsumed - b.totalConsumed,
-      defaultSortOrder: 'descend',
+      sorter: (a: ResourceConsumptionDto, b: ResourceConsumptionDto) => a.totalQuantity - b.totalQuantity,
     },
-    {
-      title: t.resourceConsumption.unit,
-      dataIndex: 'unitCode',
-      key: 'unitCode',
-    },
+    { title: t.analytics.unit, dataIndex: 'unit', key: 'unit' },
+    { title: t.analytics.operationType, dataIndex: 'operationType', key: 'operationType' },
   ];
 
-  const chartData = data.slice(0, 10).map((item) => ({
-    name: item.itemName,
-    value: Number(item.totalConsumed.toFixed(2)),
-    unit: item.unitCode,
+  const chartData = data.map((item) => ({
+    name: item.resourceName,
+    [t.analytics.totalQuantity]: Number(item.totalQuantity.toFixed(2)),
   }));
 
   return (
     <div>
-      <PageHeader title={t.resourceConsumption.title} subtitle={t.resourceConsumption.subtitle} />
-
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col>
-          <RangePicker
-            value={dateRange}
-            onChange={(values) => handleDateChange(values as [Dayjs | null, Dayjs | null] | null)}
-          />
-        </Col>
-      </Row>
-
+      <PageHeader title={t.analytics.resourceConsumption} subtitle={t.analytics.title} />
+      <Space style={{ marginBottom: 16 }}>
+        <RangePicker
+          onChange={(_, dateStrings) =>
+            setDateRange(dateStrings[0] && dateStrings[1] ? [dateStrings[0], dateStrings[1]] : null)
+          }
+          placeholder={[t.analytics.from, t.analytics.to]}
+        />
+      </Space>
       {loading ? (
         <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />
       ) : (
-        <Row gutter={[16, 16]}>
+        <>
+          <Table
+            dataSource={data}
+            columns={columns}
+            rowKey={(r) => `${r.resourceName}-${r.operationType}`}
+            pagination={false}
+            style={{ marginBottom: 32 }}
+          />
           {chartData.length > 0 && (
-            <Col span={24}>
-              <Card title={t.resourceConsumption.chartTitle}>
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart
-                    data={chartData}
-                    margin={{ top: 5, right: 20, left: 0, bottom: 80 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="name"
-                      angle={-35}
-                      textAnchor="end"
-                      interval={0}
-                      tick={{ fontSize: 11 }}
-                    />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend verticalAlign="top" />
-                    <Bar
-                      dataKey="value"
-                      fill="#52c41a"
-                      name={t.resourceConsumption.totalConsumed}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Card>
-            </Col>
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" angle={-30} textAnchor="end" interval={0} />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey={t.analytics.totalQuantity} fill="#52c41a" />
+              </BarChart>
+            </ResponsiveContainer>
           )}
-
-          <Col span={24}>
-            <Card>
-              <Table
-                rowKey="itemId"
-                dataSource={data}
-                columns={columns}
-                pagination={{ pageSize: 20 }}
-                locale={{ emptyText: t.resourceConsumption.noData }}
-              />
-            </Card>
-          </Col>
-        </Row>
+        </>
       )}
     </div>
   );

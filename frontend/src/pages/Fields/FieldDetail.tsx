@@ -2,12 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
-import type { GeoJsonObject } from 'geojson';
-import 'leaflet/dist/leaflet.css';
 import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan } from '../../api/fields';
 import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
+import FieldMap from '../../components/Map/FieldMap';
 import { useTranslation } from '../../i18n';
 
 export default function FieldDetail() {
@@ -80,13 +78,6 @@ export default function FieldDetail() {
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
   if (!field) return null;
 
-  let geoJsonData: GeoJsonObject | null = null;
-  try {
-    if (field.geoJson) geoJsonData = JSON.parse(field.geoJson) as GeoJsonObject;
-  } catch {
-    // ignore parse error
-  }
-
   const cropOptions = Object.entries(t.crops).map(([k, v]) => ({ value: k as CropType, label: v }));
 
   const historyColumns = [
@@ -142,20 +133,11 @@ export default function FieldDetail() {
           </Card>
         </Col>
 
-        {geoJsonData && (
-          <Col xs={24} lg={12}>
-            <Card title={t.fields.fieldMap} styles={{ body: { padding: 0 } }}>
-              <MapContainer
-                style={{ height: 300, width: '100%' }}
-                center={[48.5, 35.0]}
-                zoom={12}
-              >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <GeoJSON data={geoJsonData} />
-              </MapContainer>
-            </Card>
-          </Col>
-        )}
+        <Col xs={24} lg={12}>
+          <Card title={t.fields.fieldMap} styles={{ body: { padding: 0 } }}>
+            <FieldMap fields={[field]} height={300} />
+          </Card>
+        </Col>
       </Row>
 
       <Card title={t.fields.cropHistory} style={{ marginTop: 16 }}>
