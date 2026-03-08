@@ -6,6 +6,9 @@ import {
   ToolOutlined,
   CarOutlined,
   DollarOutlined,
+  LineChartOutlined,
+  BarChartOutlined,
+  ThunderboltOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -15,7 +18,7 @@ export default function Sidebar() {
   const location = useLocation();
   const { t } = useTranslation();
 
-  const menuItems = [
+  const flatItems = [
     { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined /> },
     { key: '/fields', label: t.nav.fields, icon: <AimOutlined /> },
     { key: '/warehouses', label: t.nav.warehouses, icon: <InboxOutlined /> },
@@ -24,20 +27,40 @@ export default function Sidebar() {
     { key: '/economics', label: t.nav.economics, icon: <DollarOutlined /> },
   ];
 
+  const analyticsChildren = [
+    { key: '/analytics/resources', label: t.analytics.resourceConsumption, icon: <BarChartOutlined /> },
+    { key: '/analytics/efficiency', label: t.analytics.fieldEfficiency, icon: <ThunderboltOutlined /> },
+  ];
+
+  const menuItems = [
+    ...flatItems,
+    {
+      key: '/analytics',
+      label: t.nav.analytics,
+      icon: <LineChartOutlined />,
+      children: analyticsChildren,
+    },
+  ];
+
   const selectedKey =
-    menuItems
+    [...flatItems, ...analyticsChildren]
       .slice()
       .reverse()
-      .find((item) => location.pathname.startsWith(item.key) || location.pathname === item.key)
+      .find((item) => location.pathname === item.key || (item.key !== '/' && location.pathname.startsWith(item.key)))
       ?.key ?? '/';
+
+  const openKeys = analyticsChildren.some((c) => c.key === selectedKey) ? ['/analytics'] : [];
 
   return (
     <Menu
       theme="dark"
       mode="inline"
       selectedKeys={[selectedKey]}
+      defaultOpenKeys={openKeys}
       items={menuItems}
-      onClick={({ key }) => navigate(key)}
+      onClick={({ key }) => {
+        if (key !== '/analytics') navigate(key);
+      }}
       style={{ borderRight: 0 }}
     />
   );
