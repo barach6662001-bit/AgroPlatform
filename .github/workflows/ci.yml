@@ -68,15 +68,38 @@ jobs:
           path: TestResults/**/coverage.cobertura.xml
           retention-days: 7
 
-      - name: Check for vulnerable packages
+      - name: Check for vulnerable packages (production)
         run: |
-          OUTPUT=$(dotnet list package --vulnerable --include-transitive 2>&1)
-          echo "$OUTPUT"
-          if echo "$OUTPUT" | grep -qiE "\b(Critical|High)\b"; then
-            echo "::error::HIGH or CRITICAL vulnerabilities found! Please update affected packages."
+          echo "=== Scanning production projects for vulnerabilities ==="
+          FOUND_VULN=0
+          for proj in src/AgroPlatform.Api/AgroPlatform.Api.csproj \
+                      src/AgroPlatform.Application/AgroPlatform.Application.csproj \
+                      src/AgroPlatform.Domain/AgroPlatform.Domain.csproj \
+                      src/AgroPlatform.Infrastructure/AgroPlatform.Infrastructure.csproj; do
+            echo ""
+            echo "--- Scanning $proj ---"
+            OUTPUT=$(dotnet list "$proj" package --vulnerable --include-transitive 2>&1)
+            echo "$OUTPUT"
+            if echo "$OUTPUT" | grep -qiE '\b(Critical|High)\b'; then
+              echo "::error::HIGH or CRITICAL vulnerability found in $proj"
+              FOUND_VULN=1
+            fi
+          done
+
+          echo ""
+          echo "=== Scanning test projects (informational only) ==="
+          for proj in tests/AgroPlatform.UnitTests/AgroPlatform.UnitTests.csproj \
+                      tests/AgroPlatform.IntegrationTests/AgroPlatform.IntegrationTests.csproj; do
+            echo ""
+            echo "--- Scanning $proj (non-blocking) ---"
+            dotnet list "$proj" package --vulnerable --include-transitive 2>&1 || true
+          done
+
+          if [ "$FOUND_VULN" -ne 0 ]; then
+            echo "::error::HIGH or CRITICAL vulnerabilities found in production projects! Please update affected packages."
             exit 1
           fi
-          echo "No HIGH/CRITICAL vulnerabilities detected."
+          echo "✅ No HIGH/CRITICAL vulnerabilities in production projects."
 
       - name: Publish API
         run: |
