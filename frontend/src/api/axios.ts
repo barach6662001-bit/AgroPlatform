@@ -24,6 +24,10 @@ apiClient.interceptors.response.use(
       useAuthStore.getState().logout();
       window.location.href = '/login';
     }
+    if (error.response?.status === 403) {
+      window.location.href = '/access-denied';
+    }
+    // 404 and 500 are handled at the component level (try/catch)
     return Promise.reject(error);
   }
 );

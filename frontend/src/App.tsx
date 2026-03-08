@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import ukUA from 'antd/locale/uk_UA';
 import enUS from 'antd/locale/en_US';
@@ -37,6 +37,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/access-denied" element={<AccessDenied />} />
           <Route
             element={
               <ProtectedRoute>
@@ -58,6 +59,7 @@ export default function App() {
             <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>
