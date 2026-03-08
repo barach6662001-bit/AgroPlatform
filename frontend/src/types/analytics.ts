@@ -21,6 +21,25 @@ export interface MonthlyCostTrendDto {
   totalCost: number;
 }
 
+export interface ResourceConsumptionDto {
+  itemId: string;
+  itemName: string;
+  category: string;
+  totalConsumed: number;
+  unitCode: string;
+}
+
+export interface FieldEfficiencyDto {
+  fieldId: string;
+  fieldName: string;
+  areaHectares: number;
+  currentCrop: string | null;
+  operationsCount: number;
+  totalCosts: number;
+  costPerHectare: number;
+  yieldPerHectare: number | null;
+}
+
 export interface TopStockItemDto {
   itemName: string;
   itemCode: string;
