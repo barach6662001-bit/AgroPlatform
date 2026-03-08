@@ -18,9 +18,12 @@
 git clone https://github.com/barach6662001-bit/AgroPlatform.git
 cd AgroPlatform
 docker-compose up --build -d
-# API:     http://localhost:8080
-# Swagger: http://localhost:8080/swagger
+# Frontend: http://localhost:3000
+# API:      http://localhost:8080
+# Swagger:  http://localhost:8080/swagger
 ```
+
+> **Примечание:** Frontend запускается на порту 3000. API-запросы (`/api/*`) автоматически проксируются через Nginx к бэкенду (`api:8080`) внутри Docker-сети.
 
 ### Вариант B — Локальный .NET + Docker PostgreSQL
 
