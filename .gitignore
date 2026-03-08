@@ -429,3 +429,6 @@ frontend/.env.production.local
 frontend/.env.test.local
 
 .idea/
+
+# Database backups
+backups/
