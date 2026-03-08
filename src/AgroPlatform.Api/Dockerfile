@@ -19,8 +19,10 @@ RUN dotnet publish src/AgroPlatform.Api/AgroPlatform.Api.csproj \
     --output /app/publish
 
 # Stage 2 – minimal runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app
+RUN apk add --no-cache icu-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
