@@ -12,6 +12,7 @@ const en: Translations = {
     operations: 'Operations',
     machinery: 'Machinery',
     economics: 'Economics',
+    analytics: 'Analytics',
   },
   common: {
     cancel: 'Cancel',
@@ -140,6 +141,9 @@ const en: Translations = {
     deleteRotationPlanError: 'Error deleting plan',
     plannedCrop: 'Planned crop',
     plannedYear: 'Year',
+    mapView: 'Map',
+    listView: 'List',
+    noCoordinates: 'No coordinates available',
   },
   warehouses: {
     title: 'Warehouses',
@@ -324,10 +328,25 @@ const en: Translations = {
     Equipment: 'Equipment',
     Other: 'Other',
   },
-  accessDenied: {
-    title: 'Access Denied',
-    subtitle: 'You do not have permission to view this page.',
-    backHome: 'Back to Home',
+  analytics: {
+    title: 'Analytics',
+    resourceConsumption: 'Resource Consumption',
+    fieldEfficiency: 'Field Efficiency',
+    resourceName: 'Resource',
+    totalQuantity: 'Total Quantity',
+    unit: 'Unit',
+    operationType: 'Operation Type',
+    fieldName: 'Field',
+    totalOps: 'Total Operations',
+    completedOps: 'Completed',
+    totalCost: 'Total Cost',
+    costPerHa: 'Cost/ha',
+    areaHa: 'Area (ha)',
+    dateFilter: 'Date Filter',
+    from: 'From',
+    to: 'To',
+    apply: 'Apply',
+    loadError: 'Failed to load data',
   },
 };
 

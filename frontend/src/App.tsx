@@ -18,7 +18,8 @@ import OperationDetail from './pages/Operations/OperationDetail';
 import MachineryList from './pages/Machinery/MachineryList';
 import MachineDetail from './pages/Machinery/MachineDetail';
 import CostRecords from './pages/Economics/CostRecords';
-import AccessDenied from './pages/AccessDenied';
+import ResourceConsumption from './pages/Analytics/ResourceConsumption';
+import FieldEfficiency from './pages/Analytics/FieldEfficiency';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -48,32 +49,13 @@ export default function App() {
             <Route path="/fields/:id" element={<FieldDetail />} />
             <Route path="/warehouses" element={<WarehousesList />} />
             <Route path="/warehouses/items" element={<WarehouseItems />} />
-            <Route path="/operations" element={
-              <RoleGuard allowedRoles={['Administrator', 'Manager', 'Agronomist', 'Director']}>
-                <OperationsList />
-              </RoleGuard>
-            } />
-            <Route path="/operations/:id" element={
-              <RoleGuard allowedRoles={['Administrator', 'Manager', 'Agronomist', 'Director']}>
-                <OperationDetail />
-              </RoleGuard>
-            } />
-            <Route path="/machinery" element={
-              <RoleGuard allowedRoles={['Administrator', 'Manager', 'Agronomist', 'Director']}>
-                <MachineryList />
-              </RoleGuard>
-            } />
-            <Route path="/machinery/:id" element={
-              <RoleGuard allowedRoles={['Administrator', 'Manager', 'Agronomist', 'Director']}>
-                <MachineDetail />
-              </RoleGuard>
-            } />
-            <Route path="/economics" element={
-              <RoleGuard allowedRoles={['Administrator', 'Manager', 'Director']}>
-                <CostRecords />
-              </RoleGuard>
-            } />
-            <Route path="/access-denied" element={<AccessDenied />} />
+            <Route path="/operations" element={<OperationsList />} />
+            <Route path="/operations/:id" element={<OperationDetail />} />
+            <Route path="/machinery" element={<MachineryList />} />
+            <Route path="/machinery/:id" element={<MachineDetail />} />
+            <Route path="/economics" element={<CostRecords />} />
+            <Route path="/analytics/resources" element={<ResourceConsumption />} />
+            <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

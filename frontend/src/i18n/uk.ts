@@ -10,6 +10,7 @@ const uk = {
     operations: 'Операції',
     machinery: 'Техніка',
     economics: 'Економіка',
+    analytics: 'Аналітика',
   },
   common: {
     cancel: 'Скасувати',
@@ -138,6 +139,9 @@ const uk = {
     deleteRotationPlanError: 'Помилка видалення плану',
     plannedCrop: 'Планована культура',
     plannedYear: 'Рік',
+    mapView: 'Карта',
+    listView: 'Список',
+    noCoordinates: 'Координати відсутні',
   },
   warehouses: {
     title: 'Склади',
@@ -322,10 +326,25 @@ const uk = {
     Equipment: 'Техніка',
     Other: 'Інше',
   },
-  accessDenied: {
-    title: 'Доступ заборонено',
-    subtitle: 'У вас немає прав для перегляду цієї сторінки.',
-    backHome: 'Назад на головну',
+  analytics: {
+    title: 'Аналітика',
+    resourceConsumption: 'Розхід ресурсів',
+    fieldEfficiency: 'Ефективність полів',
+    resourceName: 'Ресурс',
+    totalQuantity: 'Загальна кількість',
+    unit: 'Одиниця',
+    operationType: 'Тип операції',
+    fieldName: 'Поле',
+    totalOps: 'Всього операцій',
+    completedOps: 'Завершено',
+    totalCost: 'Загальні витрати',
+    costPerHa: 'Витрати/га',
+    areaHa: 'Площа (га)',
+    dateFilter: 'Фільтр за датою',
+    from: 'Від',
+    to: 'До',
+    apply: 'Застосувати',
+    loadError: 'Помилка завантаження даних',
   },
 } as const;
 
