@@ -2,15 +2,15 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: agroplatform_db
-      POSTGRES_USER: agroplatform
-      POSTGRES_PASSWORD: agroplatform_dev
+      POSTGRES_DB: ${POSTGRES_DB:-agroplatform_db}
+      POSTGRES_USER: ${POSTGRES_USER:-agroplatform}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agroplatform_dev}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U agroplatform -d agroplatform_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-agroplatform} -d ${POSTGRES_DB:-agroplatform_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,11 +27,11 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=agroplatform_db;Username=agroplatform;Password=agroplatform_dev"
-      JwtSettings__Key: "change-me-super-secret-key-minimum-32-characters!!"  # REPLACE before deploying to any shared environment
-      JwtSettings__Issuer: "AgroPlatform"
-      JwtSettings__Audience: "AgroPlatform"
-      Cors__AllowedOrigins__0: "http://localhost:3000"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-agroplatform_db};Username=${POSTGRES_USER:-agroplatform};Password=${POSTGRES_PASSWORD:-agroplatform_dev}"
+      JwtSettings__Key: "${JWT_KEY:-change-me-super-secret-key-minimum-32-characters!!}"
+      JwtSettings__Issuer: "${JWT_ISSUER:-AgroPlatform}"
+      JwtSettings__Audience: "${JWT_AUDIENCE:-AgroPlatform}"
+      Cors__AllowedOrigins__0: "${CORS_ORIGIN:-http://localhost:3000}"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health/live || exit 1"]
       interval: 15s
