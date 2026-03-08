@@ -7,6 +7,7 @@ import type { WarehouseDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { useRole } from '../../hooks/useRole';
 
 export default function WarehousesList() {
   const [result, setResult] = useState<PaginatedResult<WarehouseDto> | null>(null);
@@ -18,6 +19,9 @@ export default function WarehousesList() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { hasRole } = useRole();
+
+  const canCreate = hasRole(['Administrator', 'Manager']);
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
@@ -66,14 +70,16 @@ export default function WarehousesList() {
     <div>
       <PageHeader title={t.warehouses.title} subtitle={t.warehouses.subtitle} />
       <Space style={{ marginBottom: 16 }}>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          style={{ background: '#52c41a', borderColor: '#52c41a' }}
-          onClick={() => setModalOpen(true)}
-        >
-          {t.warehouses.createWarehouse}
-        </Button>
+        {canCreate && (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            style={{ background: '#52c41a', borderColor: '#52c41a' }}
+            onClick={() => setModalOpen(true)}
+          >
+            {t.warehouses.createWarehouse}
+          </Button>
+        )}
       </Space>
       <Table
         dataSource={result?.items ?? []}

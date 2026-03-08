@@ -9,6 +9,7 @@ import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { useRole } from '../../hooks/useRole';
 
 const typeColors: Record<string, string> = {
   Sowing: 'green', Fertilizing: 'blue', PlantProtection: 'orange',
@@ -28,6 +29,9 @@ export default function OperationsList() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { hasRole } = useRole();
+
+  const canCreate = hasRole(['Administrator', 'Manager']);
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
@@ -120,14 +124,16 @@ export default function OperationsList() {
           onChange={setStatusFilter}
           options={[{ value: true, label: t.operations.completed }, { value: false, label: t.operations.inProgress }]}
         />
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          style={{ background: '#52c41a', borderColor: '#52c41a' }}
-          onClick={() => setModalOpen(true)}
-        >
-          {t.operations.createOperation}
-        </Button>
+        {canCreate && (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            style={{ background: '#52c41a', borderColor: '#52c41a' }}
+            onClick={() => setModalOpen(true)}
+          >
+            {t.operations.createOperation}
+          </Button>
+        )}
       </Space>
       <Table
         dataSource={result?.items ?? []}
