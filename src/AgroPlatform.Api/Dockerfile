@@ -1,5 +1,5 @@
 # Stage 1 – build & publish
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /repo
 
 # Copy solution and project files first for layer caching
@@ -19,8 +19,10 @@ RUN dotnet publish src/AgroPlatform.Api/AgroPlatform.Api.csproj \
     --output /app/publish
 
 # Stage 2 – minimal runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app
+RUN apk add --no-cache icu-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
