@@ -420,5 +420,9 @@ FodyWeavers.xsd
 # Frontend build artifacts
 frontend/dist/
 frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.production.local
+frontend/.env.test.local
 
 .idea/

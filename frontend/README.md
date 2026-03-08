@@ -25,15 +25,13 @@ npm run dev
 
 ## Конфігурація
 
-Скопіюйте `.env.example` в `.env`:
-
-```bash
-cp .env.example .env
+Файл `.env.development` вже містить правильне значення для локальної розробки:
 ```
-
-Встановіть змінну:
+VITE_API_URL=http://localhost:5224
 ```
-VITE_API_URL=http://localhost:5000
+Для роботи з Docker (API на порту 8080) створіть файл `.env.local`:
+```
+VITE_API_URL=http://localhost:8080
 ```
 
 ## Збирання для production

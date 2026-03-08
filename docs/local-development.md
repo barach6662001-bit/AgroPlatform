@@ -166,7 +166,7 @@ npm install
 npm run dev   # http://localhost:3000
 ```
 
-The Vite dev server proxies `/api` requests to `http://localhost:5000`.
+The Vite dev server proxies `/api` requests to `http://localhost:5224`.
 
 ---
 
