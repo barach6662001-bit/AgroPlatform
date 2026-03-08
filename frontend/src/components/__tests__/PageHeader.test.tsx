@@ -9,13 +9,12 @@ describe('PageHeader', () => {
   });
 
   it('renders the subtitle when provided', () => {
-    render(<PageHeader title="My Title" subtitle="My Subtitle" />);
-    expect(screen.getByText('My Title')).toBeInTheDocument();
-    expect(screen.getByText('My Subtitle')).toBeInTheDocument();
+    render(<PageHeader title="Title" subtitle="Some subtitle" />);
+    expect(screen.getByText('Some subtitle')).toBeInTheDocument();
   });
 
   it('does not render subtitle when not provided', () => {
-    render(<PageHeader title="Only Title" />);
-    expect(screen.queryByText('My Subtitle')).not.toBeInTheDocument();
+    render(<PageHeader title="Title Only" />);
+    expect(screen.queryByText(/subtitle/i)).not.toBeInTheDocument();
   });
 });

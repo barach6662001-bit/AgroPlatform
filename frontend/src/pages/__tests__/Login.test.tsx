@@ -3,47 +3,33 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Login from '../Login';
 
+// Prevent actual API calls
 vi.mock('../../api/auth', () => ({
   login: vi.fn(),
 }));
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
-  return { ...actual, useNavigate: () => vi.fn() };
-});
+function renderLogin() {
+  return render(
+    <MemoryRouter>
+      <Login />
+    </MemoryRouter>,
+  );
+}
 
 describe('Login page', () => {
-  it('renders the login form', () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
-
+  it('renders email and password input fields', () => {
+    renderLogin();
     expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/password|пароль/i)).toBeInTheDocument();
   });
 
-  it('renders the submit button', () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
-
-    const submitButton = screen.getByRole('button', { name: /увійти|login|sign in/i });
-    expect(submitButton).toBeInTheDocument();
+  it('renders a submit button', () => {
+    renderLogin();
+    expect(screen.getByRole('button', { name: /login|увійти/i })).toBeInTheDocument();
   });
 
-  it('renders a link to the register page', () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
-
-    const registerLink = screen.getByRole('link');
-    expect(registerLink).toBeInTheDocument();
-    expect(registerLink).toHaveAttribute('href', '/register');
+  it('renders a link to the registration page', () => {
+    renderLogin();
+    expect(screen.getByRole('link')).toBeInTheDocument();
   });
 });

@@ -114,7 +114,7 @@ export default function WarehouseItems() {
     },
   ];
 
-  const MovementForm = ({ form }: { form: ReturnType<typeof Form.useForm>[0] }) => (
+  const MovementForm = () => (
     <>
       <Form.Item name="warehouseId" label={t.warehouses.warehouse} rules={[{ required: true, message: t.common.required }]}>
         <Select options={warehouseOptions} placeholder={t.warehouses.selectWarehouse} />
@@ -178,7 +178,7 @@ export default function WarehouseItems() {
         confirmLoading={saving}
       >
         <Form form={receiptForm} layout="vertical" style={{ marginTop: 16 }}>
-          <MovementForm form={receiptForm} />
+          <MovementForm />
           <Form.Item name="batchCode" label={t.warehouses.batchCode}>
             <Input />
           </Form.Item>
@@ -196,7 +196,7 @@ export default function WarehouseItems() {
         confirmLoading={saving}
       >
         <Form form={issueForm} layout="vertical" style={{ marginTop: 16 }}>
-          <MovementForm form={issueForm} />
+          <MovementForm />
         </Form>
       </Modal>
     </div>
