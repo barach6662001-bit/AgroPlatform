@@ -29,4 +29,6 @@ EXPOSE 8080
 
 COPY --from=build /app/publish .
 
+RUN mkdir -p /app/logs
+
 ENTRYPOINT ["dotnet", "AgroPlatform.Api.dll"]
