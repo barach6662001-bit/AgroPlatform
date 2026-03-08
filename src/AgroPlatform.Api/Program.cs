@@ -7,6 +7,7 @@ using AgroPlatform.Infrastructure;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry.Metrics;
@@ -168,6 +169,26 @@ try
     });
 
     var app = builder.Build();
+
+    // Auto-apply pending EF Core migrations on startup (controlled by AUTO_MIGRATE env var)
+    if (builder.Configuration.GetValue<bool>("AUTO_MIGRATE", false))
+    {
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+        try
+        {
+            logger.LogInformation("AUTO_MIGRATE is enabled. Applying pending migrations...");
+            await dbContext.Database.MigrateAsync();
+            logger.LogInformation("Database migrations applied successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while applying database migrations.");
+            throw; // Fail fast — don't start the app with an inconsistent database
+        }
+    }
 
     app.UseMiddleware<ExceptionHandlingMiddleware>();
     app.UseMiddleware<SecurityHeadersMiddleware>();
