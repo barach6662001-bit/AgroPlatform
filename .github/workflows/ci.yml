@@ -69,7 +69,14 @@ jobs:
           retention-days: 7
 
       - name: Check for vulnerable packages
-        run: dotnet list package --vulnerable --include-transitive || true
+        run: |
+          OUTPUT=$(dotnet list package --vulnerable --include-transitive 2>&1)
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -qiE "\b(Critical|High)\b"; then
+            echo "::error::HIGH or CRITICAL vulnerabilities found! Please update affected packages."
+            exit 1
+          fi
+          echo "No HIGH/CRITICAL vulnerabilities detected."
 
       - name: Publish API
         run: |
