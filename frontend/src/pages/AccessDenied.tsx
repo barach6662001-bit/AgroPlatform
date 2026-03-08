@@ -1,4 +1,4 @@
-import { Result, Button } from 'antd';
+import { Button, Result } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../i18n';
 
@@ -9,11 +9,11 @@ export default function AccessDenied() {
   return (
     <Result
       status="403"
-      title={t.errors.accessDenied}
-      subTitle={t.errors.accessDeniedDesc}
+      title={t.accessDenied.title}
+      subTitle={t.accessDenied.subtitle}
       extra={
         <Button type="primary" onClick={() => navigate('/')}>
-          {t.errors.backHome}
+          {t.accessDenied.backHome}
         </Button>
       }
     />

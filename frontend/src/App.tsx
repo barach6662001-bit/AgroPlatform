@@ -5,6 +5,7 @@ import enUS from 'antd/locale/en_US';
 import { useTranslation } from './i18n';
 import AppLayout from './components/Layout/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
+import { RoleGuard } from './components/Auth/RoleGuard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -17,8 +18,8 @@ import OperationDetail from './pages/Operations/OperationDetail';
 import MachineryList from './pages/Machinery/MachineryList';
 import MachineDetail from './pages/Machinery/MachineDetail';
 import CostRecords from './pages/Economics/CostRecords';
-import NotFound from './pages/NotFound';
-import AccessDenied from './pages/AccessDenied';
+import ResourceConsumption from './pages/Analytics/ResourceConsumption';
+import FieldEfficiency from './pages/Analytics/FieldEfficiency';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -54,6 +55,9 @@ export default function App() {
             <Route path="/machinery" element={<MachineryList />} />
             <Route path="/machinery/:id" element={<MachineDetail />} />
             <Route path="/economics" element={<CostRecords />} />
+            <Route path="/analytics/resources" element={<ResourceConsumption />} />
+            <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
