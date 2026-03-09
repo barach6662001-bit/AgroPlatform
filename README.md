@@ -6,6 +6,12 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+**Keywords / Topics:**
+`agriculture` `agro` `farm-management` `erp` `agritech`
+`dotnet` `aspnet-core` `entity-framework-core` `clean-architecture` `cqrs` `postgresql`
+`react` `typescript` `ant-design` `vite` `zustand` `leaflet`
+`docker` `jwt-authentication` `multi-tenant`
+
 **Цифровая платформа управления агропредприятием** — комплексное решение для управления складом, полями, агрооперациями, техникой, экономикой и аналитикой сельскохозяйственного предприятия.
 
 ---
