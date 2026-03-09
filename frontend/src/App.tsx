@@ -5,7 +5,6 @@ import enUS from 'antd/locale/en_US';
 import { useTranslation } from './i18n';
 import AppLayout from './components/Layout/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
-import { RoleGuard } from './components/Auth/RoleGuard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
