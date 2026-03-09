@@ -24,6 +24,7 @@ jobs:
             "names": [
               "agriculture",
               "agro",
+              "agrotech",
               "farm-management",
               "dotnet",
               "aspnet-core",

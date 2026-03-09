@@ -27,7 +27,7 @@ import type { DashboardDto } from '../types/analytics';
 import PageHeader from '../components/PageHeader';
 import { useTranslation } from '../i18n';
 
-const COLORS = ['#52c41a', '#1890ff', '#faad14', '#f5222d', '#722ed1', '#13c2c2', '#eb2f96', '#fa8c16'];
+const COLORS = ['#0D9488', '#6366F1', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899', '#F97316'];
 
 export default function Dashboard() {
   const [data, setData] = useState<DashboardDto | null>(null);
@@ -70,7 +70,7 @@ export default function Dashboard() {
               title={t.dashboard.fields}
               value={data.totalFields}
               prefix={<AimOutlined />}
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: '#0D9488' }}
             />
           </Card>
         </Col>
@@ -80,7 +80,7 @@ export default function Dashboard() {
               title={t.dashboard.area}
               value={data.totalAreaHectares}
               precision={1}
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: '#0D9488' }}
             />
           </Card>
         </Col>
@@ -175,7 +175,7 @@ export default function Dashboard() {
                   <XAxis dataKey="name" angle={-30} textAnchor="end" interval={0} tick={{ fontSize: 11 }} />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="area" fill="#52c41a" name={t.dashboard.areaHa} />
+                  <Bar dataKey="area" fill="#0D9488" name={t.dashboard.areaHa} />
                 </BarChart>
               </ResponsiveContainer>
             </Card>

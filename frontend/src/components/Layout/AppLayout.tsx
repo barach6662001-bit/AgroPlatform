@@ -25,13 +25,13 @@ export default function AppLayout() {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: '100vh', background: '#F1F5F9' }}>
       <Sider
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
         theme="dark"
-        style={{ background: '#001529' }}
+        style={{ background: '#0F172A' }}
       >
         <div
           style={{
@@ -45,14 +45,14 @@ export default function AppLayout() {
           {!collapsed && (
             <Typography.Text
               strong
-              style={{ color: '#52c41a', fontSize: 18, whiteSpace: 'nowrap' }}
+              style={{ color: '#2DD4BF', fontSize: 18, whiteSpace: 'nowrap' }}
             >
               {t.app.name}
             </Typography.Text>
           )}
           {collapsed && (
-            <Typography.Text style={{ color: '#52c41a', fontSize: 20 }}>
-              🌾
+            <Typography.Text style={{ color: '#2DD4BF', fontSize: 20 }}>
+              🚀
             </Typography.Text>
           )}
         </div>
@@ -61,12 +61,12 @@ export default function AppLayout() {
       <Layout>
         <Header
           style={{
-            background: '#fff',
+            background: '#FFFFFF',
             padding: '0 24px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-end',
-            boxShadow: '0 1px 4px rgba(0,21,41,.08)',
+            borderBottom: '1px solid #E2E8F0',
           }}
         >
           <Space>
@@ -81,7 +81,7 @@ export default function AppLayout() {
                 {lang === 'uk' ? '🇺🇦 UA' : '🇬🇧 EN'}
               </Button>
             </Dropdown>
-            <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#52c41a' }} />
+            <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#0D9488' }} />
             <Typography.Text strong>{email}</Typography.Text>
             {role && (
               <Typography.Text type="secondary" style={{ fontSize: 12 }}>
@@ -98,7 +98,7 @@ export default function AppLayout() {
             </Button>
           </Space>
         </Header>
-        <Content style={{ margin: '24px', background: '#fff', padding: 24, borderRadius: 8, minHeight: 280 }}>
+        <Content style={{ margin: '24px', background: '#FFFFFF', padding: 24, borderRadius: 8, minHeight: 280, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <Outlet />
         </Content>
       </Layout>

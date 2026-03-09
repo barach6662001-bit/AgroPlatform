@@ -46,7 +46,7 @@ export default function Register() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #f0f9eb 0%, #d9f7be 100%)',
+        background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #134E4A 100%)',
         position: 'relative',
       }}
     >
@@ -63,9 +63,9 @@ export default function Register() {
           </Button>
         </Dropdown>
       </div>
-      <Card style={{ width: 440, boxShadow: '0 4px 24px rgba(0,0,0,0.1)' }}>
+      <Card style={{ width: 440, backdropFilter: 'blur(20px)', background: 'rgba(255,255,255,0.95)', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)' }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <Typography.Title level={2} style={{ color: '#389e0d', margin: 0 }}>
+          <Typography.Title level={2} style={{ color: '#0D9488', margin: 0 }}>
             {t.app.name}
           </Typography.Title>
         </div>
@@ -86,7 +86,7 @@ export default function Register() {
             <Select options={roleOptions} size="large" placeholder={t.auth.selectRole} />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" block size="large" style={{ background: '#52c41a', borderColor: '#52c41a' }}>
+            <Button type="primary" htmlType="submit" block size="large">
               {t.auth.register}
             </Button>
           </Form.Item>

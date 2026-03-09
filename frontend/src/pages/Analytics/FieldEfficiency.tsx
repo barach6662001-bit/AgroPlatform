@@ -95,7 +95,7 @@ export default function FieldEfficiency() {
                 <YAxis type="category" dataKey="name" width={110} />
                 <Tooltip formatter={(v: number) => `${v.toFixed(2)} UAH`} />
                 <Legend />
-                <Bar dataKey={t.analytics.totalCost} fill="#1890ff" />
+                <Bar dataKey={t.analytics.totalCost} fill="#0D9488" />
               </BarChart>
             </ResponsiveContainer>
           )}

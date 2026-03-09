@@ -1,6 +1,6 @@
 # Local Development Guide
 
-This guide walks you through running AgroPlatform locally from source.
+This guide walks you through running Agrotech locally from source.
 
 ---
 

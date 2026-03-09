@@ -19,7 +19,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh api -X PATCH /repos/${{ github.repository }} \
-            -f description='🌾 Цифровая платформа управления агропредприятием — склад, поля, агрооперации, техника, экономика, аналитика. .NET 8 + React 18 + TypeScript + PostgreSQL' \
+            -f description='🚀 Agrotech — Smart agricultural enterprise management platform — fields, warehouses, agro-operations, machinery, economics, analytics. .NET 8 + React 18 + TypeScript + PostgreSQL' \
             -f homepage='https://barach6662001-bit.github.io/AgroPlatform/'
 
       - name: Update repository topics
@@ -27,4 +27,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh api -X PUT /repos/${{ github.repository }}/topics \
-            --input - <<< '{"names":["agriculture","agro","farm-management","erp","agritech","dotnet","aspnet-core","react","typescript","postgresql","docker","clean-architecture"]}'
+            --input - <<< '{"names":["agriculture","agro","agrotech","farm-management","erp","agritech","dotnet","aspnet-core","react","typescript","postgresql","docker","clean-architecture"]}'

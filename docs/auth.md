@@ -1,6 +1,6 @@
 # Authentication
 
-AgroPlatform uses **JWT Bearer** authentication.
+Agrotech uses **JWT Bearer** authentication.
 
 ---
 
@@ -86,8 +86,8 @@ Example (development only — never use in production):
 ```json
 "JwtSettings": {
   "Key": "super-secret-key-for-development-minimum-32-characters-long!!",
-  "Issuer": "AgroPlatform",
-  "Audience": "AgroPlatform",
+  "Issuer": "Agrotech",
+  "Audience": "Agrotech",
   "ExpiresInMinutes": 60
 }
 ```

@@ -11,7 +11,7 @@ title: Production Secrets
 
 ## Overview
 
-AgroPlatform uses environment variables for all sensitive configuration. Keeping secrets out of source control is critical — leaked credentials can compromise your database, allow unauthorized API access, or expose user data.
+Agrotech uses environment variables for all sensitive configuration. Keeping secrets out of source control is critical — leaked credentials can compromise your database, allow unauthorized API access, or expose user data.
 
 **Key principles:**
 - ⚠️ **Never commit** real secrets to the repository (`.env` is in `.gitignore`)
@@ -96,7 +96,7 @@ Using a dedicated `production` environment adds an approval gate and allows envi
 openssl rand -base64 64
 ```
 
-This produces an 88-character Base64 string — well above the 32-character minimum required by the HMAC signing algorithm used in AgroPlatform.
+This produces an 88-character Base64 string — well above the 32-character minimum required by the HMAC signing algorithm used in Agrotech.
 
 ### Strong database password
 
