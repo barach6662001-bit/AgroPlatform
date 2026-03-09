@@ -1,6 +1,7 @@
 # 🌾 AgroPlatform
 
 [![CI](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml/badge.svg)](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=github)](https://barach6662001-bit.github.io/AgroPlatform/)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -13,6 +14,17 @@
 `docker` `jwt-authentication` `multi-tenant`
 
 **Цифровая платформа управления агропредприятием** — комплексное решение для управления складом, полями, агрооперациями, техникой, экономикой и аналитикой сельскохозяйственного предприятия.
+
+---
+
+## 📖 Документация
+
+Полная документация доступна на: **[barach6662001-bit.github.io/AgroPlatform](https://barach6662001-bit.github.io/AgroPlatform/)**
+
+- [📡 API Reference](https://barach6662001-bit.github.io/AgroPlatform/api)
+- [📐 Архитектура](https://barach6662001-bit.github.io/AgroPlatform/architecture)
+- [🚀 Руководство по деплою](https://barach6662001-bit.github.io/AgroPlatform/deployment)
+- [🛠️ Руководство разработчика](https://barach6662001-bit.github.io/AgroPlatform/development)
 
 ---
 
