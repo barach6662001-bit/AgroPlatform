@@ -244,6 +244,14 @@ GitHub Actions автоматически запускается на кажды
 
 ---
 
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch workflow, PR requirements, CI checks, commit conventions, and code review guidelines.
+
+For repository admins: branch protection setup instructions are in [docs/branch-protection.md](docs/branch-protection.md).
+
+---
+
 ## 📄 Лицензия
 
 MIT — см. файл [LICENSE](LICENSE).
