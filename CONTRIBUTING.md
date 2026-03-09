@@ -1,4 +1,4 @@
-# Contributing to AgroPlatform
+# Contributing to Agrotech
 
 Thank you for your interest in contributing! This guide explains the workflow, conventions, and requirements for contributing to this project.
 

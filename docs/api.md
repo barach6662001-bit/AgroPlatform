@@ -126,8 +126,8 @@ title: API Reference
 |---|---|---|
 | `ConnectionStrings__DefaultConnection` | PostgreSQL connection string | см. docker-compose.yml |
 | `JwtSettings__Key` | HMAC ключ подписи JWT (≥ 32 символа) | placeholder в docker-compose |
-| `JwtSettings__Issuer` | Издатель JWT | `AgroPlatform` |
-| `JwtSettings__Audience` | Аудитория JWT | `AgroPlatform` |
+| `JwtSettings__Issuer` | Издатель JWT | `Agrotech` |
+| `JwtSettings__Audience` | Аудитория JWT | `Agrotech` |
 | `Cors__AllowedOrigins__0` | Разрешённый CORS origin | `http://localhost:3000` |
 | `Swagger__Enabled` | Включить Swagger вне Development | `false` |
 | `RateLimiting__ReadPermitLimit` | Лимит GET запросов / окно | `100` |

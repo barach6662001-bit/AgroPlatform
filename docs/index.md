@@ -1,9 +1,9 @@
 ---
 layout: default
-title: AgroPlatform — Документация
+title: Agrotech — Документация
 ---
 
-# 🌾 AgroPlatform — Цифровая платформа управления агропредприятием
+# 🚀 Agrotech — Цифровая платформа управления агропредприятием
 
 [![CI](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml/badge.svg)](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)

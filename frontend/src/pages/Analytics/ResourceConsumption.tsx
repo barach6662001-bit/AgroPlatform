@@ -79,7 +79,7 @@ export default function ResourceConsumption() {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey={t.analytics.totalQuantity} fill="#52c41a" />
+                <Bar dataKey={t.analytics.totalQuantity} fill="#0D9488" />
               </BarChart>
             </ResponsiveContainer>
           )}

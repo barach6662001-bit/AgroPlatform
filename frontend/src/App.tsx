@@ -30,8 +30,32 @@ export default function App() {
       locale={lang === 'uk' ? ukUA : enUS}
       theme={{
         token: {
-          colorPrimary: '#52c41a',
-          colorLink: '#389e0d',
+          colorPrimary: '#0D9488',
+          colorLink: '#0F766E',
+          colorBgBase: '#FAFBFC',
+          colorTextBase: '#1E293B',
+          borderRadius: 10,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        },
+        components: {
+          Layout: {
+            siderBg: '#0F172A',
+            headerBg: '#FFFFFF',
+          },
+          Menu: {
+            darkItemBg: '#0F172A',
+            darkItemSelectedBg: '#1E293B',
+            darkItemHoverBg: '#1E293B',
+            darkItemColor: '#94A3B8',
+            darkItemSelectedColor: '#2DD4BF',
+          },
+          Card: {
+            borderRadiusLG: 12,
+          },
+          Button: {
+            borderRadius: 8,
+            primaryShadow: '0 2px 8px rgba(13, 148, 136, 0.3)',
+          },
         },
       }}
     >

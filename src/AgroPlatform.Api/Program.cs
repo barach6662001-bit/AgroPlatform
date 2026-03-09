@@ -35,7 +35,7 @@ try
     {
         options.SwaggerDoc("v1", new OpenApiInfo
         {
-            Title = "AgroPlatform API",
+            Title = "Agrotech API",
             Version = "v1",
             Description = """
                 Digital platform for agricultural enterprise management.
@@ -51,7 +51,7 @@ try
                 """,
             Contact = new OpenApiContact
             {
-                Name = "AgroPlatform",
+                Name = "Agrotech",
                 Url = new Uri("https://github.com/barach6662001-bit/AgroPlatform")
             },
             License = new OpenApiLicense
