@@ -395,7 +395,7 @@ public class AgroOperationHandlerTests
         var handler = new GetAgroOperationsHandler(context);
         var result = await handler.Handle(new GetAgroOperationsQuery(null, null, null, null, null), CancellationToken.None);
 
-        result.Should().HaveCount(2);
+        result.Items.Should().HaveCount(2);
     }
 
     [Fact]
@@ -413,8 +413,8 @@ public class AgroOperationHandlerTests
         var handler = new GetAgroOperationsHandler(context);
         var result = await handler.Handle(new GetAgroOperationsQuery(field1.Id, null, null, null, null), CancellationToken.None);
 
-        result.Should().HaveCount(1);
-        result[0].FieldId.Should().Be(field1.Id);
+        result.Items.Should().HaveCount(1);
+        result.Items[0].FieldId.Should().Be(field1.Id);
     }
 
     // ── GetAgroOperationById ─────────────────────────────────────────────────
