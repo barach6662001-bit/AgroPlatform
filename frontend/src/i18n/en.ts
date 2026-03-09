@@ -2,7 +2,7 @@ import type { Translations } from './uk';
 
 const en: Translations = {
   app: {
-    name: '🚀 Agrotech',
+    name: '🌾 Agrotech',
     subtitle: 'Smart Farm Management',
   },
   nav: {

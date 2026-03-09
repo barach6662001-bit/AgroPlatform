@@ -52,7 +52,7 @@ export default function AppLayout() {
           )}
           {collapsed && (
             <Typography.Text style={{ color: '#2DD4BF', fontSize: 20 }}>
-              🚀
+              🌾
             </Typography.Text>
           )}
         </div>
