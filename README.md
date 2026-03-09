@@ -262,6 +262,17 @@ GitHub Actions автоматически запускается на кажды
 
 ---
 
+## 🧹 Очистка веток
+
+Устаревшие ветки очищаются автоматически:
+- **При слиянии PR:** ветка удаляется автоматически через GitHub Actions
+- **Еженедельно:** плановое задание удаляет оставшиеся слитые ветки (воскресенье, 03:00 UTC)
+- **Вручную:** запустите воркфлоу `Cleanup merged branches` на вкладке **Actions**
+
+> **Совет:** включите «Automatically delete head branches» в **Settings → General → Pull Requests** для мгновенного удаления веток после слияния.
+
+---
+
 ## 🤝 Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch workflow, PR requirements, CI checks, commit conventions, and code review guidelines.

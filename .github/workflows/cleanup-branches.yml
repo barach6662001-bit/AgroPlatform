@@ -1,0 +1,61 @@
+name: Cleanup merged branches
+
+# Примечание: для мгновенного удаления веток после слияния включите
+# "Automatically delete head branches" в Settings → General → Pull Requests.
+
+on:
+  # Запускается после закрытия любого PR
+  pull_request:
+    types: [closed]
+  # Ручной запуск
+  workflow_dispatch:
+  # Плановая еженедельная очистка (воскресенье, 03:00 UTC)
+  schedule:
+    - cron: '0 3 * * 0'
+
+jobs:
+  cleanup:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Delete merged PR branch
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          echo "Deleting merged branch: $BRANCH"
+          gh api -X DELETE "/repos/${{ github.repository }}/git/refs/heads/$BRANCH" || echo "Branch already deleted or protected"
+
+      - name: Cleanup all stale merged branches
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Fetching all branches..."
+          BRANCHES=$(gh api "/repos/${{ github.repository }}/branches" --paginate --jq '.[].name')
+
+          for BRANCH in $BRANCHES; do
+            # Пропускать защищённые ветки
+            if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ] || [ "$BRANCH" = "develop" ]; then
+              echo "⏭️  Skipping protected branch: $BRANCH"
+              continue
+            fi
+
+            # Проверить, была ли ветка слита в main (основная ветка репозитория)
+            COMPARE=$(gh api "/repos/${{ github.repository }}/compare/main...$BRANCH" --jq '.status' 2>/dev/null || echo "error")
+
+            if [ "$COMPARE" = "behind" ] || [ "$COMPARE" = "identical" ]; then
+              echo "🗑️  Deleting merged branch: $BRANCH"
+              gh api -X DELETE "/repos/${{ github.repository }}/git/refs/heads/$BRANCH" || echo "Failed to delete $BRANCH"
+            else
+              echo "⏭️  Keeping unmerged branch: $BRANCH (status: $COMPARE)"
+            fi
+          done
+
+          echo "✅ Cleanup complete"
