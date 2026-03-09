@@ -1,4 +1,4 @@
-# 🚀 Agrotech
+# 🌾 Agrotech
 
 [![CI](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml/badge.svg)](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=github)](https://barach6662001-bit.github.io/AgroPlatform/)
