@@ -47,10 +47,10 @@ public class WarehousesControllerTests : IntegrationTestBase
     {
         await CreateWarehouseAsync("List Test Warehouse");
 
-        var result = await GetAsync<JsonElement[]>("/api/warehouses");
+        var result = await GetAsync<JsonElement>("/api/warehouses");
 
-        result.Should().NotBeNull();
-        result!.Should().NotBeEmpty();
+        result.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        result.GetProperty("items").GetArrayLength().Should().BeGreaterThan(0);
     }
 
     [Fact]
