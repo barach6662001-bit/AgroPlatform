@@ -53,9 +53,10 @@ public class TenantIsolationTests : IntegrationTestBase
 
         // Assert: Tenant B cannot see Tenant A's warehouse
         responseB.StatusCode.Should().Be(HttpStatusCode.OK);
-        var warehousesB = await responseB.Content.ReadFromJsonAsync<JsonElement[]>(JsonOptions);
-        warehousesB.Should().NotBeNull();
-        warehousesB!.Should().NotContain(w => w.GetProperty("id").GetGuid() == warehouseId);
+        var payload = await responseB.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        payload.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        var warehousesB = payload.GetProperty("items").EnumerateArray().ToList();
+        warehousesB.Should().NotContain(w => w.GetProperty("id").GetGuid() == warehouseId);
     }
 
     [Fact]

@@ -1,11 +1,12 @@
 using AgroPlatform.Application.AgroOperations.DTOs;
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Common.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Application.AgroOperations.Queries.GetAgroOperations;
 
-public class GetAgroOperationsHandler : IRequestHandler<GetAgroOperationsQuery, List<AgroOperationDto>>
+public class GetAgroOperationsHandler : IRequestHandler<GetAgroOperationsQuery, PaginatedResult<AgroOperationDto>>
 {
     private readonly IAppDbContext _context;
 
@@ -14,7 +15,7 @@ public class GetAgroOperationsHandler : IRequestHandler<GetAgroOperationsQuery, 
         _context = context;
     }
 
-    public async Task<List<AgroOperationDto>> Handle(GetAgroOperationsQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<AgroOperationDto>> Handle(GetAgroOperationsQuery request, CancellationToken cancellationToken)
     {
         var query = _context.AgroOperations
             .Include(o => o.Field)
@@ -35,7 +36,8 @@ public class GetAgroOperationsHandler : IRequestHandler<GetAgroOperationsQuery, 
         if (request.DateTo.HasValue)
             query = query.Where(o => o.PlannedDate <= request.DateTo.Value);
 
-        return await query
+        var totalCount = await query.CountAsync(cancellationToken);
+        var items = await query
             .OrderBy(o => o.PlannedDate)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
@@ -52,5 +54,13 @@ public class GetAgroOperationsHandler : IRequestHandler<GetAgroOperationsQuery, 
                 AreaProcessed = o.AreaProcessed
             })
             .ToListAsync(cancellationToken);
+
+        return new PaginatedResult<AgroOperationDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize
+        };
     }
 }
