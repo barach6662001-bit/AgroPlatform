@@ -262,6 +262,24 @@ GitHub Actions автоматически запускается на кажды
 
 ---
 
+## 🔐 Production Secrets (Секреты для продакшена)
+
+Для деплоя в продакшен необходимо настроить следующие **GitHub Secrets** в репозитории (**Settings → Secrets and variables → Actions**):
+
+| Секрет | Описание |
+|--------|----------|
+| `POSTGRES_PASSWORD` | Пароль базы данных PostgreSQL |
+| `JWT_KEY` | Ключ подписи JWT (минимум 32 символа) |
+| `DOMAIN` | Домен для TLS-сертификата (Let's Encrypt) |
+| `EMAIL` | Email для регистрации в Let's Encrypt |
+| `CORS_ORIGIN` | URL фронтенда, разрешённый CORS политикой |
+
+Запустить деплой можно через воркфлоу **Deploy to Production** на вкладке Actions (с ручным запуском и одобрением через GitHub Environment `production`).
+
+📖 Полное руководство по настройке секретов: [docs/production-secrets.md](docs/production-secrets.md)
+
+---
+
 ## 🧹 Очистка веток
 
 Устаревшие ветки очищаются автоматически:

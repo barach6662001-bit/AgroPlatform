@@ -1,0 +1,62 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Image tag to deploy (default: latest)'
+        required: false
+        default: 'latest'
+
+jobs:
+  validate:
+    uses: ./.github/workflows/validate-secrets.yml
+    secrets: inherit
+    permissions: {}
+
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate deployment .env
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          DOMAIN: ${{ secrets.DOMAIN }}
+          EMAIL: ${{ secrets.EMAIL }}
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+        run: |
+          cat > .env.production << EOF
+          POSTGRES_DB=agroplatform_db
+          POSTGRES_USER=agroplatform
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          JWT_KEY=${JWT_KEY}
+          JWT_ISSUER=AgroPlatform
+          JWT_AUDIENCE=AgroPlatform
+          CORS_ORIGIN=${CORS_ORIGIN}
+          AUTO_MIGRATE=true
+          DOMAIN=${DOMAIN}
+          EMAIL=${EMAIL}
+          EOF
+
+          echo "✅ Production .env file generated"
+          echo ""
+          echo "=== Deployment Instructions ==="
+          echo "1. Copy .env.production to your server"
+          echo "2. Rename to .env"
+          echo "3. Run: docker compose -f docker-compose.yml -f docker-compose.prod.yml pull"
+          echo "4. Run: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d"
+          echo ""
+          echo "Image tag: ${{ github.event.inputs.version }}"
+
+      - name: Upload .env as artifact (encrypted)
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-env
+          path: .env.production
+          retention-days: 1
