@@ -29,11 +29,18 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Type-check & build
+      - name: TypeScript type-check
+        run: npx tsc -b --noEmit
+
+      - name: Build
         run: npm run build
 
       - name: Run tests
         run: npm test
+
+      - name: Docker build dry-run (frontend)
+        working-directory: .
+        run: docker build -f frontend/Dockerfile frontend/
 
   build-and-test:
     runs-on: ubuntu-latest
