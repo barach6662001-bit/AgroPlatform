@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { notification } from 'antd';
 import { useAuthStore } from '../stores/authStore';
 
 const apiClient = axios.create({
@@ -27,7 +28,12 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 403) {
       window.location.href = '/access-denied';
     }
-    // 404 and 500 are handled at the component level (try/catch)
+    if (error.response?.status >= 500) {
+      notification.error({
+        message: 'Server Error',
+        description: error.response?.data?.detail ?? error.message ?? 'An unexpected server error occurred.',
+      });
+    }
     return Promise.reject(error);
   }
 );

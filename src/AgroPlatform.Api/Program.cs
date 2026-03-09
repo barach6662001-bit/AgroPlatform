@@ -107,7 +107,8 @@ try
     builder.Services.AddOpenTelemetry()
         .WithMetrics(metrics =>
         {
-            metrics.AddAspNetCoreInstrumentation();
+            metrics.AddAspNetCoreInstrumentation()
+                   .AddPrometheusExporter();
         });
 
     builder.Services.AddCors(options =>
@@ -244,6 +245,8 @@ try
         Predicate = check => check.Tags.Contains("ready"),
         ResultStatusCodes = healthCheckStatusCodes
     });
+
+    app.MapPrometheusScrapingEndpoint();
 
     app.Run();
 }
