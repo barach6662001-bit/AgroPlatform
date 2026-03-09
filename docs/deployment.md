@@ -115,7 +115,12 @@ sudo certbot --nginx -d yourdomain.com
 
 ## CI/CD (GitHub Actions)
 
-Проект включает готовые workflows:
+### Управление секретами для продакшена
+
+Перед запуском деплоя в продакшен необходимо настроить GitHub Secrets. Подробное руководство:
+**[📖 docs/production-secrets.md](production-secrets)**
+
+Обязательные секреты: `POSTGRES_PASSWORD`, `JWT_KEY`, `DOMAIN`, `EMAIL`, `CORS_ORIGIN`.
 
 ### `ci.yml` — Continuous Integration
 Запускается на каждый push в `main` и на каждый Pull Request:
@@ -133,6 +138,18 @@ sudo certbot --nginx -d yourdomain.com
 Запускается на теги `v*`:
 - Публикация API и фронтенда как ZIP-артефактов
 - Создание GitHub Release с автоматическими release notes
+
+### `validate-secrets.yml` — Secrets Validation
+Запускается вручную или как зависимость перед деплоем:
+- Проверяет наличие всех 5 обязательных секретов в GitHub
+- Выводит статус каждого секрета (✅ / ❌) и завершается с ошибкой при отсутствии любого
+
+### `deploy.yml` — Deploy to Production
+Запускается вручную через **Actions → Deploy to Production → Run workflow**:
+- Требует одобрения через GitHub Environment `production`
+- Вызывает `validate-secrets.yml` для проверки секретов
+- Генерирует `.env.production` из GitHub Secrets
+- Публикует `.env.production` как артефакт (1 день хранения)
 
 ---
 
