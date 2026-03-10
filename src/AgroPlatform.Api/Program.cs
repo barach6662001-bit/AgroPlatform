@@ -1,8 +1,11 @@
 using System.Reflection;
 using System.Threading.RateLimiting;
+using AgroPlatform.Api.Hubs;
 using AgroPlatform.Api.Middleware;
 using AgroPlatform.Api.OpenApi;
+using AgroPlatform.Api.Services;
 using AgroPlatform.Application;
+using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Infrastructure;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -106,6 +109,10 @@ try
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
 
+    // SignalR — real-time fleet hub
+    builder.Services.AddSignalR();
+    builder.Services.AddScoped<IFleetHubService, FleetHubService>();
+
     builder.Services.AddHealthChecks()
         .AddDbContextCheck<AppDbContext>(tags: ["ready"]);
 
@@ -131,7 +138,8 @@ try
         {
             policy.WithOrigins(allowedOrigins)
                   .AllowAnyHeader()
-                  .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
+                  .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                  .AllowCredentials(); // Required for SignalR WebSocket/SSE transports
         });
     });
 
@@ -231,6 +239,7 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+    app.MapHub<FleetHub>("/hubs/fleet");
 
     var healthCheckStatusCodes = new Dictionary<HealthStatus, int>
     {

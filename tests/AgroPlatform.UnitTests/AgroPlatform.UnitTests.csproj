@@ -35,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\AgroPlatform.Domain\AgroPlatform.Domain.csproj" />
     <ProjectReference Include="..\..\src\AgroPlatform.Application\AgroPlatform.Application.csproj" />
+    <ProjectReference Include="..\..\src\AgroPlatform.Api\AgroPlatform.Api.csproj" />
   </ItemGroup>
 
 </Project>
