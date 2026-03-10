@@ -142,6 +142,11 @@ const uk = {
     mapView: 'Карта',
     listView: 'Список',
     noCoordinates: 'Координати відсутні',
+    drawPolygon: 'Намалювати полігон поля',
+    saveGeometry: 'Зберегти полігон',
+    saveGeometrySuccess: 'Полігон поля збережено',
+    saveGeometryError: 'Помилка збереження полігону',
+    noPolygonToDraw: 'Спочатку намалюйте полігон',
   },
   warehouses: {
     title: 'Склади',

@@ -33,3 +33,7 @@ export interface FieldDetailDto extends FieldDto {
   cropHistory: CropHistoryDto[];
   rotationPlans: CropRotationPlanDto[];
 }
+
+export interface FieldGeometryPayload {
+  geoJson: string;
+}

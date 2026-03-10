@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { FieldDto, FieldDetailDto, CropType } from '../types/field';
+import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload } from '../types/field';
 import type { PaginatedResult } from '../types/common';
 
 export const getFields = (params?: { page?: number; pageSize?: number; search?: string }) =>
@@ -28,3 +28,7 @@ export const createRotationPlan = (data: { fieldId: string; plannedCrop: CropTyp
 
 export const deleteRotationPlan = (id: string) =>
   apiClient.delete(`/api/fields/rotation-plans/${id}`);
+
+export const updateFieldGeometry = (id: string, data: FieldGeometryPayload) =>
+  apiClient.put<void>(`/api/fields/${id}/geometry`, data).then((r) => r.data);
+
