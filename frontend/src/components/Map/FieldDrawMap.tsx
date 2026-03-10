@@ -81,25 +81,25 @@ function DrawControl({ field, onGeometryChange }: DrawControlProps) {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    map.on((L as any).Draw.Event.CREATED, (e: any) => {
+    const DrawEvent = (L as any).Draw.Event as Record<string, string>;
+    const evCreated = DrawEvent.CREATED;
+    const evEdited = DrawEvent.EDITED;
+    const evDeleted = DrawEvent.DELETED;
+
+    map.on(evCreated, (e: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       e.layer.setStyle({ color, fillColor: color, fillOpacity: 0.3, weight: 2 });
       drawnItems.addLayer(e.layer);
       notify();
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    map.on((L as any).Draw.Event.EDITED, notify);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    map.on((L as any).Draw.Event.DELETED, notify);
+    map.on(evEdited, notify);
+    map.on(evDeleted, notify);
 
     return () => {
       map.removeControl(drawControl);
       map.removeLayer(drawnItems);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      map.off((L as any).Draw.Event.CREATED);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      map.off((L as any).Draw.Event.EDITED);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      map.off((L as any).Draw.Event.DELETED);
+      map.off(evCreated);
+      map.off(evEdited);
+      map.off(evDeleted);
     };
   }, [map, field.id, field.geoJson, field.currentCrop]); // re-init when field or crop changes
 
