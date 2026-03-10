@@ -12,14 +12,11 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
-import { useRole } from '../../hooks/useRole';
-import type { AppRole } from '../../hooks/useRole';
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  const { hasRole } = useRole();
 
   const flatItems = [
     { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined /> },
