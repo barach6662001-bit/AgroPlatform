@@ -15,15 +15,26 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Testcontainers.PostgreSql;
 
 namespace AgroPlatform.IntegrationTests;
 
-public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>
+public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IAsyncLifetime
     where TProgram : class
 {
-    private readonly string _dbName = Guid.NewGuid().ToString();
+    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
+        .WithImage("postgis/postgis:16-alpine")
+        .WithDatabase("agroplatform_test_factory")
+        .WithUsername("agroplatform")
+        .WithPassword("agroplatform_test")
+        .Build();
 
     public static readonly Guid TenantId = new Guid("00000000-0000-0000-0000-000000000001");
+
+    public async Task InitializeAsync()
+    {
+        await _postgres.StartAsync();
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -33,7 +44,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
             services.AddDbContext<AppDbContext>((sp, options) =>
             {
-                options.UseInMemoryDatabase(_dbName);
+                options.UseNpgsql(_postgres.GetConnectionString(), o => o.UseNetTopologySuite());
                 options.AddInterceptors(
                     sp.GetRequiredService<AuditableEntityInterceptor>(),
                     sp.GetRequiredService<SoftDeleteInterceptor>(),
@@ -79,6 +90,12 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
         db.SaveChanges();
 
         return host;
+    }
+
+    public new async Task DisposeAsync()
+    {
+        await _postgres.StopAsync();
+        await base.DisposeAsync();
     }
 }
 
