@@ -327,6 +327,13 @@ const uk = {
     field: 'Поле',
     selectCategory: 'Оберіть категорію',
     enterAmount: 'Введіть суму',
+    plTableTitle: 'Витрати план/факт за категоріями',
+    plTableSubtitle: 'Порівняння фактичних витрат із плановими по категоріях',
+    plColMetric: 'Категорія',
+    plColPlan: 'План',
+    plColFact: 'Факт',
+    plColExecution: 'Виконання',
+    plNoPlan: 'Планові дані відсутні',
   },
   costCategories: {
     Seeds: 'Насіння',

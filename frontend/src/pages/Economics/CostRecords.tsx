@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber, Popconfirm } from 'antd';
+import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber, Popconfirm, Card, Divider, Empty } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getCostRecords, createCostRecord, deleteCostRecord } from '../../api/economics';
 import type { CostRecordDto } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import PLTable from '../../components/PLTable';
+import type { PLTableRow } from '../../components/PLTable';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 
@@ -16,8 +18,24 @@ const categoryColors: Record<string, string> = {
   Other: 'default',
 };
 
+/**
+ * Default plan budgets per category (UAH).
+ * These serve as reference targets for the P&L progress bars.
+ * In a full implementation these would come from a dedicated budget API.
+ */
+const DEFAULT_PLANS: Record<string, number> = {
+  Seeds:       50_000,
+  Fertilizers: 80_000,
+  Pesticides:  40_000,
+  Fuel:        60_000,
+  Labor:       70_000,
+  Equipment:   30_000,
+  Other:       20_000,
+};
+
 export default function CostRecords() {
   const [result, setResult] = useState<PaginatedResult<CostRecordDto> | null>(null);
+  const [allRecords, setAllRecords] = useState<CostRecordDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState<string | undefined>();
   const [dateRange, setDateRange] = useState<[string, string] | null>(null);
@@ -34,14 +52,28 @@ export default function CostRecords() {
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
-    getCostRecords({
+    // Paginated fetch for the details table
+    const paginated = getCostRecords({
       category,
       dateFrom: dateRange?.[0],
       dateTo: dateRange?.[1],
       page: p,
       pageSize: ps,
-    })
-      .then(setResult)
+    }).then(setResult);
+
+    // Fetch all records for the PLTable totals (up to 1000).
+    // NOTE: If the total number of cost records ever exceeds 1000, the PLTable
+    // category aggregation will be incomplete. A dedicated aggregation API
+    // endpoint would be the proper solution at that scale.
+    const all = getCostRecords({
+      category,
+      dateFrom: dateRange?.[0],
+      dateTo: dateRange?.[1],
+      page: 1,
+      pageSize: 1000,
+    }).then((r) => setAllRecords(r.items));
+
+    Promise.all([paginated, all])
       .catch(() => message.error(t.economics.loadError))
       .finally(() => setLoading(false));
   };
@@ -78,6 +110,21 @@ export default function CostRecords() {
   const records = result?.items ?? [];
   const totalAmount = records.reduce((sum, r) => sum + r.amount, 0);
 
+  // Build PLTable rows by grouping allRecords by category
+  const plRows: PLTableRow[] = Object.keys(DEFAULT_PLANS).map((cat) => {
+    const fact = allRecords
+      .filter((r) => r.category === cat)
+      .reduce((sum, r) => sum + r.amount, 0);
+    return {
+      key: cat,
+      label: t.costCategories[cat as keyof typeof t.costCategories] ?? cat,
+      plan: DEFAULT_PLANS[cat],
+      fact,
+      unit: 'UAH',
+      lowerIsBetter: true, // costs: lower-is-better
+    };
+  });
+
   const columns = [
     {
       title: t.economics.date, dataIndex: 'date', key: 'date',
@@ -107,7 +154,38 @@ export default function CostRecords() {
   return (
     <div>
       <PageHeader title={t.economics.title} subtitle={t.economics.subtitle} />
-      <Space style={{ marginBottom: 16 }}>
+
+      {/* P&L summary table */}
+      <Card
+        style={{ marginBottom: 24, background: '#161B22', border: '1px solid #30363D' }}
+        bodyStyle={{ padding: 0 }}
+        title={
+          <span style={{ color: '#E6EDF3', fontSize: 15, fontWeight: 600 }}>
+            {t.economics.plTableTitle}
+          </span>
+        }
+      >
+        {allRecords.length === 0 && !loading ? (
+          <div style={{ padding: '32px 16px' }}>
+            <Empty description={<span style={{ color: '#8B949E' }}>{t.economics.plNoPlan}</span>} />
+          </div>
+        ) : (
+          <PLTable
+            rows={plRows}
+            labels={{
+              metric: t.economics.plColMetric,
+              plan: t.economics.plColPlan,
+              fact: t.economics.plColFact,
+              execution: t.economics.plColExecution,
+            }}
+          />
+        )}
+      </Card>
+
+      <Divider style={{ borderColor: '#30363D', margin: '0 0 16px' }} />
+
+      {/* Filters & action buttons */}
+      <Space style={{ marginBottom: 16 }} wrap>
         <Select
           placeholder={t.economics.categoryFilter}
           allowClear
@@ -126,13 +204,14 @@ export default function CostRecords() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            style={{ background: '#52c41a', borderColor: '#52c41a' }}
             onClick={() => setModalOpen(true)}
           >
             {t.economics.createRecord}
           </Button>
         )}
       </Space>
+
+      {/* Details table */}
       <Table
         dataSource={records}
         columns={columns}

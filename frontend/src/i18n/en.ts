@@ -329,6 +329,13 @@ const en: Translations = {
     field: 'Field',
     selectCategory: 'Select category',
     enterAmount: 'Enter amount',
+    plTableTitle: 'Costs Plan / Fact by Category',
+    plTableSubtitle: 'Comparison of actual costs against planned targets per category',
+    plColMetric: 'Category',
+    plColPlan: 'Plan',
+    plColFact: 'Fact',
+    plColExecution: 'Execution',
+    plNoPlan: 'No planned targets available',
   },
   costCategories: {
     Seeds: 'Seeds',
