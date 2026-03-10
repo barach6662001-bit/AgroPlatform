@@ -14,8 +14,9 @@ public class TenantMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        // Skip tenant requirement for auth and health endpoints
+        // Skip tenant requirement for auth, tenant registration, and health endpoints
         if (context.Request.Path.StartsWithSegments("/api/auth", StringComparison.OrdinalIgnoreCase)
+            || context.Request.Path.StartsWithSegments("/api/tenants/register", StringComparison.OrdinalIgnoreCase)
             || context.Request.Path.StartsWithSegments("/health", StringComparison.OrdinalIgnoreCase))
         {
             if (context.Request.Headers.TryGetValue("X-Tenant-Id", out var authTenantIdValue)
