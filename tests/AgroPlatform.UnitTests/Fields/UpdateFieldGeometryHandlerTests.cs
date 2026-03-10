@@ -1,8 +1,11 @@
 using AgroPlatform.Application.Common.Exceptions;
+using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.Fields.Commands.UpdateFieldGeometry;
 using AgroPlatform.Domain.Fields;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
+using NSubstitute;
 
 namespace AgroPlatform.UnitTests.Fields;
 
@@ -11,36 +14,56 @@ public class UpdateFieldGeometryHandlerTests
     private const string ValidPolygonGeoJson =
         "{\"type\":\"Polygon\",\"coordinates\":[[[30.0,10.0],[40.0,40.0],[20.0,40.0],[10.0,20.0],[30.0,10.0]]]}";
 
-    private static TestDbContext CreateDbContext()
+    private const string InvalidGeoJson = "not-valid-json";
+
+    private static DbSet<Field> CreateMockDbSetWithFields(List<Field> fieldList)
     {
-        var options = new DbContextOptionsBuilder<TestDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
-        return new TestDbContext(options);
+        var fields = fieldList.AsQueryable();
+        var mockDbSet = Substitute.For<DbSet<Field>, IQueryable<Field>, IAsyncEnumerable<Field>>();
+        ((IQueryable<Field>)mockDbSet).Provider.Returns(
+            new TestAsyncQueryProvider<Field>(fields.Provider));
+        ((IQueryable<Field>)mockDbSet).Expression.Returns(fields.Expression);
+        ((IQueryable<Field>)mockDbSet).ElementType.Returns(fields.ElementType);
+        ((IQueryable<Field>)mockDbSet).GetEnumerator().Returns(fields.GetEnumerator());
+        ((IAsyncEnumerable<Field>)mockDbSet).GetAsyncEnumerator(Arg.Any<CancellationToken>())
+            .Returns(new TestAsyncEnumerator<Field>(fields.GetEnumerator()));
+        return mockDbSet;
+    }
+
+    // Helper: create a mock context that returns a specific field when queried
+    private static (IAppDbContext context, Field field) CreateMockContextWithField()
+    {
+        var field = new Field { Name = "Test Field", AreaHectares = 10m };
+        var mockDbSet = CreateMockDbSetWithFields([field]);
+
+        var context = Substitute.For<IAppDbContext>();
+        context.Fields.Returns(mockDbSet);
+        context.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        return (context, field);
     }
 
     [Fact]
     public async Task Handle_ExistingField_SetsGeometryAndGeoJson()
     {
-        var context = CreateDbContext();
-        var field = new Field { Name = "Test Field", AreaHectares = 10m };
-        context.Fields.Add(field);
-        await context.SaveChangesAsync();
-
+        var (context, field) = CreateMockContextWithField();
         var handler = new UpdateFieldGeometryHandler(context);
         var command = new UpdateFieldGeometryCommand(field.Id, ValidPolygonGeoJson);
 
         await handler.Handle(command, CancellationToken.None);
 
-        var updated = await context.Fields.FindAsync(field.Id);
-        updated!.Geometry.Should().NotBeNull();
-        updated.GeoJson.Should().Be(ValidPolygonGeoJson);
+        field.Geometry.Should().NotBeNull();
+        field.GeoJson.Should().Be(ValidPolygonGeoJson);
+        await context.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task Handle_NonExistentField_ThrowsNotFoundException()
     {
-        var context = CreateDbContext();
+        var mockDbSet = CreateMockDbSetWithFields([]);
+        var context = Substitute.For<IAppDbContext>();
+        context.Fields.Returns(mockDbSet);
+
         var handler = new UpdateFieldGeometryHandler(context);
         var command = new UpdateFieldGeometryCommand(Guid.NewGuid(), ValidPolygonGeoJson);
 
@@ -52,13 +75,9 @@ public class UpdateFieldGeometryHandlerTests
     [Fact]
     public async Task Handle_InvalidGeoJson_ThrowsJsonException()
     {
-        var context = CreateDbContext();
-        var field = new Field { Name = "Test Field", AreaHectares = 10m };
-        context.Fields.Add(field);
-        await context.SaveChangesAsync();
-
+        var (context, field) = CreateMockContextWithField();
         var handler = new UpdateFieldGeometryHandler(context);
-        var command = new UpdateFieldGeometryCommand(field.Id, "not-valid-json");
+        var command = new UpdateFieldGeometryCommand(field.Id, InvalidGeoJson);
 
         var act = async () => await handler.Handle(command, CancellationToken.None);
 
@@ -68,17 +87,15 @@ public class UpdateFieldGeometryHandlerTests
     [Fact]
     public async Task Handle_ExistingField_SetsSRID4326()
     {
-        var context = CreateDbContext();
-        var field = new Field { Name = "SRID Field", AreaHectares = 5m };
-        context.Fields.Add(field);
-        await context.SaveChangesAsync();
-
+        var (context, field) = CreateMockContextWithField();
         var handler = new UpdateFieldGeometryHandler(context);
         var command = new UpdateFieldGeometryCommand(field.Id, ValidPolygonGeoJson);
 
         await handler.Handle(command, CancellationToken.None);
 
-        var updated = await context.Fields.FindAsync(field.Id);
-        updated!.Geometry!.SRID.Should().Be(4326);
+        field.Geometry.Should().NotBeNull();
+        field.Geometry!.SRID.Should().Be(4326);
     }
 }
+
+
