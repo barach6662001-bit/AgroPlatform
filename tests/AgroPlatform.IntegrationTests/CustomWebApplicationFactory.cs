@@ -23,7 +23,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
     where TProgram : class
 {
     private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgis/postgis:16-alpine")
+        .WithImage("postgis/postgis:16-3.4-alpine")
         .WithDatabase("agroplatform_test_factory")
         .WithUsername("agroplatform")
         .WithPassword("agroplatform_test")
