@@ -16,6 +16,8 @@ vi.mock('leaflet', () => ({
   icon: vi.fn(),
 }));
 
+vi.mock('leaflet-draw', () => ({}));
+
 // Mock all API modules to avoid network calls
 vi.mock('../api/analytics', () => ({ getDashboard: vi.fn(() => Promise.reject(new Error('no network'))) }));
 vi.mock('../api/fields', () => ({ getFields: vi.fn(() => Promise.reject(new Error('no network'))) }));

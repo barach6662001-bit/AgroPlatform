@@ -144,6 +144,11 @@ const en: Translations = {
     mapView: 'Map',
     listView: 'List',
     noCoordinates: 'No coordinates available',
+    drawPolygon: 'Draw field polygon',
+    saveGeometry: 'Save polygon',
+    saveGeometrySuccess: 'Field polygon saved',
+    saveGeometryError: 'Error saving polygon',
+    noPolygonToDraw: 'Draw a polygon first',
   },
   warehouses: {
     title: 'Warehouses',
