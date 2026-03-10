@@ -50,9 +50,9 @@ export default function Login() {
           </Button>
         </Dropdown>
       </div>
-      <Card style={{ width: 420, backdropFilter: 'blur(20px)', background: 'rgba(255,255,255,0.95)', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)' }}>
+      <Card style={{ width: 420, backdropFilter: 'blur(20px)', background: '#161B22', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.6)' }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <Typography.Title level={2} style={{ color: '#0D9488', margin: 0 }}>
+          <Typography.Title level={2} style={{ color: '#3FB950', margin: 0 }}>
             {t.app.name}
           </Typography.Title>
           <Typography.Text type="secondary">{t.app.subtitle}</Typography.Text>

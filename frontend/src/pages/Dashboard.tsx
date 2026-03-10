@@ -26,8 +26,8 @@ import { getDashboard } from '../api/analytics';
 import type { DashboardDto } from '../types/analytics';
 import PageHeader from '../components/PageHeader';
 import { useTranslation } from '../i18n';
+import { CHART_COLORS } from '../theme/darkTheme';
 
-const COLORS = ['#0D9488', '#6366F1', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899', '#F97316'];
 
 export default function Dashboard() {
   const [data, setData] = useState<DashboardDto | null>(null);
@@ -70,7 +70,7 @@ export default function Dashboard() {
               title={t.dashboard.fields}
               value={data.totalFields}
               prefix={<AimOutlined />}
-              valueStyle={{ color: '#0D9488' }}
+              valueStyle={{ color: '#3FB950' }}
             />
           </Card>
         </Col>
@@ -80,7 +80,7 @@ export default function Dashboard() {
               title={t.dashboard.area}
               value={data.totalAreaHectares}
               precision={1}
-              valueStyle={{ color: '#0D9488' }}
+              valueStyle={{ color: '#3FB950' }}
             />
           </Card>
         </Col>
@@ -101,7 +101,7 @@ export default function Dashboard() {
               value={data.activeMachines}
               suffix={`/ ${data.totalMachines}`}
               prefix={<CarOutlined />}
-              valueStyle={{ color: '#1890ff' }}
+              valueStyle={{ color: '#1F6FEB' }}
             />
           </Card>
         </Col>
@@ -112,7 +112,7 @@ export default function Dashboard() {
               value={data.totalCosts}
               precision={0}
               prefix={<DollarOutlined />}
-              valueStyle={{ color: '#f5222d' }}
+              valueStyle={{ color: '#F85149' }}
             />
           </Card>
         </Col>
@@ -156,7 +156,7 @@ export default function Dashboard() {
                 <PieChart>
                   <Pie data={operationsData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
                     {operationsData.map((_, index) => (
-                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -171,11 +171,11 @@ export default function Dashboard() {
             <Card title={t.dashboard.areaByCrop}>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={areaData} margin={{ top: 5, right: 10, left: 0, bottom: 60 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" angle={-30} textAnchor="end" interval={0} tick={{ fontSize: 11 }} />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
+                  <XAxis dataKey="name" angle={-30} textAnchor="end" interval={0} tick={{ fontSize: 11, fill: '#8B949E' }} stroke="#8B949E" />
+                  <YAxis stroke="#8B949E" tick={{ fill: '#8B949E' }} />
                   <Tooltip />
-                  <Bar dataKey="area" fill="#0D9488" name={t.dashboard.areaHa} />
+                  <Bar dataKey="area" fill="#3FB950" name={t.dashboard.areaHa} />
                 </BarChart>
               </ResponsiveContainer>
             </Card>
@@ -187,12 +187,12 @@ export default function Dashboard() {
             <Card title={t.dashboard.costTrend}>
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={costTrendData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#8B949E' }} stroke="#8B949E" />
+                  <YAxis stroke="#8B949E" tick={{ fill: '#8B949E' }} />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="cost" stroke="#f5222d" name={t.dashboard.costsUAH} strokeWidth={2} />
+                  <Line type="monotone" dataKey="cost" stroke="#F85149" name={t.dashboard.costsUAH} strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </Card>
