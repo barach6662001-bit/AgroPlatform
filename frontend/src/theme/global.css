@@ -1,0 +1,90 @@
+/* AgroPlatform — Global Dark Theme Variables */
+:root {
+  --color-bg-base:        #0D1117;
+  --color-surface:        #161B22;
+  --color-surface-2:      #1C2128;
+  --color-border:         #30363D;
+  --color-border-subtle:  #21262D;
+  --color-text:           #E6EDF3;
+  --color-text-secondary: #8B949E;
+  --color-text-muted:     #6E7681;
+  --color-accent-green:   #3FB950;
+  --color-accent-red:     #F85149;
+  --color-accent-blue:    #1F6FEB;
+  --color-accent-yellow:  #D29922;
+  --color-accent-teal:    #2DD4BF;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0D1117;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #30363D;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #484F58;
+}
+
+/* Ant Design overrides — ensure dark backgrounds */
+.ant-layout {
+  background: var(--color-bg-base) !important;
+}
+
+.ant-layout-content {
+  background: var(--color-surface) !important;
+}
+
+.ant-card {
+  border-color: var(--color-border) !important;
+}
+
+.ant-table-wrapper .ant-table {
+  background: var(--color-surface) !important;
+}
+
+.ant-statistic-title {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Recharts dark overrides */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: #30363D !important;
+}
+
+.recharts-text {
+  fill: #8B949E !important;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: #1C2128 !important;
+  border-color: #30363D !important;
+  border-radius: 8px !important;
+}
+
+.recharts-tooltip-label {
+  color: #E6EDF3 !important;
+}
+
+.recharts-tooltip-item {
+  color: #8B949E !important;
+}
