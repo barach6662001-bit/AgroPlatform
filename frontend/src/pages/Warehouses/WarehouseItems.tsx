@@ -1,25 +1,31 @@
 import { useEffect, useState } from 'react';
 import { Table, Select, Space, message, Tag, Button, Modal, Form, InputNumber, DatePicker, Input } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue } from '../../api/warehouses';
+import { useSearchParams } from 'react-router-dom';
+import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue, createWarehouseItem } from '../../api/warehouses';
 import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 
 export default function WarehouseItems() {
+  const [searchParams] = useSearchParams();
+  const initialWarehouse = searchParams.get('warehouse') ?? undefined;
+
   const [result, setResult] = useState<PaginatedResult<BalanceDto> | null>(null);
   const [warehouses, setWarehouses] = useState<WarehouseDto[]>([]);
   const [items, setItems] = useState<WarehouseItemDto[]>([]);
-  const [selectedWarehouse, setSelectedWarehouse] = useState<string | undefined>();
+  const [selectedWarehouse, setSelectedWarehouse] = useState<string | undefined>(initialWarehouse);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [receiptOpen, setReceiptOpen] = useState(false);
   const [issueOpen, setIssueOpen] = useState(false);
+  const [createItemOpen, setCreateItemOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [receiptForm] = Form.useForm();
   const [issueForm] = Form.useForm();
+  const [createItemForm] = Form.useForm();
   const { t } = useTranslation();
 
   const loadBalances = (warehouseId?: string, p = page, ps = pageSize) => {
@@ -43,7 +49,7 @@ export default function WarehouseItems() {
         setItems(wi.items);
       })
       .catch(() => message.error(t.warehouses.loadDataError));
-    loadBalances();
+    loadBalances(initialWarehouse);
   }, []);
 
   useEffect(() => { loadBalances(selectedWarehouse, page, pageSize); }, [page, pageSize]);
@@ -84,6 +90,23 @@ export default function WarehouseItems() {
       loadBalances(selectedWarehouse, page, pageSize);
     } catch {
       message.error(t.warehouses.issueError);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCreateItem = async () => {
+    try {
+      const values = await createItemForm.validateFields();
+      setSaving(true);
+      await createWarehouseItem(values);
+      message.success(t.warehouses.createItemSuccess);
+      createItemForm.resetFields();
+      setCreateItemOpen(false);
+      const wi = await getWarehouseItems({ page: 1, pageSize: 100 });
+      setItems(wi.items);
+    } catch {
+      message.error(t.warehouses.createItemError);
     } finally {
       setSaving(false);
     }
@@ -152,6 +175,9 @@ export default function WarehouseItems() {
         <Button icon={<PlusOutlined />} onClick={() => setIssueOpen(true)}>
           {t.warehouses.issue}
         </Button>
+        <Button icon={<PlusOutlined />} onClick={() => setCreateItemOpen(true)}>
+          {t.warehouses.createItem}
+        </Button>
       </Space>
       <Table
         dataSource={result?.items ?? []}
@@ -197,6 +223,45 @@ export default function WarehouseItems() {
       >
         <Form form={issueForm} layout="vertical" style={{ marginTop: 16 }}>
           <MovementForm />
+        </Form>
+      </Modal>
+      {/* Create Item Modal */}
+      <Modal
+        title={t.warehouses.createItem}
+        open={createItemOpen}
+        onOk={handleCreateItem}
+        onCancel={() => { setCreateItemOpen(false); createItemForm.resetFields(); }}
+        okText={t.common.create}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+      >
+        <Form form={createItemForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="name" label={t.warehouses.name} rules={[{ required: true, message: t.common.required }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="code" label={t.warehouses.code} rules={[{ required: true, message: t.common.required }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="category" label={t.warehouses.category} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={[
+              { value: 'Seeds', label: t.warehouses.categorySeeds },
+              { value: 'Fertilizers', label: t.warehouses.categoryFertilizers },
+              { value: 'Fuel', label: t.warehouses.categoryFuel },
+              { value: 'Pesticides', label: t.warehouses.categoryPesticides },
+              { value: 'Other', label: t.warehouses.categoryOther },
+            ]} />
+          </Form.Item>
+          <Form.Item name="baseUnit" label={t.warehouses.baseUnit} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={[
+              { value: 'kg', label: 'kg' },
+              { value: 'l', label: 'l' },
+              { value: 't', label: 't' },
+              { value: 'pcs', label: 'pcs' },
+            ]} />
+          </Form.Item>
+          <Form.Item name="description" label={t.warehouses.description}>
+            <Input />
+          </Form.Item>
         </Form>
       </Modal>
     </div>
