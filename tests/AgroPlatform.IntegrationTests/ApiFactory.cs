@@ -18,7 +18,7 @@ namespace AgroPlatform.IntegrationTests;
 public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgres:16-alpine")
+        .WithImage("postgis/postgis:16-alpine")
         .WithDatabase("agroplatform_test")
         .WithUsername("agroplatform")
         .WithPassword("agroplatform_test")
@@ -39,7 +39,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
             services.AddDbContext<AppDbContext>((sp, options) =>
             {
-                options.UseNpgsql(_postgres.GetConnectionString());
+                options.UseNpgsql(_postgres.GetConnectionString(), o => o.UseNetTopologySuite());
                 options.AddInterceptors(
                     sp.GetRequiredService<AuditableEntityInterceptor>(),
                     sp.GetRequiredService<SoftDeleteInterceptor>(),
