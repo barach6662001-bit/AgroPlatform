@@ -344,6 +344,17 @@ const uk = {
     Equipment: 'Техніка',
     Other: 'Інше',
   },
+  materialKpi: {
+    fertilizers: 'Добрива',
+    seeds: 'Насіння',
+    pesticides: 'Хімікати',
+    fuel: 'Паливо',
+    harvest: 'Врожай',
+    total: 'Всього',
+    sectionTitle: 'Зведення по матеріалах',
+    sectionSubtitle: 'Витрати по категоріях матеріалів (UAH)',
+    loadError: 'Помилка завантаження зведення',
+  },
   analytics: {
     title: 'Аналітика',
     resourceConsumption: 'Розхід ресурсів',
