@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace AgroPlatform.IntegrationTests;
 
@@ -43,6 +44,8 @@ public class HealthChecksTests(CustomWebApplicationFactory<Program> factory)
             base.ConfigureWebHost(builder);
             builder.ConfigureServices(services =>
             {
+                // Clear all existing health check registrations (incl. AddDbContextCheck from Program.cs)
+                // then add a single always-unhealthy check tagged "ready"
                 services.PostConfigure<HealthCheckServiceOptions>(options =>
                 {
                     options.Registrations.Clear();
