@@ -29,7 +29,7 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>((sp, options) =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            options.UseNpgsql(connectionString);
+            options.UseNpgsql(connectionString, o => o.UseNetTopologySuite());
 
             options.AddInterceptors(
                 sp.GetRequiredService<AuditableEntityInterceptor>(),

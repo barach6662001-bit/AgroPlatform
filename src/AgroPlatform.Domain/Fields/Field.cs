@@ -1,6 +1,7 @@
 using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Enums;
+using NetTopologySuite.Geometries;
 
 namespace AgroPlatform.Domain.Fields;
 
@@ -12,6 +13,7 @@ public class Field : AuditableEntity
     public CropType? CurrentCrop { get; set; }
     public int? CurrentCropYear { get; set; }
     public string? GeoJson { get; set; }
+    public Geometry? Geometry { get; set; }
     public string? SoilType { get; set; }
     public string? Notes { get; set; }
 
