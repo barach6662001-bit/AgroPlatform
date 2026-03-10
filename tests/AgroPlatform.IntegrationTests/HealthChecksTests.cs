@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace AgroPlatform.IntegrationTests;
@@ -28,6 +29,7 @@ public class HealthChecksTests(CustomWebApplicationFactory<Program> factory)
     public async Task ReadyEndpoint_Returns503_WhenDbUnavailable()
     {
         await using var unhealthyFactory = new UnhealthyDbFactory();
+        await unhealthyFactory.InitializeAsync();
         var client = unhealthyFactory.CreateClient();
 
         var response = await client.GetAsync("/health/ready");
