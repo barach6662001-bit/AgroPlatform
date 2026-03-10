@@ -18,7 +18,7 @@ namespace AgroPlatform.IntegrationTests;
 public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgis/postgis:16-alpine")
+        .WithImage("postgis/postgis:16-3.4-alpine")
         .WithDatabase("agroplatform_test")
         .WithUsername("agroplatform")
         .WithPassword("agroplatform_test")
