@@ -33,7 +33,7 @@ public class FleetHubEndpointTests(CustomWebApplicationFactory<Program> factory)
         var response = await _client.PostAsync("/hubs/fleet/negotiate?negotiateVersion=1", null);
 
         var body = await response.Content.ReadAsStringAsync();
-        // The negotiate response must contain a connection token or connection ID.
-        body.Should().ContainAny("connectionId", "connectionToken");
+        // The negotiate response must always contain a connectionId per the SignalR protocol.
+        body.Should().Contain("connectionId");
     }
 }
