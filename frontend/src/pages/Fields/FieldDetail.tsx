@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan } from '../../api/fields';
+import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined } from '@ant-design/icons';
+import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry } from '../../api/fields';
 import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
-import FieldMap from '../../components/Map/FieldMap';
+import FieldDrawMap from '../../components/Map/FieldDrawMap';
 import { useTranslation } from '../../i18n';
 
 export default function FieldDetail() {
@@ -16,6 +16,8 @@ export default function FieldDetail() {
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [planModalOpen, setPlanModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [currentGeoJson, setCurrentGeoJson] = useState<string | null>(null);
+  const [savingGeometry, setSavingGeometry] = useState(false);
   const [assignForm] = Form.useForm();
   const [planForm] = Form.useForm();
   const { t } = useTranslation();
@@ -72,6 +74,24 @@ export default function FieldDetail() {
       load();
     } catch {
       message.error(t.fields.deleteRotationPlanError);
+    }
+  };
+
+  const handleSaveGeometry = async () => {
+    if (!currentGeoJson) {
+      message.warning(t.fields.noPolygonToDraw);
+      return;
+    }
+    setSavingGeometry(true);
+    try {
+      await updateFieldGeometry(id!, { geoJson: currentGeoJson });
+      message.success(t.fields.saveGeometrySuccess);
+      setLoading(true);
+      load();
+    } catch {
+      message.error(t.fields.saveGeometryError);
+    } finally {
+      setSavingGeometry(false);
     }
   };
 
@@ -134,8 +154,23 @@ export default function FieldDetail() {
         </Col>
 
         <Col xs={24} lg={12}>
-          <Card title={t.fields.fieldMap} styles={{ body: { padding: 0 } }}>
-            <FieldMap fields={[field]} height={300} />
+          <Card
+            title={t.fields.fieldMap}
+            styles={{ body: { padding: 0 } }}
+            extra={
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
+                size="small"
+                loading={savingGeometry}
+                disabled={!currentGeoJson}
+                onClick={handleSaveGeometry}
+              >
+                {t.fields.saveGeometry}
+              </Button>
+            }
+          >
+            <FieldDrawMap field={field} onGeometryChange={setCurrentGeoJson} height={300} />
           </Card>
         </Col>
       </Row>
