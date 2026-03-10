@@ -346,6 +346,17 @@ const en: Translations = {
     Equipment: 'Equipment',
     Other: 'Other',
   },
+  materialKpi: {
+    fertilizers: 'Fertilizers',
+    seeds: 'Seeds',
+    pesticides: 'Chemicals',
+    fuel: 'Fuel',
+    harvest: 'Harvest',
+    total: 'Total',
+    sectionTitle: 'Materials Summary',
+    sectionSubtitle: 'Costs by material category (UAH)',
+    loadError: 'Failed to load summary',
+  },
   analytics: {
     title: 'Analytics',
     resourceConsumption: 'Resource Consumption',
