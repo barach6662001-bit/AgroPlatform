@@ -4,6 +4,7 @@ using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -340,6 +341,10 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("GeoJson")
                         .HasColumnType("text");
+
+                    b.Property<Geometry>("Geometry")
+                        .HasColumnType("geometry(Polygon, 4326)")
+                        .HasColumnName("Geometry");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");

@@ -4,6 +4,7 @@ using AgroPlatform.Application.Fields.Commands.DeleteField;
 using AgroPlatform.Application.Fields.Commands.DeleteRotationPlan;
 using AgroPlatform.Application.Fields.Commands.PlanRotation;
 using AgroPlatform.Application.Fields.Commands.UpdateField;
+using AgroPlatform.Application.Fields.Commands.UpdateFieldGeometry;
 using AgroPlatform.Application.Fields.Commands.UpdateYield;
 using AgroPlatform.Application.Fields.Queries.GetFieldById;
 using AgroPlatform.Application.Fields.Queries.GetFields;
@@ -158,4 +159,25 @@ public class FieldsController : ControllerBase
         await _sender.Send(new DeleteRotationPlanCommand(planId), cancellationToken);
         return NoContent();
     }
+
+    /// <summary>Updates the GeoJSON polygon geometry of a field.</summary>
+    /// <param name="id">Field ID.</param>
+    /// <param name="request">GeoJSON body.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("{id:guid}/geometry")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateGeometry(
+        Guid id,
+        [FromBody] UpdateFieldGeometryRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _sender.Send(new UpdateFieldGeometryCommand(id, request.GeoJson), cancellationToken);
+        return NoContent();
+    }
 }
+
+/// <summary>Request body for updating a field's GeoJSON geometry.</summary>
+public record UpdateFieldGeometryRequest(string GeoJson);

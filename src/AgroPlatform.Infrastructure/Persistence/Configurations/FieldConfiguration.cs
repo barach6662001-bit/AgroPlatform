@@ -24,6 +24,10 @@ public class FieldConfiguration : IEntityTypeConfiguration<Field>
         builder.Property(f => f.GeoJson)
             .HasColumnType("text");
 
+        builder.Property(f => f.Geometry)
+            .HasColumnType("geometry(Polygon, 4326)")
+            .HasColumnName("Geometry");
+
         builder.Property(f => f.SoilType)
             .HasMaxLength(100);
 
