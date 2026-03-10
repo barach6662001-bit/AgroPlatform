@@ -14,9 +14,14 @@ using OpenTelemetry.Metrics;
 using Serilog;
 using System.Text.Json.Serialization;
 
+// Use CreateLogger() (not CreateBootstrapLogger()) so that multiple WebApplicationFactory
+// instances can invoke Program.Main() concurrently in integration tests without triggering
+// the "ReloadableLogger is already frozen" exception from Serilog's two-stage init.
+// Startup console logs are still captured; UseSerilog() below replaces Log.Logger with
+// the fully-configured logger once the DI container is built.
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .CreateBootstrapLogger();
+    .CreateLogger();
 
 try
 {
