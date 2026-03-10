@@ -42,19 +42,16 @@ public class HealthChecksTests(CustomWebApplicationFactory<Program> factory)
         protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
         {
             base.ConfigureWebHost(builder);
+
             builder.ConfigureServices(services =>
             {
-                // Clear all existing health check registrations (incl. AddDbContextCheck from Program.cs)
-                // then add a single always-unhealthy check tagged "ready"
-                services.PostConfigure<HealthCheckServiceOptions>(options =>
-                {
-                    options.Registrations.Clear();
-                    options.Registrations.Add(new HealthCheckRegistration(
-                        "db",
-                        _ => new AlwaysUnhealthyCheck(),
-                        HealthStatus.Unhealthy,
-                        ["ready"]));
-                });
+                // Remove existing health check service registrations added by Program.cs
+                services.RemoveAll<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckService>();
+                services.RemoveAll<Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheckPublisher>();
+
+                // Re-add health checks with a single always-unhealthy "ready" check
+                services.AddHealthChecks()
+                    .AddCheck("db", new AlwaysUnhealthyCheck(), tags: new[] { "ready" });
             });
         }
     }
