@@ -61,7 +61,7 @@ export default function WarehousesList() {
     {
       title: t.warehouses.actions, key: 'actions',
       render: (_: unknown, record: WarehouseDto) => (
-        <a onClick={() => navigate(`/warehouses?warehouse=${record.id}`)}>{t.warehouses.balances}</a>
+        <a onClick={() => navigate(`/warehouses/items?warehouse=${record.id}`)}>{t.warehouses.balances}</a>
       ),
     },
   ];
@@ -92,7 +92,7 @@ export default function WarehousesList() {
           total: result?.totalCount ?? 0,
           onChange: (p, ps) => { setPage(p); setPageSize(ps); },
         }}
-        onRow={(record) => ({ onClick: () => navigate(`/warehouses?warehouse=${record.id}`) })}
+        onRow={(record) => ({ onClick: () => navigate(`/warehouses/items?warehouse=${record.id}`) })}
         rowClassName={() => 'clickable-row'}
       />
 
