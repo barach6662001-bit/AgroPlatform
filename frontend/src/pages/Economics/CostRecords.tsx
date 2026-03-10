@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber, Popconfirm, Card, Divider, Empty } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined } from '@ant-design/icons';
 import { getCostRecords, createCostRecord, deleteCostRecord } from '../../api/economics';
-import type { CostRecordDto } from '../../types/economics';
+import type { CostRecordDto, MaterialKpiItem } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import PLTable from '../../components/PLTable';
+import MaterialKpiCards from '../../components/MaterialKpiCards';
 import type { PLTableRow } from '../../components/PLTable';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
@@ -125,6 +126,50 @@ export default function CostRecords() {
     };
   });
 
+  // Build the six material KPI items from allRecords
+  const sumByCategory = (cat: string) =>
+    allRecords.filter((r) => r.category === cat).reduce((s, r) => s + r.amount, 0);
+
+  const kpiItems: MaterialKpiItem[] = [
+    {
+      key: 'Fertilizers',
+      label: t.materialKpi.fertilizers,
+      amount: sumByCategory('Fertilizers'),
+      icon: <ExperimentOutlined />,
+    },
+    {
+      key: 'Seeds',
+      label: t.materialKpi.seeds,
+      amount: sumByCategory('Seeds'),
+      icon: <AppstoreOutlined />,
+    },
+    {
+      key: 'Pesticides',
+      label: t.materialKpi.pesticides,
+      amount: sumByCategory('Pesticides'),
+      icon: <MedicineBoxOutlined />,
+    },
+    {
+      key: 'Fuel',
+      label: t.materialKpi.fuel,
+      amount: sumByCategory('Fuel'),
+      icon: <ThunderboltOutlined />,
+    },
+    {
+      key: 'Harvest',
+      label: t.materialKpi.harvest,
+      amount: 0, // Harvest revenue is not tracked in cost records; placeholder for future data
+      icon: <GiftOutlined />,
+    },
+    {
+      key: 'Total',
+      label: t.materialKpi.total,
+      amount: allRecords.reduce((s, r) => s + r.amount, 0),
+      icon: <CalculatorOutlined />,
+      isTotal: true,
+    },
+  ];
+
   const columns = [
     {
       title: t.economics.date, dataIndex: 'date', key: 'date',
@@ -154,6 +199,11 @@ export default function CostRecords() {
   return (
     <div>
       <PageHeader title={t.economics.title} subtitle={t.economics.subtitle} />
+
+      {/* Material KPI summary cards */}
+      <div style={{ marginBottom: 24 }}>
+        <MaterialKpiCards items={kpiItems} loading={loading} />
+      </div>
 
       {/* P&L summary table */}
       <Card

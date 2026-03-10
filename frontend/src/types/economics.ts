@@ -8,3 +8,20 @@ export interface CostRecordDto {
   agroOperationId?: string;
   description?: string;
 }
+
+/** Identifies one of the six material KPI card types. */
+export type MaterialKpiKey = 'Fertilizers' | 'Seeds' | 'Pesticides' | 'Fuel' | 'Harvest' | 'Total';
+
+/** View-model for a single material KPI card. */
+export interface MaterialKpiItem {
+  /** Stable identifier used as React key and for styling (e.g. "Total" gets the blue variant). */
+  key: MaterialKpiKey;
+  /** Translated display label. */
+  label: string;
+  /** Monetary amount in UAH. */
+  amount: number;
+  /** Icon element to display inside the card. */
+  icon: React.ReactNode;
+  /** When true, renders the "total" blue-highlight variant. */
+  isTotal?: boolean;
+}
