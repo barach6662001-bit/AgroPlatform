@@ -21,7 +21,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
             ?? "Host=localhost;Database=agroplatform;Username=postgres;Password=postgres";
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseNpgsql(connectionString, o => o.UseNetTopologySuite());
 
         return new AppDbContext(optionsBuilder.Options, new DesignTimeTenantService());
     }
