@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace AgroPlatform.IntegrationTests;
@@ -44,6 +45,8 @@ public class HealthChecksTests(CustomWebApplicationFactory<Program> factory)
             base.ConfigureWebHost(builder);
             builder.ConfigureServices(services =>
             {
+                // Remove all existing health check registrations so the real DB check is replaced
+                services.RemoveAll<IHealthCheckPublisher>();
                 services.PostConfigure<HealthCheckServiceOptions>(options =>
                 {
                     options.Registrations.Clear();
