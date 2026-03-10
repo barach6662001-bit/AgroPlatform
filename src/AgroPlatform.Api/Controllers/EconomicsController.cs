@@ -1,6 +1,8 @@
 using AgroPlatform.Application.Economics.Commands.CreateCostRecord;
 using AgroPlatform.Application.Economics.Commands.DeleteCostRecord;
+using AgroPlatform.Application.Economics.DTOs;
 using AgroPlatform.Application.Economics.Queries.GetCostRecords;
+using AgroPlatform.Application.Economics.Queries.GetFieldPnl;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -75,5 +77,29 @@ public class EconomicsController : ControllerBase
     {
         await _sender.Send(new DeleteCostRecordCommand(id), cancellationToken);
         return NoContent();
+    }
+
+    /// <summary>
+    /// Returns Profit &amp; Loss analytics per field for the given year.
+    /// Costs are taken from CostRecord entries linked to each field.
+    /// Revenue estimation requires <paramref name="estimatedPricePerTonne"/> and recorded yield data.
+    /// </summary>
+    /// <param name="year">Calendar year (default: current year).</param>
+    /// <param name="estimatedPricePerTonne">Optional price per tonne (UAH) for revenue estimation.</param>
+    /// <param name="fieldId">Optional field filter — returns data for one field only.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>List of <see cref="FieldPnlDto"/> sorted by field name.</returns>
+    [HttpGet("field-pnl")]
+    [ProducesResponseType(typeof(IReadOnlyList<FieldPnlDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFieldPnl(
+        [FromQuery] int? year,
+        [FromQuery] decimal? estimatedPricePerTonne,
+        [FromQuery] Guid? fieldId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new GetFieldPnlQuery(year, estimatedPricePerTonne, fieldId),
+            cancellationToken);
+        return Ok(result);
     }
 }
