@@ -38,7 +38,5 @@ public class GpsTrackConfiguration : IEntityTypeConfiguration<GpsTrack>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(g => new { g.VehicleId, g.Timestamp });
-
-        builder.HasQueryFilter(g => !g.IsDeleted);
     }
 }
