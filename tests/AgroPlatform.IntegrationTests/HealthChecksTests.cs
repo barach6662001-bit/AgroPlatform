@@ -1,7 +1,5 @@
 using System.Net;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace AgroPlatform.IntegrationTests;
 
@@ -42,16 +40,17 @@ public class HealthChecksTests(CustomWebApplicationFactory<Program> factory)
         protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
         {
             base.ConfigureWebHost(builder);
-
             builder.ConfigureServices(services =>
             {
-                // Remove existing health check service registrations added by Program.cs
-                services.RemoveAll<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckService>();
-                services.RemoveAll<Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheckPublisher>();
-
-                // Re-add health checks with a single always-unhealthy "ready" check
-                services.AddHealthChecks()
-                    .AddCheck("db", new AlwaysUnhealthyCheck(), tags: new[] { "ready" });
+                services.PostConfigure<HealthCheckServiceOptions>(options =>
+                {
+                    options.Registrations.Clear();
+                    options.Registrations.Add(new HealthCheckRegistration(
+                        "db",
+                        _ => new AlwaysUnhealthyCheck(),
+                        HealthStatus.Unhealthy,
+                        ["ready"]));
+                });
             });
         }
     }
