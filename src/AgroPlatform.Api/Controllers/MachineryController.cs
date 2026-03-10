@@ -3,6 +3,7 @@ using AgroPlatform.Application.Machinery.Commands.AddWorkLog;
 using AgroPlatform.Application.Machinery.Commands.CreateMachine;
 using AgroPlatform.Application.Machinery.Commands.DeleteMachine;
 using AgroPlatform.Application.Machinery.Commands.UpdateMachine;
+using AgroPlatform.Application.Machinery.Queries.GetGpsTrack;
 using AgroPlatform.Application.Machinery.Queries.GetMachineById;
 using AgroPlatform.Application.Machinery.Queries.GetMachines;
 using AgroPlatform.Application.Machinery.Queries.GetMachineSummary;
@@ -151,5 +152,35 @@ public class MachineryController : ControllerBase
 
         var logId = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetMachine), new { id }, new { id = logId });
+    }
+
+    /// <summary>Returns GPS track points for a machine within the specified time range.</summary>
+    /// <param name="id">Machine (vehicle) ID.</param>
+    /// <param name="from">Start of the time range (UTC, inclusive).</param>
+    /// <param name="to">End of the time range (UTC, inclusive).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Ordered list of GPS track points, or 404 if the machine does not exist.</returns>
+    [HttpGet("{id:guid}/track")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetTrack(
+        Guid id,
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to,
+        CancellationToken cancellationToken)
+    {
+        if (from == null || to == null)
+            return BadRequest(new { error = "Query parameters 'from' and 'to' are required." });
+
+        if (from.Value > to.Value)
+            return BadRequest(new { error = "Parameter 'from' must not be later than 'to'." });
+
+        var result = await _sender.Send(new GetGpsTrackQuery(id, from.Value, to.Value), cancellationToken);
+
+        if (result == null)
+            return NotFound();
+
+        return Ok(result);
     }
 }

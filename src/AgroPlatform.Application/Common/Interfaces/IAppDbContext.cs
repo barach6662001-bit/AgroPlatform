@@ -25,6 +25,7 @@ public interface IAppDbContext
     DbSet<MachineWorkLog> MachineWorkLogs { get; }
     DbSet<FuelLog> FuelLogs { get; }
     DbSet<CostRecord> CostRecords { get; }
+    DbSet<GpsTrack> GpsTracks { get; }
     DbSet<Tenant> Tenants { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

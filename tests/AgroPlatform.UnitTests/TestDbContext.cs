@@ -28,5 +28,6 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<MachineWorkLog> MachineWorkLogs => Set<MachineWorkLog>();
     public DbSet<FuelLog> FuelLogs => Set<FuelLog>();
     public DbSet<CostRecord> CostRecords => Set<CostRecord>();
+    public DbSet<GpsTrack> GpsTracks => Set<GpsTrack>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
 }

@@ -35,6 +35,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<MachineWorkLog> MachineWorkLogs => Set<MachineWorkLog>();
     public DbSet<FuelLog> FuelLogs => Set<FuelLog>();
     public DbSet<CostRecord> CostRecords => Set<CostRecord>();
+    public DbSet<GpsTrack> GpsTracks => Set<GpsTrack>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -53,6 +54,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<MachineWorkLog>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
         builder.Entity<FuelLog>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
         builder.Entity<CostRecord>().HasQueryFilter(c => !c.IsDeleted && c.TenantId == _tenantId);
+        builder.Entity<GpsTrack>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
         builder.Entity<Warehouse>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
         builder.Entity<WarehouseItem>().HasQueryFilter(i => !i.IsDeleted && i.TenantId == _tenantId);
         builder.Entity<StockMove>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
