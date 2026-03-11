@@ -16,8 +16,8 @@ export const getOperationById = (id: string) =>
     .get<AgroOperationDetailDto>(`/api/agro-operations/${id}`)
     .then((r) => r.data);
 
-export const completeOperation = (id: string) =>
-  apiClient.post(`/api/agro-operations/${id}/complete`).then((r) => r.data);
+export const completeOperation = (id: string, data: { completedDate: string; areaProcessed?: number }) =>
+  apiClient.post(`/api/agro-operations/${id}/complete`, { id, ...data }).then((r) => r.data);
 
 export const createOperation = (data: {
   fieldId: string;
@@ -36,13 +36,30 @@ export const deleteOperation = (id: string) =>
 
 export const addResource = (operationId: string, data: {
   warehouseItemId: string;
+  warehouseId: string;
   plannedQuantity: number;
-  unit: string;
+  unitCode: string;
 }) =>
-  apiClient.post(`/api/agro-operations/${operationId}/resources`, data).then((r) => r.data);
+  apiClient.post(`/api/agro-operations/${operationId}/resources`, { agroOperationId: operationId, ...data }).then((r) => r.data);
+
+export const updateResourceActual = (resourceId: string, data: { actualQuantity: number }) =>
+  apiClient.put(`/api/agro-operations/resources/${resourceId}/actual`, { resourceId, ...data }).then((r) => r.data);
+
+export const removeResource = (resourceId: string) =>
+  apiClient.delete(`/api/agro-operations/resources/${resourceId}`);
 
 export const addMachinery = (operationId: string, data: {
   machineId: string;
   hoursPlanned?: number;
 }) =>
-  apiClient.post(`/api/agro-operations/${operationId}/machinery`, data).then((r) => r.data);
+  apiClient.post(`/api/agro-operations/${operationId}/machinery`, { agroOperationId: operationId, ...data }).then((r) => r.data);
+
+export const updateMachinery = (machineryId: string, data: {
+  hoursWorked?: number;
+  fuelUsed?: number;
+  operatorName?: string;
+}) =>
+  apiClient.put(`/api/agro-operations/machinery/${machineryId}`, { machineryId, ...data }).then((r) => r.data);
+
+export const removeMachinery = (machineryId: string) =>
+  apiClient.delete(`/api/agro-operations/machinery/${machineryId}`);

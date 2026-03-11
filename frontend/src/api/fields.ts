@@ -18,13 +18,13 @@ export const deleteField = (id: string) =>
   apiClient.delete(`/api/fields/${id}`);
 
 export const assignCrop = (data: { fieldId: string; cropType: CropType; year: number; notes?: string }) =>
-  apiClient.post('/api/fields/assign-crop', data).then((r) => r.data);
+  apiClient.post('/api/fields/assign-crop', { fieldId: data.fieldId, crop: data.cropType, year: data.year, notes: data.notes }).then((r) => r.data);
 
-export const updateCropYield = (id: string, data: { yieldTonnesPerHa: number; notes?: string }) =>
-  apiClient.put(`/api/fields/crop-history/${id}/yield`, data).then((r) => r.data);
+export const updateCropYield = (id: string, data: { yieldPerHectare: number }) =>
+  apiClient.put(`/api/fields/crop-history/${id}/yield`, { cropHistoryId: id, yieldPerHectare: data.yieldPerHectare }).then((r) => r.data);
 
 export const createRotationPlan = (data: { fieldId: string; plannedCrop: CropType; plannedYear: number; notes?: string }) =>
-  apiClient.post('/api/fields/rotation-plans', data).then((r) => r.data);
+  apiClient.post('/api/fields/rotation-plans', { fieldId: data.fieldId, plannedCrop: data.plannedCrop, year: data.plannedYear, notes: data.notes }).then((r) => r.data);
 
 export const deleteRotationPlan = (id: string) =>
   apiClient.delete(`/api/fields/rotation-plans/${id}`);
