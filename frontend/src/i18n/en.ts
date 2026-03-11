@@ -159,6 +159,7 @@ const en: Translations = {
     noPolygonToDraw: 'Draw a polygon first',
     fieldUpdated: 'Field updated',
     editField: 'Edit Field',
+    fieldUpdateError: 'Error updating field',
   },
   warehouses: {
     title: 'Warehouses',
@@ -226,6 +227,7 @@ const en: Translations = {
     moveLoadError: 'Error loading movements',
     updateItemSuccess: 'Item updated',
     editItem: 'Edit Item',
+    updateItemError: 'Error updating item',
   },
   moveTypes: {
     Receipt: 'Receipt',
@@ -295,6 +297,7 @@ const en: Translations = {
     hoursWorked: 'Planned hours',
     operationUpdated: 'Operation updated',
     editOperation: 'Edit Operation',
+    operationUpdateError: 'Error updating operation',
   },
   machinery: {
     title: 'Machinery',
@@ -348,6 +351,7 @@ const en: Translations = {
     selectFuelType: 'Select fuel type',
     machineUpdated: 'Machine updated',
     editMachine: 'Edit Machine',
+    machineUpdateError: 'Error updating machine',
   },
   machineryTypes: {
     Tractor: 'Tractor',

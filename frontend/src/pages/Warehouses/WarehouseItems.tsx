@@ -173,7 +173,7 @@ export default function WarehouseItems() {
       const wi = await getWarehouseItems({ page: 1, pageSize: 100 });
       setItems(wi.items);
     } catch {
-      message.error(t.warehouses.createItemError);
+      message.error(t.warehouses.updateItemError);
     } finally {
       setEditItemSaving(false);
     }

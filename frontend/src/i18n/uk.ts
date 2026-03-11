@@ -157,6 +157,7 @@ const uk = {
     noPolygonToDraw: 'Спочатку намалюйте полігон',
     fieldUpdated: 'Поле оновлено',
     editField: 'Редагувати поле',
+    fieldUpdateError: 'Помилка оновлення поля',
   },
   warehouses: {
     title: 'Склади',
@@ -224,6 +225,7 @@ const uk = {
     moveLoadError: 'Помилка завантаження рухів',
     updateItemSuccess: 'Товар оновлено',
     editItem: 'Редагувати товар',
+    updateItemError: 'Помилка оновлення товару',
   },
   moveTypes: {
     Receipt: 'Прихід',
@@ -293,6 +295,7 @@ const uk = {
     hoursWorked: 'Планові години',
     operationUpdated: 'Операцію оновлено',
     editOperation: 'Редагувати операцію',
+    operationUpdateError: 'Помилка оновлення операції',
   },
   machinery: {
     title: 'Техніка',
@@ -346,6 +349,7 @@ const uk = {
     selectFuelType: 'Оберіть вид пального',
     machineUpdated: 'Техніку оновлено',
     editMachine: 'Редагувати техніку',
+    machineUpdateError: 'Помилка оновлення техніки',
   },
   machineryTypes: {
     Tractor: 'Трактор',

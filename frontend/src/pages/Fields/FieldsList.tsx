@@ -86,7 +86,7 @@ export default function FieldsList() {
       setEditRecord(null);
       load();
     } catch {
-      message.error(t.fields.createError);
+      message.error(t.fields.fieldUpdateError);
     } finally {
       setEditSaving(false);
     }
