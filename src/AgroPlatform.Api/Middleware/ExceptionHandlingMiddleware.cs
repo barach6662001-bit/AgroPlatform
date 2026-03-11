@@ -36,7 +36,7 @@ public class ExceptionHandlingMiddleware
             NotFoundException => (StatusCodes.Status404NotFound, "Not Found", (IDictionary<string, string[]>?)null),
             ValidationException ve => (StatusCodes.Status400BadRequest, "Validation Failed", ve.Errors),
             InsufficientBalanceException => (StatusCodes.Status422UnprocessableEntity, "Insufficient Balance", null),
-            ConflictException ce => (StatusCodes.Status409Conflict, ce.Message, null),
+            ConflictException => (StatusCodes.Status409Conflict, "Conflict", null),
             ForbiddenException => (StatusCodes.Status403Forbidden, "Forbidden", null),
             DbUpdateException => (StatusCodes.Status409Conflict, "Conflict", null),
             _ => (StatusCodes.Status500InternalServerError, "An error occurred while processing your request.", null)
