@@ -64,9 +64,15 @@ export default function WarehouseItems() {
     try {
       const values = await receiptForm.validateFields();
       setSaving(true);
-      // DatePicker returns a Dayjs object; convert to ISO string
-      const date = values.date ? (values.date as { toISOString: () => string }).toISOString() : new Date().toISOString();
-      await createReceipt({ ...values, date });
+      const selectedItem = items.find((i) => i.id === values.itemId);
+      const unitCode = selectedItem?.baseUnit ?? 'kg';
+      await createReceipt({
+        warehouseId: values.warehouseId,
+        itemId: values.itemId,
+        unitCode,
+        quantity: values.quantity,
+        note: values.notes,
+      });
       message.success(t.warehouses.receiptSuccess);
       receiptForm.resetFields();
       setReceiptOpen(false);
@@ -82,8 +88,15 @@ export default function WarehouseItems() {
     try {
       const values = await issueForm.validateFields();
       setSaving(true);
-      const date = values.date ? (values.date as { toISOString: () => string }).toISOString() : new Date().toISOString();
-      await createIssue({ ...values, date });
+      const selectedItem = items.find((i) => i.id === values.itemId);
+      const unitCode = selectedItem?.baseUnit ?? 'kg';
+      await createIssue({
+        warehouseId: values.warehouseId,
+        itemId: values.itemId,
+        unitCode,
+        quantity: values.quantity,
+        note: values.notes,
+      });
       message.success(t.warehouses.issueSuccess);
       issueForm.resetFields();
       setIssueOpen(false);
