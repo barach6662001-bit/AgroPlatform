@@ -38,7 +38,7 @@ public class ExceptionHandlingMiddleware
             InsufficientBalanceException => (StatusCodes.Status422UnprocessableEntity, "Insufficient Balance", null),
             ConflictException ce => (StatusCodes.Status409Conflict, ce.Message, null),
             ForbiddenException => (StatusCodes.Status403Forbidden, "Forbidden", null),
-            DbUpdateException => (StatusCodes.Status409Conflict, "A record with the same identifier already exists.", null),
+            DbUpdateException => (StatusCodes.Status409Conflict, "Conflict", null),
             _ => (StatusCodes.Status500InternalServerError, "An error occurred while processing your request.", null)
         };
 
