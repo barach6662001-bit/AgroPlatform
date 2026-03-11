@@ -8,5 +8,6 @@ public class PlanRotationValidator : AbstractValidator<PlanRotationCommand>
     {
         RuleFor(x => x.FieldId).NotEmpty();
         RuleFor(x => x.Year).GreaterThan(2000);
+        RuleFor(x => x.PlannedCrop).IsInEnum();
     }
 }

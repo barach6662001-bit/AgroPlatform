@@ -20,28 +20,27 @@ export const createWarehouseItem = (data: { name: string; code: string; category
 export const createReceipt = (data: {
   warehouseId: string;
   itemId: string;
+  unitCode: string;
   quantity: number;
-  date: string;
-  batchCode?: string;
-  notes?: string;
+  note?: string;
 }) =>
   apiClient.post('/api/warehouses/receipt', data).then((r) => r.data);
 
 export const createIssue = (data: {
   warehouseId: string;
   itemId: string;
+  unitCode: string;
   quantity: number;
-  date: string;
-  notes?: string;
+  note?: string;
 }) =>
   apiClient.post('/api/warehouses/issue', data).then((r) => r.data);
 
 export const createTransfer = (data: {
-  fromWarehouseId: string;
-  toWarehouseId: string;
+  sourceWarehouseId: string;
+  destinationWarehouseId: string;
   itemId: string;
+  unitCode: string;
   quantity: number;
-  date: string;
-  notes?: string;
+  note?: string;
 }) =>
   apiClient.post('/api/warehouses/transfer', data).then((r) => r.data);

@@ -28,6 +28,9 @@ public class AgroOperationResourceConfiguration : IEntityTypeConfiguration<AgroO
             .WithMany()
             .HasForeignKey(r => r.WarehouseItemId);
 
+        builder.Property(r => r.WarehouseId)
+            .IsRequired();
+
         builder.HasQueryFilter(r => !r.IsDeleted);
     }
 }

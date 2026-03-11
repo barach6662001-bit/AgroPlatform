@@ -8,5 +8,6 @@ public class CreateAgroOperationValidator : AbstractValidator<CreateAgroOperatio
     {
         RuleFor(x => x.FieldId).NotEmpty();
         RuleFor(x => x.PlannedDate).NotEmpty();
+        RuleFor(x => x.OperationType).IsInEnum();
     }
 }

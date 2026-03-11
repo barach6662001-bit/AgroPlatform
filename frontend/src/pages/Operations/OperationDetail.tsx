@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Space } from 'antd';
+import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Space, Modal, Form, DatePicker, InputNumber } from 'antd';
 import { ArrowLeftOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { getOperationById, completeOperation } from '../../api/operations';
 import type { AgroOperationDetailDto, AgroOperationResourceDto } from '../../types/operation';
@@ -12,6 +12,9 @@ export default function OperationDetail() {
   const navigate = useNavigate();
   const [op, setOp] = useState<AgroOperationDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [completeModalOpen, setCompleteModalOpen] = useState(false);
+  const [completing, setCompleting] = useState(false);
+  const [completeForm] = Form.useForm();
   const { t, lang } = useTranslation();
 
   const load = () => {
@@ -27,11 +30,20 @@ export default function OperationDetail() {
   const handleComplete = async () => {
     if (!id) return;
     try {
-      await completeOperation(id);
+      const values = await completeForm.validateFields();
+      setCompleting(true);
+      const completedDate = values.completedDate
+        ? (values.completedDate as { toISOString: () => string }).toISOString()
+        : new Date().toISOString();
+      await completeOperation(id, { completedDate, areaProcessed: values.areaProcessed });
       message.success(t.operations.operationCompleted);
+      completeForm.resetFields();
+      setCompleteModalOpen(false);
       load();
     } catch {
       message.error(t.operations.completeError);
+    } finally {
+      setCompleting(false);
     }
   };
 
@@ -55,7 +67,7 @@ export default function OperationDetail() {
       <Space style={{ marginBottom: 16 }}>
         <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/operations')}>{t.operations.back}</Button>
         {!op.isCompleted && (
-          <Button type="primary" icon={<CheckCircleOutlined />} onClick={handleComplete} style={{ background: '#52c41a', borderColor: '#52c41a' }}>
+          <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => setCompleteModalOpen(true)} style={{ background: '#52c41a', borderColor: '#52c41a' }}>
             {t.operations.completeOperation}
           </Button>
         )}
@@ -102,6 +114,25 @@ export default function OperationDetail() {
           locale={{ emptyText: t.operations.machineryEmpty }}
         />
       </Card>
+
+      <Modal
+        title={t.operations.completeOperation}
+        open={completeModalOpen}
+        onOk={handleComplete}
+        onCancel={() => { setCompleteModalOpen(false); completeForm.resetFields(); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={completing}
+      >
+        <Form form={completeForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="completedDate" label={t.operations.completedDate} rules={[{ required: true, message: t.common.required }]}>
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="areaProcessed" label={t.operations.area}>
+            <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
