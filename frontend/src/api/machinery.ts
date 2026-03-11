@@ -32,18 +32,23 @@ export const updateMachine = (id: string, data: Partial<MachineDto>) =>
 export const deleteMachine = (id: string) =>
   apiClient.delete(`/api/machinery/${id}`);
 
+// MachineId must be included in the body — controller validates route id == body MachineId
 export const addWorkLog = (machineId: string, data: {
   date: string;
   hoursWorked: number;
-  fieldId?: string;
-  notes?: string;
+  description?: string;
 }) =>
-  apiClient.post(`/api/machinery/${machineId}/work-logs`, data).then((r) => r.data);
+  apiClient
+    .post(`/api/machinery/${machineId}/work-logs`, { machineId, ...data })
+    .then((r) => r.data);
 
+// FuelType is required by the backend AddFuelLogCommand; pass machine's fuelType automatically
 export const addFuelLog = (machineId: string, data: {
   date: string;
-  liters: number;
-  pricePerLiter?: number;
-  notes?: string;
+  quantity: number;
+  fuelType: string;
+  note?: string;
 }) =>
-  apiClient.post(`/api/machinery/${machineId}/fuel-logs`, data).then((r) => r.data);
+  apiClient
+    .post(`/api/machinery/${machineId}/fuel-logs`, { machineId, ...data })
+    .then((r) => r.data);

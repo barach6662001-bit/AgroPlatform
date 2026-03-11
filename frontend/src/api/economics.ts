@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { CostRecordDto } from '../types/economics';
+import type { CostRecordDto, FieldPnlDto } from '../types/economics';
 import type { PaginatedResult } from '../types/common';
 
 export const getCostRecords = (params?: {
@@ -25,3 +25,10 @@ export const createCostRecord = (data: {
 
 export const deleteCostRecord = (id: string) =>
   apiClient.delete(`/api/economics/cost-records/${id}`);
+
+export const getFieldPnl = (params?: {
+  year?: number;
+  estimatedPricePerTonne?: number;
+  fieldId?: string;
+}) =>
+  apiClient.get<FieldPnlDto[]>('/api/economics/field-pnl', { params }).then((r) => r.data);

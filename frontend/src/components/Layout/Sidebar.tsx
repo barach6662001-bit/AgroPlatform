@@ -9,22 +9,30 @@ import {
   LineChartOutlined,
   BarChartOutlined,
   ThunderboltOutlined,
+  TeamOutlined,
+  UserOutlined,
+  SwapOutlined,
+  RiseOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
+import { useRole } from '../../hooks/useRole';
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const { isAdmin } = useRole();
 
-  const flatItems = [
-    { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined /> },
-    { key: '/fields', label: t.nav.fields, icon: <AimOutlined /> },
-    { key: '/warehouses', label: t.nav.warehouses, icon: <InboxOutlined /> },
-    { key: '/operations', label: t.nav.operations, icon: <ToolOutlined /> },
-    { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined /> },
-    { key: '/economics', label: t.nav.economics, icon: <DollarOutlined /> },
+  const warehouseChildren = [
+    { key: '/warehouses/items', label: t.nav.warehouseItems, icon: <InboxOutlined /> },
+    { key: '/warehouses/movements', label: t.nav.stockMovements, icon: <SwapOutlined /> },
+  ];
+
+  const economicsChildren = [
+    { key: '/economics', label: t.nav.costs, icon: <DollarOutlined /> },
+    { key: '/economics/pnl', label: t.nav.pnl, icon: <RiseOutlined /> },
   ];
 
   const analyticsChildren = [
@@ -32,24 +40,71 @@ export default function Sidebar() {
     { key: '/analytics/efficiency', label: t.analytics.fieldEfficiency, icon: <ThunderboltOutlined /> },
   ];
 
+  const allLeafItems = [
+    { key: '/' },
+    { key: '/fields' },
+    { key: '/operations' },
+    { key: '/machinery' },
+    { key: '/profile' },
+    ...warehouseChildren,
+    ...economicsChildren,
+    ...analyticsChildren,
+    ...(isAdmin ? [{ key: '/settings/users' }] : []),
+  ];
+
   const menuItems = [
-    ...flatItems,
+    { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined /> },
+    { key: '/fields', label: t.nav.fields, icon: <AimOutlined /> },
+    {
+      key: 'warehouses-group',
+      label: t.nav.warehouses,
+      icon: <InboxOutlined />,
+      children: warehouseChildren,
+    },
+    { key: '/operations', label: t.nav.operations, icon: <ToolOutlined /> },
+    { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined /> },
+    {
+      key: 'economics-group',
+      label: t.nav.economics,
+      icon: <DollarOutlined />,
+      children: economicsChildren,
+    },
     {
       key: '/analytics',
       label: t.nav.analytics,
       icon: <LineChartOutlined />,
       children: analyticsChildren,
     },
+    { key: '/profile', label: t.nav.profile, icon: <UserOutlined /> },
+    ...(isAdmin
+      ? [
+          {
+            key: 'settings-group',
+            label: t.nav.settings,
+            icon: <SettingOutlined />,
+            children: [
+              { key: '/settings/users', label: t.nav.users, icon: <TeamOutlined /> },
+            ],
+          },
+        ]
+      : []),
   ];
 
   const selectedKey =
-    [...flatItems, ...analyticsChildren]
+    allLeafItems
       .slice()
       .reverse()
-      .find((item) => location.pathname === item.key || (item.key !== '/' && location.pathname.startsWith(item.key)))
-      ?.key ?? '/';
+      .find(
+        (item) =>
+          location.pathname === item.key ||
+          (item.key !== '/' && location.pathname.startsWith(item.key))
+      )?.key ?? '/';
 
-  const openKeys = analyticsChildren.some((c) => c.key === selectedKey) ? ['/analytics'] : [];
+  const openKeys: string[] = [];
+  if (warehouseChildren.some((c) => c.key === selectedKey)) openKeys.push('warehouses-group');
+  if (economicsChildren.some((c) => c.key === selectedKey)) openKeys.push('economics-group');
+  if (analyticsChildren.some((c) => c.key === selectedKey)) openKeys.push('/analytics');
+  if (isAdmin && selectedKey === '/settings/users') openKeys.push('settings-group');
 
   return (
     <Menu
@@ -59,7 +114,7 @@ export default function Sidebar() {
       defaultOpenKeys={openKeys}
       items={menuItems}
       onClick={({ key }) => {
-        if (key !== '/analytics') navigate(key);
+        if (!key.endsWith('-group') && key !== '/analytics') navigate(key);
       }}
       style={{ borderRight: 0 }}
     />

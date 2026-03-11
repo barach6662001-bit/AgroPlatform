@@ -3,6 +3,7 @@ using AgroPlatform.Application.Fields.Commands.CreateField;
 using AgroPlatform.Application.Fields.Queries.GetFieldById;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Fields;
+using AgroPlatform.UnitTests.TestDoubles;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,13 +19,15 @@ public class CreateFieldHandlerTests
         return new TestDbContext(options);
     }
 
+    private static FakeCurrentUserService CreateCurrentUser() => new() { TenantId = Guid.NewGuid() };
+
     // ── CreateField ──────────────────────────────────────────────────────────
 
     [Fact]
     public async Task CreateField_ValidCommand_ReturnsNonEmptyGuid()
     {
         var context = CreateDbContext();
-        var handler = new CreateFieldHandler(context);
+        var handler = new CreateFieldHandler(context, CreateCurrentUser());
         var command = new CreateFieldCommand("South Field", "KD-1234", 75.0m, CropType.Wheat, 2024, null, "Loam", null);
 
         var id = await handler.Handle(command, CancellationToken.None);
@@ -36,7 +39,7 @@ public class CreateFieldHandlerTests
     public async Task CreateField_ValidCommand_PersistsFieldInDatabase()
     {
         var context = CreateDbContext();
-        var handler = new CreateFieldHandler(context);
+        var handler = new CreateFieldHandler(context, CreateCurrentUser());
         var command = new CreateFieldCommand("East Field", null, 30.5m, null, null, null, null, "Test notes");
 
         var id = await handler.Handle(command, CancellationToken.None);
@@ -52,7 +55,7 @@ public class CreateFieldHandlerTests
     public async Task CreateField_WithCrop_SetsCropProperties()
     {
         var context = CreateDbContext();
-        var handler = new CreateFieldHandler(context);
+        var handler = new CreateFieldHandler(context, CreateCurrentUser());
         var command = new CreateFieldCommand("Wheat Field", null, 50m, CropType.Wheat, 2024, null, null, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
