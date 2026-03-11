@@ -28,6 +28,12 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 403) {
       window.location.href = '/access-denied';
     }
+    if (error.response?.status === 409) {
+      notification.warning({
+        message: 'Conflict',
+        description: error.response?.data?.title ?? error.response?.data?.detail ?? 'A record with the same identifier already exists.',
+      });
+    }
     if (error.response?.status >= 500) {
       notification.error({
         message: 'Server Error',

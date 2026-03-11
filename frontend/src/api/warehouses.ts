@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { WarehouseDto, WarehouseItemDto, BalanceDto } from '../types/warehouse';
+import type { WarehouseDto, WarehouseItemDto, BalanceDto, StockMoveDto } from '../types/warehouse';
 import type { PaginatedResult } from '../types/common';
 
 export const getWarehouses = (params?: { page?: number; pageSize?: number }) =>
@@ -44,3 +44,14 @@ export const createTransfer = (data: {
   note?: string;
 }) =>
   apiClient.post('/api/warehouses/transfer', data).then((r) => r.data);
+
+export const getStockMovements = (params?: {
+  warehouseId?: string;
+  itemId?: string;
+  type?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  pageSize?: number;
+}) =>
+  apiClient.get<PaginatedResult<StockMoveDto>>('/api/warehouses/moves', { params }).then((r) => r.data);

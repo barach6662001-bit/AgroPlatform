@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Table, Select, Space, message, Tag, Button, Modal, Form, InputNumber, DatePicker, Input } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
-import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue, createWarehouseItem } from '../../api/warehouses';
+import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue, createWarehouseItem, createTransfer } from '../../api/warehouses';
 import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
@@ -22,10 +22,12 @@ export default function WarehouseItems() {
   const [receiptOpen, setReceiptOpen] = useState(false);
   const [issueOpen, setIssueOpen] = useState(false);
   const [createItemOpen, setCreateItemOpen] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [receiptForm] = Form.useForm();
   const [issueForm] = Form.useForm();
   const [createItemForm] = Form.useForm();
+  const [transferForm] = Form.useForm();
   const { t } = useTranslation();
 
   const loadBalances = (warehouseId?: string, p = page, ps = pageSize) => {
@@ -103,6 +105,31 @@ export default function WarehouseItems() {
       loadBalances(selectedWarehouse, page, pageSize);
     } catch {
       message.error(t.warehouses.issueError);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleTransfer = async () => {
+    try {
+      const values = await transferForm.validateFields();
+      setSaving(true);
+      const selectedItem = items.find((i) => i.id === values.itemId);
+      const unitCode = selectedItem?.baseUnit ?? 'kg';
+      await createTransfer({
+        sourceWarehouseId: values.sourceWarehouseId,
+        destinationWarehouseId: values.destinationWarehouseId,
+        itemId: values.itemId,
+        unitCode,
+        quantity: values.quantity,
+        note: values.note,
+      });
+      message.success(t.warehouses.transferSuccess);
+      transferForm.resetFields();
+      setTransferOpen(false);
+      loadBalances(selectedWarehouse, page, pageSize);
+    } catch {
+      message.error(t.warehouses.transferError);
     } finally {
       setSaving(false);
     }
@@ -191,6 +218,9 @@ export default function WarehouseItems() {
         <Button icon={<PlusOutlined />} onClick={() => setCreateItemOpen(true)}>
           {t.warehouses.createItem}
         </Button>
+        <Button icon={<PlusOutlined />} onClick={() => setTransferOpen(true)}>
+          {t.warehouses.transfer}
+        </Button>
       </Space>
       <Table
         dataSource={result?.items ?? []}
@@ -273,6 +303,34 @@ export default function WarehouseItems() {
             ]} />
           </Form.Item>
           <Form.Item name="description" label={t.warehouses.description}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+      {/* Transfer Modal */}
+      <Modal
+        title={t.warehouses.transferTitle}
+        open={transferOpen}
+        onOk={handleTransfer}
+        onCancel={() => { setTransferOpen(false); transferForm.resetFields(); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+      >
+        <Form form={transferForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="sourceWarehouseId" label={t.warehouses.fromWarehouse} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={warehouseOptions} placeholder={t.warehouses.selectWarehouse} />
+          </Form.Item>
+          <Form.Item name="destinationWarehouseId" label={t.warehouses.toWarehouse} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={warehouseOptions} placeholder={t.warehouses.selectWarehouse} />
+          </Form.Item>
+          <Form.Item name="itemId" label={t.warehouses.item} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={itemOptions} placeholder={t.warehouses.selectItem} showSearch optionFilterProp="label" />
+          </Form.Item>
+          <Form.Item name="quantity" label={t.warehouses.quantity} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={0.001} step={0.001} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="note" label={t.common.notes}>
             <Input />
           </Form.Item>
         </Form>
