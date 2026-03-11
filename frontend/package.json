@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.0",
+    "@microsoft/signalr": "^8.0.17",
     "antd": "^5.22.0",
     "axios": "^1.7.0",
     "leaflet": "^1.9.4",

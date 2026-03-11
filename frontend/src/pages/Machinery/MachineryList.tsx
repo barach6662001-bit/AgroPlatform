@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Select, Input, message, Badge, Modal, Form, InputNumber } from 'antd';
+import { Table, Button, Space, Select, Input, message, Badge, Modal, Form, InputNumber, Tag } from 'antd';
 import { EyeOutlined, SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getMachines, createMachine } from '../../api/machinery';
@@ -8,6 +8,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { useFleetHub } from '../../hooks/useFleetHub';
 
 const statusColors: Record<string, string> = {
   Active: 'success', UnderRepair: 'warning', Decommissioned: 'error',
@@ -27,6 +28,7 @@ export default function MachineryList() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { hasRole } = useRole();
+  const { activeVehicleIds } = useFleetHub();
 
   const canCreate = hasRole(['Administrator', 'Manager']);
 
@@ -67,7 +69,20 @@ export default function MachineryList() {
   };
 
   const columns = [
-    { title: t.machinery.name, dataIndex: 'name', key: 'name', sorter: (a: MachineDto, b: MachineDto) => a.name.localeCompare(b.name) },
+    {
+      title: t.machinery.name, dataIndex: 'name', key: 'name',
+      sorter: (a: MachineDto, b: MachineDto) => a.name.localeCompare(b.name),
+      render: (name: string, record: MachineDto) => (
+        <Space>
+          {name}
+          {activeVehicleIds.has(record.id) && (
+            <Tag color="green" style={{ margin: 0, fontSize: 11 }}>
+              {t.fleet.liveSignal}
+            </Tag>
+          )}
+        </Space>
+      ),
+    },
     { title: t.machinery.invNumber, dataIndex: 'inventoryNumber', key: 'inventoryNumber' },
     { title: t.machinery.type, dataIndex: 'type', key: 'type', render: (v: MachineryType) => t.machineryTypes[v as keyof typeof t.machineryTypes] || v },
     { title: t.machinery.brandModel, key: 'brandModel', render: (_: unknown, r: MachineDto) => [r.brand, r.model].filter(Boolean).join(' ') || '—' },

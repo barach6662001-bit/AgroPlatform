@@ -65,7 +65,20 @@ body {
   color: var(--color-text-secondary) !important;
 }
 
-/* Recharts dark overrides */
+/* Mobile table styles: horizontal scroll + sticky first column */
+@media (max-width: 767px) {
+  .ant-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .ant-table-wrapper .ant-table-tbody > tr > td:first-child,
+  .ant-table-wrapper .ant-table-thead > tr > th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--color-surface);
+  }
+}
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
   stroke: #30363D !important;
