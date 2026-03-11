@@ -432,3 +432,4 @@ frontend/.env.test.local
 
 # Database backups
 backups/
+"AgroPlatform/.claude/settings.local.json" 
