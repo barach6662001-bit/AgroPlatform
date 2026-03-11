@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using ValidationException = AgroPlatform.Application.Common.Exceptions.ValidationException;
 
@@ -37,6 +38,7 @@ public class ExceptionHandlingMiddleware
             InsufficientBalanceException => (StatusCodes.Status422UnprocessableEntity, "Insufficient Balance", null),
             ConflictException => (StatusCodes.Status409Conflict, "Conflict", null),
             ForbiddenException => (StatusCodes.Status403Forbidden, "Forbidden", null),
+            DbUpdateException => (StatusCodes.Status409Conflict, "Conflict", null),
             _ => (StatusCodes.Status500InternalServerError, "An error occurred while processing your request.", null)
         };
 
