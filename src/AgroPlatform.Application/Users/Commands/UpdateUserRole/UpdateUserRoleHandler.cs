@@ -2,6 +2,7 @@ using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Users;
+using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,7 +22,7 @@ public class UpdateUserRoleHandler : IRequestHandler<UpdateUserRoleCommand>
     public async Task Handle(UpdateUserRoleCommand request, CancellationToken cancellationToken)
     {
         if (!Enum.TryParse<UserRole>(request.Role, out var newRole))
-            throw new ValidationException($"Invalid role: {request.Role}");
+            throw new ValidationException(new[] { new ValidationFailure("Role", $"Invalid role: {request.Role}") });
 
         var user = await _userManager.FindByIdAsync(request.UserId)
             ?? throw new NotFoundException("User", request.UserId);
