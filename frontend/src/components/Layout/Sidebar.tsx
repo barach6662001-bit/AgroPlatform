@@ -1,19 +1,9 @@
 import { Menu } from 'antd';
 import {
-  DashboardOutlined,
-  AimOutlined,
-  InboxOutlined,
-  ToolOutlined,
-  CarOutlined,
-  DollarOutlined,
-  LineChartOutlined,
-  BarChartOutlined,
-  ThunderboltOutlined,
-  TeamOutlined,
-  UserOutlined,
-  SwapOutlined,
-  RiseOutlined,
-  SettingOutlined,
+  DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
+  DollarOutlined, LineChartOutlined, BarChartOutlined, ThunderboltOutlined,
+  TeamOutlined, UserOutlined, SwapOutlined, RiseOutlined, SettingOutlined,
+  EnvironmentOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -45,6 +35,7 @@ export default function Sidebar() {
     { key: '/fields' },
     { key: '/operations' },
     { key: '/machinery' },
+    { key: '/fleet' },
     { key: '/profile' },
     ...warehouseChildren,
     ...economicsChildren,
@@ -63,6 +54,7 @@ export default function Sidebar() {
     },
     { key: '/operations', label: t.nav.operations, icon: <ToolOutlined /> },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined /> },
+    { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined /> },
     {
       key: 'economics-group',
       label: t.nav.economics,
