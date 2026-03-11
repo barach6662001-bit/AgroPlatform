@@ -10,6 +10,7 @@ using AgroPlatform.Application.Fields.Commands.UpdateYield;
 using AgroPlatform.Application.Fields.Queries.GetFields;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Fields;
+using AgroPlatform.UnitTests.TestDoubles;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,13 +26,15 @@ public class FieldHandlerTests
         return new TestDbContext(options);
     }
 
+    private static FakeCurrentUserService CreateCurrentUser() => new() { TenantId = Guid.NewGuid() };
+
     // ── CreateField ─────────────────────────────────────────────────────────
 
     [Fact]
     public async Task CreateField_ValidCommand_ReturnsNewId()
     {
         var context = CreateDbContext();
-        var handler = new CreateFieldHandler(context);
+        var handler = new CreateFieldHandler(context, CreateCurrentUser());
         var command = new CreateFieldCommand("North Field", null, 50.5m, null, null, null, "Clay", null);
 
         var id = await handler.Handle(command, CancellationToken.None);
