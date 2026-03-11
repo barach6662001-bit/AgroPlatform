@@ -111,6 +111,68 @@ title: API Reference
 
 ---
 
+## 📡 Real-time: SignalR Fleet Hub
+
+| Transport | URL | Auth required |
+|-----------|-----|---------------|
+| WebSocket / SSE / Long-polling | `/hubs/fleet` | ✅ Bearer JWT |
+
+### Overview
+
+The fleet hub streams real-time vehicle telemetry to connected clients.
+The server pushes updates via the **`ReceivePositionUpdate`** event.
+Each connected client is automatically scoped to the SignalR group of its
+tenant (`TenantId` claim from the JWT), so tenants never receive each other's
+telemetry.
+
+> The `/hubs` path prefix is excluded from the `X-Tenant-Id` header
+> requirement in `TenantMiddleware`.  Tenant partitioning is handled
+> server-side via SignalR groups derived from the JWT `TenantId` claim.
+
+### Payload — `ReceivePositionUpdate`
+
+```json
+{
+  "vehicleId":     "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "lat":           48.4501,
+  "lng":           35.0234,
+  "speed":         42.5,
+  "fuel":          135.0,
+  "timestampUtc":  "2025-06-01T10:23:45Z"
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `vehicleId` | `uuid` | Machine identifier (`Machine.Id`) |
+| `lat` | `double` | Latitude in decimal degrees (WGS-84, –90 … 90) |
+| `lng` | `double` | Longitude in decimal degrees (WGS-84, –180 … 180) |
+| `speed` | `double` | Ground speed in km/h (≥ 0) |
+| `fuel` | `double` | Fuel level in litres (≥ 0) |
+| `timestampUtc` | `datetime` | UTC timestamp of the telemetry reading |
+
+### Client connection example (JavaScript)
+
+```js
+import * as signalR from "@microsoft/signalr";
+
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/hubs/fleet", {
+        accessTokenFactory: () => jwtToken  // Bearer token from POST /api/auth/login
+    })
+    .withAutomaticReconnect()
+    .build();
+
+connection.on("ReceivePositionUpdate", (update) => {
+    console.log(update);
+    // { vehicleId, lat, lng, speed, fuel, timestampUtc }
+});
+
+await connection.start();
+```
+
+---
+
 ## ❤️ Health Checks
 
 | Метод | URL | Описание |
