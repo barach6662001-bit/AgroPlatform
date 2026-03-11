@@ -17,6 +17,9 @@ export const createWarehouse = (data: { name: string; location?: string }) =>
 export const createWarehouseItem = (data: { name: string; code: string; category: string; baseUnit: string; description?: string }) =>
   apiClient.post<WarehouseItemDto>('/api/warehouses/items', data).then((r) => r.data);
 
+export const updateWarehouseItem = (id: string, data: { name: string; description?: string }) =>
+  apiClient.put(`/api/warehouses/items/${id}`, data).then((r) => r.data);
+
 export const createReceipt = (data: {
   warehouseId: string;
   itemId: string;

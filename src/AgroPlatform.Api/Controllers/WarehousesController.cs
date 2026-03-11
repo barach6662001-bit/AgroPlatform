@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Warehouses.Commands.CreateWarehouse;
 using AgroPlatform.Application.Warehouses.Commands.CreateWarehouseItem;
 using AgroPlatform.Application.Warehouses.Commands.InventoryAdjust;
+using AgroPlatform.Application.Warehouses.Commands.UpdateWarehouseItem;
 using AgroPlatform.Application.Warehouses.Commands.IssueStock;
 using AgroPlatform.Application.Warehouses.Commands.ReceiptStock;
 using AgroPlatform.Application.Warehouses.Commands.TransferStock;
@@ -69,6 +70,20 @@ public class WarehousesController : ControllerBase
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetWarehouseItems), new { }, new { id });
+    }
+
+    /// <summary>Updates the name and description of an existing stock item.</summary>
+    /// <param name="id">The ID of the stock item to update.</param>
+    /// <param name="body">Updated item data (name and description).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("items/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateWarehouseItem(Guid id, [FromBody] UpdateWarehouseItemBody body, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new UpdateWarehouseItemCommand(id, body.Name, body.Description), cancellationToken);
+        return NoContent();
     }
 
     /// <summary>Returns a paginated list of stock items, optionally filtered by category.</summary>
@@ -178,3 +193,6 @@ public class WarehousesController : ControllerBase
         return Ok(result);
     }
 }
+
+/// <summary>Request body for updating a warehouse item's name and description.</summary>
+public record UpdateWarehouseItemBody(string Name, string? Description);

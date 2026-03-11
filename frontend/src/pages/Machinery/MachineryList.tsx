@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Table, Button, Space, Select, Input, message, Badge, Modal, Form, InputNumber, Tag } from 'antd';
-import { EyeOutlined, SearchOutlined, PlusOutlined } from '@ant-design/icons';
+import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getMachines, createMachine } from '../../api/machinery';
+import { getMachines, createMachine, updateMachine } from '../../api/machinery';
 import type { MachineDto, MachineryType, MachineryStatus } from '../../types/machinery';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
@@ -31,6 +31,12 @@ export default function MachineryList() {
   const { activeVehicleIds } = useFleetHub();
 
   const canCreate = hasRole(['Administrator', 'Manager']);
+  const canEdit = hasRole(['Administrator', 'Manager']);
+
+  const [editRecord, setEditRecord] = useState<MachineDto | null>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editForm] = Form.useForm();
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
@@ -55,6 +61,24 @@ export default function MachineryList() {
       message.error(t.machinery.createError);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleEdit = async () => {
+    if (!editRecord) return;
+    try {
+      const values = await editForm.validateFields();
+      setEditSaving(true);
+      await updateMachine(editRecord.id, values);
+      message.success(t.machinery.machineUpdated);
+      editForm.resetFields();
+      setEditModalOpen(false);
+      setEditRecord(null);
+      load();
+    } catch {
+      message.error(t.machinery.updateError);
+    } finally {
+      setEditSaving(false);
     }
   };
 
@@ -94,9 +118,14 @@ export default function MachineryList() {
     {
       title: t.machinery.actions, key: 'actions',
       render: (_: unknown, record: MachineDto) => (
-        <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/machinery/${record.id}`)}>
-          {t.machinery.details}
-        </Button>
+        <Space>
+          <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/machinery/${record.id}`)}>
+            {t.machinery.details}
+          </Button>
+          {canEdit && (
+            <Button size="small" icon={<EditOutlined />} onClick={() => { setEditRecord(record); editForm.setFieldsValue(record); setEditModalOpen(true); }} />
+          )}
+        </Space>
       ),
     },
   ];
@@ -188,6 +217,55 @@ export default function MachineryList() {
               placeholder={t.machinery.selectFuelType}
               options={Object.entries(t.fuelTypes).map(([k, v]) => ({ value: k, label: v }))}
             />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title={t.machinery.editMachine}
+        open={editModalOpen}
+        onOk={handleEdit}
+        onCancel={() => { setEditModalOpen(false); editForm.resetFields(); setEditRecord(null); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={editSaving}
+      >
+        <Form form={editForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="name" label={t.machinery.name} rules={[{ required: true, message: t.common.required }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="inventoryNumber" label={t.machinery.invNumberFull}>
+            <Input placeholder={t.machinery.enterInventoryNumber} />
+          </Form.Item>
+          <Form.Item name="type" label={t.machinery.type}>
+            <Select
+              placeholder={t.machinery.selectType}
+              options={Object.entries(t.machineryTypes).map(([k, v]) => ({ value: k, label: v }))}
+            />
+          </Form.Item>
+          <Form.Item name="brand" label={t.machinery.brand}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="model" label={t.machinery.model}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="year" label={t.machinery.year}>
+            <InputNumber min={1900} max={2030} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="status" label={t.machinery.status}>
+            <Select
+              placeholder={t.machinery.statusFilter}
+              options={Object.entries(t.machineryStatuses).map(([k, v]) => ({ value: k, label: v }))}
+            />
+          </Form.Item>
+          <Form.Item name="fuelType" label={t.machinery.fuelType}>
+            <Select
+              placeholder={t.machinery.selectFuelType}
+              options={Object.entries(t.fuelTypes).map(([k, v]) => ({ value: k, label: v }))}
+            />
+          </Form.Item>
+          <Form.Item name="fuelConsumptionPerHour" label={t.machinery.fuelConsumption}>
+            <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       </Modal>
