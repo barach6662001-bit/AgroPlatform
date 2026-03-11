@@ -1,3 +1,17 @@
+export interface FieldPnlDto {
+  fieldId: string;
+  fieldName: string;
+  areaHectares: number;
+  currentCrop?: string;
+  totalCosts: number;
+  costsByCategory: Record<string, number>;
+  costPerHectare: number;
+  actualYieldPerHectare?: number;
+  estimatedRevenue?: number;
+  netProfit?: number;
+  revenuePerHectare?: number;
+}
+
 export interface CostRecordDto {
   id: string;
   category: string;

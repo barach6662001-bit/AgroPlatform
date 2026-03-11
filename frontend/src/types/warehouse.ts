@@ -14,6 +14,20 @@ export interface WarehouseItemDto {
   description?: string;
 }
 
+export interface StockMoveDto {
+  id: string;
+  type: string;
+  warehouseId: string;
+  warehouseName: string;
+  itemId: string;
+  itemName: string;
+  quantity: number;
+  unitCode: string;
+  date: string;
+  note?: string;
+  createdAt: string;
+}
+
 export interface BalanceDto {
   warehouseId: string;
   warehouseName: string;

@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using ValidationException = AgroPlatform.Application.Common.Exceptions.ValidationException;
 
@@ -35,8 +36,9 @@ public class ExceptionHandlingMiddleware
             NotFoundException => (StatusCodes.Status404NotFound, "Not Found", (IDictionary<string, string[]>?)null),
             ValidationException ve => (StatusCodes.Status400BadRequest, "Validation Failed", ve.Errors),
             InsufficientBalanceException => (StatusCodes.Status422UnprocessableEntity, "Insufficient Balance", null),
-            ConflictException => (StatusCodes.Status409Conflict, "Conflict", null),
+            ConflictException ce => (StatusCodes.Status409Conflict, ce.Message, null),
             ForbiddenException => (StatusCodes.Status403Forbidden, "Forbidden", null),
+            DbUpdateException => (StatusCodes.Status409Conflict, "A record with the same identifier already exists.", null),
             _ => (StatusCodes.Status500InternalServerError, "An error occurred while processing your request.", null)
         };
 
