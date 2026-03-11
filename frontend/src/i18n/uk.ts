@@ -155,6 +155,8 @@ const uk = {
     saveGeometrySuccess: 'Полігон поля збережено',
     saveGeometryError: 'Помилка збереження полігону',
     noPolygonToDraw: 'Спочатку намалюйте полігон',
+    fieldUpdated: 'Поле оновлено',
+    editField: 'Редагувати поле',
   },
   warehouses: {
     title: 'Склади',
@@ -220,6 +222,8 @@ const uk = {
     moveQty: 'Кількість',
     moveNote: 'Примітка',
     moveLoadError: 'Помилка завантаження рухів',
+    updateItemSuccess: 'Товар оновлено',
+    editItem: 'Редагувати товар',
   },
   moveTypes: {
     Receipt: 'Прихід',
@@ -287,6 +291,8 @@ const uk = {
     removeMachineryError: 'Помилка видалення техніки',
     selectMachine: 'Оберіть техніку',
     hoursWorked: 'Планові години',
+    operationUpdated: 'Операцію оновлено',
+    editOperation: 'Редагувати операцію',
   },
   machinery: {
     title: 'Техніка',
@@ -338,6 +344,8 @@ const uk = {
     enterInventoryNumber: 'Введіть інвентарний номер',
     selectType: 'Оберіть тип',
     selectFuelType: 'Оберіть вид пального',
+    machineUpdated: 'Техніку оновлено',
+    editMachine: 'Редагувати техніку',
   },
   machineryTypes: {
     Tractor: 'Трактор',

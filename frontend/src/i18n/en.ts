@@ -157,6 +157,8 @@ const en: Translations = {
     saveGeometrySuccess: 'Field polygon saved',
     saveGeometryError: 'Error saving polygon',
     noPolygonToDraw: 'Draw a polygon first',
+    fieldUpdated: 'Field updated',
+    editField: 'Edit Field',
   },
   warehouses: {
     title: 'Warehouses',
@@ -222,6 +224,8 @@ const en: Translations = {
     moveQty: 'Quantity',
     moveNote: 'Note',
     moveLoadError: 'Error loading movements',
+    updateItemSuccess: 'Item updated',
+    editItem: 'Edit Item',
   },
   moveTypes: {
     Receipt: 'Receipt',
@@ -289,6 +293,8 @@ const en: Translations = {
     removeMachineryError: 'Error removing machinery',
     selectMachine: 'Select machine',
     hoursWorked: 'Planned hours',
+    operationUpdated: 'Operation updated',
+    editOperation: 'Edit Operation',
   },
   machinery: {
     title: 'Machinery',
@@ -340,6 +346,8 @@ const en: Translations = {
     enterInventoryNumber: 'Enter inventory number',
     selectType: 'Select type',
     selectFuelType: 'Select fuel type',
+    machineUpdated: 'Machine updated',
+    editMachine: 'Edit Machine',
   },
   machineryTypes: {
     Tractor: 'Tractor',
