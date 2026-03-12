@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Notifications;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AgroPlatform.Infrastructure.Services;
 
