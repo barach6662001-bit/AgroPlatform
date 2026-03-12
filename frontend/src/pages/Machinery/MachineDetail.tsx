@@ -4,13 +4,13 @@ import {
   Card, Descriptions, Table, Button, Spin, message, Row, Col,
   Statistic, Badge, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag,
 } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined, ToolOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, PlusOutlined, ToolOutlined, DownloadOutlined } from '@ant-design/icons';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { getMachineById, addWorkLog, addFuelLog } from '../../api/machinery';
-import { getMaintenanceRecords, addMaintenanceRecord, type MaintenanceRecordDto } from '../../api/maintenance';
+import { getMaintenanceRecords, addMaintenanceRecord, exportMaintenanceRecords, type MaintenanceRecordDto } from '../../api/maintenance';
 import type { MachineDetailDto, WorkLogDto, FuelLogDto } from '../../types/machinery';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -31,6 +31,7 @@ export default function MachineDetail() {
   const [fuelLogOpen, setFuelLogOpen] = useState(false);
   const [maintenanceOpen, setMaintenanceOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [exportingMaintenance, setExportingMaintenance] = useState(false);
   const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecordDto[]>([]);
   const [workForm] = Form.useForm();
   const [fuelForm] = Form.useForm();
@@ -125,6 +126,24 @@ export default function MachineDetail() {
       message.error(t.maintenance.addError);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleExportMaintenance = async () => {
+    if (!id) return;
+    setExportingMaintenance(true);
+    try {
+      const resp = await exportMaintenanceRecords(id);
+      const url = window.URL.createObjectURL(new Blob([resp.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `maintenance-${id}-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      message.error(t.machinery.loadError);
+    } finally {
+      setExportingMaintenance(false);
     }
   };
 
@@ -312,7 +331,15 @@ export default function MachineDetail() {
       </Card>
 
       {/* Maintenance Records */}
-      <Card title={t.maintenance.title} style={{ marginTop: 16 }}>
+      <Card
+        title={t.maintenance.title}
+        style={{ marginTop: 16 }}
+        extra={
+          <Button icon={<DownloadOutlined />} loading={exportingMaintenance} onClick={handleExportMaintenance}>
+            {t.warehouses_export.exportCosts}
+          </Button>
+        }
+      >
         <Table
           dataSource={maintenanceRecords}
           columns={maintenanceColumns}

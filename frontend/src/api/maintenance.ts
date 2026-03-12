@@ -22,3 +22,6 @@ export const addMaintenanceRecord = (machineId: string, data: {
   nextMaintenanceDate?: string;
 }) =>
   apiClient.post<{ id: string }>(`/api/machinery/${machineId}/maintenance`, data).then((r) => r.data);
+
+export const exportMaintenanceRecords = (machineId: string) =>
+  apiClient.get(`/api/machinery/${machineId}/maintenance/export`, { responseType: 'blob' });

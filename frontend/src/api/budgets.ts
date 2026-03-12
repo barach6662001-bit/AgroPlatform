@@ -13,3 +13,6 @@ export const getBudgets = (year: number) =>
 
 export const upsertBudget = (data: { year: number; category: string; plannedAmount: number; note?: string }) =>
   apiClient.put<{ id: string }>('/api/economics/budgets', data).then((r) => r.data);
+
+export const exportBudgets = (year: number) =>
+  apiClient.get('/api/economics/budgets/export', { params: { year }, responseType: 'blob' });
