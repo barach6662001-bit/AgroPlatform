@@ -9,6 +9,7 @@ using AgroPlatform.Application.Warehouses.Queries.GetBalance;
 using AgroPlatform.Application.Warehouses.Queries.GetMoveHistory;
 using AgroPlatform.Application.Warehouses.Queries.GetWarehouses;
 using AgroPlatform.Application.Warehouses.Queries.GetWarehouseItems;
+using AgroPlatform.Application.Warehouses.Queries.ExportBalances;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -191,5 +192,15 @@ public class WarehousesController : ControllerBase
             new GetMoveHistoryQuery(warehouseId, itemId, dateFrom, dateTo, moveType, page, pageSize),
             cancellationToken);
         return Ok(result);
+    }
+    /// <summary>Exports current stock balances as CSV file.</summary>
+    [HttpGet("balances/export")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExportBalances(
+        [FromQuery] Guid? warehouseId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new ExportBalancesQuery(warehouseId), cancellationToken);
+        return File(result.Content, result.ContentType, result.FileName);
     }
 }

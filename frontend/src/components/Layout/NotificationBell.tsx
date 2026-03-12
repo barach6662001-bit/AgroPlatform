@@ -1,8 +1,15 @@
-import { Badge, Button, Popover, List, Typography, Space, Tag, Empty } from 'antd';
+import { useEffect, useState } from 'react';
+import { Badge, Button, Popover, List, Typography, Space, Tag, Empty, message } from 'antd';
 import { BellOutlined } from '@ant-design/icons';
 import { useNotificationStore } from '../../hooks/useNotifications';
 import { useTranslation } from '../../i18n';
 import type { Notification, NotificationType } from '../../hooks/useNotifications';
+import {
+  getNotifications,
+  markAllNotificationsRead,
+  clearReadNotifications,
+  markNotificationRead,
+} from '../../api/notifications';
 
 const typeColor: Record<NotificationType, string> = {
   info: '#1677ff',
@@ -25,9 +32,67 @@ function formatRelativeTime(timestamp: string): string {
   return `${hours}h ago`;
 }
 
+// Sync backend notifications into the local store
+function useBackendNotifications(open: boolean) {
+  const { addNotification, notifications } = useNotificationStore();
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!open) return;
+    getNotifications({ pageSize: 50 })
+      .then((items) => {
+        items.forEach((n) => {
+          // Only add if not already present (by backend id stored in local)
+          const exists = notifications.find((local) => local.id === n.id);
+          if (!exists) {
+            addNotification({
+              id: n.id,
+              type: n.type as NotificationType,
+              message: `${n.title}: ${n.body}`,
+              timestamp: n.createdAtUtc,
+              read: n.isRead,
+            });
+          }
+        });
+      })
+      .catch(() => message.error(t.notifications.loadError));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+}
+
 export default function NotificationBell() {
   const { t } = useTranslation();
   const { notifications, markAllRead, clearAll, markAsRead, getUnreadCount } = useNotificationStore();
+  const [open, setOpen] = useState(false);
+
+  useBackendNotifications(open);
+
+  const handleMarkAllRead = async () => {
+    try {
+      await markAllNotificationsRead();
+      markAllRead();
+    } catch {
+      message.error(t.notifications.markReadError);
+    }
+  };
+
+  const handleClearAll = async () => {
+    try {
+      await clearReadNotifications();
+      clearAll();
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleMarkRead = async (id: string) => {
+    try {
+      await markNotificationRead(id);
+      markAsRead(id);
+    } catch {
+      markAsRead(id);
+    }
+  };
 
   const unreadCount = getUnreadCount();
   const recentNotifications = notifications.slice(0, 20);
@@ -37,10 +102,10 @@ export default function NotificationBell() {
       <Space style={{ width: '100%', justifyContent: 'space-between', marginBottom: 8 }}>
         <Typography.Text strong>{t.notifications.title}</Typography.Text>
         <Space>
-          <Button size="small" type="link" onClick={markAllRead}>
+          <Button size="small" type="link" onClick={handleMarkAllRead}>
             {t.notifications.markAllRead}
           </Button>
-          <Button size="small" type="link" danger onClick={clearAll}>
+          <Button size="small" type="link" danger onClick={handleClearAll}>
             {t.notifications.clearAll}
           </Button>
         </Space>
@@ -61,7 +126,7 @@ export default function NotificationBell() {
                 paddingLeft: 8,
                 marginBottom: 4,
               }}
-              onClick={() => markAsRead(item.id)}
+              onClick={() => handleMarkRead(item.id)}
             >
               <div style={{ width: '100%' }}>
                 <Space style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -90,6 +155,8 @@ export default function NotificationBell() {
     <Popover
       content={content}
       trigger="click"
+      open={open}
+      onOpenChange={setOpen}
       placement="bottomRight"
       overlayStyle={{ width: 360 }}
     >

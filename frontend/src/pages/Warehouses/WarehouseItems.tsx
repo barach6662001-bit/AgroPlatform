@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Table, Select, Space, message, Tag, Button, Modal, Form, InputNumber, DatePicker, Input } from 'antd';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
+import apiClient from '../../api/axios';
 import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue, createWarehouseItem, createTransfer, updateWarehouseItem } from '../../api/warehouses';
 import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
@@ -25,6 +26,7 @@ export default function WarehouseItems() {
   const [createItemOpen, setCreateItemOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [receiptForm] = Form.useForm();
   const [issueForm] = Form.useForm();
   const [createItemForm] = Form.useForm();
@@ -223,7 +225,28 @@ export default function WarehouseItems() {
     },
   ];
 
-  const MovementForm = () => (
+
+  const handleExportBalances = async () => {
+    setExporting(true);
+    try {
+      const resp = await apiClient.get('/api/warehouses/balances/export', {
+        params: { warehouseId: selectedWarehouse },
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([resp.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `stock-balances-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      message.error(t.warehouses.loadDataError);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+    const MovementForm = () => (
     <>
       <Form.Item name="warehouseId" label={t.warehouses.warehouse} rules={[{ required: true, message: t.common.required }]}>
         <Select options={warehouseOptions} placeholder={t.warehouses.selectWarehouse} />
@@ -266,6 +289,9 @@ export default function WarehouseItems() {
         </Button>
         <Button icon={<PlusOutlined />} onClick={() => setTransferOpen(true)}>
           {t.warehouses.transfer}
+        </Button>
+        <Button icon={<DownloadOutlined />} loading={exporting} onClick={handleExportBalances}>
+          {t.warehouses_export.exportBalances}
         </Button>
       </Space>
       <Table
@@ -351,6 +377,9 @@ export default function WarehouseItems() {
           <Form.Item name="description" label={t.warehouses.description}>
             <Input />
           </Form.Item>
+          <Form.Item name="minimumQuantity" label={t.warehouses.minimumQuantity}>
+            <InputNumber min={0} step={0.001} style={{ width: '100%' }} />
+          </Form.Item>
         </Form>
       </Modal>
       {/* Transfer Modal */}
@@ -418,6 +447,9 @@ export default function WarehouseItems() {
           </Form.Item>
           <Form.Item name="description" label={t.warehouses.description}>
             <Input />
+          </Form.Item>
+          <Form.Item name="minimumQuantity" label={t.warehouses.minimumQuantity}>
+            <InputNumber min={0} step={0.001} style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       </Modal>

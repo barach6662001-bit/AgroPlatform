@@ -2,6 +2,7 @@ using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.Machinery;
+using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.EntityFrameworkCore;
@@ -24,8 +25,11 @@ public interface IAppDbContext
     DbSet<Machine> Machines { get; }
     DbSet<MachineWorkLog> MachineWorkLogs { get; }
     DbSet<FuelLog> FuelLogs { get; }
+    DbSet<MaintenanceRecord> MaintenanceRecords { get; }
     DbSet<CostRecord> CostRecords { get; }
+    DbSet<Budget> Budgets { get; }
     DbSet<GpsTrack> GpsTracks { get; }
+    DbSet<Notification> Notifications { get; }
     DbSet<Tenant> Tenants { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

@@ -2,21 +2,25 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Card, Descriptions, Table, Button, Spin, message, Row, Col,
-  Statistic, Badge, Modal, Form, Input, InputNumber, DatePicker, Space, Select,
+  Statistic, Badge, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag,
 } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, PlusOutlined, ToolOutlined } from '@ant-design/icons';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { getMachineById, addWorkLog, addFuelLog } from '../../api/machinery';
+import { getMaintenanceRecords, addMaintenanceRecord, type MaintenanceRecordDto } from '../../api/maintenance';
 import type { MachineDetailDto, WorkLogDto, FuelLogDto } from '../../types/machinery';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { useRole } from '../../hooks/useRole';
 
 const statusColors: Record<string, string> = {
   Active: 'success', UnderRepair: 'warning', Decommissioned: 'error',
 };
+
+const MAINTENANCE_TYPES = ['Scheduled', 'Repair', 'Inspection'];
 
 export default function MachineDetail() {
   const { id } = useParams<{ id: string }>();
@@ -25,15 +29,26 @@ export default function MachineDetail() {
   const [loading, setLoading] = useState(true);
   const [workLogOpen, setWorkLogOpen] = useState(false);
   const [fuelLogOpen, setFuelLogOpen] = useState(false);
+  const [maintenanceOpen, setMaintenanceOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecordDto[]>([]);
   const [workForm] = Form.useForm();
   const [fuelForm] = Form.useForm();
+  const [maintenanceForm] = Form.useForm();
   const { t } = useTranslation();
+  const { hasRole } = useRole();
+  const canEdit = hasRole(['Administrator', 'Manager']);
 
   const load = () => {
     if (!id) return;
-    getMachineById(id)
-      .then(setMachine)
+    Promise.all([
+      getMachineById(id),
+      getMaintenanceRecords(id),
+    ])
+      .then(([m, maint]) => {
+        setMachine(m);
+        setMaintenanceRecords(maint);
+      })
       .catch(() => message.error(t.machinery.notFound))
       .finally(() => setLoading(false));
   };
@@ -48,11 +63,7 @@ export default function MachineDetail() {
       const date = values.date
         ? (values.date as { toISOString: () => string }).toISOString()
         : new Date().toISOString();
-      await addWorkLog(id, {
-        date,
-        hoursWorked: values.hoursWorked,
-        description: values.description,
-      });
+      await addWorkLog(id, { date, hoursWorked: values.hoursWorked, description: values.description });
       message.success(t.machinery.workLogSuccess);
       workForm.resetFields();
       setWorkLogOpen(false);
@@ -73,13 +84,7 @@ export default function MachineDetail() {
       const date = values.date
         ? (values.date as { toISOString: () => string }).toISOString()
         : new Date().toISOString();
-      // Pass machine's fuelType automatically (required by backend)
-      await addFuelLog(id, {
-        date,
-        quantity: values.quantity,
-        fuelType: machine.fuelType,
-        note: values.note,
-      });
+      await addFuelLog(id, { date, quantity: values.quantity, fuelType: machine.fuelType, note: values.note });
       message.success(t.machinery.fuelLogSuccess);
       fuelForm.resetFields();
       setFuelLogOpen(false);
@@ -92,63 +97,79 @@ export default function MachineDetail() {
     }
   };
 
+  const handleAddMaintenance = async () => {
+    if (!id) return;
+    try {
+      const values = await maintenanceForm.validateFields();
+      setSaving(true);
+      const date = values.date
+        ? (values.date as { toISOString: () => string }).toISOString()
+        : new Date().toISOString();
+      const nextDate = values.nextMaintenanceDate
+        ? (values.nextMaintenanceDate as { toISOString: () => string }).toISOString()
+        : undefined;
+      await addMaintenanceRecord(id, {
+        machineId: id,
+        date,
+        type: values.type,
+        description: values.description,
+        cost: values.cost,
+        hoursAtMaintenance: values.hoursAtMaintenance,
+        nextMaintenanceDate: nextDate,
+      });
+      message.success(t.maintenance.addSuccess);
+      maintenanceForm.resetFields();
+      setMaintenanceOpen(false);
+      load();
+    } catch {
+      message.error(t.maintenance.addError);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
   if (!machine) return null;
 
   const workLogColumns = [
-    {
-      title: t.machinery.date, dataIndex: 'date', key: 'date',
-      render: (v: string) => new Date(v).toLocaleDateString(),
-    },
-    {
-      title: t.machinery.hours, dataIndex: 'hoursWorked', key: 'hoursWorked',
-      render: (v: number) => v.toFixed(2),
-    },
-    {
-      title: t.machinery.fieldName, dataIndex: 'fieldName', key: 'fieldName',
-      render: (v: string) => v || '—',
-    },
-    {
-      title: t.machinery.notes, dataIndex: 'notes', key: 'notes',
-      render: (v: string) => v || '—',
-    },
+    { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
+    { title: t.machinery.hours, dataIndex: 'hoursWorked', key: 'hoursWorked', render: (v: number) => v.toFixed(2) },
+    { title: t.machinery.fieldName, dataIndex: 'fieldName', key: 'fieldName', render: (v: string) => v || '—' },
+    { title: t.machinery.notes, dataIndex: 'notes', key: 'notes', render: (v: string) => v || '—' },
   ];
 
   const fuelLogColumns = [
-    {
-      title: t.machinery.date, dataIndex: 'date', key: 'date',
-      render: (v: string) => new Date(v).toLocaleDateString(),
-    },
-    {
-      title: t.machinery.liters, dataIndex: 'liters', key: 'liters',
-      render: (v: number) => v != null ? v.toFixed(2) : '—',
-    },
-    {
-      title: t.machinery.pricePerLiter, dataIndex: 'pricePerLiter', key: 'pricePerLiter',
-      render: (v: number) => v ? v.toFixed(2) : '—',
-    },
-    {
-      title: t.machinery.total, dataIndex: 'totalCost', key: 'totalCost',
-      render: (v: number) => v ? `${v.toFixed(2)} UAH` : '—',
-    },
+    { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
+    { title: t.machinery.liters, dataIndex: 'liters', key: 'liters', render: (v: number) => v != null ? v.toFixed(2) : '—' },
+    { title: t.machinery.pricePerLiter, dataIndex: 'pricePerLiter', key: 'pricePerLiter', render: (v: number) => v ? v.toFixed(2) : '—' },
+    { title: t.machinery.total, dataIndex: 'totalCost', key: 'totalCost', render: (v: number) => v ? `${v.toFixed(2)} UAH` : '—' },
   ];
 
-  // Chart data — use recentWorkLogs sorted by date
+  const maintenanceColumns = [
+    { title: t.maintenance.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
+    {
+      title: t.maintenance.type, dataIndex: 'type', key: 'type',
+      render: (v: string) => {
+        const key = `type${v}` as keyof typeof t.maintenance;
+        const label = t.maintenance[key] as string ?? v;
+        const colors: Record<string, string> = { Scheduled: 'blue', Repair: 'red', Inspection: 'green' };
+        return <Tag color={colors[v] ?? 'default'}>{label}</Tag>;
+      },
+    },
+    { title: t.maintenance.description, dataIndex: 'description', key: 'description', render: (v: string) => v || '—' },
+    { title: t.maintenance.cost, dataIndex: 'cost', key: 'cost', render: (v: number) => v ? `${v.toFixed(2)} UAH` : '—' },
+    { title: t.maintenance.hoursAtMaintenance, dataIndex: 'hoursAtMaintenance', key: 'hours', render: (v: number) => v ? v.toFixed(1) : '—' },
+  ];
+
   const workChartData = [...machine.recentWorkLogs]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(-15)
-    .map((l: WorkLogDto) => ({
-      date: new Date(l.date).toLocaleDateString(),
-      [t.machinery.hours]: l.hoursWorked,
-    }));
+    .map((l: WorkLogDto) => ({ date: new Date(l.date).toLocaleDateString(), [t.machinery.hours]: l.hoursWorked }));
 
   const fuelChartData = [...machine.recentFuelLogs]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(-15)
-    .map((l: FuelLogDto) => ({
-      date: new Date(l.date).toLocaleDateString(),
-      [t.machinery.liters]: l.liters,
-    }));
+    .map((l: FuelLogDto) => ({ date: new Date(l.date).toLocaleDateString(), [t.machinery.liters]: l.liters }));
 
   return (
     <div>
@@ -166,6 +187,11 @@ export default function MachineDetail() {
         <Button icon={<PlusOutlined />} onClick={() => setFuelLogOpen(true)}>
           {t.machinery.logFuel}
         </Button>
+        {canEdit && (
+          <Button icon={<ToolOutlined />} onClick={() => setMaintenanceOpen(true)}>
+            {t.maintenance.addRecord}
+          </Button>
+        )}
       </Space>
 
       <PageHeader
@@ -196,6 +222,18 @@ export default function MachineDetail() {
               <Descriptions.Item label={t.machinery.fuelConsumption}>
                 {machine.fuelConsumptionPerHour || '—'}
               </Descriptions.Item>
+              {machine.nextMaintenanceDate && (
+                <Descriptions.Item label={t.maintenance.nextMaintenanceDate}>
+                  <Tag color={new Date(machine.nextMaintenanceDate) < new Date() ? 'error' : 'warning'}>
+                    {new Date(machine.nextMaintenanceDate).toLocaleDateString()}
+                  </Tag>
+                </Descriptions.Item>
+              )}
+              {machine.lastMaintenanceDate && (
+                <Descriptions.Item label={t.maintenance.lastMaintenanceDate}>
+                  {new Date(machine.lastMaintenanceDate).toLocaleDateString()}
+                </Descriptions.Item>
+              )}
             </Descriptions>
           </Card>
         </Col>
@@ -241,16 +279,8 @@ export default function MachineDetail() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
                 <XAxis dataKey="date" tick={{ fill: '#8B949E', fontSize: 11 }} />
                 <YAxis tick={{ fill: '#8B949E', fontSize: 11 }} />
-                <Tooltip
-                  contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey={t.machinery.hours}
-                  stroke="#1890ff"
-                  strokeWidth={2}
-                  dot={{ fill: '#1890ff', r: 3 }}
-                />
+                <Tooltip contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }} />
+                <Line type="monotone" dataKey={t.machinery.hours} stroke="#1890ff" strokeWidth={2} dot={{ fill: '#1890ff', r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -273,14 +303,23 @@ export default function MachineDetail() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
                 <XAxis dataKey="date" tick={{ fill: '#8B949E', fontSize: 11 }} />
                 <YAxis tick={{ fill: '#8B949E', fontSize: 11 }} />
-                <Tooltip
-                  contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }}
-                />
+                <Tooltip contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }} />
                 <Bar dataKey={t.machinery.liters} fill="#faad14" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         )}
+      </Card>
+
+      {/* Maintenance Records */}
+      <Card title={t.maintenance.title} style={{ marginTop: 16 }}>
+        <Table
+          dataSource={maintenanceRecords}
+          columns={maintenanceColumns}
+          rowKey="id"
+          pagination={{ pageSize: 10 }}
+          locale={{ emptyText: t.maintenance.noRecords }}
+        />
       </Card>
 
       {/* Work Log Modal */}
@@ -325,6 +364,41 @@ export default function MachineDetail() {
           </Form.Item>
           <Form.Item name="note" label={t.machinery.notes}>
             <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Maintenance Modal */}
+      <Modal
+        title={t.maintenance.addRecord}
+        open={maintenanceOpen}
+        onOk={handleAddMaintenance}
+        onCancel={() => { setMaintenanceOpen(false); maintenanceForm.resetFields(); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+      >
+        <Form form={maintenanceForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="date" label={t.maintenance.date} rules={[{ required: true, message: t.common.required }]}>
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="type" label={t.maintenance.type} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={MAINTENANCE_TYPES.map((tp) => ({
+              value: tp,
+              label: t.maintenance[`type${tp}` as keyof typeof t.maintenance] as string ?? tp,
+            }))} />
+          </Form.Item>
+          <Form.Item name="description" label={t.maintenance.description}>
+            <Input.TextArea rows={2} />
+          </Form.Item>
+          <Form.Item name="cost" label={t.maintenance.cost}>
+            <InputNumber min={0} step={100} style={{ width: '100%' }} addonAfter="UAH" />
+          </Form.Item>
+          <Form.Item name="hoursAtMaintenance" label={t.maintenance.hoursAtMaintenance}>
+            <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="nextMaintenanceDate" label={t.maintenance.nextMaintenanceDate}>
+            <DatePicker style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       </Modal>

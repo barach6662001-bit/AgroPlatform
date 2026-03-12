@@ -43,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<ITenantService, TenantService>();
         services.AddSingleton<IDateTimeService, DateTimeService>();
+        services.AddSingleton<INotificationService, NotificationService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
 
         services.AddIdentity<AppUser, IdentityRole>(options =>

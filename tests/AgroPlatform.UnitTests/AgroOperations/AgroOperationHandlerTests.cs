@@ -24,6 +24,21 @@ namespace AgroPlatform.UnitTests.AgroOperations;
 
 public class AgroOperationHandlerTests
 {
+    private sealed class TestNotificationService : INotificationService
+    {
+        public Task SendAsync(Guid tenantId, string type, string title, string body, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+    }
+
+    private sealed class TestCurrentUserService : ICurrentUserService
+    {
+        public string? UserId => null;
+        public string? UserName => null;
+        public Guid TenantId { get; } = Guid.NewGuid();
+        public UserRole? Role => null;
+        public bool IsInRole(UserRole role) => false;
+    }
+
     private static IAppDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<TestDbContext>()
@@ -141,7 +156,7 @@ public class AgroOperationHandlerTests
         context.AgroOperations.Add(op);
         await context.SaveChangesAsync();
 
-        var handler = new CompleteAgroOperationHandler(context);
+        var handler = new CompleteAgroOperationHandler(context, new TestNotificationService(), new TestCurrentUserService());
         var completedDate = DateTime.UtcNow;
         await handler.Handle(new CompleteAgroOperationCommand(op.Id, completedDate, 30m), CancellationToken.None);
 
@@ -179,7 +194,7 @@ public class AgroOperationHandlerTests
         context.AgroOperationResources.Add(resource);
         await context.SaveChangesAsync();
 
-        var handler = new CompleteAgroOperationHandler(context);
+        var handler = new CompleteAgroOperationHandler(context, new TestNotificationService(), new TestCurrentUserService());
         await handler.Handle(new CompleteAgroOperationCommand(op.Id, DateTime.UtcNow, null), CancellationToken.None);
 
         var updatedBalance = await ((TestDbContext)context).StockBalances
@@ -194,7 +209,7 @@ public class AgroOperationHandlerTests
     public async Task CompleteAgroOperation_NotFound_ThrowsNotFoundException()
     {
         var context = CreateDbContext();
-        var handler = new CompleteAgroOperationHandler(context);
+        var handler = new CompleteAgroOperationHandler(context, new TestNotificationService(), new TestCurrentUserService());
 
         var act = () => handler.Handle(new CompleteAgroOperationCommand(Guid.NewGuid(), DateTime.UtcNow, null), CancellationToken.None);
 
