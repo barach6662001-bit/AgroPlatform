@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Economics.Commands.UpsertBudget;
+using AgroPlatform.Application.Economics.Queries.ExportBudgets;
 using AgroPlatform.Application.Economics.Queries.GetBudgets;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -35,5 +36,15 @@ public class BudgetsController : ControllerBase
     {
         var id = await _sender.Send(command, cancellationToken);
         return Ok(new { id });
+    }
+
+    /// <summary>Exports budget entries for the specified year as a CSV file.</summary>
+    [HttpGet("export")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExportBudgets([FromQuery] int year, CancellationToken cancellationToken)
+    {
+        if (year == 0) year = DateTime.UtcNow.Year;
+        var result = await _sender.Send(new ExportBudgetsQuery(year), cancellationToken);
+        return File(result.Content, result.ContentType, result.FileName);
     }
 }
