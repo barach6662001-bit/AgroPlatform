@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Table, InputNumber, Button, Select, message, Space, Tag } from 'antd';
-import { SaveOutlined } from '@ant-design/icons';
-import { getBudgets, upsertBudget, type BudgetDto } from '../../api/budgets';
+import { SaveOutlined, DownloadOutlined } from '@ant-design/icons';
+import { getBudgets, upsertBudget, exportBudgets, type BudgetDto } from '../../api/budgets';
 import { getCostSummary, type CostSummaryDto } from '../../api/economics';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -20,6 +20,7 @@ export default function BudgetPage() {
   const [summary, setSummary] = useState<CostSummaryDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
+  const [exporting, setExporting] = useState(false);
   const [pendingAmounts, setPendingAmounts] = useState<Record<string, number | null>>({});
   const { t } = useTranslation();
   const { hasRole } = useRole();
@@ -56,6 +57,23 @@ export default function BudgetPage() {
       message.error(t.budget.saveError);
     } finally {
       setSaving((p) => ({ ...p, [category]: false }));
+    }
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const resp = await exportBudgets(year);
+      const url = window.URL.createObjectURL(new Blob([resp.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `budgets-${year}-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      message.error(t.budget.loadError);
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -136,6 +154,9 @@ export default function BudgetPage() {
       <Space style={{ marginBottom: 16 }}>
         <span style={{ color: '#8B949E' }}>{t.budget.year}:</span>
         <Select value={year} onChange={setYear} options={YEAR_OPTIONS} style={{ width: 100 }} />
+        <Button icon={<DownloadOutlined />} loading={exporting} onClick={handleExport}>
+          {t.warehouses_export.exportCosts}
+        </Button>
       </Space>
       <Table
         dataSource={tableData}
