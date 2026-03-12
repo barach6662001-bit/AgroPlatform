@@ -68,7 +68,7 @@ export default function NotificationsPage() {
       render: (_: unknown, row: NotificationDto) => typeIcon(row.type),
     },
     {
-      title: t.notifications.title,
+      title: 'Title',
       dataIndex: 'title',
       key: 'title',
     },
@@ -78,7 +78,7 @@ export default function NotificationsPage() {
       key: 'body',
     },
     {
-      title: 'Date',
+      title: t.common.date,
       dataIndex: 'createdAtUtc',
       key: 'date',
       render: (val: string) => new Date(val).toLocaleString(),
@@ -90,7 +90,7 @@ export default function NotificationsPage() {
         row.isRead ? <Tag color="default">Read</Tag> : <Tag color="blue">New</Tag>,
     },
     {
-      title: 'Actions',
+      title: t.common.actions,
       key: 'actions',
       render: (_: unknown, row: NotificationDto) => (
         <Button
