@@ -4,6 +4,7 @@ using AgroPlatform.Application.Machinery.Commands.AddWorkLog;
 using AgroPlatform.Application.Machinery.Commands.CreateMachine;
 using AgroPlatform.Application.Machinery.Commands.DeleteMachine;
 using AgroPlatform.Application.Machinery.Commands.UpdateMachine;
+using AgroPlatform.Application.Machinery.Queries.ExportMaintenanceRecords;
 using AgroPlatform.Application.Machinery.Queries.GetGpsTrack;
 using AgroPlatform.Application.Machinery.Queries.GetMachineById;
 using AgroPlatform.Application.Machinery.Queries.GetMachines;
@@ -150,6 +151,15 @@ public class MachineryController : ControllerBase
     {
         var result = await _sender.Send(new GetMaintenanceRecordsQuery(id), cancellationToken);
         return Ok(result);
+    }
+
+    /// <summary>Exports maintenance records for a machine as a CSV file.</summary>
+    [HttpGet("{id:guid}/maintenance/export")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExportMaintenance(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new ExportMaintenanceRecordsQuery(id), cancellationToken);
+        return File(result.Content, result.ContentType, result.FileName);
     }
 
     /// <summary>Records a maintenance event for a machine.</summary>
