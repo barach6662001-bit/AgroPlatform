@@ -3,7 +3,7 @@ import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
   DollarOutlined, LineChartOutlined, BarChartOutlined, ThunderboltOutlined,
   TeamOutlined, UserOutlined, SwapOutlined, RiseOutlined, SettingOutlined,
-  EnvironmentOutlined, FundOutlined,
+  EnvironmentOutlined, FundOutlined, BellOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -37,6 +37,7 @@ export default function Sidebar() {
     { key: '/operations' },
     { key: '/machinery' },
     { key: '/fleet' },
+    { key: '/notifications' },
     { key: '/profile' },
     ...warehouseChildren,
     ...economicsChildren,
@@ -56,6 +57,7 @@ export default function Sidebar() {
     { key: '/operations', label: t.nav.operations, icon: <ToolOutlined /> },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined /> },
     { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined /> },
+    { key: '/notifications', label: t.notifications.title, icon: <BellOutlined /> },
     {
       key: 'economics-group',
       label: t.nav.economics,

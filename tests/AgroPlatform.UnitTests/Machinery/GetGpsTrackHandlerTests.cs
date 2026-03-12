@@ -141,4 +141,83 @@ public class GetGpsTrackHandlerTests
         dto.FuelLevel.Should().Be(60.25m);
         dto.Timestamp.Should().Be(trackTime);
     }
+
+    [Fact]
+    public async Task GetGpsTrack_DateRangeFilter_ReturnsOnlyPointsInRange()
+    {
+        var context = CreateDbContext();
+        var machine = CreateMachine(context);
+
+        var from = new DateTime(2026, 3, 1, 8, 0, 0, DateTimeKind.Utc);
+        var to = new DateTime(2026, 3, 1, 10, 0, 0, DateTimeKind.Utc);
+
+        // 2 points before range
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machine.Id, Lat = 50.0, Lng = 30.0, Speed = 5m, FuelLevel = 90m, Timestamp = from.AddHours(-2) });
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machine.Id, Lat = 50.1, Lng = 30.1, Speed = 5m, FuelLevel = 89m, Timestamp = from.AddMinutes(-1) });
+        // 2 points inside range
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machine.Id, Lat = 50.2, Lng = 30.2, Speed = 10m, FuelLevel = 88m, Timestamp = from.AddMinutes(30) });
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machine.Id, Lat = 50.3, Lng = 30.3, Speed = 15m, FuelLevel = 87m, Timestamp = from.AddHours(1) });
+        // 1 point after range
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machine.Id, Lat = 50.4, Lng = 30.4, Speed = 20m, FuelLevel = 86m, Timestamp = to.AddMinutes(1) });
+        await context.SaveChangesAsync();
+
+        var handler = new GetGpsTrackHandler(context);
+        var result = await handler.Handle(
+            new GetGpsTrackQuery(machine.Id, from, to),
+            CancellationToken.None);
+
+        result.Should().NotBeNull();
+        result!.Should().HaveCount(2);
+        result.Should().AllSatisfy(p =>
+        {
+            p.Timestamp.Should().BeOnOrAfter(from);
+            p.Timestamp.Should().BeOnOrBefore(to);
+        });
+    }
+
+    [Fact]
+    public async Task GetGpsTrack_UnknownMachineId_ReturnsEmptyList()
+    {
+        var context = CreateDbContext();
+        var machineWithTracks = CreateMachine(context);
+        var machineWithoutTracks = CreateMachine(context);
+
+        var baseTime = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machineWithTracks.Id, Lat = 50.1, Lng = 30.1, Speed = 10m, FuelLevel = 80m, Timestamp = baseTime.AddMinutes(10) });
+        await context.SaveChangesAsync();
+
+        var handler = new GetGpsTrackHandler(context);
+        var result = await handler.Handle(
+            new GetGpsTrackQuery(machineWithoutTracks.Id, baseTime, baseTime.AddHours(1)),
+            CancellationToken.None);
+
+        result.Should().NotBeNull();
+        result!.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetGpsTrack_MultiplePoints_ReturnsOrderedByTimestamp()
+    {
+        var context = CreateDbContext();
+        var machine = CreateMachine(context);
+
+        var baseTime = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+        // Add 5 points in random order
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machine.Id, Lat = 50.5, Lng = 30.5, Speed = 25m, FuelLevel = 72m, Timestamp = baseTime.AddMinutes(50) });
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machine.Id, Lat = 50.1, Lng = 30.1, Speed = 5m,  FuelLevel = 80m, Timestamp = baseTime.AddMinutes(10) });
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machine.Id, Lat = 50.3, Lng = 30.3, Speed = 15m, FuelLevel = 76m, Timestamp = baseTime.AddMinutes(30) });
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machine.Id, Lat = 50.2, Lng = 30.2, Speed = 10m, FuelLevel = 78m, Timestamp = baseTime.AddMinutes(20) });
+        context.GpsTracks.Add(new GpsTrack { VehicleId = machine.Id, Lat = 50.4, Lng = 30.4, Speed = 20m, FuelLevel = 74m, Timestamp = baseTime.AddMinutes(40) });
+        await context.SaveChangesAsync();
+
+        var handler = new GetGpsTrackHandler(context);
+        var result = await handler.Handle(
+            new GetGpsTrackQuery(machine.Id, baseTime, baseTime.AddHours(1)),
+            CancellationToken.None);
+
+        result.Should().NotBeNull();
+        result!.Should().HaveCount(5);
+        for (var i = 1; i < result.Count; i++)
+            result[i].Timestamp.Should().BeAfter(result[i - 1].Timestamp);
+    }
 }
