@@ -211,6 +211,9 @@ export default function MachineDetail() {
             {t.maintenance.addRecord}
           </Button>
         )}
+        <Button onClick={() => navigate(`/machinery/${id}/maintenance`)}>
+          {t.maintenance.title}
+        </Button>
       </Space>
 
       <PageHeader
