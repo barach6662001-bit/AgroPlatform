@@ -41,4 +41,6 @@ export interface MachineDetailDto extends MachineDto {
   recentFuelLogs: FuelLogDto[];
   totalHoursWorked: number;
   totalFuelConsumed: number;
+  nextMaintenanceDate?: string | null;
+  lastMaintenanceDate?: string | null;
 }

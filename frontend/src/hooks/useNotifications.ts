@@ -6,7 +6,7 @@ export type NotificationType = 'info' | 'warning' | 'error';
 export interface Notification {
   id: string;
   type: NotificationType;
-  titleKey: string;
+  titleKey?: string;
   message: string;
   timestamp: string;
   read: boolean;
@@ -14,7 +14,7 @@ export interface Notification {
 
 interface NotificationsState {
   notifications: Notification[];
-  addNotification: (n: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
+  addNotification: (n: Notification) => void;
   markAsRead: (id: string) => void;
   markAllRead: () => void;
   clearAll: () => void;
@@ -29,18 +29,8 @@ export const useNotificationStore = create<NotificationsState>()(
       notifications: [],
 
       addNotification: (n) => {
-        const id =
-          typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-        const newNotification: Notification = {
-          ...n,
-          id,
-          timestamp: new Date().toISOString(),
-          read: false,
-        };
         set((state) => {
-          const updated = [newNotification, ...state.notifications];
+          const updated = [n, ...state.notifications];
           return { notifications: updated.slice(0, MAX_NOTIFICATIONS) };
         });
       },
