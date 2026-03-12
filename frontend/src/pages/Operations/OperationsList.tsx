@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Table, Tag, Button, Space, Select, message, Modal, Form, Input, InputNumber, DatePicker } from 'antd';
-import { EyeOutlined, PlusOutlined } from '@ant-design/icons';
+import { EyeOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getOperations, createOperation } from '../../api/operations';
+import { getOperations, createOperation, updateOperation } from '../../api/operations';
 import { getFields } from '../../api/fields';
 import type { AgroOperationDto, AgroOperationType } from '../../types/operation';
 import type { FieldDto } from '../../types/field';
@@ -10,6 +10,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import dayjs from 'dayjs';
 
 const typeColors: Record<string, string> = {
   Sowing: 'green', Fertilizing: 'blue', PlantProtection: 'orange',
@@ -27,11 +28,16 @@ export default function OperationsList() {
   const [saving, setSaving] = useState(false);
   const [fields, setFields] = useState<FieldDto[]>([]);
   const [form] = Form.useForm();
+  const [editRecord, setEditRecord] = useState<AgroOperationDto | null>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editForm] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { hasRole } = useRole();
 
   const canCreate = hasRole(['Administrator', 'Manager']);
+  const canEdit = hasRole(['Administrator', 'Manager']);
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
@@ -68,6 +74,27 @@ export default function OperationsList() {
     }
   };
 
+  const handleEdit = async () => {
+    if (!editRecord) return;
+    try {
+      const values = await editForm.validateFields();
+      setEditSaving(true);
+      const plannedDate = values.plannedDate
+        ? (values.plannedDate as { toISOString: () => string }).toISOString()
+        : editRecord.plannedDate;
+      await updateOperation(editRecord.id, { ...values, plannedDate });
+      message.success(t.operations.operationUpdated);
+      editForm.resetFields();
+      setEditModalOpen(false);
+      setEditRecord(null);
+      load();
+    } catch {
+      message.error(t.operations.operationUpdateError);
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
   const operationTypeOptions = Object.entries(t.operationTypes).map(([k, v]) => ({ value: k, label: v }));
   const fieldOptions = fields.map((f) => ({ value: f.id, label: f.name }));
 
@@ -97,9 +124,27 @@ export default function OperationsList() {
     {
       title: t.operations.actions, key: 'actions',
       render: (_: unknown, record: AgroOperationDto) => (
-        <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/operations/${record.id}`)}>
-          {t.operations.details}
-        </Button>
+        <Space>
+          <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/operations/${record.id}`)}>
+            {t.operations.details}
+          </Button>
+          {canEdit && !record.isCompleted && (
+            <Button
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => {
+                setEditRecord(record);
+                editForm.setFieldsValue({
+                  operationType: record.operationType,
+                  plannedDate: record.plannedDate ? dayjs(record.plannedDate) : undefined,
+                  description: record.description,
+                  areaProcessed: record.areaProcessed,
+                });
+                setEditModalOpen(true);
+              }}
+            />
+          )}
+        </Space>
       ),
     },
   ];
@@ -176,6 +221,32 @@ export default function OperationsList() {
           </Form.Item>
         </Form>
       </Modal>
+
+      <Modal
+        title={t.operations.editOperation}
+        open={editModalOpen}
+        onOk={handleEdit}
+        onCancel={() => { editForm.resetFields(); setEditModalOpen(false); setEditRecord(null); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={editSaving}
+      >
+        <Form form={editForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="operationType" label={t.operations.type} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={operationTypeOptions} placeholder={t.operations.selectType} />
+          </Form.Item>
+          <Form.Item name="plannedDate" label={t.operations.plannedDate} rules={[{ required: true, message: t.common.required }]}>
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="description" label={t.operations.description}>
+            <Input.TextArea rows={3} placeholder={t.operations.enterDescription} />
+          </Form.Item>
+          <Form.Item name="areaProcessed" label={t.operations.areaProcessed}>
+            <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
+

@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Warehouses.Commands.CreateWarehouse;
 using AgroPlatform.Application.Warehouses.Commands.CreateWarehouseItem;
 using AgroPlatform.Application.Warehouses.Commands.InventoryAdjust;
+using AgroPlatform.Application.Warehouses.Commands.UpdateWarehouseItem;
 using AgroPlatform.Application.Warehouses.Commands.IssueStock;
 using AgroPlatform.Application.Warehouses.Commands.ReceiptStock;
 using AgroPlatform.Application.Warehouses.Commands.TransferStock;
@@ -82,6 +83,20 @@ public class WarehousesController : ControllerBase
     {
         var result = await _sender.Send(new GetWarehouseItemsQuery(category, page, pageSize), cancellationToken);
         return Ok(result);
+    }
+
+    /// <summary>Updates an existing stock item.</summary>
+    /// <param name="id">The ID of the item to update.</param>
+    /// <param name="command">Updated item data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("items/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateWarehouseItem(Guid id, [FromBody] UpdateWarehouseItemCommand command, CancellationToken cancellationToken)
+    {
+        await _sender.Send(command with { Id = id }, cancellationToken);
+        return NoContent();
     }
 
     /// <summary>Records a stock receipt (incoming delivery) to a warehouse.</summary>

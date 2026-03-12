@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Table, Select, Space, message, Tag, Button, Modal, Form, InputNumber, DatePicker, Input } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
-import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue, createWarehouseItem, createTransfer } from '../../api/warehouses';
+import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue, createWarehouseItem, createTransfer, updateWarehouseItem } from '../../api/warehouses';
 import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { useRole } from '../../hooks/useRole';
 
 export default function WarehouseItems() {
   const [searchParams] = useSearchParams();
@@ -28,7 +29,14 @@ export default function WarehouseItems() {
   const [issueForm] = Form.useForm();
   const [createItemForm] = Form.useForm();
   const [transferForm] = Form.useForm();
+  const [editItemRecord, setEditItemRecord] = useState<WarehouseItemDto | null>(null);
+  const [editItemOpen, setEditItemOpen] = useState(false);
+  const [editItemSaving, setEditItemSaving] = useState(false);
+  const [editItemForm] = Form.useForm();
   const { t } = useTranslation();
+  const { hasRole } = useRole();
+
+  const canManageItems = hasRole(['Administrator', 'Manager', 'Storekeeper']);
 
   const loadBalances = (warehouseId?: string, p = page, ps = pageSize) => {
     setLoading(true);
@@ -152,6 +160,25 @@ export default function WarehouseItems() {
     }
   };
 
+  const handleEditItem = async () => {
+    if (!editItemRecord) return;
+    try {
+      const values = await editItemForm.validateFields();
+      setEditItemSaving(true);
+      await updateWarehouseItem(editItemRecord.id, values);
+      message.success(t.warehouses.updateItemSuccess);
+      editItemForm.resetFields();
+      setEditItemOpen(false);
+      setEditItemRecord(null);
+      const wi = await getWarehouseItems({ page: 1, pageSize: 100 });
+      setItems(wi.items);
+    } catch {
+      message.error(t.warehouses.updateItemError);
+    } finally {
+      setEditItemSaving(false);
+    }
+  };
+
   const warehouseOptions = warehouses.map((w) => ({ value: w.id, label: w.name }));
   const itemOptions = items.map((i) => ({ value: i.id, label: `${i.name} (${i.code})` }));
 
@@ -174,6 +201,25 @@ export default function WarehouseItems() {
     {
       title: t.warehouses.updated, dataIndex: 'lastUpdatedUtc', key: 'lastUpdatedUtc',
       render: (v: string) => new Date(v).toLocaleDateString(),
+    },
+    {
+      title: t.common.actions, key: 'actions',
+      render: (_: unknown, record: BalanceDto) => {
+        const item = items.find((i) => i.id === record.itemId);
+        return canManageItems && item ? (
+          <Button
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditItemRecord(item);
+              editItemForm.setFieldsValue(item);
+              setEditItemOpen(true);
+            }}
+          >
+            {t.warehouses.editItem}
+          </Button>
+        ) : null;
+      },
     },
   ];
 
@@ -331,6 +377,46 @@ export default function WarehouseItems() {
             <InputNumber min={0.001} step={0.001} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="note" label={t.common.notes}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Edit Item Modal */}
+      <Modal
+        title={t.warehouses.editItem}
+        open={editItemOpen}
+        onOk={handleEditItem}
+        onCancel={() => { editItemForm.resetFields(); setEditItemOpen(false); setEditItemRecord(null); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={editItemSaving}
+      >
+        <Form form={editItemForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="name" label={t.warehouses.name} rules={[{ required: true, message: t.common.required }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="code" label={t.warehouses.code} rules={[{ required: true, message: t.common.required }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="category" label={t.warehouses.category} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={[
+              { value: 'Seeds', label: t.warehouses.categorySeeds },
+              { value: 'Fertilizers', label: t.warehouses.categoryFertilizers },
+              { value: 'Fuel', label: t.warehouses.categoryFuel },
+              { value: 'Pesticides', label: t.warehouses.categoryPesticides },
+              { value: 'Other', label: t.warehouses.categoryOther },
+            ]} />
+          </Form.Item>
+          <Form.Item name="baseUnit" label={t.warehouses.baseUnit} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={[
+              { value: 'kg', label: 'kg' },
+              { value: 'l', label: 'l' },
+              { value: 't', label: 't' },
+              { value: 'pcs', label: 'pcs' },
+            ]} />
+          </Form.Item>
+          <Form.Item name="description" label={t.warehouses.description}>
             <Input />
           </Form.Item>
         </Form>

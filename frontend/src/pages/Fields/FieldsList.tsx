@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, InputNumber, Segmented } from 'antd';
-import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, InputNumber, Segmented, Select } from 'antd';
+import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getFields, deleteField, createField } from '../../api/fields';
+import { getFields, deleteField, createField, updateField } from '../../api/fields';
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
@@ -20,12 +20,17 @@ export default function FieldsList() {
   const [saving, setSaving] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [form] = Form.useForm();
+  const [editRecord, setEditRecord] = useState<FieldDto | null>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editForm] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { hasRole } = useRole();
 
   const canCreate = hasRole(['Administrator', 'Manager']);
   const canDelete = hasRole(['Administrator', 'Manager']);
+  const canEdit = hasRole(['Administrator', 'Manager']);
 
   const load = (p = page, ps = pageSize, s = search) => {
     setLoading(true);
@@ -69,6 +74,24 @@ export default function FieldsList() {
     }
   };
 
+  const handleEdit = async () => {
+    if (!editRecord) return;
+    try {
+      const values = await editForm.validateFields();
+      setEditSaving(true);
+      await updateField(editRecord.id, values);
+      message.success(t.fields.fieldUpdated);
+      editForm.resetFields();
+      setEditModalOpen(false);
+      setEditRecord(null);
+      load();
+    } catch {
+      message.error(t.fields.fieldUpdateError);
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
   const columns = [
     { title: t.fields.name, dataIndex: 'name', key: 'name', sorter: (a: FieldDto, b: FieldDto) => a.name.localeCompare(b.name) },
     { title: t.fields.cadastralNumber, dataIndex: 'cadastralNumber', key: 'cadastralNumber', render: (v: string) => v || '—' },
@@ -83,6 +106,13 @@ export default function FieldsList() {
       render: (_: unknown, record: FieldDto) => (
         <Space>
           <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/fields/${record.id}`)}>{t.fields.details}</Button>
+          {canEdit && (
+            <Button
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => { setEditRecord(record); editForm.setFieldsValue(record); setEditModalOpen(true); }}
+            />
+          )}
           {canDelete && (
             <Popconfirm title={t.fields.deleteField} onConfirm={() => handleDelete(record.id)}>
               <Button size="small" danger icon={<DeleteOutlined />} />
@@ -161,6 +191,44 @@ export default function FieldsList() {
           </Form.Item>
           <Form.Item name="soilType" label={t.fields.soilType}>
             <Input />
+          </Form.Item>
+          <Form.Item name="notes" label={t.fields.notes}>
+            <Input.TextArea rows={3} />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title={t.fields.editField}
+        open={editModalOpen}
+        onOk={handleEdit}
+        onCancel={() => { editForm.resetFields(); setEditModalOpen(false); setEditRecord(null); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={editSaving}
+      >
+        <Form form={editForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="name" label={t.fields.name} rules={[{ required: true, message: t.common.required }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="cadastralNumber" label={t.fields.cadastralNumber}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="areaHectares" label={t.fields.area} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="soilType" label={t.fields.soilType}>
+            <Select
+              allowClear
+              options={[
+                { value: 'Sandy', label: 'Sandy' },
+                { value: 'Clay', label: 'Clay' },
+                { value: 'Loam', label: 'Loam' },
+                { value: 'Silt', label: 'Silt' },
+                { value: 'Peat', label: 'Peat' },
+                { value: 'Chalk', label: 'Chalk' },
+              ]}
+            />
           </Form.Item>
           <Form.Item name="notes" label={t.fields.notes}>
             <Input.TextArea rows={3} />
