@@ -9,4 +9,5 @@ public class WarehouseItem : AuditableEntity
     public string Category { get; set; } = string.Empty;
     public string BaseUnit { get; set; } = string.Empty;
     public string? Description { get; set; }
+    public decimal? MinimumQuantity { get; set; }
 }

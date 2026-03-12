@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber, Popconfirm, Card, Divider, Empty } from 'antd';
-import { PlusOutlined, DeleteOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined } from '@ant-design/icons';
 import { getCostRecords, getCostSummary, createCostRecord, deleteCostRecord } from '../../api/economics';
 import type { CostSummaryDto } from '../../api/economics';
+import { getBudgets } from '../../api/budgets';
+import type { BudgetDto } from '../../api/budgets';
 import type { CostRecordDto, MaterialKpiItem } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
@@ -11,6 +13,7 @@ import MaterialKpiCards from '../../components/MaterialKpiCards';
 import type { PLTableRow } from '../../components/PLTable';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import apiClient from '../../api/axios';
 
 const { RangePicker } = DatePicker;
 
@@ -20,24 +23,12 @@ const categoryColors: Record<string, string> = {
   Other: 'default',
 };
 
-/**
- * Default plan budgets per category (UAH).
- * These serve as reference targets for the P&L progress bars.
- * In a full implementation these would come from a dedicated budget API.
- */
-const DEFAULT_PLANS: Record<string, number> = {
-  Seeds:       50_000,
-  Fertilizers: 80_000,
-  Pesticides:  40_000,
-  Fuel:        60_000,
-  Labor:       70_000,
-  Equipment:   30_000,
-  Other:       20_000,
-};
+const CATEGORIES = ['Seeds', 'Fertilizers', 'Pesticides', 'Fuel', 'Labor', 'Equipment', 'Other'];
 
 export default function CostRecords() {
   const [result, setResult] = useState<PaginatedResult<CostRecordDto> | null>(null);
   const [summary, setSummary] = useState<CostSummaryDto | null>(null);
+  const [budgets, setBudgets] = useState<BudgetDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState<string | undefined>();
   const [dateRange, setDateRange] = useState<[string, string] | null>(null);
@@ -45,12 +36,15 @@ export default function CostRecords() {
   const [pageSize, setPageSize] = useState(20);
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const { hasRole } = useRole();
 
   const canCreate = hasRole(['Administrator', 'Manager']);
   const canDelete = hasRole(['Administrator', 'Manager']);
+
+  const currentYear = new Date().getFullYear();
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
@@ -68,7 +62,9 @@ export default function CostRecords() {
       dateTo: dateRange?.[1],
     }).then(setSummary);
 
-    Promise.all([paginated, summaryFetch])
+    const budgetFetch = getBudgets(currentYear).then(setBudgets);
+
+    Promise.all([paginated, summaryFetch, budgetFetch])
       .catch(() => message.error(t.economics.loadError))
       .finally(() => setLoading(false));
   };
@@ -102,60 +98,53 @@ export default function CostRecords() {
     }
   };
 
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const resp = await apiClient.get('/api/economics/cost-records/export', {
+        params: { category, dateFrom: dateRange?.[0], dateTo: dateRange?.[1] },
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([resp.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `cost-records-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      message.error(t.economics.loadError);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const records = result?.items ?? [];
   const totalAmount = records.reduce((sum, r) => sum + r.amount, 0);
 
-  // Build PLTable rows from server-side summary
   const sumByCategory = (cat: string) =>
     summary?.byCategory.find((c) => c.category === cat)?.amount ?? 0;
 
-  const plRows: PLTableRow[] = Object.keys(DEFAULT_PLANS).map((cat) => ({
+  const planByCategory = (cat: string) =>
+    budgets.find((b) => b.category === cat)?.plannedAmount ?? 0;
+
+  const plRows: PLTableRow[] = CATEGORIES.map((cat) => ({
     key: cat,
     label: t.costCategories[cat as keyof typeof t.costCategories] ?? cat,
-    plan: DEFAULT_PLANS[cat],
+    plan: planByCategory(cat),
     fact: sumByCategory(cat),
     unit: 'UAH',
     lowerIsBetter: true,
   }));
 
+  const hasBudget = plRows.some((r) => r.plan > 0);
+
   const kpiItems: MaterialKpiItem[] = [
-    {
-      key: 'Fertilizers',
-      label: t.materialKpi.fertilizers,
-      amount: sumByCategory('Fertilizers'),
-      icon: <ExperimentOutlined />,
-    },
-    {
-      key: 'Seeds',
-      label: t.materialKpi.seeds,
-      amount: sumByCategory('Seeds'),
-      icon: <AppstoreOutlined />,
-    },
-    {
-      key: 'Pesticides',
-      label: t.materialKpi.pesticides,
-      amount: sumByCategory('Pesticides'),
-      icon: <MedicineBoxOutlined />,
-    },
-    {
-      key: 'Fuel',
-      label: t.materialKpi.fuel,
-      amount: sumByCategory('Fuel'),
-      icon: <ThunderboltOutlined />,
-    },
-    {
-      key: 'Harvest',
-      label: t.materialKpi.harvest,
-      amount: 0,
-      icon: <GiftOutlined />,
-    },
-    {
-      key: 'Total',
-      label: t.materialKpi.total,
-      amount: summary?.totalAmount ?? 0,
-      icon: <CalculatorOutlined />,
-      isTotal: true,
-    },
+    { key: 'Fertilizers', label: t.materialKpi.fertilizers, amount: sumByCategory('Fertilizers'), icon: <ExperimentOutlined /> },
+    { key: 'Seeds', label: t.materialKpi.seeds, amount: sumByCategory('Seeds'), icon: <AppstoreOutlined /> },
+    { key: 'Pesticides', label: t.materialKpi.pesticides, amount: sumByCategory('Pesticides'), icon: <MedicineBoxOutlined /> },
+    { key: 'Fuel', label: t.materialKpi.fuel, amount: sumByCategory('Fuel'), icon: <ThunderboltOutlined /> },
+    { key: 'Harvest', label: t.materialKpi.harvest, amount: 0, icon: <GiftOutlined /> },
+    { key: 'Total', label: t.materialKpi.total, amount: summary?.totalAmount ?? 0, icon: <CalculatorOutlined />, isTotal: true },
   ];
 
   const columns = [
@@ -188,22 +177,16 @@ export default function CostRecords() {
     <div>
       <PageHeader title={t.economics.title} subtitle={t.economics.subtitle} />
 
-      {/* Material KPI summary cards */}
       <div style={{ marginBottom: 24 }}>
         <MaterialKpiCards items={kpiItems} loading={loading} />
       </div>
 
-      {/* P&L summary table */}
       <Card
         style={{ marginBottom: 24, background: '#161B22', border: '1px solid #30363D' }}
         bodyStyle={{ padding: 0 }}
-        title={
-          <span style={{ color: '#E6EDF3', fontSize: 15, fontWeight: 600 }}>
-            {t.economics.plTableTitle}
-          </span>
-        }
+        title={<span style={{ color: '#E6EDF3', fontSize: 15, fontWeight: 600 }}>{t.economics.plTableTitle}</span>}
       >
-        {(summary?.totalAmount ?? 0) === 0 && !loading ? (
+        {!hasBudget && !loading ? (
           <div style={{ padding: '32px 16px' }}>
             <Empty description={<span style={{ color: '#8B949E' }}>{t.economics.plNoPlan}</span>} />
           </div>
@@ -222,7 +205,6 @@ export default function CostRecords() {
 
       <Divider style={{ borderColor: '#30363D', margin: '0 0 16px' }} />
 
-      {/* Filters & action buttons */}
       <Space style={{ marginBottom: 16 }} wrap>
         <Select
           placeholder={t.economics.categoryFilter}
@@ -239,17 +221,15 @@ export default function CostRecords() {
           placeholder={[t.economics.dateFrom, t.economics.dateTo]}
         />
         {canCreate && (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setModalOpen(true)}
-          >
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
             {t.economics.createRecord}
           </Button>
         )}
+        <Button icon={<DownloadOutlined />} loading={exporting} onClick={handleExport}>
+          {t.warehouses_export.exportCosts}
+        </Button>
       </Space>
 
-      {/* Details table */}
       <Table
         dataSource={records}
         columns={columns}

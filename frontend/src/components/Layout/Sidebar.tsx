@@ -3,7 +3,7 @@ import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
   DollarOutlined, LineChartOutlined, BarChartOutlined, ThunderboltOutlined,
   TeamOutlined, UserOutlined, SwapOutlined, RiseOutlined, SettingOutlined,
-  EnvironmentOutlined,
+  EnvironmentOutlined, FundOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -23,6 +23,7 @@ export default function Sidebar() {
   const economicsChildren = [
     { key: '/economics', label: t.nav.costs, icon: <DollarOutlined /> },
     { key: '/economics/pnl', label: t.nav.pnl, icon: <RiseOutlined /> },
+    { key: '/economics/budget', label: t.nav.budget, icon: <FundOutlined /> },
   ];
 
   const analyticsChildren = [

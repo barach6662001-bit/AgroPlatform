@@ -11,10 +11,17 @@ namespace AgroPlatform.Application.AgroOperations.Commands.CompleteAgroOperation
 public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperationCommand>
 {
     private readonly IAppDbContext _context;
+    private readonly INotificationService _notifications;
+    private readonly ICurrentUserService _currentUser;
 
-    public CompleteAgroOperationHandler(IAppDbContext context)
+    public CompleteAgroOperationHandler(
+        IAppDbContext context,
+        INotificationService notifications,
+        ICurrentUserService currentUser)
     {
         _context = context;
+        _notifications = notifications;
+        _currentUser = currentUser;
     }
 
     public async Task Handle(CompleteAgroOperationCommand request, CancellationToken cancellationToken)
@@ -60,9 +67,29 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
                 balance.BalanceBase -= resource.ActualQuantity.Value;
 
                 resource.StockMoveId = move.Id;
+
+                // Check low-stock threshold
+                var item = await _context.WarehouseItems.FindAsync([resource.WarehouseItemId], cancellationToken);
+                if (item?.MinimumQuantity.HasValue == true && balance.BalanceBase < item.MinimumQuantity.Value)
+                {
+                    await _notifications.SendAsync(
+                        _currentUser.TenantId,
+                        "warning",
+                        "Низький залишок",
+                        $"Товар '{item.Name}' нижче мінімуму: {balance.BalanceBase:F2} {item.BaseUnit} (мін: {item.MinimumQuantity:F2})",
+                        cancellationToken);
+                }
             }
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Notify operation completed
+        await _notifications.SendAsync(
+            _currentUser.TenantId,
+            "info",
+            "Операцію завершено",
+            $"Агрооперацію успішно завершено {(request.CompletedDate.HasValue ? request.CompletedDate.Value.ToString("dd.MM.yyyy") : "")}",
+            cancellationToken);
     }
 }
