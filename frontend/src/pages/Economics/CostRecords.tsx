@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber, Popconfirm, Card, Divider, Empty } from 'antd';
 import { PlusOutlined, DeleteOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined } from '@ant-design/icons';
-import { getCostRecords, createCostRecord, deleteCostRecord } from '../../api/economics';
+import { getCostRecords, getCostSummary, createCostRecord, deleteCostRecord } from '../../api/economics';
+import type { CostSummaryDto } from '../../api/economics';
 import type { CostRecordDto, MaterialKpiItem } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
@@ -36,7 +37,7 @@ const DEFAULT_PLANS: Record<string, number> = {
 
 export default function CostRecords() {
   const [result, setResult] = useState<PaginatedResult<CostRecordDto> | null>(null);
-  const [allRecords, setAllRecords] = useState<CostRecordDto[]>([]);
+  const [summary, setSummary] = useState<CostSummaryDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState<string | undefined>();
   const [dateRange, setDateRange] = useState<[string, string] | null>(null);
@@ -53,7 +54,6 @@ export default function CostRecords() {
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
-    // Paginated fetch for the details table
     const paginated = getCostRecords({
       category,
       dateFrom: dateRange?.[0],
@@ -62,19 +62,13 @@ export default function CostRecords() {
       pageSize: ps,
     }).then(setResult);
 
-    // Fetch all records for the PLTable totals (up to 1000).
-    // NOTE: If the total number of cost records ever exceeds 1000, the PLTable
-    // category aggregation will be incomplete. A dedicated aggregation API
-    // endpoint would be the proper solution at that scale.
-    const all = getCostRecords({
+    const summaryFetch = getCostSummary({
       category,
       dateFrom: dateRange?.[0],
       dateTo: dateRange?.[1],
-      page: 1,
-      pageSize: 1000,
-    }).then((r) => setAllRecords(r.items));
+    }).then(setSummary);
 
-    Promise.all([paginated, all])
+    Promise.all([paginated, summaryFetch])
       .catch(() => message.error(t.economics.loadError))
       .finally(() => setLoading(false));
   };
@@ -111,24 +105,18 @@ export default function CostRecords() {
   const records = result?.items ?? [];
   const totalAmount = records.reduce((sum, r) => sum + r.amount, 0);
 
-  // Build PLTable rows by grouping allRecords by category
-  const plRows: PLTableRow[] = Object.keys(DEFAULT_PLANS).map((cat) => {
-    const fact = allRecords
-      .filter((r) => r.category === cat)
-      .reduce((sum, r) => sum + r.amount, 0);
-    return {
-      key: cat,
-      label: t.costCategories[cat as keyof typeof t.costCategories] ?? cat,
-      plan: DEFAULT_PLANS[cat],
-      fact,
-      unit: 'UAH',
-      lowerIsBetter: true, // costs: lower-is-better
-    };
-  });
-
-  // Build the six material KPI items from allRecords
+  // Build PLTable rows from server-side summary
   const sumByCategory = (cat: string) =>
-    allRecords.filter((r) => r.category === cat).reduce((s, r) => s + r.amount, 0);
+    summary?.byCategory.find((c) => c.category === cat)?.amount ?? 0;
+
+  const plRows: PLTableRow[] = Object.keys(DEFAULT_PLANS).map((cat) => ({
+    key: cat,
+    label: t.costCategories[cat as keyof typeof t.costCategories] ?? cat,
+    plan: DEFAULT_PLANS[cat],
+    fact: sumByCategory(cat),
+    unit: 'UAH',
+    lowerIsBetter: true,
+  }));
 
   const kpiItems: MaterialKpiItem[] = [
     {
@@ -158,13 +146,13 @@ export default function CostRecords() {
     {
       key: 'Harvest',
       label: t.materialKpi.harvest,
-      amount: 0, // Harvest revenue is not tracked in cost records; placeholder for future data
+      amount: 0,
       icon: <GiftOutlined />,
     },
     {
       key: 'Total',
       label: t.materialKpi.total,
-      amount: allRecords.reduce((s, r) => s + r.amount, 0),
+      amount: summary?.totalAmount ?? 0,
       icon: <CalculatorOutlined />,
       isTotal: true,
     },
@@ -215,7 +203,7 @@ export default function CostRecords() {
           </span>
         }
       >
-        {allRecords.length === 0 && !loading ? (
+        {(summary?.totalAmount ?? 0) === 0 && !loading ? (
           <div style={{ padding: '32px 16px' }}>
             <Empty description={<span style={{ color: '#8B949E' }}>{t.economics.plNoPlan}</span>} />
           </div>
