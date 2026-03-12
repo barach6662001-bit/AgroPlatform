@@ -26,6 +26,12 @@ export const createCostRecord = (data: {
 export const deleteCostRecord = (id: string) =>
   apiClient.delete(`/api/economics/cost-records/${id}`);
 
+export interface CategorySummaryDto { category: string; amount: number; count: number; }
+export interface CostSummaryDto { totalAmount: number; byCategory: CategorySummaryDto[]; }
+
+export const getCostSummary = (params?: { category?: string; dateFrom?: string; dateTo?: string }) =>
+  apiClient.get<CostSummaryDto>('/api/economics/cost-summary', { params }).then((r) => r.data);
+
 export const getFieldPnl = (params?: {
   year?: number;
   estimatedPricePerTonne?: number;

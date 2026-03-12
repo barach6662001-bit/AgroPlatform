@@ -2,6 +2,7 @@ using AgroPlatform.Application.Economics.Commands.CreateCostRecord;
 using AgroPlatform.Application.Economics.Commands.DeleteCostRecord;
 using AgroPlatform.Application.Economics.DTOs;
 using AgroPlatform.Application.Economics.Queries.GetCostRecords;
+using AgroPlatform.Application.Economics.Queries.GetCostSummary;
 using AgroPlatform.Application.Economics.Queries.GetFieldPnl;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -63,6 +64,19 @@ public class EconomicsController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(new GetCostRecordsQuery(category, fieldId, agroOperationId, dateFrom, dateTo, page, pageSize), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns aggregated cost totals grouped by category.</summary>
+    [HttpGet("cost-summary")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCostSummary(
+        [FromQuery] string? category,
+        [FromQuery] DateTime? dateFrom,
+        [FromQuery] DateTime? dateTo,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetCostSummaryQuery(category, dateFrom, dateTo), cancellationToken);
         return Ok(result);
     }
 
