@@ -89,7 +89,7 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
             _currentUser.TenantId,
             "info",
             "Операцію завершено",
-            $"Агрооперацію успішно завершено {(request.CompletedDate.HasValue ? request.CompletedDate.Value.ToString("dd.MM.yyyy") : "")}",
+            $"Агрооперацію успішно завершено {request.CompletedDate:dd.MM.yyyy}",
             cancellationToken);
     }
 }
