@@ -27,6 +27,7 @@ import ResourceConsumption from './pages/Analytics/ResourceConsumption';
 import FieldEfficiency from './pages/Analytics/FieldEfficiency';
 import UsersPage from './pages/Settings/UsersPage';
 import ProfilePage from './pages/Profile/ProfilePage';
+import NotificationsPage from './pages/Notifications/NotificationsPage';
 import AccessDenied from './pages/AccessDenied';
 import NotFound from './pages/NotFound';
 
@@ -68,6 +69,7 @@ export default function App() {
             <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
             <Route path="/settings/users" element={<UsersPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
           <Route path="*" element={<NotFound />} />

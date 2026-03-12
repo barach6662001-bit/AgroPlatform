@@ -1,4 +1,9 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+    <File Path="docker-compose.prod.yml" />
+    <File Path=".env.example" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/AgroPlatform.Api/AgroPlatform.Api.csproj" />
     <Project Path="src/AgroPlatform.Application/AgroPlatform.Application.csproj" />
