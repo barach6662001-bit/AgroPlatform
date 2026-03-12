@@ -1,8 +1,9 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.Economics.Commands.UpsertBudget;
+using AgroPlatform.Application.Economics.Queries.ExportBudgets;
 using AgroPlatform.Application.Economics.Queries.GetBudgets;
 using AgroPlatform.Domain.Economics;
-using AgroPlatform.UnitTests.TestDoubles;
+using AgroPlatform.Domain.Enums;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,69 +11,154 @@ namespace AgroPlatform.UnitTests.Economics;
 
 public class BudgetHandlerTests
 {
-    private static (IAppDbContext ctx, FakeCurrentUserService user) CreateContext()
+    private sealed class TestCurrentUserService : ICurrentUserService
+    {
+        public string? UserId => null;
+        public string? UserName => null;
+        public Guid TenantId { get; } = Guid.NewGuid();
+        public UserRole? Role => null;
+        public bool IsInRole(UserRole role) => false;
+    }
+
+    private static IAppDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        var user = new FakeCurrentUserService();
-        return (new TestDbContext(options), user);
+        return new TestDbContext(options);
     }
 
-    // ── UpsertBudget ─────────────────────────────────────────────────────────
+    // ── UpsertBudgetHandler ──────────────────────────────────────────────────
 
     [Fact]
-    public async Task UpsertBudget_NewEntry_CreatesAndReturnsId()
+    public async Task UpsertBudget_NewEntry_ReturnsNonEmptyGuid()
     {
-        var (ctx, user) = CreateContext();
-        var handler = new UpsertBudgetHandler(ctx, user);
-        var command = new UpsertBudgetCommand(2025, "Seeds", 50000m, null);
+        var context = CreateDbContext();
+        var currentUser = new TestCurrentUserService();
+        var handler = new UpsertBudgetHandler(context, currentUser);
+        var command = new UpsertBudgetCommand(2024, "Seeds", 10000m, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
         id.Should().NotBeEmpty();
-        var budget = await ((TestDbContext)ctx).Budgets.FindAsync(id);
+    }
+
+    [Fact]
+    public async Task UpsertBudget_NewEntry_PersistsBudgetInDatabase()
+    {
+        var context = CreateDbContext();
+        var currentUser = new TestCurrentUserService();
+        var handler = new UpsertBudgetHandler(context, currentUser);
+        var command = new UpsertBudgetCommand(2024, "Fuel", 5000m, "Fuel note");
+
+        var id = await handler.Handle(command, CancellationToken.None);
+
+        var budget = await ((TestDbContext)context).Budgets.FindAsync(id);
         budget.Should().NotBeNull();
-        budget!.Year.Should().Be(2025);
-        budget.Category.Should().Be("Seeds");
-        budget.PlannedAmount.Should().Be(50000m);
+        budget!.Year.Should().Be(2024);
+        budget.Category.Should().Be("Fuel");
+        budget.PlannedAmount.Should().Be(5000m);
+        budget.Note.Should().Be("Fuel note");
     }
 
     [Fact]
-    public async Task UpsertBudget_ExistingEntry_UpdatesAmountAndReturnsId()
+    public async Task UpsertBudget_ExistingYearAndCategory_UpdatesExistingRecord()
     {
-        var (ctx, user) = CreateContext();
-        var handler = new UpsertBudgetHandler(ctx, user);
-        var command = new UpsertBudgetCommand(2025, "Fuel", 30000m, "Initial");
+        var context = CreateDbContext();
+        var currentUser = new TestCurrentUserService();
+        var handler = new UpsertBudgetHandler(context, currentUser);
 
-        var id1 = await handler.Handle(command, CancellationToken.None);
+        var firstId = await handler.Handle(new UpsertBudgetCommand(2024, "Seeds", 10000m, null), CancellationToken.None);
+        var secondId = await handler.Handle(new UpsertBudgetCommand(2024, "Seeds", 15000m, "Updated"), CancellationToken.None);
 
-        var updateCommand = new UpsertBudgetCommand(2025, "Fuel", 45000m, "Updated");
-        var id2 = await handler.Handle(updateCommand, CancellationToken.None);
-
-        id2.Should().Be(id1);
-        var budget = await ((TestDbContext)ctx).Budgets.FindAsync(id1);
-        budget!.PlannedAmount.Should().Be(45000m);
-        budget.Note.Should().Be("Updated");
-        var count = await ((TestDbContext)ctx).Budgets.CountAsync();
+        firstId.Should().Be(secondId);
+        var count = await ((TestDbContext)context).Budgets.CountAsync();
         count.Should().Be(1);
+
+        var budget = await ((TestDbContext)context).Budgets.FindAsync(firstId);
+        budget!.PlannedAmount.Should().Be(15000m);
+        budget.Note.Should().Be("Updated");
     }
 
-    // ── GetBudgets ───────────────────────────────────────────────────────────
+    // ── GetBudgetsHandler ────────────────────────────────────────────────────
 
     [Fact]
-    public async Task GetBudgets_ByYear_ReturnsMatchingEntries()
+    public async Task GetBudgets_EmptyDatabase_ReturnsEmptyList()
     {
-        var (ctx, _) = CreateContext();
-        ctx.Budgets.Add(new Budget { Year = 2024, Category = "Seeds", PlannedAmount = 10000m });
-        ctx.Budgets.Add(new Budget { Year = 2024, Category = "Fuel", PlannedAmount = 20000m });
-        ctx.Budgets.Add(new Budget { Year = 2025, Category = "Seeds", PlannedAmount = 15000m });
-        await ctx.SaveChangesAsync();
+        var context = CreateDbContext();
+        var handler = new GetBudgetsHandler(context);
 
-        var handler = new GetBudgetsHandler(ctx);
+        var result = await handler.Handle(new GetBudgetsQuery(2024), CancellationToken.None);
+
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetBudgets_FiltersByYearCorrectly()
+    {
+        var context = CreateDbContext();
+        var currentUser = new TestCurrentUserService();
+        context.Budgets.Add(new Budget { TenantId = currentUser.TenantId, Year = 2023, Category = "Seeds", PlannedAmount = 5000m });
+        context.Budgets.Add(new Budget { TenantId = currentUser.TenantId, Year = 2024, Category = "Fuel", PlannedAmount = 8000m });
+        context.Budgets.Add(new Budget { TenantId = currentUser.TenantId, Year = 2024, Category = "Seeds", PlannedAmount = 10000m });
+        await context.SaveChangesAsync();
+
+        var handler = new GetBudgetsHandler(context);
         var result = await handler.Handle(new GetBudgetsQuery(2024), CancellationToken.None);
 
         result.Should().HaveCount(2);
-        result.Should().AllSatisfy(b => b.Year.Should().Be(2024));
+        result.Should().OnlyContain(b => b.Year == 2024);
+    }
+
+    [Fact]
+    public async Task GetBudgets_ReturnsCorrectDtos()
+    {
+        var context = CreateDbContext();
+        var currentUser = new TestCurrentUserService();
+        context.Budgets.Add(new Budget { TenantId = currentUser.TenantId, Year = 2024, Category = "Labor", PlannedAmount = 12000m, Note = "labor note" });
+        await context.SaveChangesAsync();
+
+        var handler = new GetBudgetsHandler(context);
+        var result = await handler.Handle(new GetBudgetsQuery(2024), CancellationToken.None);
+
+        result.Should().HaveCount(1);
+        result[0].Category.Should().Be("Labor");
+        result[0].PlannedAmount.Should().Be(12000m);
+        result[0].Note.Should().Be("labor note");
+    }
+
+    // ── ExportBudgetsHandler ─────────────────────────────────────────────────
+
+    [Fact]
+    public async Task ExportBudgets_ReturnsCsvWithCorrectContentType()
+    {
+        var context = CreateDbContext();
+        var currentUser = new TestCurrentUserService();
+        context.Budgets.Add(new Budget { TenantId = currentUser.TenantId, Year = 2024, Category = "Seeds", PlannedAmount = 10000m });
+        await context.SaveChangesAsync();
+
+        var handler = new ExportBudgetsHandler(context);
+        var result = await handler.Handle(new ExportBudgetsQuery(2024), CancellationToken.None);
+
+        result.ContentType.Should().Be("text/csv");
+        result.Content.Should().NotBeEmpty();
+        result.FileName.Should().Contain("budgets-2024");
+    }
+
+    [Fact]
+    public async Task ExportBudgets_ContentContainsCsvHeaderAndData()
+    {
+        var context = CreateDbContext();
+        var currentUser = new TestCurrentUserService();
+        context.Budgets.Add(new Budget { TenantId = currentUser.TenantId, Year = 2024, Category = "Fuel", PlannedAmount = 5000m, Note = "test" });
+        await context.SaveChangesAsync();
+
+        var handler = new ExportBudgetsHandler(context);
+        var result = await handler.Handle(new ExportBudgetsQuery(2024), CancellationToken.None);
+
+        var content = System.Text.Encoding.UTF8.GetString(result.Content).TrimStart('\ufeff');
+        content.Should().Contain("Year,Category,PlannedAmount,Note");
+        content.Should().Contain("Fuel");
+        content.Should().Contain("5000");
     }
 }

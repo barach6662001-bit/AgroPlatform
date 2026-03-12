@@ -18,6 +18,7 @@ import OperationsList from './pages/Operations/OperationsList';
 import OperationDetail from './pages/Operations/OperationDetail';
 import MachineryList from './pages/Machinery/MachineryList';
 import MachineDetail from './pages/Machinery/MachineDetail';
+import MaintenancePage from './pages/Machinery/MaintenancePage';
 import FleetMap from './pages/Fleet/FleetMap';
 import CostRecords from './pages/Economics/CostRecords';
 import FieldPnl from './pages/Economics/FieldPnl';
@@ -59,6 +60,7 @@ export default function App() {
             <Route path="/operations/:id" element={<OperationDetail />} />
             <Route path="/machinery" element={<MachineryList />} />
             <Route path="/machinery/:id" element={<MachineDetail />} />
+            <Route path="/machinery/:id/maintenance" element={<MaintenancePage />} />
             <Route path="/fleet" element={<FleetMap />} />
             <Route path="/economics" element={<CostRecords />} />
             <Route path="/economics/pnl" element={<FieldPnl />} />
