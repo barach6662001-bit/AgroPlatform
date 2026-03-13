@@ -21,7 +21,7 @@ export default function WarehousesList() {
   const { t } = useTranslation();
   const { hasRole } = useRole();
 
-  const canCreate = hasRole(['Administrator', 'Manager']);
+  const canCreate = hasRole(['Administrator', 'Manager', 'Storekeeper']);
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);

@@ -6,12 +6,24 @@ const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '',
 });
 
+function getTenantIdFromJwt(token: string): string | null {
+  try {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    return decoded['TenantId'] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 apiClient.interceptors.request.use((config) => {
   const state = useAuthStore.getState();
   if (state.token) {
     config.headers.Authorization = `Bearer ${state.token}`;
   }
-  const tenantId = state.tenantId || localStorage.getItem('tenantId');
+  const tenantId = state.tenantId
+    || localStorage.getItem('tenantId')
+    || (state.token ? getTenantIdFromJwt(state.token) : null);
   if (tenantId) {
     config.headers['X-Tenant-Id'] = tenantId;
   }
