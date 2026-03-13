@@ -12,6 +12,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("CREATE EXTENSION IF NOT EXISTS postgis;");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
