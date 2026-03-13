@@ -33,7 +33,7 @@ public class UpdateWarehouseItemHandlerTests
         await ((TestDbContext)context).SaveChangesAsync(CancellationToken.None);
 
         var handler = new UpdateWarehouseItemHandler(context);
-        var command = new UpdateWarehouseItemCommand(item.Id, "New Name", "NEW001", "Fertilizers", "t", "New description", minimumQuantity: 10);
+        var command = new UpdateWarehouseItemCommand(item.Id, "New Name", "NEW001", "Fertilizers", "t", "New description", MinimumQuantity: 10);
 
         await handler.Handle(command, CancellationToken.None);
 
@@ -51,7 +51,7 @@ public class UpdateWarehouseItemHandlerTests
     {
         var context = CreateDbContext();
         var handler = new UpdateWarehouseItemHandler(context);
-        var command = new UpdateWarehouseItemCommand(Guid.NewGuid(), "Name", "CODE", "Seeds", "kg", null, minimumQuantity: null);
+        var command = new UpdateWarehouseItemCommand(Guid.NewGuid(), "Name", "CODE", "Seeds", "kg", null, MinimumQuantity: null);
 
         var act = async () => await handler.Handle(command, CancellationToken.None);
 
@@ -70,7 +70,7 @@ public class UpdateWarehouseItemHandlerTests
 
         var handler = new UpdateWarehouseItemHandler(context);
         // Try to update item2 with item1's code
-        var command = new UpdateWarehouseItemCommand(item2.Id, "Item 2 Updated", "CODE001", "Fuel", "l", null, minimumQuantity: null);
+        var command = new UpdateWarehouseItemCommand(item2.Id, "Item 2 Updated", "CODE001", "Fuel", "l", null, MinimumQuantity: null);
 
         var act = async () => await handler.Handle(command, CancellationToken.None);
 
@@ -87,7 +87,7 @@ public class UpdateWarehouseItemHandlerTests
 
         var handler = new UpdateWarehouseItemHandler(context);
         // Update keeping the same code
-        var command = new UpdateWarehouseItemCommand(item.Id, "New Name", "CODE001", "Seeds", "kg", null, minimumQuantity: null);
+        var command = new UpdateWarehouseItemCommand(item.Id, "New Name", "CODE001", "Seeds", "kg", null, MinimumQuantity: null);
 
         var act = async () => await handler.Handle(command, CancellationToken.None);
 
