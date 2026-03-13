@@ -7,5 +7,6 @@ public record CreateWarehouseItemCommand(
     string Code,
     string Category,
     string BaseUnit,
-    string? Description
+    string? Description,
+    decimal? MinimumQuantity
 ) : IRequest<Guid>;

@@ -31,6 +31,7 @@ public class UpdateWarehouseItemHandler : IRequestHandler<UpdateWarehouseItemCom
         item.Category = request.Category;
         item.BaseUnit = request.BaseUnit;
         item.Description = request.Description;
+        item.MinimumQuantity = request.MinimumQuantity;
 
         await _context.SaveChangesAsync(cancellationToken);
     }
