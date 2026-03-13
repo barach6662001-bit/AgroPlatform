@@ -161,7 +161,7 @@ export default function OperationDetail() {
       setAddingMachinery(true);
       await addMachinery(id, {
         machineId: values.machineId,
-        hoursPlanned: values.hoursPlanned,
+        hoursWorked: values.hoursWorked,
       });
       message.success(t.operations.addMachinerySuccess);
       machineryForm.resetFields();
@@ -189,17 +189,17 @@ export default function OperationDetail() {
   if (!op) return null;
 
   const resourceColumns = [
-    { title: t.warehouses.item, dataIndex: 'itemName', key: 'itemName' },
+    { title: t.warehouses.item, dataIndex: 'warehouseItemName', key: 'warehouseItemName' },
     {
       title: t.operations.plannedQty,
       key: 'plannedQuantity',
-      render: (_: unknown, r: AgroOperationResourceDto) => `${r.plannedQuantity} ${r.unit}`,
+      render: (_: unknown, r: AgroOperationResourceDto) => `${r.plannedQuantity} ${r.unitCode}`,
     },
     {
       title: t.operations.actualQty,
       key: 'actualQuantity',
       render: (_: unknown, r: AgroOperationResourceDto) =>
-        r.actualQuantity != null ? `${r.actualQuantity} ${r.unit}` : '—',
+        r.actualQuantity != null ? `${r.actualQuantity} ${r.unitCode}` : '—',
     },
     {
       title: t.common.actions,
@@ -222,14 +222,8 @@ export default function OperationDetail() {
     { title: t.operations.machineName, dataIndex: 'machineName', key: 'machineName' },
     {
       title: t.operations.hoursPlanned,
-      dataIndex: 'hoursPlanned',
-      key: 'hoursPlanned',
-      render: (v: number) => (v ? `${v} ${lang === 'uk' ? 'год' : 'h'}` : '—'),
-    },
-    {
-      title: t.operations.hoursActual,
-      dataIndex: 'hoursActual',
-      key: 'hoursActual',
+      dataIndex: 'hoursWorked',
+      key: 'hoursWorked',
       render: (v: number) => (v ? `${v} ${lang === 'uk' ? 'год' : 'h'}` : '—'),
     },
     {
@@ -428,7 +422,7 @@ export default function OperationDetail() {
         <Form form={actualForm} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item
             name="actualQuantity"
-            label={`${t.operations.actualQty}${actualResource ? ` (${actualResource.unit})` : ''}`}
+            label={`${t.operations.actualQty}${actualResource ? ` (${actualResource.unitCode})` : ''}`}
             rules={[{ required: true, message: t.common.required }]}
           >
             <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
@@ -464,7 +458,7 @@ export default function OperationDetail() {
               }))}
             />
           </Form.Item>
-          <Form.Item name="hoursPlanned" label={t.operations.hoursWorked}>
+          <Form.Item name="hoursWorked" label={t.operations.hoursWorked}>
             <InputNumber min={0} step={0.5} style={{ width: '100%' }} />
           </Form.Item>
         </Form>

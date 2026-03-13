@@ -49,7 +49,7 @@ public class GetFieldPnlHandler : IRequestHandler<GetFieldPnlQuery, IReadOnlyLis
             .Where(h => !h.IsDeleted
                         && fieldIds.Contains(h.FieldId)
                         && h.Year == year)
-            .Select(h => new { h.FieldId, h.YieldPerHectare, CropName = h.Crop.ToString() })
+            .Select(h => new { h.FieldId, h.YieldPerHectare })
             .ToListAsync(cancellationToken);
 
         // Build result

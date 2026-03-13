@@ -153,15 +153,13 @@ export default function MachineDetail() {
   const workLogColumns = [
     { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
     { title: t.machinery.hours, dataIndex: 'hoursWorked', key: 'hoursWorked', render: (v: number) => v.toFixed(2) },
-    { title: t.machinery.fieldName, dataIndex: 'fieldName', key: 'fieldName', render: (v: string) => v || '—' },
-    { title: t.machinery.notes, dataIndex: 'notes', key: 'notes', render: (v: string) => v || '—' },
+    { title: t.machinery.notes, dataIndex: 'description', key: 'description', render: (v: string) => v || '—' },
   ];
 
   const fuelLogColumns = [
     { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
-    { title: t.machinery.liters, dataIndex: 'liters', key: 'liters', render: (v: number) => v != null ? v.toFixed(2) : '—' },
-    { title: t.machinery.pricePerLiter, dataIndex: 'pricePerLiter', key: 'pricePerLiter', render: (v: number) => v ? v.toFixed(2) : '—' },
-    { title: t.machinery.total, dataIndex: 'totalCost', key: 'totalCost', render: (v: number) => v ? `${v.toFixed(2)} UAH` : '—' },
+    { title: t.machinery.liters, dataIndex: 'quantity', key: 'quantity', render: (v: number) => v != null ? v.toFixed(2) : '—' },
+    { title: t.machinery.notes, dataIndex: 'note', key: 'note', render: (v: string) => v || '—' },
   ];
 
   const maintenanceColumns = [
@@ -188,7 +186,7 @@ export default function MachineDetail() {
   const fuelChartData = [...machine.recentFuelLogs]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(-15)
-    .map((l: FuelLogDto) => ({ date: new Date(l.date).toLocaleDateString(), [t.machinery.liters]: l.liters }));
+    .map((l: FuelLogDto) => ({ date: new Date(l.date).toLocaleDateString(), [t.machinery.liters]: l.quantity }));
 
   return (
     <div>
