@@ -8,8 +8,8 @@ const en: Translations = {
   nav: {
     dashboard: 'Dashboard',
     fields: 'Fields',
-    warehouses: 'Warehouse',
-    warehouseItems: 'Stock Balances',
+    warehouses: 'Warehouses',
+    warehouseItems: 'Stock',
     stockMovements: 'Stock Movements',
     operations: 'Operations',
     machinery: 'Machinery',

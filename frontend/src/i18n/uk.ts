@@ -6,7 +6,7 @@ const uk = {
   nav: {
     dashboard: 'Головна',
     fields: 'Поля',
-    warehouses: 'Склад',
+    warehouses: 'Склади',
     warehouseItems: 'Залишки',
     stockMovements: 'Рухи товарів',
     operations: 'Операції',

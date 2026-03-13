@@ -3,7 +3,7 @@ import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
   DollarOutlined, LineChartOutlined, BarChartOutlined, ThunderboltOutlined,
   TeamOutlined, UserOutlined, SwapOutlined, RiseOutlined, SettingOutlined,
-  EnvironmentOutlined, FundOutlined, BellOutlined,
+  EnvironmentOutlined, FundOutlined, BellOutlined, BankOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -16,6 +16,7 @@ export default function Sidebar() {
   const { isAdmin } = useRole();
 
   const warehouseChildren = [
+    { key: '/warehouses', label: t.nav.warehouses, icon: <BankOutlined /> },
     { key: '/warehouses/items', label: t.nav.warehouseItems, icon: <InboxOutlined /> },
     { key: '/warehouses/movements', label: t.nav.stockMovements, icon: <SwapOutlined /> },
   ];
