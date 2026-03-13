@@ -373,7 +373,6 @@ const uk = {
   fuelTypes: {
     Diesel: 'Дизель',
     Gasoline: 'Бензин',
-    Electric: 'Електро',
     Gas: 'Газ',
   },
   economics: {

@@ -434,6 +434,7 @@ frontend/.env.test.local
 # Production secrets — never commit
 appsettings.Production.json
 appsettings.*.Production.json
+src/**/appsettings.Production.json
 
 # Database backups
 backups/

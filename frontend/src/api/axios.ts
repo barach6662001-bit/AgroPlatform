@@ -69,7 +69,7 @@ apiClient.interceptors.response.use(
       const e = i18nErrors[getLang()];
       notification.warning({
         message: e.conflict,
-        description: error.response?.data?.title ?? error.response?.data?.detail ?? e.conflictDesc,
+        description: error.response?.data?.detail ?? e.conflictDesc,
       });
     }
     if (error.response?.status >= 500) {

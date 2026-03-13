@@ -41,7 +41,6 @@ export default function ResourceConsumption() {
       sorter: (a: ResourceConsumptionDto, b: ResourceConsumptionDto) => a.totalConsumed - b.totalConsumed,
     },
     { title: t.analytics.unit, dataIndex: 'unitCode', key: 'unitCode' },
-    { title: t.analytics.operationType, dataIndex: 'category', key: 'category' },
   ];
 
   const chartData = data.map((item) => ({
@@ -67,7 +66,7 @@ export default function ResourceConsumption() {
           <Table
             dataSource={data}
             columns={columns}
-            rowKey={(r) => `${r.itemId}-${r.category}`}
+            rowKey={(r) => `${r.itemId}-${r.unitCode}`}
             pagination={false}
             style={{ marginBottom: 32 }}
           />
