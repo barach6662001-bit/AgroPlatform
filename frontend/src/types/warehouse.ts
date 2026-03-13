@@ -3,6 +3,7 @@ export interface WarehouseDto {
   name: string;
   location?: string;
   isActive: boolean;
+  type: number;
 }
 
 export interface WarehouseItemDto {

@@ -11,6 +11,7 @@ const en: Translations = {
     warehouses: 'Warehouses',
     warehouseItems: 'Stock',
     stockMovements: 'Stock Movements',
+    grainStorage: 'Grain Storage',
     operations: 'Operations',
     machinery: 'Machinery',
     fleet: 'Fleet Map',
@@ -233,6 +234,9 @@ const en: Translations = {
     editItem: 'Edit Item',
     updateItemError: 'Error updating item',
     minimumQuantity: 'Minimum Stock Level',
+    grainStorageTitle: 'Grain Storage',
+    grainStorageSubtitle: 'Manage grain storage facilities',
+    createGrainStorage: 'Add Grain Storage',
   },
   moveTypes: {
     Receipt: 'Receipt',

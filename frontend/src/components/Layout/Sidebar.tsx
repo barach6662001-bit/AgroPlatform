@@ -19,6 +19,7 @@ export default function Sidebar() {
     { key: '/warehouses', label: t.nav.warehouses, icon: <BankOutlined /> },
     { key: '/warehouses/items', label: t.nav.warehouseItems, icon: <InboxOutlined /> },
     { key: '/warehouses/movements', label: t.nav.stockMovements, icon: <SwapOutlined /> },
+    { key: '/warehouses/grain', label: t.nav.grainStorage, icon: <InboxOutlined /> },
   ];
 
   const economicsChildren = [

@@ -19,7 +19,8 @@ public class CreateWarehouseHandler : IRequestHandler<CreateWarehouseCommand, Gu
         {
             Name = request.Name,
             Location = request.Location,
-            IsActive = true
+            IsActive = true,
+            Type = request.Type ?? 0
         };
 
         _context.Warehouses.Add(warehouse);

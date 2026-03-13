@@ -51,12 +51,17 @@ public class WarehousesController : ControllerBase
     /// <summary>Returns a paginated list of warehouses for the current tenant.</summary>
     /// <param name="page">Page number (1-based, default 1).</param>
     /// <param name="pageSize">Page size (default 20).</param>
+    /// <param name="type">Optional warehouse type filter.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetWarehouses([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetWarehouses(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] int? type = null,
+        CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetWarehousesQuery(page, pageSize), cancellationToken);
+        var result = await _sender.Send(new GetWarehousesQuery(page, pageSize, type), cancellationToken);
         return Ok(result);
     }
 
