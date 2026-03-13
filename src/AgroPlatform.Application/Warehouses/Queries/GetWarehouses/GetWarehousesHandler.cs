@@ -18,6 +18,8 @@ public class GetWarehousesHandler : IRequestHandler<GetWarehousesQuery, Paginate
     public async Task<PaginatedResult<WarehouseDto>> Handle(GetWarehousesQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Warehouses.Where(w => !w.IsDeleted);
+        if (request.Type.HasValue)
+            query = query.Where(w => w.Type == request.Type.Value);
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderBy(w => w.Name)
@@ -28,7 +30,8 @@ public class GetWarehousesHandler : IRequestHandler<GetWarehousesQuery, Paginate
                 Id = w.Id,
                 Name = w.Name,
                 Location = w.Location,
-                IsActive = w.IsActive
+                IsActive = w.IsActive,
+                Type = w.Type
             })
             .ToListAsync(cancellationToken);
 

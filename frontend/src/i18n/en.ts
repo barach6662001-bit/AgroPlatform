@@ -8,9 +8,10 @@ const en: Translations = {
   nav: {
     dashboard: 'Dashboard',
     fields: 'Fields',
-    warehouses: 'Warehouse',
-    warehouseItems: 'Stock Balances',
+    warehouses: 'Warehouses',
+    warehouseItems: 'Stock',
     stockMovements: 'Stock Movements',
+    grainStorage: 'Grain Storage',
     operations: 'Operations',
     machinery: 'Machinery',
     fleet: 'Fleet Map',
@@ -233,6 +234,9 @@ const en: Translations = {
     editItem: 'Edit Item',
     updateItemError: 'Error updating item',
     minimumQuantity: 'Minimum Stock Level',
+    grainStorageTitle: 'Grain Storage',
+    grainStorageSubtitle: 'Manage grain storage facilities',
+    createGrainStorage: 'Add Grain Storage',
   },
   moveTypes: {
     Receipt: 'Receipt',

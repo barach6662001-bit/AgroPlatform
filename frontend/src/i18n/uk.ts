@@ -6,9 +6,10 @@ const uk = {
   nav: {
     dashboard: 'Головна',
     fields: 'Поля',
-    warehouses: 'Склад',
+    warehouses: 'Склади',
     warehouseItems: 'Залишки',
     stockMovements: 'Рухи товарів',
+    grainStorage: 'Зерносховища',
     operations: 'Операції',
     machinery: 'Техніка',
     fleet: 'Карта парку',
@@ -231,6 +232,9 @@ const uk = {
     editItem: 'Редагувати товар',
     updateItemError: 'Помилка оновлення товару',
     minimumQuantity: 'Мінімальний залишок',
+    grainStorageTitle: 'Зерносховища',
+    grainStorageSubtitle: 'Управління зерносховищами',
+    createGrainStorage: 'Додати зерносховище',
   },
   moveTypes: {
     Receipt: 'Прихід',
