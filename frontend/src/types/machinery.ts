@@ -20,20 +20,20 @@ export interface MachineDto {
 
 export interface WorkLogDto {
   id: string;
+  machineId: string;
   date: string;
   hoursWorked: number;
-  fieldId?: string;
-  fieldName?: string;
-  notes?: string;
+  agroOperationId?: string;
+  description?: string;
 }
 
 export interface FuelLogDto {
   id: string;
+  machineId: string;
   date: string;
-  liters: number;
-  pricePerLiter?: number;
-  totalCost?: number;
-  notes?: string;
+  quantity: number;
+  fuelType: string;
+  note?: string;
 }
 
 export interface MachineDetailDto extends MachineDto {
