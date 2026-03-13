@@ -30,10 +30,10 @@ export default function ProfilePage() {
   try {
     if (token) {
       const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-      email = email ||
+      email = email || (
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ??
         payload['email'] ??
-        '';
+        '');
       firstName =
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] ??
         payload['firstName'] ??
