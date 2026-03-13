@@ -21,7 +21,7 @@ public class CreateWarehouseHandlerTests
     {
         var context = CreateDbContext();
         var handler = new CreateWarehouseHandler(context);
-        var command = new CreateWarehouseCommand("Storage A", "Block 1");
+        var command = new CreateWarehouseCommand("Storage A", "Block 1", null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -33,7 +33,7 @@ public class CreateWarehouseHandlerTests
     {
         var context = CreateDbContext();
         var handler = new CreateWarehouseHandler(context);
-        var command = new CreateWarehouseCommand("Main Warehouse", "North Gate");
+        var command = new CreateWarehouseCommand("Main Warehouse", "North Gate", null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -48,7 +48,7 @@ public class CreateWarehouseHandlerTests
     {
         var context = CreateDbContext();
         var handler = new CreateWarehouseHandler(context);
-        var command = new CreateWarehouseCommand("Grain Store", null);
+        var command = new CreateWarehouseCommand("Grain Store", null, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -61,7 +61,7 @@ public class CreateWarehouseHandlerTests
     {
         var context = CreateDbContext();
         var handler = new CreateWarehouseHandler(context);
-        var command = new CreateWarehouseCommand("Secondary Store", null);
+        var command = new CreateWarehouseCommand("Secondary Store", null, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -75,8 +75,8 @@ public class CreateWarehouseHandlerTests
         var context = CreateDbContext();
         var handler = new CreateWarehouseHandler(context);
 
-        var id1 = await handler.Handle(new CreateWarehouseCommand("Warehouse 1", null), CancellationToken.None);
-        var id2 = await handler.Handle(new CreateWarehouseCommand("Warehouse 2", null), CancellationToken.None);
+        var id1 = await handler.Handle(new CreateWarehouseCommand("Warehouse 1", null, null), CancellationToken.None);
+        var id2 = await handler.Handle(new CreateWarehouseCommand("Warehouse 2", null, null), CancellationToken.None);
 
         id1.Should().NotBe(id2);
         var count = await ((TestDbContext)context).Warehouses.CountAsync();
