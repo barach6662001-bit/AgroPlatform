@@ -15,7 +15,8 @@ public class SecurityHeadersMiddleware
         context.Response.Headers["X-Frame-Options"] = "DENY";
         context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
         context.Response.Headers["X-Permitted-Cross-Domain-Policies"] = "none";
-        context.Response.Headers["Content-Security-Policy"] = "default-src 'self'";
+        context.Response.Headers["Content-Security-Policy"] =
+            "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' ws: wss:; font-src 'self' data:";
 
         await _next(context);
     }
