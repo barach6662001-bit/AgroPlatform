@@ -1,27 +1,4 @@
 export interface ResourceConsumptionDto {
-  resourceName: string;
-  totalQuantity: number;
-  unit: string;
-  operationType: string;
-}
-
-export interface FieldEfficiencyDto {
-  fieldId: string;
-  fieldName: string;
-  totalOperations: number;
-  completedOperations: number;
-  totalCost: number;
-  areaHectares: number;
-  costPerHectare: number;
-}
-
-export interface MonthlyCostTrendDto {
-  year: number;
-  month: number;
-  totalCost: number;
-}
-
-export interface ResourceConsumptionDto {
   itemId: string;
   itemName: string;
   category: string;
@@ -40,11 +17,18 @@ export interface FieldEfficiencyDto {
   yieldPerHectare: number | null;
 }
 
+export interface MonthlyCostTrendDto {
+  year: number;
+  month: number;
+  totalAmount: number;
+}
+
 export interface TopStockItemDto {
+  itemId: string;
   itemName: string;
-  itemCode: string;
+  category: string;
   totalBalance: number;
-  unit: string;
+  baseUnit: string;
 }
 
 export interface DashboardDto {

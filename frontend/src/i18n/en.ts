@@ -375,7 +375,6 @@ const en: Translations = {
   fuelTypes: {
     Diesel: 'Diesel',
     Gasoline: 'Gasoline',
-    Electric: 'Electric',
     Gas: 'Gas',
   },
   economics: {

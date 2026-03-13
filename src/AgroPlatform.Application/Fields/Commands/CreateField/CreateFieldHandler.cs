@@ -21,11 +21,8 @@ public class CreateFieldHandler : IRequestHandler<CreateFieldCommand, Guid>
     {
         var tenantId = _currentUser.TenantId;
 
-        // Check for duplicate name within the tenant (including soft-deleted records,
-        // because the unique DB index covers all rows regardless of IsDeleted).
         var nameExists = await _context.Fields
-            .IgnoreQueryFilters()
-            .AnyAsync(f => f.Name == request.Name && f.TenantId == tenantId, cancellationToken);
+            .AnyAsync(f => f.Name == request.Name, cancellationToken);
 
         if (nameExists)
             throw new ConflictException($"Поле з назвою '{request.Name}' вже існує.");

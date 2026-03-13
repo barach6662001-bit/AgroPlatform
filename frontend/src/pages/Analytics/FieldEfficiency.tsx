@@ -31,15 +31,9 @@ export default function FieldEfficiency() {
     { title: t.analytics.fieldName, dataIndex: 'fieldName', key: 'fieldName' },
     {
       title: t.analytics.totalOps,
-      dataIndex: 'totalOperations',
-      key: 'totalOperations',
-      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.totalOperations - b.totalOperations,
-    },
-    {
-      title: t.analytics.completedOps,
-      dataIndex: 'completedOperations',
-      key: 'completedOperations',
-      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.completedOperations - b.completedOperations,
+      dataIndex: 'operationsCount',
+      key: 'operationsCount',
+      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.operationsCount - b.operationsCount,
     },
     {
       title: t.analytics.areaHa,
@@ -50,10 +44,10 @@ export default function FieldEfficiency() {
     },
     {
       title: t.analytics.totalCost,
-      dataIndex: 'totalCost',
-      key: 'totalCost',
+      dataIndex: 'totalCosts',
+      key: 'totalCosts',
       render: (v: number) => `${v.toFixed(2)} UAH`,
-      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.totalCost - b.totalCost,
+      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.totalCosts - b.totalCosts,
     },
     {
       title: t.analytics.costPerHa,
@@ -66,7 +60,7 @@ export default function FieldEfficiency() {
 
   const chartData = data.map((item) => ({
     name: item.fieldName,
-    [t.analytics.totalCost]: Number(item.totalCost.toFixed(2)),
+    [t.analytics.totalCost]: Number(item.totalCosts.toFixed(2)),
   }));
 
   return (

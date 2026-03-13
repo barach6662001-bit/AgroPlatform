@@ -56,8 +56,10 @@ export default function MachineryList() {
       form.resetFields();
       setModalOpen(false);
       load();
-    } catch {
-      message.error(t.machinery.createError);
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status === 409) return;
+      if (status) message.error(t.machinery.createError);
     } finally {
       setSaving(false);
     }

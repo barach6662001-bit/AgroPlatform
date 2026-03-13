@@ -56,7 +56,7 @@ export default function Dashboard() {
 
   const costTrendData = data.costTrend.map((item) => ({
     name: `${item.year}-${String(item.month).padStart(2, '0')}`,
-    cost: item.totalCost,
+    cost: item.totalAmount,
   }));
 
   return (
