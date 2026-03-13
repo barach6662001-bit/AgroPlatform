@@ -5,3 +5,5 @@ RUN apt-get update && \
         postgresql-16-postgis-3 \
         postgresql-16-postgis-3-scripts && \
     rm -rf /var/lib/apt/lists/*
+
+COPY init.sql /docker-entrypoint-initdb.d/init.sql
