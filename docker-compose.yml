@@ -34,6 +34,8 @@ services:
       JwtSettings__Issuer: "${JWT_ISSUER:-AgroPlatform}"
       JwtSettings__Audience: "${JWT_AUDIENCE:-AgroPlatform}"
       Cors__AllowedOrigins__0: "${CORS_ORIGIN:-http://localhost:3000}"
+      Cors__AllowedOrigins__1: "${CODESPACES_URL:-}"
+      Swagger__Enabled: "${SWAGGER_ENABLED:-true}"
       AUTO_MIGRATE: "${AUTO_MIGRATE:-true}"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health/live || exit 1"]
