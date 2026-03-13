@@ -16,18 +16,20 @@ export interface AgroOperationDto {
 export interface AgroOperationResourceDto {
   id: string;
   warehouseItemId: string;
-  itemName: string;
+  warehouseItemName: string;
+  warehouseId: string;
   plannedQuantity: number;
   actualQuantity?: number;
-  unit: string;
+  unitCode: string;
 }
 
 export interface AgroOperationMachineryDto {
   id: string;
   machineId: string;
   machineName: string;
-  hoursPlanned?: number;
-  hoursActual?: number;
+  hoursWorked?: number;
+  fuelUsed?: number;
+  operatorName?: string;
 }
 
 export interface AgroOperationDetailDto extends AgroOperationDto {
