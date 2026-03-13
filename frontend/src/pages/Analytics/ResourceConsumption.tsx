@@ -32,21 +32,21 @@ export default function ResourceConsumption() {
   }, [dateRange]);
 
   const columns = [
-    { title: t.analytics.resourceName, dataIndex: 'resourceName', key: 'resourceName' },
+    { title: t.analytics.resourceName, dataIndex: 'itemName', key: 'itemName' },
     {
       title: t.analytics.totalQuantity,
-      dataIndex: 'totalQuantity',
-      key: 'totalQuantity',
+      dataIndex: 'totalConsumed',
+      key: 'totalConsumed',
       render: (v: number) => v.toFixed(2),
-      sorter: (a: ResourceConsumptionDto, b: ResourceConsumptionDto) => a.totalQuantity - b.totalQuantity,
+      sorter: (a: ResourceConsumptionDto, b: ResourceConsumptionDto) => a.totalConsumed - b.totalConsumed,
     },
-    { title: t.analytics.unit, dataIndex: 'unit', key: 'unit' },
-    { title: t.analytics.operationType, dataIndex: 'operationType', key: 'operationType' },
+    { title: t.analytics.unit, dataIndex: 'unitCode', key: 'unitCode' },
+    { title: t.analytics.operationType, dataIndex: 'category', key: 'category' },
   ];
 
   const chartData = data.map((item) => ({
-    name: item.resourceName,
-    [t.analytics.totalQuantity]: Number(item.totalQuantity.toFixed(2)),
+    name: item.itemName,
+    [t.analytics.totalQuantity]: Number(item.totalConsumed.toFixed(2)),
   }));
 
   return (
@@ -67,7 +67,7 @@ export default function ResourceConsumption() {
           <Table
             dataSource={data}
             columns={columns}
-            rowKey={(r) => `${r.resourceName}-${r.operationType}`}
+            rowKey={(r) => `${r.itemId}-${r.category}`}
             pagination={false}
             style={{ marginBottom: 32 }}
           />
