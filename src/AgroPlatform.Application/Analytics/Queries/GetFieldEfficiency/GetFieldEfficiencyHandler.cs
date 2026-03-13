@@ -34,15 +34,15 @@ public class GetFieldEfficiencyHandler : IRequestHandler<GetFieldEfficiencyQuery
             .Select(g => new { FieldId = g.Key, TotalCosts = g.Sum(c => c.Amount) })
             .ToListAsync(cancellationToken);
 
-        var latestYields = await _context.FieldCropHistories
+        var yieldRows = await _context.FieldCropHistories
             .Where(h => !h.IsDeleted && fieldIds.Contains(h.FieldId) && h.YieldPerHectare.HasValue)
-            .GroupBy(h => h.FieldId)
-            .Select(g => new
-            {
-                FieldId = g.Key,
-                YieldPerHectare = g.OrderByDescending(h => h.Year).First().YieldPerHectare
-            })
+            .Select(h => new { h.FieldId, h.YieldPerHectare, h.Year })
             .ToListAsync(cancellationToken);
+
+        var latestYields = yieldRows
+            .GroupBy(h => h.FieldId)
+            .Select(g => new { FieldId = g.Key, YieldPerHectare = g.OrderByDescending(h => h.Year).First().YieldPerHectare })
+            .ToList();
 
         var opCountMap = operationCounts.ToDictionary(x => x.FieldId, x => x.Count);
         var costMap = costsByField.ToDictionary(x => x.FieldId, x => x.TotalCosts);
