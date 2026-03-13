@@ -36,8 +36,8 @@ export default function OperationsList() {
   const { t } = useTranslation();
   const { hasRole } = useRole();
 
-  const canCreate = hasRole(['Administrator', 'Manager']);
-  const canEdit = hasRole(['Administrator', 'Manager']);
+  const canCreate = hasRole(['Administrator', 'Manager', 'Agronomist']);
+  const canEdit = hasRole(['Administrator', 'Manager', 'Agronomist']);
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);

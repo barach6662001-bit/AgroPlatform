@@ -42,8 +42,10 @@ export default function WarehousesList() {
       form.resetFields();
       setModalOpen(false);
       load();
-    } catch {
-      message.error(t.warehouses.createError);
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status === 409) return; // axios interceptor already showed the conflict notification
+      if (status) message.error(t.warehouses.createError);
     } finally {
       setSaving(false);
     }

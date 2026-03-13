@@ -30,6 +30,31 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+const i18nErrors = {
+  uk: {
+    conflict: 'Конфлікт',
+    conflictDesc: 'Запис з таким ідентифікатором вже існує.',
+    serverError: 'Помилка сервера',
+    serverErrorDesc: 'Виникла неочікувана помилка. Спробуйте ще раз.',
+  },
+  en: {
+    conflict: 'Conflict',
+    conflictDesc: 'A record with the same identifier already exists.',
+    serverError: 'Server Error',
+    serverErrorDesc: 'An unexpected server error occurred.',
+  },
+};
+
+function getLang(): 'uk' | 'en' {
+  try {
+    const stored = localStorage.getItem('lang-storage');
+    const parsed = stored ? JSON.parse(stored) : null;
+    return parsed?.state?.lang === 'en' ? 'en' : 'uk';
+  } catch {
+    return 'uk';
+  }
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -41,15 +66,17 @@ apiClient.interceptors.response.use(
       window.location.href = '/access-denied';
     }
     if (error.response?.status === 409) {
+      const e = i18nErrors[getLang()];
       notification.warning({
-        message: 'Conflict',
-        description: error.response?.data?.title ?? error.response?.data?.detail ?? 'A record with the same identifier already exists.',
+        message: e.conflict,
+        description: error.response?.data?.title ?? error.response?.data?.detail ?? e.conflictDesc,
       });
     }
     if (error.response?.status >= 500) {
+      const e = i18nErrors[getLang()];
       notification.error({
-        message: 'Server Error',
-        description: error.response?.data?.detail ?? error.message ?? 'An unexpected server error occurred.',
+        message: e.serverError,
+        description: error.response?.data?.detail ?? error.message ?? e.serverErrorDesc,
       });
     }
     return Promise.reject(error);

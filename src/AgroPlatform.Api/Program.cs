@@ -125,9 +125,11 @@ try
 
     builder.Services.AddCors(options =>
     {
-        var allowedOrigins = builder.Configuration
+        var allowedOrigins = (builder.Configuration
             .GetSection("Cors:AllowedOrigins")
-            .Get<string[]>() ?? [];
+            .Get<string[]>() ?? [])
+            .Where(o => !string.IsNullOrWhiteSpace(o))
+            .ToArray();
 
         if (allowedOrigins.Length == 0)
         {
