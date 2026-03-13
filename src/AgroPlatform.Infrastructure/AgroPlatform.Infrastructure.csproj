@@ -7,13 +7,13 @@
 
   <ItemGroup>
     <!-- Pin transitive package to fix HIGH vulnerability GHSA-8g4q-xg66-9fp4 -->
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="9.0.14" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.24">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.14">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
