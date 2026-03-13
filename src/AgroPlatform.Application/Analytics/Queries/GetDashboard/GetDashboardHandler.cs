@@ -38,28 +38,28 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
         dto.TotalWarehouseItems = await _context.WarehouseItems
             .CountAsync(i => !i.IsDeleted, cancellationToken);
 
-        dto.TopStockItems = await _context.StockBalances
+        var topBalances = await _context.StockBalances
             .GroupBy(sb => sb.ItemId)
-            .Select(g => new
-            {
-                ItemId = g.Key,
-                TotalBalance = g.Sum(sb => sb.BalanceBase)
-            })
+            .Select(g => new { ItemId = g.Key, TotalBalance = g.Sum(sb => sb.BalanceBase) })
             .OrderByDescending(x => x.TotalBalance)
             .Take(10)
-            .Join(
-                _context.WarehouseItems.Where(i => !i.IsDeleted),
-                x => x.ItemId,
-                i => i.Id,
-                (x, i) => new TopStockItemDto
-                {
-                    ItemId = x.ItemId,
-                    ItemName = i.Name,
-                    Category = i.Category,
-                    TotalBalance = x.TotalBalance,
-                    BaseUnit = i.BaseUnit
-                })
             .ToListAsync(cancellationToken);
+
+        var topItemIds = topBalances.Select(x => x.ItemId).ToList();
+        var topWarehouseItems = await _context.WarehouseItems
+            .Where(i => !i.IsDeleted && topItemIds.Contains(i.Id))
+            .ToListAsync(cancellationToken);
+
+        dto.TopStockItems = topBalances
+            .Join(topWarehouseItems, b => b.ItemId, i => i.Id, (b, i) => new TopStockItemDto
+            {
+                ItemId = b.ItemId,
+                ItemName = i.Name,
+                Category = i.Category,
+                TotalBalance = b.TotalBalance,
+                BaseUnit = i.BaseUnit
+            })
+            .ToList();
 
         // ── Operations ────────────────────────────────────────────────────
         var operations = await _context.AgroOperations
