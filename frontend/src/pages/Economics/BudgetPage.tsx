@@ -9,8 +9,9 @@ import { useRole } from '../../hooks/useRole';
 
 const CATEGORIES = ['Seeds', 'Fertilizers', 'Pesticides', 'Fuel', 'Labor', 'Equipment', 'Other'];
 
-const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
-  const y = 2020 + i;
+const currentYear = new Date().getFullYear();
+const YEAR_OPTIONS = Array.from({ length: 6 }, (_, i) => {
+  const y = currentYear - 2 + i;
   return { value: y, label: String(y) };
 });
 

@@ -3,10 +3,12 @@ import { GlobalOutlined } from '@ant-design/icons';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { useAuthStore } from '../../stores/authStore';
 
 export default function ProfilePage() {
   const { t, lang, setLang } = useTranslation();
   const { isAdmin, isManager, isAgronomist, isStorekeeper, isDirector } = useRole();
+  const { token, email: storedEmail } = useAuthStore();
 
   // Derive current role string from the hook flags
   const roleKey = isAdmin
@@ -21,18 +23,16 @@ export default function ProfilePage() {
     ? 'Director'
     : 'Unknown';
 
-  // Read user info from the JWT stored in localStorage
-  const token = localStorage.getItem('token') ?? '';
-  let email = '';
+  // Decode additional claims (firstName, lastName) from JWT; use store email as primary source
+  let email = storedEmail ?? '';
   let firstName = '';
   let lastName = '';
   try {
     if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      email =
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      email = email ||
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ??
         payload['email'] ??
-        payload['sub'] ??
         '';
       firstName =
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] ??
