@@ -38,10 +38,14 @@ cd AgroPlatform
 docker-compose up --build -d
 # Frontend: http://localhost:3000
 # API:      http://localhost:8080
-# Swagger:  http://localhost:8080/swagger
+# Swagger:  http://localhost:8080/swagger  (включён по умолчанию в Docker)
 ```
 
 > **Примечание:** Frontend запускается на порту 3000. API-запросы (`/api/*`) автоматически проксируются через Nginx к бэкенду (`api:8080`) внутри Docker-сети.
+
+> **Пароль при регистрации:** минимум **8 символов**, обязательно **цифра** и **строчная буква**. Пример: `Password1`.
+
+> **Конфликт портов:** запускайте только один способ одновременно — либо Docker Compose (порт 3000), либо `npm run dev` (тоже порт 3000). Перед переключением выполните `docker-compose down`.
 
 ### Вариант B — Локальный .NET + Docker PostgreSQL
 
@@ -62,9 +66,9 @@ dotnet run --project src/AgroPlatform.Api
 
 ```bash
 cd frontend
-# .env.development уже содержит VITE_API_URL=http://localhost:5224 для локальной разработки.
-# Для работы с Docker (API на порту 8080) создайте файл frontend/.env.local:
-#   VITE_API_URL=http://localhost:8080
+# По умолчанию .env.development указывает на Docker API (http://localhost:8080).
+# Для локального .NET (порт 5224) создайте файл frontend/.env.development.local:
+#   VITE_API_URL=http://localhost:5224
 npm install
 npm run dev
 # Фронтенд: http://localhost:3000
