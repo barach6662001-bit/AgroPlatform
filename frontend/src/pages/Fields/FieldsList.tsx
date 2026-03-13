@@ -67,8 +67,15 @@ export default function FieldsList() {
       form.resetFields();
       setModalOpen(false);
       load();
-    } catch {
-      message.error(t.fields.createError);
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status === 409) {
+        // axios interceptor already shows the conflict notification
+        return;
+      }
+      if (status) {
+        message.error(t.fields.createError);
+      }
     } finally {
       setSaving(false);
     }

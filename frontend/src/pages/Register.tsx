@@ -79,7 +79,23 @@ export default function Register() {
           <Form.Item label={t.auth.email} name="email" rules={[{ required: true, type: 'email', message: t.auth.enterEmail }]}>
             <Input placeholder="email@example.com" size="large" />
           </Form.Item>
-          <Form.Item label={t.auth.password} name="password" rules={[{ required: true, min: 6, message: t.auth.minPassword }]}>
+          <Form.Item
+            label={t.auth.password}
+            name="password"
+            rules={[
+              { required: true, message: t.auth.minPassword },
+              {
+                validator: (_, value) => {
+                  if (!value) return Promise.resolve();
+                  if (value.length < 8) return Promise.reject(t.auth.minPassword);
+                  if (!/\d/.test(value)) return Promise.reject(t.auth.passwordNeedsDigit);
+                  if (!/[a-z]/.test(value)) return Promise.reject(t.auth.passwordNeedsLower);
+                  return Promise.resolve();
+                },
+              },
+            ]}
+            extra={t.auth.passwordHint}
+          >
             <Input.Password placeholder="••••••" size="large" />
           </Form.Item>
           <Form.Item label={t.auth.role} name="role" rules={[{ required: true, message: t.auth.selectRole }]}>
