@@ -19,7 +19,6 @@ export default function Sidebar() {
     { key: '/warehouses', label: t.nav.warehouses, icon: <BankOutlined /> },
     { key: '/warehouses/items', label: t.nav.warehouseItems, icon: <InboxOutlined /> },
     { key: '/warehouses/movements', label: t.nav.stockMovements, icon: <SwapOutlined /> },
-    { key: '/warehouses/grain', label: t.nav.grainStorage, icon: <InboxOutlined /> },
   ];
 
   const economicsChildren = [
@@ -42,6 +41,7 @@ export default function Sidebar() {
     { key: '/notifications' },
     { key: '/profile' },
     ...warehouseChildren,
+    { key: '/warehouses/grain' },
     ...economicsChildren,
     ...analyticsChildren,
     ...(isAdmin ? [{ key: '/settings/users' }] : []),
@@ -56,6 +56,7 @@ export default function Sidebar() {
       icon: <InboxOutlined />,
       children: warehouseChildren,
     },
+    { key: '/warehouses/grain', label: t.nav.grainStorage, icon: <InboxOutlined /> },
     { key: '/operations', label: t.nav.operations, icon: <ToolOutlined /> },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined /> },
     { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined /> },
