@@ -186,6 +186,7 @@ const en: Translations = {
     cadastreNotFound: 'No cadastral data found for this number.',
     cadastreLoaded: 'Cadastre data loaded successfully.',
     cadastreError: 'Failed to load cadastral data.',
+    loadFromCadastre: 'Load from Cadastre',
   },
   warehouses: {
     title: 'Warehouses',
