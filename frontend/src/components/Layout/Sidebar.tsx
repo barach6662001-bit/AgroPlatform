@@ -3,7 +3,7 @@ import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
   DollarOutlined, LineChartOutlined, BarChartOutlined, ThunderboltOutlined,
   TeamOutlined, SwapOutlined, RiseOutlined, SettingOutlined,
-  EnvironmentOutlined, FundOutlined, BankOutlined,
+  EnvironmentOutlined, FundOutlined, BankOutlined, UserOutlined, CalendarOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -33,6 +33,12 @@ export default function Sidebar() {
     { key: '/analytics/efficiency', label: t.analytics.fieldEfficiency, icon: <ThunderboltOutlined />, style: { padding: '4px 8px' } },
   ];
 
+  const hrChildren = [
+    { key: '/hr/employees', label: t.nav.employees, icon: <UserOutlined />, style: { padding: '4px 8px' } },
+    { key: '/hr/worklogs', label: t.nav.workLogs, icon: <CalendarOutlined />, style: { padding: '4px 8px' } },
+    { key: '/hr/salary', label: t.nav.salary, icon: <DollarOutlined />, style: { padding: '4px 8px' } },
+  ];
+
   const allLeafItems = [
     { key: '/' },
     { key: '/fields' },
@@ -42,6 +48,7 @@ export default function Sidebar() {
     ...warehouseChildren,
     ...economicsChildren,
     ...analyticsChildren,
+    ...hrChildren,
     ...(isAdmin ? [{ key: '/settings/users' }] : []),
   ];
 
@@ -69,6 +76,12 @@ export default function Sidebar() {
       icon: <LineChartOutlined />,
       children: analyticsChildren,
     },
+    {
+      key: 'hr-group',
+      label: t.nav.hr,
+      icon: <TeamOutlined />,
+      children: hrChildren,
+    },
     ...(isAdmin
       ? [
           {
@@ -83,7 +96,7 @@ export default function Sidebar() {
       : []),
   ];
 
-  const groupKeys = new Set(['warehouses-group', 'economics-group', 'analytics-group', 'settings-group']);
+  const groupKeys = new Set(['warehouses-group', 'economics-group', 'analytics-group', 'settings-group', 'hr-group']);
 
   const selectedKey =
     allLeafItems
@@ -99,6 +112,7 @@ export default function Sidebar() {
   if (warehouseChildren.some((c) => c.key === selectedKey)) openKeys.push('warehouses-group');
   if (economicsChildren.some((c) => c.key === selectedKey)) openKeys.push('economics-group');
   if (analyticsChildren.some((c) => c.key === selectedKey)) openKeys.push('analytics-group');
+  if (hrChildren.some((c) => c.key === selectedKey)) openKeys.push('hr-group');
   if (isAdmin && selectedKey === '/settings/users') openKeys.push('settings-group');
 
   return (
