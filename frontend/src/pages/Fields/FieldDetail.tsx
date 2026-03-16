@@ -18,6 +18,7 @@ export default function FieldDetail() {
   const [saving, setSaving] = useState(false);
   const [currentGeoJson, setCurrentGeoJson] = useState<string | null>(null);
   const [savingGeometry, setSavingGeometry] = useState(false);
+  const [cadastreLoading, setCadastreLoading] = useState(false);
   const [assignForm] = Form.useForm();
   const [planForm] = Form.useForm();
   const { t } = useTranslation();
@@ -74,6 +75,32 @@ export default function FieldDetail() {
       load();
     } catch {
       message.error(t.fields.deleteRotationPlanError);
+    }
+  };
+
+  const handleLoadFromCadastre = async () => {
+    if (!field || !field.cadastralNumber) return;
+    setCadastreLoading(true);
+    try {
+      const url = `https://kadastr.live/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kadastr:cadaster_parcel&outputFormat=application/json&CQL_FILTER=cadnum='${encodeURIComponent(field.cadastralNumber)}'`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+      const geojson = await response.json();
+      if (!geojson.features || geojson.features.length === 0) {
+        message.warning(t.fields.cadastreNotFound);
+        return;
+      }
+      const feature = geojson.features[0];
+      const geometryJson = JSON.stringify(feature.geometry);
+      await updateFieldGeometry(id!, { geoJson: geometryJson });
+      message.success(t.fields.cadastreLoaded);
+      setLoading(true);
+      load();
+    } catch (error) {
+      console.error('Cadastre loading failed:', error);
+      message.error(t.fields.cadastreError);
+    } finally {
+      setCadastreLoading(false);
     }
   };
 
