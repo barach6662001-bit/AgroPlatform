@@ -15,6 +15,7 @@ public class StockMove : AuditableEntity
     public decimal QuantityBase { get; set; }
     public string? Note { get; set; }
     public string? ClientOperationId { get; set; }
+    public decimal? TotalCost { get; set; }
 
     public Warehouse Warehouse { get; set; } = null!;
     public WarehouseItem Item { get; set; } = null!;

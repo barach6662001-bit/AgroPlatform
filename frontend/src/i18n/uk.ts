@@ -236,6 +236,8 @@ const uk = {
     editItem: 'Редагувати товар',
     updateItemError: 'Помилка оновлення товару',
     minimumQuantity: 'Мінімальний залишок',
+    purchasePrice: 'Ціна закупівлі',
+    totalCost: 'Вартість',
     grainStorageTitle: 'Зерносховища',
     grainStorageSubtitle: 'Управління зерносховищами',
     createGrainStorage: 'Додати зерносховище',
