@@ -205,6 +205,14 @@ export default function WarehouseItems() {
       render: (v: string) => new Date(v).toLocaleDateString(),
     },
     {
+      title: t.warehouses.purchasePrice,
+      key: 'purchasePrice',
+      render: (_: unknown, record: BalanceDto) => {
+        const item = items.find((i) => i.id === record.itemId);
+        return item?.purchasePrice != null ? `${item.purchasePrice.toFixed(2)} UAH` : '—';
+      },
+    },
+    {
       title: t.common.actions, key: 'actions',
       render: (_: unknown, record: BalanceDto) => {
         const item = items.find((i) => i.id === record.itemId);
@@ -380,6 +388,9 @@ export default function WarehouseItems() {
           <Form.Item name="minimumQuantity" label={t.warehouses.minimumQuantity}>
             <InputNumber min={0} step={0.001} style={{ width: '100%' }} />
           </Form.Item>
+          <Form.Item name="purchasePrice" label={t.warehouses.purchasePrice}>
+            <InputNumber min={0} precision={4} style={{ width: '100%' }} addonAfter="UAH" />
+          </Form.Item>
         </Form>
       </Modal>
       {/* Transfer Modal */}
@@ -450,6 +461,9 @@ export default function WarehouseItems() {
           </Form.Item>
           <Form.Item name="minimumQuantity" label={t.warehouses.minimumQuantity}>
             <InputNumber min={0} step={0.001} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="purchasePrice" label={t.warehouses.purchasePrice}>
+            <InputNumber min={0} precision={4} style={{ width: '100%' }} addonAfter="UAH" />
           </Form.Item>
         </Form>
       </Modal>

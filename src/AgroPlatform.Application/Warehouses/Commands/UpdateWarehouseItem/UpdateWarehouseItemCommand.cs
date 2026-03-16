@@ -9,5 +9,6 @@ public record UpdateWarehouseItemCommand(
     string Category,
     string BaseUnit,
     string? Description,
-    decimal? MinimumQuantity
+    decimal? MinimumQuantity,
+    decimal? PurchasePrice
 ) : IRequest;

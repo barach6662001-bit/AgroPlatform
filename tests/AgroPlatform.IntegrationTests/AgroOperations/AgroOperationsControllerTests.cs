@@ -78,6 +78,26 @@ public class AgroOperationsControllerTests : IntegrationTestBase
     }
 
     [Fact]
+    public async Task CompleteAgroOperation_AlreadyCompleted_ReturnsConflict()
+    {
+        var fieldId = await CreateFieldAsync("AlreadyCompleted Field");
+        var opId = await CreateAgroOperationAsync(fieldId, "AlreadyCompleted Op");
+
+        var completePayload = new
+        {
+            id = opId,
+            completedDate = DateTime.UtcNow.ToString("o"),
+            areaProcessed = 10.0
+        };
+
+        var first = await PostAsync($"/api/agro-operations/{opId}/complete", completePayload);
+        first.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var second = await PostAsync($"/api/agro-operations/{opId}/complete", completePayload);
+        second.StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
+
+    [Fact]
     public async Task CompleteAgroOperation_ReturnsNoContent()
     {
         var fieldId = await CreateFieldAsync("Complete Op Field");

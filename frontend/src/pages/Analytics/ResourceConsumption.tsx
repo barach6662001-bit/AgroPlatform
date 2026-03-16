@@ -66,7 +66,7 @@ export default function ResourceConsumption() {
           <Table
             dataSource={data}
             columns={columns}
-            rowKey={(r) => `${r.itemId}-${r.unitCode}`}
+            rowKey="itemId"
             pagination={false}
             style={{ marginBottom: 32 }}
           />

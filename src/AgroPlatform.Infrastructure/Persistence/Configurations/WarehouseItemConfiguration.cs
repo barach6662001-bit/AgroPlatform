@@ -28,5 +28,8 @@ public class WarehouseItemConfiguration : IEntityTypeConfiguration<WarehouseItem
 
         builder.HasIndex(i => new { i.TenantId, i.Code })
             .IsUnique();
+
+        builder.Property(i => i.PurchasePrice)
+            .HasPrecision(18, 4);
     }
 }

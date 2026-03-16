@@ -18,4 +18,5 @@ public class MoveHistoryDto
     public string? BatchCode { get; set; }
     public string? Note { get; set; }
     public DateTime CreatedAtUtc { get; set; }
+    public decimal? TotalCost { get; set; }
 }

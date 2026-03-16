@@ -61,7 +61,8 @@ public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, Pagina
                 BatchId = m.BatchId,
                 BatchCode = m.Batch != null ? m.Batch.Code : null,
                 Note = m.Note,
-                CreatedAtUtc = m.CreatedAtUtc
+                CreatedAtUtc = m.CreatedAtUtc,
+                TotalCost = m.TotalCost
             })
             .ToListAsync(cancellationToken);
 
