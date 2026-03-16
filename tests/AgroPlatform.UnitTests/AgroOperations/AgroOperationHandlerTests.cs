@@ -67,6 +67,8 @@ public class AgroOperationHandlerTests
         op.Should().NotBeNull();
         op!.FieldId.Should().Be(field.Id);
         op.OperationType.Should().Be(AgroOperationType.Sowing);
+        op.IsCompleted.Should().BeTrue();
+        op.CompletedDate.Should().NotBeNull();
     }
 
     [Fact]

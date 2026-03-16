@@ -22,7 +22,7 @@ export const completeOperation = (id: string, data: { completedDate: string; are
 export const createOperation = (data: {
   fieldId: string;
   operationType: string;
-  plannedDate: string;
+  performedAt: string;
   description?: string;
   areaProcessed?: number;
 }) =>

@@ -330,6 +330,7 @@ const en: Translations = {
     operationUpdated: 'Operation updated',
     editOperation: 'Edit Operation',
     operationUpdateError: 'Error updating operation',
+    performedAt: 'Date Performed',
   },
   machinery: {
     title: 'Machinery',
