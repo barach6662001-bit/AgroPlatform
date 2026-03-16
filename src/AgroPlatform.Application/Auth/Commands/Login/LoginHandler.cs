@@ -23,7 +23,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
         var user = await _userManager.FindByEmailAsync(request.Email);
         var isPasswordValid = user != null && await _userManager.CheckPasswordAsync(user, request.Password);
         if (!isPasswordValid)
-            throw new ForbiddenException("Invalid credentials.");
+            throw new UnauthorizedException("Invalid email or password.");
 
         var (token, expiresAt) = _jwtTokenService.GenerateToken(user);
         return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt, user.TenantId);

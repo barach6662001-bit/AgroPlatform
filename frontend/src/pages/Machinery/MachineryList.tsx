@@ -76,8 +76,10 @@ export default function MachineryList() {
       setEditModalOpen(false);
       setEditRecord(null);
       load();
-    } catch {
-      message.error(t.machinery.machineUpdateError);
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status === 409) return;
+      if (status) message.error(t.machinery.machineUpdateError);
     } finally {
       setEditSaving(false);
     }
