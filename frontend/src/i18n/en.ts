@@ -89,6 +89,9 @@ const en: Translations = {
     areaHa: 'Area (ha)',
     loadError: 'Failed to load data',
     noChartData: 'Chart data not yet available. Add fields, operations and costs.',
+    cropStatus: 'Crop Status',
+    machinesUnderRepair: 'machines under repair',
+    pendingOpsAlert: 'pending operations',
   },
   operationTypes: {
     Sowing: 'Sowing',

@@ -101,11 +101,11 @@ export default function Dashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card className="kpi-card" bordered={false}>
             <Statistic
-              title={t.dashboard.operations}
-              value={data.pendingOperations}
+              title={t.dashboard.cropStatus}
+              value={Object.keys(data.areaByCrop).length}
+              suffix="crops"
               prefix={<ToolOutlined />}
-              suffix={<Typography.Text type="secondary" style={{ fontSize: 12 }}>{` / ${data.totalOperations}`}</Typography.Text>}
-              valueStyle={{ color: '#F59E0B' }}
+              valueStyle={{ color: '#22C55E' }}
             />
           </Card>
         </Col>
@@ -157,7 +157,7 @@ export default function Dashboard() {
               <div className="alert-card error">
                 <Typography.Text style={{ color: '#EF4444', fontWeight: 600, fontSize: 13 }}>
                   <WarningOutlined style={{ marginRight: 8 }} />
-                  {data.underRepairMachines} {t.dashboard.underRepair ?? 'machines under repair'}
+                  {data.underRepairMachines} {t.dashboard.machinesUnderRepair}
                 </Typography.Text>
               </div>
             </Col>
@@ -167,7 +167,7 @@ export default function Dashboard() {
               <div className="alert-card">
                 <Typography.Text style={{ color: '#F59E0B', fontWeight: 600, fontSize: 13 }}>
                   <ClockCircleOutlined style={{ marginRight: 8 }} />
-                  {data.pendingOperations} {t.dashboard.pendingOps ?? 'pending operations'}
+                  {data.pendingOperations} {t.dashboard.pendingOpsAlert}
                 </Typography.Text>
               </div>
             </Col>

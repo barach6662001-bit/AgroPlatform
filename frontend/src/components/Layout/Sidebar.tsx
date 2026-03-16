@@ -83,6 +83,8 @@ export default function Sidebar() {
       : []),
   ];
 
+  const groupKeys = new Set(['warehouses-group', 'economics-group', 'analytics-group', 'settings-group']);
+
   const selectedKey =
     allLeafItems
       .slice()
@@ -108,7 +110,7 @@ export default function Sidebar() {
         defaultOpenKeys={openKeys}
         items={menuItems}
         onClick={({ key }) => {
-          if (!key.endsWith('-group')) navigate(key);
+          if (!groupKeys.has(key)) navigate(key);
         }}
         style={{ borderRight: 0, flex: 1, overflowY: 'auto' }}
       />
