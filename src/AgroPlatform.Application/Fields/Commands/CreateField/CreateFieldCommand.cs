@@ -11,5 +11,6 @@ public record CreateFieldCommand(
     int? CurrentCropYear,
     string? GeoJson,
     string? SoilType,
-    string? Notes
+    string? Notes,
+    int OwnershipType = 0
 ) : IRequest<Guid>;

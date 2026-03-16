@@ -149,6 +149,13 @@ export default function FieldDetail() {
                 ) : t.fields.notSeeded}
               </Descriptions.Item>
               <Descriptions.Item label={t.fields.notes}>{field.notes || '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.fields.ownershipType}>
+                {field.ownershipType === 1
+                  ? <Tag color="blue">{t.fields.ownershipLease}</Tag>
+                  : field.ownershipType === 2
+                  ? <Tag color="purple">{t.fields.ownershipShareLease}</Tag>
+                  : <Tag color="green">{t.fields.ownershipOwnLand}</Tag>}
+              </Descriptions.Item>
             </Descriptions>
           </Card>
         </Col>
