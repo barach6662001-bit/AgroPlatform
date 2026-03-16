@@ -79,7 +79,7 @@ export default function FieldDetail() {
   };
 
   const handleLoadFromCadastre = async () => {
-    if (!field.cadastralNumber) return;
+    if (!field || !field.cadastralNumber) return;
     setCadastreLoading(true);
     try {
       const url = `https://kadastr.live/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kadastr:cadaster_parcel&outputFormat=application/json&CQL_FILTER=cadnum='${encodeURIComponent(field.cadastralNumber)}'`;
