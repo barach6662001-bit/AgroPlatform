@@ -26,7 +26,10 @@ public class UpdateFieldGeometryHandler : IRequestHandler<UpdateFieldGeometryCom
         var options = new JsonSerializerOptions();
         options.Converters.Add(new GeoJsonConverterFactory());
 
-        var geometry = JsonSerializer.Deserialize<Geometry>(request.GeoJson, options)
+        // Leaflet's toGeoJSON() produces a FeatureCollection; extract the first feature's geometry
+        var geometryJson = ExtractGeometryJson(request.GeoJson);
+
+        var geometry = JsonSerializer.Deserialize<Geometry>(geometryJson, options)
             ?? throw new ArgumentException("Invalid GeoJSON geometry.");
 
         geometry.SRID = 4326;
@@ -34,5 +37,32 @@ public class UpdateFieldGeometryHandler : IRequestHandler<UpdateFieldGeometryCom
         field.GeoJson = request.GeoJson;
 
         await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// If the input is a GeoJSON FeatureCollection, returns the raw JSON of the first feature's
+    /// geometry so it can be deserialized as an NTS <see cref="Geometry"/>.
+    /// Plain geometry objects (Polygon, MultiPolygon, …) are returned unchanged.
+    /// </summary>
+    private static string ExtractGeometryJson(string geoJson)
+    {
+        using var doc = JsonDocument.Parse(geoJson);
+        var root = doc.RootElement;
+
+        if (root.TryGetProperty("type", out var typeElement) &&
+            typeElement.GetString() == "FeatureCollection")
+        {
+            if (!root.TryGetProperty("features", out var features) ||
+                features.GetArrayLength() == 0)
+                throw new ArgumentException("FeatureCollection must contain at least one feature.");
+
+            var firstFeature = features[0];
+            if (firstFeature.TryGetProperty("geometry", out var geometryElement))
+                return geometryElement.GetRawText();
+
+            throw new ArgumentException("FeatureCollection contains no geometry in its first feature.");
+        }
+
+        return geoJson;
     }
 }
