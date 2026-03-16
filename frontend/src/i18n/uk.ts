@@ -566,6 +566,13 @@ const uk = {
     resourceOverspend: 'Перевитрата ресурсу',
     loadError: 'Помилка завантаження сповіщень',
     markReadError: 'Помилка позначення',
+    titleColumn: 'Заголовок',
+    bodyColumn: 'Повідомлення',
+    dateColumn: 'Дата',
+    statusColumn: 'Статус',
+    statusRead: 'Прочитано',
+    statusNew: 'Нове',
+    markAsRead: 'Позначити прочитаним',
   },
 } as const;
 
