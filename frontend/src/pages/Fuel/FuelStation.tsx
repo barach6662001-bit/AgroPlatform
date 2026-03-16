@@ -265,7 +265,7 @@ export default function FuelStation() {
                       <Space>
                         <Text strong style={{ color: '#E5E7EB' }}>{tank.name}</Text>
                         <Tag>{fuelLabel}</Tag>
-                        {!tank.isActive && <Badge status="default" text="Неактивний" />}
+                        {!tank.isActive && <Badge status="default" text={t.warehouses.inactive} />}
                       </Space>
                     }
                     style={{ background: '#1f2937', border: '1px solid #374151' }}

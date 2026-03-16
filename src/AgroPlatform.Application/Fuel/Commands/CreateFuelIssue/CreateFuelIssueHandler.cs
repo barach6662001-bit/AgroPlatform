@@ -25,7 +25,7 @@ public class CreateFuelIssueHandler : IRequestHandler<CreateFuelIssueCommand, Gu
         if (tank.CurrentLiters < request.QuantityLiters)
             throw new ValidationException(new[]
             {
-                new ValidationFailure("QuantityLiters", "Недостатньо пального в резервуарі"),
+                new ValidationFailure("QuantityLiters", "Insufficient fuel in the tank"),
             });
 
         tank.CurrentLiters -= request.QuantityLiters;
