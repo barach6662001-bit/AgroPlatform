@@ -302,8 +302,7 @@ export default function Dashboard() {
                     ))}
                   </Pie>
                   <Tooltip />
-                  <Bar dataKey="area" fill="#22C55E" name={t.dashboard.areaHa} />
-                </BarChart>
+                                 </PieChart>
               </ResponsiveContainer>
             </Card>
           </Col>
