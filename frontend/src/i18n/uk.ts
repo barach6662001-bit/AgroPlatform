@@ -180,9 +180,10 @@ const uk = {
     ownershipOwnLand: 'Власність',
     ownershipLease: 'Оренда',
     ownershipShareLease: 'Пай',
-    cadastreNotFound: 'No cadastral data found for this number.',
-    cadastreLoaded: 'Cadastre data loaded successfully.',
-    cadastreError: 'Failed to load cadastral data.',
+    loadFromCadastre: 'Завантажити з кадастру',
+    cadastreNotFound: 'Кадастрові дані для цього номера не знайдено.',
+    cadastreLoaded: 'Дані кадастру завантажено успішно.',
+    cadastreError: 'Не вдалося завантажити дані кадастру.',
   },
   warehouses: {
     title: 'Склади',
