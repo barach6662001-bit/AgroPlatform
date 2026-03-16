@@ -21,6 +21,7 @@ import MachineryList from './pages/Machinery/MachineryList';
 import MachineDetail from './pages/Machinery/MachineDetail';
 import MaintenancePage from './pages/Machinery/MaintenancePage';
 import FleetMap from './pages/Fleet/FleetMap';
+import FuelStation from './pages/Fuel/FuelStation';
 import CostRecords from './pages/Economics/CostRecords';
 import FieldPnl from './pages/Economics/FieldPnl';
 import BudgetPage from './pages/Economics/BudgetPage';
@@ -64,6 +65,7 @@ export default function App() {
             <Route path="/machinery/:id" element={<MachineDetail />} />
             <Route path="/machinery/:id/maintenance" element={<MaintenancePage />} />
             <Route path="/fleet" element={<FleetMap />} />
+            <Route path="/fuel" element={<FuelStation />} />
             <Route path="/economics" element={<CostRecords />} />
             <Route path="/economics/pnl" element={<FieldPnl />} />
             <Route path="/economics/budget" element={<BudgetPage />} />

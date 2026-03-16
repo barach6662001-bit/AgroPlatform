@@ -2,6 +2,7 @@ using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
+using AgroPlatform.Domain.Fuel;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Users;
@@ -41,6 +42,8 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<GpsTrack> GpsTracks => Set<GpsTrack>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<FuelTank> FuelTanks => Set<FuelTank>();
+    public DbSet<FuelTransaction> FuelTransactions => Set<FuelTransaction>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -67,5 +70,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<StockBalance>().HasQueryFilter(sb => !sb.IsDeleted && sb.TenantId == _tenantId);
         builder.Entity<Batch>().HasQueryFilter(b => !b.IsDeleted && b.TenantId == _tenantId);
         builder.Entity<Notification>().HasQueryFilter(n => n.TenantId == _tenantId);
+        builder.Entity<FuelTank>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
+        builder.Entity<FuelTransaction>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
     }
 }
