@@ -309,6 +309,7 @@ const uk = {
     operationUpdated: 'Операцію оновлено',
     editOperation: 'Редагувати операцію',
     operationUpdateError: 'Помилка оновлення операції',
+    performedAt: 'Дата проведення',
   },
   machinery: {
     title: 'Техніка',

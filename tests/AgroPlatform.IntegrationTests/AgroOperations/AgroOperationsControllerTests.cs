@@ -28,7 +28,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
         {
             fieldId,
             operationType = "Sowing",
-            plannedDate = DateTime.UtcNow.AddDays(7).ToString("o"),
+            performedAt = DateTime.UtcNow.ToString("o"),
             description
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -45,7 +45,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
         {
             fieldId,
             operationType = "Sowing",
-            plannedDate = DateTime.UtcNow.AddDays(5).ToString("o"),
+            performedAt = DateTime.UtcNow.ToString("o"),
             description = "Spring sowing"
         });
 
@@ -78,7 +78,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
     }
 
     [Fact]
-    public async Task CompleteAgroOperation_ReturnsNoContent()
+    public async Task CompleteAgroOperation_AlreadyCompleted_ReturnsConflict()
     {
         var fieldId = await CreateFieldAsync("Complete Op Field");
         var opId = await CreateAgroOperationAsync(fieldId, "Complete Test Op");
@@ -90,7 +90,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
             areaProcessed = 45.0
         });
 
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
 
     [Fact]
