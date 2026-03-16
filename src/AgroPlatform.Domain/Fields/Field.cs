@@ -16,6 +16,7 @@ public class Field : AuditableEntity
     public Geometry? Geometry { get; set; }
     public string? SoilType { get; set; }
     public string? Notes { get; set; }
+    public LandOwnershipType OwnershipType { get; set; } = LandOwnershipType.OwnLand;
 
     public ICollection<FieldCropHistory> CropHistory { get; set; } = new List<FieldCropHistory>();
     public ICollection<AgroOperation> Operations { get; set; } = new List<AgroOperation>();
