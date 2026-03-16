@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined } from '@ant-design/icons';
 import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry } from '../../api/fields';
 import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
@@ -18,6 +18,7 @@ export default function FieldDetail() {
   const [saving, setSaving] = useState(false);
   const [currentGeoJson, setCurrentGeoJson] = useState<string | null>(null);
   const [savingGeometry, setSavingGeometry] = useState(false);
+  const [cadastreLoading, setCadastreLoading] = useState(false);
   const [assignForm] = Form.useForm();
   const [planForm] = Form.useForm();
   const { t } = useTranslation();
@@ -77,6 +78,32 @@ export default function FieldDetail() {
     }
   };
 
+  const handleLoadFromCadastre = async () => {
+    if (!field || !field.cadastralNumber) return;
+    setCadastreLoading(true);
+    try {
+      const url = `https://kadastr.live/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kadastr:cadaster_parcel&outputFormat=application/json&CQL_FILTER=cadnum='${encodeURIComponent(field.cadastralNumber)}'`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+      const geojson = await response.json();
+      if (!geojson.features || geojson.features.length === 0) {
+        message.warning(t.fields.cadastreNotFound);
+        return;
+      }
+      const feature = geojson.features[0];
+      const geometryJson = JSON.stringify(feature.geometry);
+      await updateFieldGeometry(id!, { geoJson: geometryJson });
+      message.success(t.fields.cadastreLoaded);
+      setLoading(true);
+      load();
+    } catch (error) {
+      console.error('Cadastre loading failed:', error);
+      message.error(t.fields.cadastreError);
+    } finally {
+      setCadastreLoading(false);
+    }
+  };
+
   const handleSaveGeometry = async () => {
     if (!currentGeoJson) {
       message.warning(t.fields.noPolygonToDraw);
@@ -97,6 +124,8 @@ export default function FieldDetail() {
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
   if (!field) return null;
+
+  const hasGeometry = !!field.geoJson;
 
   const cropOptions = Object.entries(t.crops).map(([k, v]) => ({ value: k as CropType, label: v }));
 
@@ -165,16 +194,28 @@ export default function FieldDetail() {
             title={t.fields.fieldMap}
             styles={{ body: { padding: 0 } }}
             extra={
-              <Button
-                type="primary"
-                icon={<SaveOutlined />}
-                size="small"
-                loading={savingGeometry}
-                disabled={!currentGeoJson}
-                onClick={handleSaveGeometry}
-              >
-                {t.fields.saveGeometry}
-              </Button>
+              <Space>
+                {field.cadastralNumber && !hasGeometry && (
+                  <Button
+                    icon={<DownloadOutlined />}
+                    size="small"
+                    loading={cadastreLoading}
+                    onClick={handleLoadFromCadastre}
+                  >
+                    {t.fields.loadFromCadastre}
+                  </Button>
+                )}
+                <Button
+                  type="primary"
+                  icon={<SaveOutlined />}
+                  size="small"
+                  loading={savingGeometry}
+                  disabled={!currentGeoJson}
+                  onClick={handleSaveGeometry}
+                >
+                  {t.fields.saveGeometry}
+                </Button>
+              </Space>
             }
           >
             <FieldDrawMap field={field} onGeometryChange={setCurrentGeoJson} height={300} />
