@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Row, Col, Card, Statistic, Spin, message, Typography, Table, Tag, List, Badge } from 'antd';
+import { Row, Col, Card, Spin, message, Typography, Table, Tag, List, Badge } from 'antd';
 import {
   AimOutlined,
   CarOutlined,
@@ -39,7 +39,7 @@ import { CHART_COLORS } from '../theme/darkTheme';
 
 dayjs.extend(relativeTime);
 
-const CARD = { background: '#111827', border: '1px solid #1f2d42', borderRadius: 12 };
+const CARD = { background: 'linear-gradient(135deg, #111814 0%, #1a2320 100%)', border: '1px solid #1f2d24', borderRadius: 16 };
 const SECTION_GAP = { marginTop: 24 };
 
 export default function Dashboard() {
@@ -101,7 +101,7 @@ export default function Dashboard() {
       dataIndex: 'name',
       key: 'name',
       ellipsis: true,
-      render: (v: string) => <Typography.Text style={{ color: '#E5E7EB' }}>{v}</Typography.Text>,
+      render: (v: string) => <Typography.Text style={{ color: '#f0fdf4' }}>{v}</Typography.Text>,
     },
     {
       title: t.fields.currentCrop,
@@ -110,13 +110,13 @@ export default function Dashboard() {
       render: (crop: string | undefined) =>
         crop
           ? <Tag color="green" style={{ borderRadius: 4, fontSize: 11 }}>{t.crops[crop as keyof typeof t.crops] || crop}</Tag>
-          : <Tag style={{ borderRadius: 4, fontSize: 11, color: '#64748B', border: '1px solid #1f2d42', background: 'transparent' }}>{t.fields.notSeeded}</Tag>,
+          : <Tag style={{ borderRadius: 4, fontSize: 11, color: '#4ade80', border: '1px solid #1f2d24', background: 'transparent' }}>{t.fields.notSeeded}</Tag>,
     },
     {
       title: t.fields.area,
       dataIndex: 'areaHectares',
       key: 'areaHectares',
-      render: (v: number) => <Typography.Text type="secondary" style={{ fontSize: 12 }}>{v.toFixed(1)} ha</Typography.Text>,
+      render: (v: number) => <Typography.Text style={{ color: '#86efac', fontSize: 12 }}>{v.toFixed(1)} ha</Typography.Text>,
     },
   ];
 
@@ -133,13 +133,13 @@ export default function Dashboard() {
       dataIndex: 'name',
       key: 'name',
       ellipsis: true,
-      render: (v: string) => <Typography.Text style={{ color: '#E5E7EB' }}>{v}</Typography.Text>,
+      render: (v: string) => <Typography.Text style={{ color: '#f0fdf4' }}>{v}</Typography.Text>,
     },
     {
       title: t.machinery.type,
       dataIndex: 'type',
       key: 'type',
-      render: (v: string) => <Typography.Text type="secondary" style={{ fontSize: 12 }}>{t.machineryTypes[v as keyof typeof t.machineryTypes] || v}</Typography.Text>,
+      render: (v: string) => <Typography.Text style={{ color: '#86efac', fontSize: 12 }}>{t.machineryTypes[v as keyof typeof t.machineryTypes] || v}</Typography.Text>,
     },
     {
       title: t.machinery.status,
@@ -163,96 +163,135 @@ export default function Dashboard() {
   const hasChartData = operationsData.length > 0 || areaData.length > 0 || costTrendData.length > 0;
 
   return (
-    <div>
+    <div className="page-enter">
       <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
 
       {/* KPI Row 1 */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
-          <Card className="kpi-card" bordered={false}>
-            <Statistic
-              title={t.dashboard.fields}
-              value={data.totalFields}
-              prefix={<AimOutlined />}
-              valueStyle={{ color: '#22C55E' }}
-            />
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {data.totalAreaHectares.toFixed(0)} ha {t.dashboard.areaLabel}
-            </Typography.Text>
-          </Card>
+          <div style={{
+            background: 'linear-gradient(135deg, #111814 0%, #1a2320 100%)',
+            border: '1px solid #1f2d24',
+            borderRadius: 16,
+            padding: '20px 24px',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'border-color 0.2s, transform 0.2s',
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, #16a34a, transparent)' }} />
+            <div style={{ color: '#4ade80', fontSize: 13, fontWeight: 500, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <AimOutlined />{t.dashboard.fields}
+            </div>
+            <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{data.totalFields}</div>
+            <div style={{ color: '#166534', fontSize: 12, marginTop: 4 }}>{data.totalAreaHectares.toFixed(0)} ha {t.dashboard.areaLabel}</div>
+          </div>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card className="kpi-card" bordered={false}>
-            <Statistic
-              title={t.dashboard.activeMachinery}
-              value={data.activeMachines}
-              suffix={`/ ${data.totalMachines}`}
-              prefix={<CarOutlined />}
-              valueStyle={{ color: '#3B82F6' }}
-            />
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {cropCount} {t.dashboard.cropTypes}
-            </Typography.Text>
-          </Card>
+          <div style={{
+            background: 'linear-gradient(135deg, #111814 0%, #1a2320 100%)',
+            border: '1px solid #1f2d24',
+            borderRadius: 16,
+            padding: '20px 24px',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'border-color 0.2s, transform 0.2s',
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, #3b82f6, transparent)' }} />
+            <div style={{ color: '#4ade80', fontSize: 13, fontWeight: 500, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <CarOutlined />{t.dashboard.activeMachinery}
+            </div>
+            <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{data.activeMachines}<span style={{ fontSize: 16, color: '#4ade80', fontWeight: 400 }}>/{data.totalMachines}</span></div>
+            <div style={{ color: '#166534', fontSize: 12, marginTop: 4 }}>{cropCount} {t.dashboard.cropTypes}</div>
+          </div>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card className="kpi-card" bordered={false}>
-            <Statistic
-              title={t.dashboard.warehouses}
-              value={data.totalWarehouseItems}
-              prefix={<InboxOutlined />}
-              valueStyle={{ color: '#22C55E' }}
-            />
-          </Card>
+          <div style={{
+            background: 'linear-gradient(135deg, #111814 0%, #1a2320 100%)',
+            border: '1px solid #1f2d24',
+            borderRadius: 16,
+            padding: '20px 24px',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'border-color 0.2s, transform 0.2s',
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, #16a34a, transparent)' }} />
+            <div style={{ color: '#4ade80', fontSize: 13, fontWeight: 500, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <InboxOutlined />{t.dashboard.warehouses}
+            </div>
+            <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{data.totalWarehouseItems}</div>
+            <div style={{ color: '#166534', fontSize: 12, marginTop: 4 }}>&nbsp;</div>
+          </div>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card className="kpi-card" bordered={false}>
-            <Statistic
-              title={t.dashboard.cropStatus}
-              value={Object.keys(data.areaByCrop).length}
-              suffix="crops"
-              prefix={<ToolOutlined />}
-              valueStyle={{ color: '#22C55E' }}
-            />
-          </Card>
+          <div style={{
+            background: 'linear-gradient(135deg, #111814 0%, #1a2320 100%)',
+            border: '1px solid #1f2d24',
+            borderRadius: 16,
+            padding: '20px 24px',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'border-color 0.2s, transform 0.2s',
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, #16a34a, transparent)' }} />
+            <div style={{ color: '#4ade80', fontSize: 13, fontWeight: 500, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <ToolOutlined />{t.dashboard.cropStatus}
+            </div>
+            <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{Object.keys(data.areaByCrop).length}</div>
+            <div style={{ color: '#166534', fontSize: 12, marginTop: 4 }}>crops</div>
+          </div>
         </Col>
       </Row>
 
       {/* KPI Row 2 */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} sm={8}>
-          <Card className="kpi-card" bordered={false}>
-            <Statistic
-              title={t.dashboard.area}
-              value={data.totalAreaHectares}
-              precision={1}
-              suffix="ha"
-              valueStyle={{ color: '#22C55E' }}
-            />
-          </Card>
+          <div style={{
+            background: 'linear-gradient(135deg, #111814 0%, #1a2320 100%)',
+            border: '1px solid #1f2d24',
+            borderRadius: 16,
+            padding: '20px 24px',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'border-color 0.2s, transform 0.2s',
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, #16a34a, transparent)' }} />
+            <div style={{ color: '#4ade80', fontSize: 13, fontWeight: 500, marginBottom: 8 }}>{t.dashboard.area}</div>
+            <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{data.totalAreaHectares.toFixed(1)}<span style={{ fontSize: 14, color: '#4ade80', marginLeft: 4 }}>ha</span></div>
+          </div>
         </Col>
         <Col xs={24} sm={8}>
-          <Card className="kpi-card" bordered={false}>
-            <Statistic
-              title={t.dashboard.hoursWorked}
-              value={data.totalHoursWorked}
-              precision={1}
-              suffix="h"
-              prefix={<ClockCircleOutlined />}
-            />
-          </Card>
+          <div style={{
+            background: 'linear-gradient(135deg, #111814 0%, #1a2320 100%)',
+            border: '1px solid #1f2d24',
+            borderRadius: 16,
+            padding: '20px 24px',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'border-color 0.2s, transform 0.2s',
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, #f59e0b, transparent)' }} />
+            <div style={{ color: '#4ade80', fontSize: 13, fontWeight: 500, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <ClockCircleOutlined />{t.dashboard.hoursWorked}
+            </div>
+            <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{data.totalHoursWorked.toFixed(1)}<span style={{ fontSize: 14, color: '#4ade80', marginLeft: 4 }}>h</span></div>
+          </div>
         </Col>
         <Col xs={24} sm={8}>
-          <Card className="kpi-card" bordered={false}>
-            <Statistic
-              title={t.dashboard.costs}
-              value={data.totalCosts}
-              precision={0}
-              suffix="UAH"
-              prefix={<DollarOutlined />}
-              valueStyle={{ color: '#EF4444' }}
-            />
-          </Card>
+          <div style={{
+            background: 'linear-gradient(135deg, #111814 0%, #1a2320 100%)',
+            border: '1px solid #1f2d24',
+            borderRadius: 16,
+            padding: '20px 24px',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'border-color 0.2s, transform 0.2s',
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, #ef4444, transparent)' }} />
+            <div style={{ color: '#4ade80', fontSize: 13, fontWeight: 500, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <DollarOutlined />{t.dashboard.costs}
+            </div>
+            <div style={{ color: '#ef4444', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{data.totalCosts.toFixed(0)}<span style={{ fontSize: 14, color: '#86efac', marginLeft: 4 }}>UAH</span></div>
+          </div>
         </Col>
       </Row>
 
@@ -353,7 +392,7 @@ export default function Dashboard() {
             <Col span={24}>
               <Card
                 title={
-                  <Typography.Text strong style={{ color: '#E5E7EB' }}>
+                  <Typography.Text strong style={{ color: '#f0fdf4' }}>
                     {t.dashboard.fieldsStatus}
                   </Typography.Text>
                 }
@@ -366,7 +405,7 @@ export default function Dashboard() {
                   rowKey="id"
                   size="small"
                   pagination={false}
-                  locale={{ emptyText: <Typography.Text type="secondary">{t.dashboard.noFieldsData}</Typography.Text> }}
+                  locale={{ emptyText: <Typography.Text style={{ color: '#86efac' }}>{t.dashboard.noFieldsData}</Typography.Text> }}
                   scroll={{ x: true }}
                 />
               </Card>
@@ -376,7 +415,7 @@ export default function Dashboard() {
             <Col span={24}>
               <Card
                 title={
-                  <Typography.Text strong style={{ color: '#E5E7EB' }}>
+                  <Typography.Text strong style={{ color: '#f0fdf4' }}>
                     {t.dashboard.machineryStatus}
                   </Typography.Text>
                 }
@@ -389,7 +428,7 @@ export default function Dashboard() {
                   rowKey="id"
                   size="small"
                   pagination={false}
-                  locale={{ emptyText: <Typography.Text type="secondary">{t.dashboard.noMachineryData}</Typography.Text> }}
+                  locale={{ emptyText: <Typography.Text style={{ color: '#86efac' }}>{t.dashboard.noMachineryData}</Typography.Text> }}
                   scroll={{ x: true }}
                 />
               </Card>
@@ -404,7 +443,7 @@ export default function Dashboard() {
             <Col span={24}>
               <Card
                 title={
-                  <Typography.Text strong style={{ color: '#E5E7EB' }}>
+                  <Typography.Text strong style={{ color: '#f0fdf4' }}>
                     {t.dashboard.warehouseOverview}
                   </Typography.Text>
                 }
@@ -416,20 +455,20 @@ export default function Dashboard() {
                   rowKey="itemId"
                   size="small"
                   pagination={false}
-                  locale={{ emptyText: <Typography.Text type="secondary">—</Typography.Text> }}
+                  locale={{ emptyText: <Typography.Text style={{ color: '#86efac' }}>—</Typography.Text> }}
                   columns={[
                     {
                       title: t.warehouses.item,
                       dataIndex: 'itemName',
                       key: 'itemName',
                       ellipsis: true,
-                      render: (v: string) => <Typography.Text style={{ color: '#E5E7EB', fontSize: 13 }}>{v}</Typography.Text>,
+                      render: (v: string) => <Typography.Text style={{ color: '#f0fdf4', fontSize: 13 }}>{v}</Typography.Text>,
                     },
                     {
                       title: t.warehouses.balance,
                       key: 'balance',
                       render: (_: unknown, r: { totalBalance: number; baseUnit: string }) => (
-                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                        <Typography.Text style={{ color: '#86efac', fontSize: 12 }}>
                           {r.totalBalance.toFixed(1)} {r.baseUnit}
                         </Typography.Text>
                       ),
@@ -443,14 +482,14 @@ export default function Dashboard() {
             <Col span={24}>
               <Card
                 title={
-                  <Typography.Text strong style={{ color: '#E5E7EB' }}>
+                  <Typography.Text strong style={{ color: '#f0fdf4' }}>
                     {t.dashboard.activityFeed}
                   </Typography.Text>
                 }
                 style={CARD}
               >
                 {notifications.length === 0 ? (
-                  <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+                  <Typography.Text style={{ color: '#86efac', fontSize: 13 }}>
                     {t.dashboard.noActivity}
                   </Typography.Text>
                 ) : (
@@ -459,18 +498,18 @@ export default function Dashboard() {
                     split={false}
                     renderItem={(item) => (
                       <List.Item
-                        style={{ padding: '8px 0', borderBottom: '1px solid #1f2d42', alignItems: 'flex-start' }}
-                        extra={!item.isRead ? <Badge dot color="#22C55E" style={{ marginTop: 6 }} /> : null}
+                        style={{ padding: '8px 0', borderBottom: '1px solid #1f2d24', alignItems: 'flex-start' }}
+                        extra={!item.isRead ? <Badge dot color="#22c55e" style={{ marginTop: 6 }} /> : null}
                       >
                         <List.Item.Meta
                           avatar={notifIcon(item.type)}
                           title={
-                            <Typography.Text style={{ fontSize: 13, color: item.isRead ? '#94A3B8' : '#E5E7EB' }}>
+                            <Typography.Text style={{ fontSize: 13, color: item.isRead ? '#86efac' : '#f0fdf4' }}>
                               {item.title}
                             </Typography.Text>
                           }
                           description={
-                            <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+                            <Typography.Text style={{ color: '#4ade80', fontSize: 11 }}>
                               <ClockCircleOutlined style={{ marginRight: 4 }} />
                               {dayjs(item.createdAtUtc).fromNow()}
                             </Typography.Text>

@@ -39,14 +39,17 @@ export default function AppLayout() {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#0B1220' }}>
+    <Layout style={{ minHeight: '100vh', background: '#0a0f0d' }}>
       {!isMobile && (
         <Sider
           collapsible
           collapsed={collapsed}
           onCollapse={setCollapsed}
           theme="dark"
-          style={{ background: '#0B1220', borderRight: '1px solid #1f2d42' }}
+          style={{
+            background: 'linear-gradient(180deg, #0d1510 0%, #0a0f0d 100%)',
+            borderRight: '1px solid #1f2d24',
+          }}
         >
           <div
             style={{
@@ -55,22 +58,34 @@ export default function AppLayout() {
               alignItems: 'center',
               gap: 10,
               padding: collapsed ? '0 26px' : '0 20px',
-              borderBottom: '1px solid #1f2d42',
+              borderBottom: '1px solid #1f2d24',
             }}
           >
-            <Logo size={28} />
+            <div style={{
+              width: 32,
+              height: 32,
+              background: 'linear-gradient(135deg, #16a34a, #4ade80)',
+              borderRadius: 8,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 20px rgba(22,163,74,0.4)',
+              flexShrink: 0,
+            }}>
+              <Logo size={18} />
+            </div>
             {!collapsed && (
               <Typography.Text
                 strong
                 style={{
-                  color: '#E5E7EB',
+                  color: '#f0fdf4',
                   fontSize: 16,
                   letterSpacing: '-0.3px',
                   whiteSpace: 'nowrap',
-                  fontWeight: 600,
+                  fontWeight: 700,
                 }}
               >
-                Agrotech
+                АгроТех
               </Typography.Text>
             )}
           </div>
@@ -80,12 +95,12 @@ export default function AppLayout() {
       <Layout>
         <Header
           style={{
-            background: '#0B1220',
+            background: '#0a0f0d',
             padding: '0 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderBottom: '1px solid #1a2535',
+            borderBottom: '1px solid #1f2d24',
             height: 64,
           }}
         >
@@ -108,7 +123,7 @@ export default function AppLayout() {
             >
               <Button
                 type="text"
-                style={{ fontWeight: 600, color: '#94A3B8', fontSize: 13 }}
+                style={{ fontWeight: 600, color: '#86efac', fontSize: 13 }}
               >
                 {lang === 'uk' ? '🇺🇦 UA' : '🇬🇧 EN'}
               </Button>
@@ -117,11 +132,11 @@ export default function AppLayout() {
             <Avatar
               icon={<UserOutlined />}
               size={32}
-              style={{ backgroundColor: '#16A34A', cursor: 'pointer' }}
+              style={{ backgroundColor: '#16a34a', cursor: 'pointer', boxShadow: '0 0 10px rgba(22,163,74,0.3)' }}
             />
             {!isMobile && (
               <>
-                <Typography.Text strong style={{ color: '#E5E7EB', fontSize: 13 }}>{email}</Typography.Text>
+                <Typography.Text strong style={{ color: '#f0fdf4', fontSize: 13 }}>{email}</Typography.Text>
                 {role && (
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     ({role})
