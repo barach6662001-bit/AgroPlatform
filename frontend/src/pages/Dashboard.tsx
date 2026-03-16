@@ -8,6 +8,8 @@ import {
   InboxOutlined,
   ClockCircleOutlined,
   WarningOutlined,
+  ExclamationCircleOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 import {
   PieChart,
@@ -288,8 +290,8 @@ export default function Dashboard() {
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94A3B8' }} stroke="#1f2d42" />
                   <YAxis stroke="#1f2d42" tick={{ fill: '#94A3B8', fontSize: 11 }} width={48} />
                   <Tooltip />
-                  <Bar dataKey="area" fill="#22C55E" name={t.dashboard.areaHa} />
-                </BarChart>
+                  <Line type="monotone" dataKey="cost" stroke="#EF4444" name={t.dashboard.costsUAH} strokeWidth={2} />
+                </LineChart>
               </ResponsiveContainer>
             </Card>
           </Col>
@@ -307,8 +309,7 @@ export default function Dashboard() {
                   </Pie>
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="cost" stroke="#EF4444" name={t.dashboard.costsUAH} strokeWidth={2} />
-                </LineChart>
+                </PieChart>
               </ResponsiveContainer>
             </Card>
           </Col>
