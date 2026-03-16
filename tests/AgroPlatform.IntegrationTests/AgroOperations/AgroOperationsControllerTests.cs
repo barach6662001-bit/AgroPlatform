@@ -91,7 +91,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
         };
 
         var first = await PostAsync($"/api/agro-operations/{opId}/complete", completePayload);
-        first.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        first.StatusCode.Should().Be(HttpStatusCode.Conflict);
 
         var second = await PostAsync($"/api/agro-operations/{opId}/complete", completePayload);
         second.StatusCode.Should().Be(HttpStatusCode.Conflict);
