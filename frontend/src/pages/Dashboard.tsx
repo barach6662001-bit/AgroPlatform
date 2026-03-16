@@ -6,6 +6,8 @@ import {
   ToolOutlined,
   DollarOutlined,
   InboxOutlined,
+  ClockCircleOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import {
   PieChart,
@@ -63,109 +65,118 @@ export default function Dashboard() {
     <div>
       <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
 
+      {/* KPI Row 1 */}
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={4}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="kpi-card" bordered={false}>
             <Statistic
               title={t.dashboard.fields}
               value={data.totalFields}
               prefix={<AimOutlined />}
-              valueStyle={{ color: '#3FB950' }}
+              valueStyle={{ color: '#22C55E' }}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={5}>
-          <Card>
-            <Statistic
-              title={t.dashboard.area}
-              value={data.totalAreaHectares}
-              precision={1}
-              valueStyle={{ color: '#3FB950' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={5}>
-          <Card>
-            <Statistic
-              title={t.dashboard.operations}
-              value={data.totalOperations}
-              prefix={<ToolOutlined />}
-              suffix={<Typography.Text type="secondary" style={{ fontSize: 12 }}>{` / ${data.completedOperations} ${t.dashboard.completed}`}</Typography.Text>}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={5}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="kpi-card" bordered={false}>
             <Statistic
               title={t.dashboard.activeMachinery}
               value={data.activeMachines}
               suffix={`/ ${data.totalMachines}`}
               prefix={<CarOutlined />}
-              valueStyle={{ color: '#1F6FEB' }}
+              valueStyle={{ color: '#3B82F6' }}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={5}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="kpi-card" bordered={false}>
             <Statistic
-              title={t.dashboard.costs}
-              value={data.totalCosts}
-              precision={0}
-              prefix={<DollarOutlined />}
-              valueStyle={{ color: '#F85149' }}
+              title={t.dashboard.warehouses}
+              value={data.totalWarehouseItems}
+              prefix={<InboxOutlined />}
+              valueStyle={{ color: '#22C55E' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="kpi-card" bordered={false}>
+            <Statistic
+              title={t.dashboard.operations}
+              value={data.pendingOperations}
+              prefix={<ToolOutlined />}
+              suffix={<Typography.Text type="secondary" style={{ fontSize: 12 }}>{` / ${data.totalOperations}`}</Typography.Text>}
+              valueStyle={{ color: '#F59E0B' }}
             />
           </Card>
         </Col>
       </Row>
 
+      {/* KPI Row 2 */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} sm={12} lg={8}>
-          <Card>
+        <Col xs={24} sm={8}>
+          <Card className="kpi-card" bordered={false}>
             <Statistic
-              title={t.dashboard.warehouses}
-              value={data.totalWarehouses}
-              prefix={<InboxOutlined />}
+              title={t.dashboard.area}
+              value={data.totalAreaHectares}
+              precision={1}
+              suffix="ha"
+              valueStyle={{ color: '#22C55E' }}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={8}>
-          <Card>
+        <Col xs={24} sm={8}>
+          <Card className="kpi-card" bordered={false}>
             <Statistic
               title={t.dashboard.hoursWorked}
               value={data.totalHoursWorked}
               precision={1}
+              suffix="h"
+              prefix={<ClockCircleOutlined />}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={8}>
-          <Card>
+        <Col xs={24} sm={8}>
+          <Card className="kpi-card" bordered={false}>
             <Statistic
-              title={t.dashboard.fuelConsumed}
-              value={data.totalFuelConsumed}
-              precision={1}
+              title={t.dashboard.costs}
+              value={data.totalCosts}
+              precision={0}
+              suffix="UAH"
+              prefix={<DollarOutlined />}
+              valueStyle={{ color: '#EF4444' }}
             />
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
-        {operationsData.length > 0 && (
-          <Col xs={24} lg={8}>
-            <Card title={t.dashboard.operationsByType}>
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie data={operationsData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                    {operationsData.map((_, index) => (
-                      <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        )}
+      {/* Alerts section */}
+      {(data.underRepairMachines > 0 || data.pendingOperations > 0) && (
+        <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
+          {data.underRepairMachines > 0 && (
+            <Col xs={24} sm={12}>
+              <div className="alert-card error">
+                <Typography.Text style={{ color: '#EF4444', fontWeight: 600, fontSize: 13 }}>
+                  <WarningOutlined style={{ marginRight: 8 }} />
+                  {data.underRepairMachines} {t.dashboard.underRepair ?? 'machines under repair'}
+                </Typography.Text>
+              </div>
+            </Col>
+          )}
+          {data.pendingOperations > 0 && (
+            <Col xs={24} sm={12}>
+              <div className="alert-card">
+                <Typography.Text style={{ color: '#F59E0B', fontWeight: 600, fontSize: 13 }}>
+                  <ClockCircleOutlined style={{ marginRight: 8 }} />
+                  {data.pendingOperations} {t.dashboard.pendingOps ?? 'pending operations'}
+                </Typography.Text>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
 
+      {/* Charts */}
+      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         {areaData.length > 0 && (
           <Col xs={24} lg={8}>
             <Card title={t.dashboard.areaByCrop}>
@@ -175,7 +186,7 @@ export default function Dashboard() {
                   <XAxis dataKey="name" angle={-30} textAnchor="end" interval={0} tick={{ fontSize: 11, fill: '#8B949E' }} stroke="#8B949E" />
                   <YAxis stroke="#8B949E" tick={{ fill: '#8B949E' }} />
                   <Tooltip />
-                  <Bar dataKey="area" fill="#3FB950" name={t.dashboard.areaHa} />
+                  <Bar dataKey="area" fill="#22C55E" name={t.dashboard.areaHa} />
                 </BarChart>
               </ResponsiveContainer>
             </Card>
@@ -192,8 +203,25 @@ export default function Dashboard() {
                   <YAxis stroke="#8B949E" tick={{ fill: '#8B949E' }} />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="cost" stroke="#F85149" name={t.dashboard.costsUAH} strokeWidth={2} />
+                  <Line type="monotone" dataKey="cost" stroke="#EF4444" name={t.dashboard.costsUAH} strokeWidth={2} />
                 </LineChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+        )}
+
+        {operationsData.length > 0 && (
+          <Col xs={24} lg={8}>
+            <Card title={t.dashboard.operationsByType}>
+              <ResponsiveContainer width="100%" height={260}>
+                <PieChart>
+                  <Pie data={operationsData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                    {operationsData.map((_, index) => (
+                      <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
               </ResponsiveContainer>
             </Card>
           </Col>

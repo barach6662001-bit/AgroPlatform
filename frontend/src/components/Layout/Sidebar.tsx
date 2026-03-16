@@ -1,9 +1,9 @@
-import { Menu } from 'antd';
+import { Menu, Typography } from 'antd';
 import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
   DollarOutlined, LineChartOutlined, BarChartOutlined, ThunderboltOutlined,
-  TeamOutlined, UserOutlined, SwapOutlined, RiseOutlined, SettingOutlined,
-  EnvironmentOutlined, FundOutlined, BellOutlined, BankOutlined,
+  TeamOutlined, SwapOutlined, RiseOutlined, SettingOutlined,
+  EnvironmentOutlined, FundOutlined, BankOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -16,20 +16,21 @@ export default function Sidebar() {
   const { isAdmin } = useRole();
 
   const warehouseChildren = [
-    { key: '/warehouses', label: t.nav.warehouses, icon: <BankOutlined /> },
-    { key: '/warehouses/items', label: t.nav.warehouseItems, icon: <InboxOutlined /> },
-    { key: '/warehouses/movements', label: t.nav.stockMovements, icon: <SwapOutlined /> },
+    { key: '/warehouses', label: t.nav.warehouses, icon: <BankOutlined />, style: { padding: '4px 8px' } },
+    { key: '/warehouses/items', label: t.nav.warehouseItems, icon: <InboxOutlined />, style: { padding: '4px 8px' } },
+    { key: '/warehouses/movements', label: t.nav.stockMovements, icon: <SwapOutlined />, style: { padding: '4px 8px' } },
+    { key: '/warehouses/grain', label: t.nav.grainStorage, icon: <InboxOutlined />, style: { padding: '4px 8px' } },
   ];
 
   const economicsChildren = [
-    { key: '/economics', label: t.nav.costs, icon: <DollarOutlined /> },
-    { key: '/economics/pnl', label: t.nav.pnl, icon: <RiseOutlined /> },
-    { key: '/economics/budget', label: t.nav.budget, icon: <FundOutlined /> },
+    { key: '/economics', label: t.nav.costs, icon: <DollarOutlined />, style: { padding: '4px 8px' } },
+    { key: '/economics/pnl', label: t.nav.pnl, icon: <RiseOutlined />, style: { padding: '4px 8px' } },
+    { key: '/economics/budget', label: t.nav.budget, icon: <FundOutlined />, style: { padding: '4px 8px' } },
   ];
 
   const analyticsChildren = [
-    { key: '/analytics/resources', label: t.analytics.resourceConsumption, icon: <BarChartOutlined /> },
-    { key: '/analytics/efficiency', label: t.analytics.fieldEfficiency, icon: <ThunderboltOutlined /> },
+    { key: '/analytics/resources', label: t.analytics.resourceConsumption, icon: <BarChartOutlined />, style: { padding: '4px 8px' } },
+    { key: '/analytics/efficiency', label: t.analytics.fieldEfficiency, icon: <ThunderboltOutlined />, style: { padding: '4px 8px' } },
   ];
 
   const allLeafItems = [
@@ -38,29 +39,24 @@ export default function Sidebar() {
     { key: '/operations' },
     { key: '/machinery' },
     { key: '/fleet' },
-    { key: '/notifications' },
-    { key: '/profile' },
     ...warehouseChildren,
-    { key: '/warehouses/grain' },
     ...economicsChildren,
     ...analyticsChildren,
     ...(isAdmin ? [{ key: '/settings/users' }] : []),
   ];
 
   const menuItems = [
-    { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined /> },
-    { key: '/fields', label: t.nav.fields, icon: <AimOutlined /> },
+    { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined />, style: { padding: '4px 8px' } },
+    { key: '/fields', label: t.nav.fields, icon: <AimOutlined />, style: { padding: '4px 8px' } },
+    { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined />, style: { padding: '4px 8px' } },
     {
       key: 'warehouses-group',
       label: t.nav.warehouses,
       icon: <InboxOutlined />,
       children: warehouseChildren,
     },
-    { key: '/warehouses/grain', label: t.nav.grainStorage, icon: <InboxOutlined /> },
-    { key: '/operations', label: t.nav.operations, icon: <ToolOutlined /> },
-    { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined /> },
-    { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined /> },
-    { key: '/notifications', label: t.notifications.title, icon: <BellOutlined /> },
+    { key: '/operations', label: t.nav.operations, icon: <ToolOutlined />, style: { padding: '4px 8px' } },
+    { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined />, style: { padding: '4px 8px' } },
     {
       key: 'economics-group',
       label: t.nav.economics,
@@ -68,12 +64,11 @@ export default function Sidebar() {
       children: economicsChildren,
     },
     {
-      key: '/analytics',
+      key: 'analytics-group',
       label: t.nav.analytics,
       icon: <LineChartOutlined />,
       children: analyticsChildren,
     },
-    { key: '/profile', label: t.nav.profile, icon: <UserOutlined /> },
     ...(isAdmin
       ? [
           {
@@ -81,7 +76,7 @@ export default function Sidebar() {
             label: t.nav.settings,
             icon: <SettingOutlined />,
             children: [
-              { key: '/settings/users', label: t.nav.users, icon: <TeamOutlined /> },
+              { key: '/settings/users', label: t.nav.users, icon: <TeamOutlined />, style: { padding: '4px 8px' } },
             ],
           },
         ]
@@ -101,20 +96,30 @@ export default function Sidebar() {
   const openKeys: string[] = [];
   if (warehouseChildren.some((c) => c.key === selectedKey)) openKeys.push('warehouses-group');
   if (economicsChildren.some((c) => c.key === selectedKey)) openKeys.push('economics-group');
-  if (analyticsChildren.some((c) => c.key === selectedKey)) openKeys.push('/analytics');
+  if (analyticsChildren.some((c) => c.key === selectedKey)) openKeys.push('analytics-group');
   if (isAdmin && selectedKey === '/settings/users') openKeys.push('settings-group');
 
   return (
-    <Menu
-      theme="dark"
-      mode="inline"
-      selectedKeys={[selectedKey]}
-      defaultOpenKeys={openKeys}
-      items={menuItems}
-      onClick={({ key }) => {
-        if (!key.endsWith('-group') && key !== '/analytics') navigate(key);
-      }}
-      style={{ borderRight: 0 }}
-    />
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)' }}>
+      <Menu
+        theme="dark"
+        mode="inline"
+        selectedKeys={[selectedKey]}
+        defaultOpenKeys={openKeys}
+        items={menuItems}
+        onClick={({ key }) => {
+          if (!key.endsWith('-group')) navigate(key);
+        }}
+        style={{ borderRight: 0, flex: 1, overflowY: 'auto' }}
+      />
+      <div style={{ padding: '12px 20px', borderTop: '1px solid #1f2d42' }}>
+        <Typography.Text style={{ fontSize: 11, color: '#4B5563', display: 'block' }}>
+          AgroPlatform v1.0
+        </Typography.Text>
+        <Typography.Text style={{ fontSize: 10, color: '#374151' }}>
+          {import.meta.env.MODE}
+        </Typography.Text>
+      </div>
+    </div>
   );
 }
