@@ -11,6 +11,7 @@ export interface FieldDto {
   currentCropYear?: number;
   soilType?: string;
   notes?: string;
+  ownershipType: number;
 }
 
 export interface CropHistoryDto {

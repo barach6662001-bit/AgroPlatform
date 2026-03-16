@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Fields;
 using MediatR;
 
@@ -27,6 +28,7 @@ public class UpdateFieldHandler : IRequestHandler<UpdateFieldCommand>
         field.GeoJson = request.GeoJson;
         field.SoilType = request.SoilType;
         field.Notes = request.Notes;
+        field.OwnershipType = (LandOwnershipType)request.OwnershipType;
 
         await _context.SaveChangesAsync(cancellationToken);
     }

@@ -109,6 +109,22 @@ export default function FieldsList() {
       render: (v: string, r: FieldDto) => v ? <Tag color="green">{t.crops[v as keyof typeof t.crops] || v}{r.currentCropYear ? ` (${r.currentCropYear})` : ''}</Tag> : <Tag>{t.fields.notSeeded}</Tag>,
     },
     {
+      title: t.fields.ownershipType,
+      dataIndex: 'ownershipType',
+      key: 'ownershipType',
+      render: (v: number) => {
+        if (v === 1) return <Tag color="blue">{t.fields.ownershipLease}</Tag>;
+        if (v === 2) return <Tag color="purple">{t.fields.ownershipShareLease}</Tag>;
+        return <Tag color="green">{t.fields.ownershipOwnLand}</Tag>;
+      },
+      filters: [
+        { text: t.fields.ownershipOwnLand, value: 0 },
+        { text: t.fields.ownershipLease, value: 1 },
+        { text: t.fields.ownershipShareLease, value: 2 },
+      ],
+      onFilter: (value: unknown, record: FieldDto) => record.ownershipType === value,
+    },
+    {
       title: t.fields.actions, key: 'actions',
       render: (_: unknown, record: FieldDto) => (
         <Space>
@@ -199,6 +215,13 @@ export default function FieldsList() {
           <Form.Item name="soilType" label={t.fields.soilType}>
             <Input />
           </Form.Item>
+          <Form.Item name="ownershipType" label={t.fields.ownershipType} initialValue={0}>
+            <Select>
+              <Select.Option value={0}>{t.fields.ownershipOwnLand}</Select.Option>
+              <Select.Option value={1}>{t.fields.ownershipLease}</Select.Option>
+              <Select.Option value={2}>{t.fields.ownershipShareLease}</Select.Option>
+            </Select>
+          </Form.Item>
           <Form.Item name="notes" label={t.fields.notes}>
             <Input.TextArea rows={3} />
           </Form.Item>
@@ -236,6 +259,13 @@ export default function FieldsList() {
                 { value: 'Chalk', label: 'Chalk' },
               ]}
             />
+          </Form.Item>
+          <Form.Item name="ownershipType" label={t.fields.ownershipType} initialValue={0}>
+            <Select>
+              <Select.Option value={0}>{t.fields.ownershipOwnLand}</Select.Option>
+              <Select.Option value={1}>{t.fields.ownershipLease}</Select.Option>
+              <Select.Option value={2}>{t.fields.ownershipShareLease}</Select.Option>
+            </Select>
           </Form.Item>
           <Form.Item name="notes" label={t.fields.notes}>
             <Input.TextArea rows={3} />

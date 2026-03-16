@@ -12,4 +12,5 @@ public class FieldDto
     public int? CurrentCropYear { get; set; }
     public string? SoilType { get; set; }
     public string? Notes { get; set; }
+    public int OwnershipType { get; set; }
 }

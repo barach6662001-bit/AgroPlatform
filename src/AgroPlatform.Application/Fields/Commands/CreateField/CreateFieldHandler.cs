@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Fields;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,8 @@ public class CreateFieldHandler : IRequestHandler<CreateFieldCommand, Guid>
             CurrentCropYear = request.CurrentCropYear,
             GeoJson = request.GeoJson,
             SoilType = request.SoilType,
-            Notes = request.Notes
+            Notes = request.Notes,
+            OwnershipType = (LandOwnershipType)request.OwnershipType
         };
 
         _context.Fields.Add(field);
