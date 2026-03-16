@@ -10,4 +10,5 @@ public class WarehouseItem : AuditableEntity
     public string BaseUnit { get; set; } = string.Empty;
     public string? Description { get; set; }
     public decimal? MinimumQuantity { get; set; }
+    public decimal? PurchasePrice { get; set; }
 }

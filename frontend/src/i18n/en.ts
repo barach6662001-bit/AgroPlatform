@@ -251,6 +251,8 @@ const en: Translations = {
     editItem: 'Edit Item',
     updateItemError: 'Error updating item',
     minimumQuantity: 'Minimum Stock Level',
+    purchasePrice: 'Purchase Price',
+    totalCost: 'Total Cost',
     grainStorageTitle: 'Grain Storage',
     grainStorageSubtitle: 'Manage grain storage facilities',
     createGrainStorage: 'Add Grain Storage',

@@ -104,6 +104,12 @@ export default function StockMovements() {
       key: 'note',
       render: (v: string) => v || '—',
     },
+    {
+      title: t.warehouses.totalCost,
+      dataIndex: 'totalCost',
+      key: 'totalCost',
+      render: (v?: number) => v != null ? `${v.toFixed(2)} UAH` : '—',
+    },
   ];
 
   const moveTypeOptions = [
