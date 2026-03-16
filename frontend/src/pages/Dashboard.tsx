@@ -8,8 +8,6 @@ import {
   InboxOutlined,
   ClockCircleOutlined,
   WarningOutlined,
-  ExclamationCircleOutlined,
-  InfoCircleOutlined,
 } from '@ant-design/icons';
 import {
   PieChart,
@@ -176,9 +174,6 @@ export default function Dashboard() {
               prefix={<AimOutlined />}
               valueStyle={{ color: '#22C55E' }}
             />
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {data.totalAreaHectares.toFixed(0)} ha {t.dashboard.areaLabel}
-            </Typography.Text>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -286,36 +281,30 @@ export default function Dashboard() {
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         {areaData.length > 0 && (
           <Col xs={24} lg={8}>
-            <Card title={t.dashboard.operationsByType} style={CARD}>
-              <ResponsiveContainer width="100%" height={240}>
-                <PieChart>
-                  <Pie
-                    data={operationsData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="45%"
-                    outerRadius={75}
-                  >
-                    {operationsData.map((_, index) => (
-                      <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        )}
-
-        {costTrendData.length > 0 && (
-          <Col xs={24} lg={8}>
             <Card title={t.dashboard.costTrend} style={CARD}>
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={costTrendData} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1f2d42" />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94A3B8' }} stroke="#1f2d42" />
                   <YAxis stroke="#1f2d42" tick={{ fill: '#94A3B8', fontSize: 11 }} width={48} />
+                  <Tooltip />
+                  <Bar dataKey="area" fill="#22C55E" name={t.dashboard.areaHa} />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+        )}
+
+        {operationsData.length > 0 && (
+          <Col xs={24} lg={8}>
+            <Card title={t.dashboard.operationsByType}>
+              <ResponsiveContainer width="100%" height={260}>
+                <PieChart>
+                  <Pie data={operationsData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                    {operationsData.map((_, index) => (
+                      <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
                   <Tooltip />
                   <Legend />
                   <Line type="monotone" dataKey="cost" stroke="#EF4444" name={t.dashboard.costsUAH} strokeWidth={2} />

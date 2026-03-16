@@ -45,7 +45,8 @@ public class GetFieldsHandler : IRequestHandler<GetFieldsQuery, PaginatedResult<
                 CurrentCrop = f.CurrentCrop,
                 CurrentCropYear = f.CurrentCropYear,
                 SoilType = f.SoilType,
-                Notes = f.Notes
+                Notes = f.Notes,
+                OwnershipType = (int)f.OwnershipType
             })
             .ToListAsync(cancellationToken);
 
