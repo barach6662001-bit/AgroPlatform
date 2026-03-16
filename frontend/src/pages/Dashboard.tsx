@@ -176,6 +176,9 @@ export default function Dashboard() {
               prefix={<AimOutlined />}
               valueStyle={{ color: '#22C55E' }}
             />
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {data.totalAreaHectares.toFixed(0)} ha {t.dashboard.areaLabel}
+            </Typography.Text>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
