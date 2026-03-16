@@ -34,6 +34,7 @@ public class GetFieldByIdHandler : IRequestHandler<GetFieldByIdQuery, FieldDetai
             CurrentCropYear = field.CurrentCropYear,
             SoilType = field.SoilType,
             Notes = field.Notes,
+            OwnershipType = (int)field.OwnershipType,
             GeoJson = field.GeoJson,
             CropHistory = field.CropHistory.Select(h => new CropHistoryDto
             {

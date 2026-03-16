@@ -163,6 +163,10 @@ const uk = {
     fieldUpdated: 'Поле оновлено',
     editField: 'Редагувати поле',
     fieldUpdateError: 'Помилка оновлення поля',
+    ownershipType: 'Тип власності',
+    ownershipOwnLand: 'Власність',
+    ownershipLease: 'Оренда',
+    ownershipShareLease: 'Пай',
   },
   warehouses: {
     title: 'Склади',

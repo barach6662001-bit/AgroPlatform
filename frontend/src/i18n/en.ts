@@ -165,6 +165,10 @@ const en: Translations = {
     fieldUpdated: 'Field updated',
     editField: 'Edit Field',
     fieldUpdateError: 'Error updating field',
+    ownershipType: 'Ownership Type',
+    ownershipOwnLand: 'Own Land',
+    ownershipLease: 'Lease',
+    ownershipShareLease: 'Share Lease',
   },
   warehouses: {
     title: 'Warehouses',
