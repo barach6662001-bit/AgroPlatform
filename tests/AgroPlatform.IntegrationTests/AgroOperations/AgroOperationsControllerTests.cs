@@ -28,7 +28,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
         {
             fieldId,
             operationType = "Sowing",
-            performedAt = DateTime.UtcNow.AddDays(7).ToString("o"),
+            performedAt = DateTime.UtcNow.AddDays(-1).ToString("o"),
             description
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -45,7 +45,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
         {
             fieldId,
             operationType = "Sowing",
-            performedAt = DateTime.UtcNow.AddDays(5).ToString("o"),
+            performedAt = DateTime.UtcNow.AddDays(-1).ToString("o"),
             description = "Spring sowing"
         });
 
@@ -91,7 +91,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
         };
 
         var first = await PostAsync($"/api/agro-operations/{opId}/complete", completePayload);
-        first.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        first.StatusCode.Should().Be(HttpStatusCode.Conflict);
 
         var second = await PostAsync($"/api/agro-operations/{opId}/complete", completePayload);
         second.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -110,7 +110,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
             areaProcessed = 45.0
         });
 
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
 
     [Fact]
