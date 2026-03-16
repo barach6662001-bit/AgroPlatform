@@ -44,8 +44,8 @@ public class CreateAgroOperationHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new CreateAgroOperationHandler(context);
-        var plannedDate = DateTime.UtcNow.AddDays(7);
-        var command = new CreateAgroOperationCommand(field.Id, AgroOperationType.Fertilizing, plannedDate, "Spring fertilizing", null);
+        var performedAt = DateTime.UtcNow.AddDays(7);
+        var command = new CreateAgroOperationCommand(field.Id, AgroOperationType.Fertilizing, performedAt, "Spring fertilizing", null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -53,12 +53,12 @@ public class CreateAgroOperationHandlerTests
         operation.Should().NotBeNull();
         operation!.FieldId.Should().Be(field.Id);
         operation.OperationType.Should().Be(AgroOperationType.Fertilizing);
-        operation.PlannedDate.Should().Be(plannedDate);
+        operation.PlannedDate.Should().Be(performedAt);
         operation.Description.Should().Be("Spring fertilizing");
     }
 
     [Fact]
-    public async Task CreateAgroOperation_NewOperation_IsNotCompletedByDefault()
+    public async Task CreateAgroOperation_NewOperation_IsCompletedOnCreation()
     {
         var context = CreateDbContext();
         var field = new Field { Name = "Test Field", AreaHectares = 25m };
@@ -71,7 +71,7 @@ public class CreateAgroOperationHandlerTests
         var id = await handler.Handle(command, CancellationToken.None);
 
         var operation = await ((TestDbContext)context).AgroOperations.FindAsync(id);
-        operation!.IsCompleted.Should().BeFalse();
+        operation!.IsCompleted.Should().BeTrue();
     }
 
     [Fact]

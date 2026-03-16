@@ -6,7 +6,7 @@ namespace AgroPlatform.Application.AgroOperations.Commands.CreateAgroOperation;
 public record CreateAgroOperationCommand(
     Guid FieldId,
     AgroOperationType OperationType,
-    DateTime PlannedDate,
+    DateTime PerformedAt,
     string? Description,
     decimal? AreaProcessed
 ) : IRequest<Guid>;

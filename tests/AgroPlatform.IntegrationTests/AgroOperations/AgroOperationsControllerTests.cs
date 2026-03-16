@@ -28,7 +28,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
         {
             fieldId,
             operationType = "Sowing",
-            plannedDate = DateTime.UtcNow.AddDays(7).ToString("o"),
+            performedAt = DateTime.UtcNow.AddDays(7).ToString("o"),
             description
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -45,7 +45,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
         {
             fieldId,
             operationType = "Sowing",
-            plannedDate = DateTime.UtcNow.AddDays(5).ToString("o"),
+            performedAt = DateTime.UtcNow.AddDays(5).ToString("o"),
             description = "Spring sowing"
         });
 
