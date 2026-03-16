@@ -14,6 +14,10 @@ public class UpdateFieldGeometryHandlerTests
     private const string ValidPolygonGeoJson =
         "{\"type\":\"Polygon\",\"coordinates\":[[[30.0,10.0],[40.0,40.0],[20.0,40.0],[10.0,20.0],[30.0,10.0]]]}";
 
+    // Leaflet's drawnItems.toGeoJSON() produces a FeatureCollection like this
+    private const string ValidFeatureCollectionGeoJson =
+        "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[30.0,10.0],[40.0,40.0],[20.0,40.0],[10.0,20.0],[30.0,10.0]]]},\"properties\":{}}]}";
+
     private const string InvalidGeoJson = "not-valid-json";
 
     private static DbSet<Field> CreateMockDbSetWithFields(List<Field> fieldList)
@@ -90,6 +94,34 @@ public class UpdateFieldGeometryHandlerTests
         var (context, field) = CreateMockContextWithField();
         var handler = new UpdateFieldGeometryHandler(context);
         var command = new UpdateFieldGeometryCommand(field.Id, ValidPolygonGeoJson);
+
+        await handler.Handle(command, CancellationToken.None);
+
+        field.Geometry.Should().NotBeNull();
+        field.Geometry!.SRID.Should().Be(4326);
+    }
+
+    [Fact]
+    public async Task Handle_FeatureCollectionGeoJson_SetsGeometryAndGeoJson()
+    {
+        var (context, field) = CreateMockContextWithField();
+        var handler = new UpdateFieldGeometryHandler(context);
+        var command = new UpdateFieldGeometryCommand(field.Id, ValidFeatureCollectionGeoJson);
+
+        await handler.Handle(command, CancellationToken.None);
+
+        field.Geometry.Should().NotBeNull();
+        field.Geometry.Should().BeOfType<NetTopologySuite.Geometries.Polygon>();
+        field.GeoJson.Should().Be(ValidFeatureCollectionGeoJson);
+        await context.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_FeatureCollectionGeoJson_SetsSRID4326()
+    {
+        var (context, field) = CreateMockContextWithField();
+        var handler = new UpdateFieldGeometryHandler(context);
+        var command = new UpdateFieldGeometryCommand(field.Id, ValidFeatureCollectionGeoJson);
 
         await handler.Handle(command, CancellationToken.None);
 
