@@ -925,6 +925,10 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasPrecision(18, 4)
                         .HasColumnType("numeric(18,4)");
 
+                    b.Property<decimal?>("TotalCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -1051,6 +1055,10 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<decimal?>("MinimumQuantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal?>("PurchasePrice")
                         .HasPrecision(18, 4)
                         .HasColumnType("numeric(18,4)");
 

@@ -14,10 +14,10 @@ export const getBalances = (params?: { warehouseId?: string; itemId?: string; pa
 export const createWarehouse = (data: { name: string; location?: string; type?: number }) =>
   apiClient.post<WarehouseDto>('/api/warehouses', data).then((r) => r.data);
 
-export const createWarehouseItem = (data: { name: string; code: string; category: string; baseUnit: string; description?: string; minimumQuantity?: number }) =>
+export const createWarehouseItem = (data: { name: string; code: string; category: string; baseUnit: string; description?: string; minimumQuantity?: number; purchasePrice?: number }) =>
   apiClient.post<WarehouseItemDto>('/api/warehouses/items', data).then((r) => r.data);
 
-export const updateWarehouseItem = (id: string, data: { name: string; code: string; category: string; baseUnit: string; description?: string; minimumQuantity?: number }) =>
+export const updateWarehouseItem = (id: string, data: { name: string; code: string; category: string; baseUnit: string; description?: string; minimumQuantity?: number; purchasePrice?: number }) =>
   apiClient.put<void>(`/api/warehouses/items/${id}`, data).then((r) => r.data);
 
 export const createReceipt = (data: {

@@ -13,6 +13,7 @@ export interface WarehouseItemDto {
   category: string;
   baseUnit: string;
   description?: string;
+  purchasePrice?: number;
 }
 
 export interface StockMoveDto {
@@ -27,6 +28,7 @@ export interface StockMoveDto {
   date: string;
   note?: string;
   createdAt: string;
+  totalCost?: number;
 }
 
 export interface BalanceDto {
