@@ -563,6 +563,13 @@ const en: Translations = {
     resourceOverspend: 'Resource overspend',
     loadError: 'Error loading notifications',
     markReadError: 'Error marking as read',
+    titleColumn: 'Title',
+    bodyColumn: 'Message',
+    dateColumn: 'Date',
+    statusColumn: 'Status',
+    statusRead: 'Read',
+    statusNew: 'New',
+    markAsRead: 'Mark as read',
   },
 };
 

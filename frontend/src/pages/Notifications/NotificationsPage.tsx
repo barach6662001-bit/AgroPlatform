@@ -68,26 +68,26 @@ export default function NotificationsPage() {
       render: (_: unknown, row: NotificationDto) => typeIcon(row.type),
     },
     {
-      title: 'Title',
+      title: t.notifications.titleColumn,
       dataIndex: 'title',
       key: 'title',
     },
     {
-      title: 'Body',
+      title: t.notifications.bodyColumn,
       dataIndex: 'body',
       key: 'body',
     },
     {
-      title: t.common.date,
+      title: t.notifications.dateColumn,
       dataIndex: 'createdAtUtc',
       key: 'date',
       render: (val: string) => new Date(val).toLocaleString(),
     },
     {
-      title: 'Status',
+      title: t.notifications.statusColumn,
       key: 'status',
       render: (_: unknown, row: NotificationDto) =>
-        row.isRead ? <Tag color="default">Read</Tag> : <Tag color="blue">New</Tag>,
+        row.isRead ? <Tag color="default">{t.notifications.statusRead}</Tag> : <Tag color="blue">{t.notifications.statusNew}</Tag>,
     },
     {
       title: t.common.actions,
@@ -98,7 +98,7 @@ export default function NotificationsPage() {
           disabled={row.isRead}
           onClick={() => handleMarkRead(row.id)}
         >
-          Mark as read
+          {t.notifications.markAsRead}
         </Button>
       ),
     },
