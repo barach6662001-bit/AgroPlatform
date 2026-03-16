@@ -15,6 +15,7 @@ import WarehousesList from './pages/Warehouses/WarehousesList';
 import WarehouseItems from './pages/Warehouses/WarehouseItems';
 import StockMovements from './pages/Warehouses/StockMovements';
 import GrainStorageList from './pages/Warehouses/GrainStorageList';
+import GrainBatchList from './pages/GrainStorage/GrainBatchList';
 import OperationsList from './pages/Operations/OperationsList';
 import OperationDetail from './pages/Operations/OperationDetail';
 import MachineryList from './pages/Machinery/MachineryList';
@@ -57,7 +58,7 @@ export default function App() {
             <Route path="/warehouses" element={<WarehousesList />} />
             <Route path="/warehouses/items" element={<WarehouseItems />} />
             <Route path="/warehouses/movements" element={<StockMovements />} />
-            <Route path="/warehouses/grain" element={<GrainStorageList />} />
+            <Route path="/warehouses/grain" element={<GrainBatchList />} />
             <Route path="/operations" element={<OperationsList />} />
             <Route path="/operations/:id" element={<OperationDetail />} />
             <Route path="/machinery" element={<MachineryList />} />
