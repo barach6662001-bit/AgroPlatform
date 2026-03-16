@@ -169,6 +169,10 @@ const en: Translations = {
     ownershipOwnLand: 'Own Land',
     ownershipLease: 'Lease',
     ownershipShareLease: 'Share Lease',
+    loadFromCadastre: 'Load from Cadastre',
+    cadastreNotFound: 'Parcel not found in cadastre',
+    cadastreLoaded: 'Parcel boundaries loaded',
+    cadastreError: 'Error loading from cadastre',
   },
   warehouses: {
     title: 'Warehouses',

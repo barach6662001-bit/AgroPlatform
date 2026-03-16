@@ -167,6 +167,10 @@ const uk = {
     ownershipOwnLand: 'Власність',
     ownershipLease: 'Оренда',
     ownershipShareLease: 'Пай',
+    loadFromCadastre: 'Завантажити з кадастру',
+    cadastreNotFound: 'Ділянку не знайдено в кадастрі',
+    cadastreLoaded: 'Межі ділянки завантажено',
+    cadastreError: 'Помилка завантаження з кадастру',
   },
   warehouses: {
     title: 'Склади',
