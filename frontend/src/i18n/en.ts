@@ -182,6 +182,9 @@ const en: Translations = {
     ownershipOwnLand: 'Own Land',
     ownershipLease: 'Lease',
     ownershipShareLease: 'Share Lease',
+    cadastreNotFound: 'No cadastral data found for this number.',
+    cadastreLoaded: 'Cadastre data loaded successfully.',
+    cadastreError: 'Failed to load cadastral data.',
   },
   warehouses: {
     title: 'Warehouses',
