@@ -86,10 +86,12 @@ export default function FieldDetail() {
       const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
       const geojson = await response.json();
+
       if (!geojson.features || geojson.features.length === 0) {
         message.warning(t.fields.cadastreNotFound);
         return;
       }
+
       const feature = geojson.features[0];
       const geometryJson = JSON.stringify(feature.geometry);
       await updateFieldGeometry(id!, { geoJson: geometryJson });
@@ -126,7 +128,6 @@ export default function FieldDetail() {
   if (!field) return null;
 
   const hasGeometry = !!field.geoJson;
-
   const cropOptions = Object.entries(t.crops).map(([k, v]) => ({ value: k as CropType, label: v }));
 
   const historyColumns = [
