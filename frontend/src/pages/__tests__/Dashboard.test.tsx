@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Dashboard from '../Dashboard';
 
@@ -29,15 +29,11 @@ vi.mock('../../api/analytics', () => ({
 }));
 
 vi.mock('../../api/fields', () => ({
-  getFields: vi.fn(() =>
-    Promise.resolve({ items: [], page: 1, pageSize: 8, totalCount: 0, totalPages: 0 }),
-  ),
+  getFields: vi.fn(() => Promise.resolve({ items: [] })),
 }));
 
 vi.mock('../../api/machinery', () => ({
-  getMachines: vi.fn(() =>
-    Promise.resolve({ items: [], page: 1, pageSize: 8, totalCount: 0, totalPages: 0 }),
-  ),
+  getMachines: vi.fn(() => Promise.resolve({ items: [] })),
 }));
 
 vi.mock('../../api/notifications', () => ({
@@ -90,15 +86,19 @@ function renderDashboard() {
 }
 
 describe('Dashboard page', () => {
-  it('renders dashboard without crashing', () => {
+  it('renders dashboard without crashing', async () => {
     const { container } = renderDashboard();
     expect(container).toBeTruthy();
+    // Wait for async data fetching to complete so no state updates leak
+    // after the test environment is torn down.
+    await waitFor(() => {
+      expect(document.querySelector('.ant-spin')).toBeFalsy();
+    });
   });
 
   it('shows loading state initially', () => {
     renderDashboard();
-    // Dashboard shows Spin while loading, then hides it
-    // The component starts with loading=true and renders <Spin>
+    // Dashboard starts with loading=true and renders <Spin>
     const spinEl = document.querySelector('.ant-spin');
     expect(spinEl).toBeTruthy();
   });
