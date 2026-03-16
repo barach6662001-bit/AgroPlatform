@@ -183,7 +183,7 @@ export default function Dashboard() {
               <AimOutlined />{t.dashboard.fields}
             </div>
             <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{data.totalFields}</div>
-            <div style={{ color: '#166534', fontSize: 12, marginTop: 4 }}>{data.totalAreaHectares.toFixed(0)} ha {t.dashboard.areaLabel}</div>
+            <div style={{ color: '#86efac', fontSize: 12, marginTop: 4 }}>{data.totalAreaHectares.toFixed(0)} ha {t.dashboard.areaLabel}</div>
           </div>
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -201,7 +201,7 @@ export default function Dashboard() {
               <CarOutlined />{t.dashboard.activeMachinery}
             </div>
             <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{data.activeMachines}<span style={{ fontSize: 16, color: '#4ade80', fontWeight: 400 }}>/{data.totalMachines}</span></div>
-            <div style={{ color: '#166534', fontSize: 12, marginTop: 4 }}>{cropCount} {t.dashboard.cropTypes}</div>
+            <div style={{ color: '#86efac', fontSize: 12, marginTop: 4 }}>{cropCount} {t.dashboard.cropTypes}</div>
           </div>
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -219,7 +219,6 @@ export default function Dashboard() {
               <InboxOutlined />{t.dashboard.warehouses}
             </div>
             <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{data.totalWarehouseItems}</div>
-            <div style={{ color: '#166534', fontSize: 12, marginTop: 4 }}>&nbsp;</div>
           </div>
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -237,7 +236,7 @@ export default function Dashboard() {
               <ToolOutlined />{t.dashboard.cropStatus}
             </div>
             <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{Object.keys(data.areaByCrop).length}</div>
-            <div style={{ color: '#166534', fontSize: 12, marginTop: 4 }}>crops</div>
+            <div style={{ color: '#86efac', fontSize: 12, marginTop: 4 }}>crops</div>
           </div>
         </Col>
       </Row>
