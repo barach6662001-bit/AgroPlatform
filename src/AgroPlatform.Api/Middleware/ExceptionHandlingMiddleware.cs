@@ -38,7 +38,7 @@ public class ExceptionHandlingMiddleware
             InsufficientBalanceException => (StatusCodes.Status422UnprocessableEntity, "Insufficient Balance", null),
             ConflictException => (StatusCodes.Status409Conflict, "Conflict", null),
             ForbiddenException => (StatusCodes.Status403Forbidden, "Forbidden", null),
-            DbUpdateException => (StatusCodes.Status500InternalServerError, "Database Error", null),
+            DbUpdateException => (StatusCodes.Status500InternalServerError, "Database error occurred", null),
             _ => (StatusCodes.Status500InternalServerError, "An error occurred while processing your request.", null)
         };
 
