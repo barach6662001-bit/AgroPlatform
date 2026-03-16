@@ -5,6 +5,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileDrawer from './MobileDrawer';
 import NotificationBell from './NotificationBell';
+import Logo from '../Logo';
 import { useAuthStore } from '../../stores/authStore';
 import { useTranslation } from '../../i18n';
 
@@ -38,35 +39,38 @@ export default function AppLayout() {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#0D1117' }}>
+    <Layout style={{ minHeight: '100vh', background: '#0B1220' }}>
       {!isMobile && (
         <Sider
           collapsible
           collapsed={collapsed}
           onCollapse={setCollapsed}
           theme="dark"
-          style={{ background: '#0D1117' }}
+          style={{ background: '#0B1220', borderRight: '1px solid #1f2d42' }}
         >
           <div
             style={{
               height: 64,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0 16px',
+              gap: 10,
+              padding: collapsed ? '0 26px' : '0 20px',
+              borderBottom: '1px solid #1f2d42',
             }}
           >
+            <Logo size={28} />
             {!collapsed && (
               <Typography.Text
                 strong
-                style={{ color: '#2DD4BF', fontSize: 18, whiteSpace: 'nowrap' }}
+                style={{
+                  color: '#E5E7EB',
+                  fontSize: 16,
+                  letterSpacing: '-0.3px',
+                  whiteSpace: 'nowrap',
+                  fontWeight: 600,
+                }}
               >
-                {t.app.name}
-              </Typography.Text>
-            )}
-            {collapsed && (
-              <Typography.Text style={{ color: '#2DD4BF', fontSize: 20 }}>
-                🌾
+                Agrotech
               </Typography.Text>
             )}
           </div>
@@ -76,24 +80,25 @@ export default function AppLayout() {
       <Layout>
         <Header
           style={{
-            background: '#161B22',
-            padding: '0 16px',
+            background: '#0f1b2d',
+            padding: '0 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderBottom: '1px solid #30363D',
+            borderBottom: '1px solid #1f2d42',
+            height: 64,
           }}
         >
           {isMobile && (
             <Button
               type="text"
-              icon={<MenuOutlined style={{ fontSize: 20, color: '#E6EDF3' }} />}
+              icon={<MenuOutlined style={{ fontSize: 20, color: '#E5E7EB' }} />}
               onClick={() => setDrawerOpen(true)}
               style={{ padding: '4px 8px' }}
             />
           )}
           {!isMobile && <div />}
-          <Space>
+          <Space size={4}>
             <Dropdown
               menu={{
                 items: langMenuItems,
@@ -101,15 +106,22 @@ export default function AppLayout() {
                 onClick: ({ key }) => setLang(key as 'uk' | 'en'),
               }}
             >
-              <Button type="text" style={{ fontWeight: 600 }}>
+              <Button
+                type="text"
+                style={{ fontWeight: 600, color: '#94A3B8', fontSize: 13 }}
+              >
                 {lang === 'uk' ? '🇺🇦 UA' : '🇬🇧 EN'}
               </Button>
             </Dropdown>
             <NotificationBell />
-            <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#238636' }} />
+            <Avatar
+              icon={<UserOutlined />}
+              size={32}
+              style={{ backgroundColor: '#16A34A', cursor: 'pointer' }}
+            />
             {!isMobile && (
               <>
-                <Typography.Text strong style={{ color: '#E6EDF3' }}>{email}</Typography.Text>
+                <Typography.Text strong style={{ color: '#E5E7EB', fontSize: 13 }}>{email}</Typography.Text>
                 {role && (
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     ({role})
@@ -122,12 +134,21 @@ export default function AppLayout() {
               icon={<LogoutOutlined />}
               onClick={handleLogout}
               danger
+              style={{ fontSize: 13 }}
             >
               {!isMobile && t.auth.logout}
             </Button>
           </Space>
         </Header>
-        <Content style={{ margin: '24px', background: '#161B22', padding: 24, borderRadius: 8, minHeight: 280, boxShadow: 'none' }}>
+        <Content
+          style={{
+            margin: 24,
+            padding: 24,
+            background: '#111827',
+            borderRadius: 20,
+            minHeight: 280,
+          }}
+        >
           <Outlet />
         </Content>
       </Layout>

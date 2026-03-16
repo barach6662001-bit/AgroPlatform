@@ -1,17 +1,30 @@
 /* AgroPlatform — Global Dark Theme Variables */
 :root {
-  --color-bg-base:        #0D1117;
-  --color-surface:        #161B22;
-  --color-surface-2:      #1C2128;
-  --color-border:         #30363D;
-  --color-border-subtle:  #21262D;
-  --color-text:           #E6EDF3;
-  --color-text-secondary: #8B949E;
-  --color-text-muted:     #6E7681;
-  --color-accent-green:   #3FB950;
-  --color-accent-red:     #F85149;
-  --color-accent-blue:    #1F6FEB;
-  --color-accent-yellow:  #D29922;
+  /* Brand */
+  --color-primary:        #22C55E;
+  --color-primary-dark:   #16A34A;
+  --color-primary-light:  #4ADE80;
+
+  /* Backgrounds */
+  --color-bg-base:        #0B1220;
+  --color-surface:        #111827;
+  --color-surface-2:      #1a2332;
+  --color-surface-3:      #172034;
+
+  /* Borders */
+  --color-border:         #1f2d42;
+  --color-border-subtle:  #172034;
+
+  /* Text */
+  --color-text:           #E5E7EB;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted:     #64748B;
+
+  /* Accents */
+  --color-accent-green:   #22C55E;
+  --color-accent-red:     #EF4444;
+  --color-accent-blue:    #3B82F6;
+  --color-accent-yellow:  #F59E0B;
   --color-accent-teal:    #2DD4BF;
 }
 
@@ -23,34 +36,37 @@ body {
   background-color: var(--color-bg-base);
   color: var(--color-text);
   margin: 0;
+  font-family: 'Inter', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar styling for dark theme */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0D1117;
+  background: var(--color-bg-base);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #30363D;
-  border-radius: 4px;
+  background: var(--color-border);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #484F58;
+  background: var(--color-text-muted);
 }
 
-/* Ant Design overrides — ensure dark backgrounds */
+/* Ant Design overrides */
 .ant-layout {
   background: var(--color-bg-base) !important;
 }
 
 .ant-layout-content {
-  background: var(--color-surface) !important;
+  background: transparent !important;
 }
 
 .ant-card {
@@ -65,7 +81,12 @@ body {
   color: var(--color-text-secondary) !important;
 }
 
-/* Mobile table styles: horizontal scroll + sticky first column */
+/* Clickable table rows */
+.clickable-row {
+  cursor: pointer;
+}
+
+/* Mobile table: horizontal scroll + sticky first column */
 @media (max-width: 767px) {
   .ant-table-wrapper {
     overflow-x: auto;
@@ -79,25 +100,28 @@ body {
     background: var(--color-surface);
   }
 }
+
+/* Recharts customization */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: #30363D !important;
+  stroke: var(--color-border) !important;
 }
 
 .recharts-text {
-  fill: #8B949E !important;
+  fill: var(--color-text-secondary) !important;
 }
 
 .recharts-tooltip-wrapper .recharts-default-tooltip {
-  background-color: #1C2128 !important;
-  border-color: #30363D !important;
-  border-radius: 8px !important;
+  background-color: var(--color-surface-2) !important;
+  border-color: var(--color-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
 }
 
 .recharts-tooltip-label {
-  color: #E6EDF3 !important;
+  color: var(--color-text) !important;
 }
 
 .recharts-tooltip-item {
-  color: #8B949E !important;
+  color: var(--color-text-secondary) !important;
 }
