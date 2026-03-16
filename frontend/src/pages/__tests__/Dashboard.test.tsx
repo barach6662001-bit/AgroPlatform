@@ -28,6 +28,22 @@ vi.mock('../../api/analytics', () => ({
   ),
 }));
 
+vi.mock('../../api/fields', () => ({
+  getFields: vi.fn(() =>
+    Promise.resolve({ items: [], page: 1, pageSize: 8, totalCount: 0, totalPages: 0 }),
+  ),
+}));
+
+vi.mock('../../api/machinery', () => ({
+  getMachines: vi.fn(() =>
+    Promise.resolve({ items: [], page: 1, pageSize: 8, totalCount: 0, totalPages: 0 }),
+  ),
+}));
+
+vi.mock('../../api/notifications', () => ({
+  getNotifications: vi.fn(() => Promise.resolve([])),
+}));
+
 vi.mock('recharts', () => ({
   PieChart: ({ children }: { children: React.ReactNode }) => <div data-testid="pie-chart">{children}</div>,
   Pie: () => <div />,
