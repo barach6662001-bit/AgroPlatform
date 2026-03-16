@@ -87,6 +87,9 @@ const uk = {
     areaHa: 'Площа (га)',
     loadError: 'Не вдалося завантажити дані',
     noChartData: 'Дані для графіків поки недоступні. Додайте поля, операції та витрати.',
+    cropStatus: 'Стан культур',
+    machinesUnderRepair: 'одиниць техніки на ремонті',
+    pendingOpsAlert: 'незавершених операцій',
   },
   operationTypes: {
     Sowing: 'Посів',
@@ -562,6 +565,13 @@ const uk = {
     resourceOverspend: 'Перевитрата ресурсу',
     loadError: 'Помилка завантаження сповіщень',
     markReadError: 'Помилка позначення',
+    titleColumn: 'Заголовок',
+    bodyColumn: 'Повідомлення',
+    dateColumn: 'Дата',
+    statusColumn: 'Статус',
+    statusRead: 'Прочитано',
+    statusNew: 'Нове',
+    markAsRead: 'Позначити прочитаним',
   },
 } as const;
 
