@@ -3,7 +3,7 @@ import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
   DollarOutlined, LineChartOutlined, BarChartOutlined, ThunderboltOutlined,
   TeamOutlined, SwapOutlined, RiseOutlined, SettingOutlined,
-  EnvironmentOutlined, FundOutlined, BankOutlined,
+  EnvironmentOutlined, FundOutlined, BankOutlined, FileTextOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -36,6 +36,7 @@ export default function Sidebar() {
   const allLeafItems = [
     { key: '/' },
     { key: '/fields' },
+    { key: '/fields/leases' },
     { key: '/operations' },
     { key: '/machinery' },
     { key: '/fleet' },
@@ -45,9 +46,19 @@ export default function Sidebar() {
     ...(isAdmin ? [{ key: '/settings/users' }] : []),
   ];
 
+  const fieldsChildren = [
+    { key: '/fields', label: t.nav.fields, icon: <AimOutlined />, style: { padding: '4px 8px' } },
+    { key: '/fields/leases', label: t.nav.leases, icon: <FileTextOutlined />, style: { padding: '4px 8px' } },
+  ];
+
   const menuItems = [
     { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined />, style: { padding: '4px 8px' } },
-    { key: '/fields', label: t.nav.fields, icon: <AimOutlined />, style: { padding: '4px 8px' } },
+    {
+      key: 'fields-group',
+      label: t.nav.fields,
+      icon: <AimOutlined />,
+      children: fieldsChildren,
+    },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined />, style: { padding: '4px 8px' } },
     {
       key: 'warehouses-group',
@@ -83,7 +94,7 @@ export default function Sidebar() {
       : []),
   ];
 
-  const groupKeys = new Set(['warehouses-group', 'economics-group', 'analytics-group', 'settings-group']);
+  const groupKeys = new Set(['fields-group', 'warehouses-group', 'economics-group', 'analytics-group', 'settings-group']);
 
   const selectedKey =
     allLeafItems
@@ -96,6 +107,7 @@ export default function Sidebar() {
       )?.key ?? '/';
 
   const openKeys: string[] = [];
+  if (fieldsChildren.some((c) => c.key === selectedKey)) openKeys.push('fields-group');
   if (warehouseChildren.some((c) => c.key === selectedKey)) openKeys.push('warehouses-group');
   if (economicsChildren.some((c) => c.key === selectedKey)) openKeys.push('economics-group');
   if (analyticsChildren.some((c) => c.key === selectedKey)) openKeys.push('analytics-group');

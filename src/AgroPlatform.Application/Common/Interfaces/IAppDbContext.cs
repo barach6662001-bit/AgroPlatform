@@ -31,6 +31,8 @@ public interface IAppDbContext
     DbSet<GpsTrack> GpsTracks { get; }
     DbSet<Notification> Notifications { get; }
     DbSet<Tenant> Tenants { get; }
+    DbSet<LandLease> LandLeases { get; }
+    DbSet<LeasePayment> LeasePayments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

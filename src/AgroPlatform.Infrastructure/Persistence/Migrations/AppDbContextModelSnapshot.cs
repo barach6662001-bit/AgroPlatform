@@ -1344,6 +1344,147 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Fields.LandLease", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("AnnualPayment")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("ContractStartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ContractEndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ContractNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("GrainPaymentTons")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OwnerName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("OwnerPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Cash");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId")
+                        .HasDatabaseName("IX_LandLeases_FieldId");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_LandLeases_TenantId");
+
+                    b.ToTable("LandLeases");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fields.LeasePayment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LandLeaseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Payment");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LandLeaseId")
+                        .HasDatabaseName("IX_LeasePayments_LandLeaseId");
+
+                    b.ToTable("LeasePayments");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.AgroOperations.AgroOperation", b =>
                 {
                     b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
@@ -1590,9 +1731,35 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 {
                     b.Navigation("CropHistory");
 
+                    b.Navigation("LandLeases");
+
                     b.Navigation("Operations");
 
                     b.Navigation("RotationPlans");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fields.LandLease", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
+                        .WithMany("LandLeases")
+                        .HasForeignKey("FieldId")
+                        .HasConstraintName("FK_LandLeases_Fields")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fields.LeasePayment", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Fields.LandLease", "LandLease")
+                        .WithMany("Payments")
+                        .HasForeignKey("LandLeaseId")
+                        .HasConstraintName("FK_LeasePayments_LandLeases")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LandLease");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Machinery.MaintenanceRecord", b =>

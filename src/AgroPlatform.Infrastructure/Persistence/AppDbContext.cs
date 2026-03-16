@@ -41,6 +41,8 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<GpsTrack> GpsTracks => Set<GpsTrack>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<LandLease> LandLeases => Set<LandLease>();
+    public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -67,5 +69,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<StockBalance>().HasQueryFilter(sb => !sb.IsDeleted && sb.TenantId == _tenantId);
         builder.Entity<Batch>().HasQueryFilter(b => !b.IsDeleted && b.TenantId == _tenantId);
         builder.Entity<Notification>().HasQueryFilter(n => n.TenantId == _tenantId);
+        builder.Entity<LandLease>().HasQueryFilter(l => !l.IsDeleted && l.TenantId == _tenantId);
+        builder.Entity<LeasePayment>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
     }
 }
