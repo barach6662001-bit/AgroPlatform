@@ -182,10 +182,9 @@ const en: Translations = {
     ownershipOwnLand: 'Own Land',
     ownershipLease: 'Lease',
     ownershipShareLease: 'Share Lease',
-    loadFromCadastre: 'Load from Cadastre',
-    cadastreNotFound: 'Parcel not found in cadastre',
-    cadastreLoaded: 'Parcel boundaries loaded',
-    cadastreError: 'Error loading from cadastre',
+    cadastreNotFound: 'No cadastral data found for this number.',
+    cadastreLoaded: 'Cadastre data loaded successfully.',
+    cadastreError: 'Failed to load cadastral data.',
   },
   warehouses: {
     title: 'Warehouses',
@@ -330,6 +329,7 @@ const en: Translations = {
     operationUpdated: 'Operation updated',
     editOperation: 'Edit Operation',
     operationUpdateError: 'Error updating operation',
+    performedAt: 'Date Performed',
   },
   machinery: {
     title: 'Machinery',

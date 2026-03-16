@@ -180,10 +180,9 @@ const uk = {
     ownershipOwnLand: 'Власність',
     ownershipLease: 'Оренда',
     ownershipShareLease: 'Пай',
-    loadFromCadastre: 'Завантажити з кадастру',
-    cadastreNotFound: 'Ділянку не знайдено в кадастрі',
-    cadastreLoaded: 'Межі ділянки завантажено',
-    cadastreError: 'Помилка завантаження з кадастру',
+    cadastreNotFound: 'No cadastral data found for this number.',
+    cadastreLoaded: 'Cadastre data loaded successfully.',
+    cadastreError: 'Failed to load cadastral data.',
   },
   warehouses: {
     title: 'Склади',
@@ -328,6 +327,7 @@ const uk = {
     operationUpdated: 'Операцію оновлено',
     editOperation: 'Редагувати операцію',
     operationUpdateError: 'Помилка оновлення операції',
+    performedAt: 'Дата проведення',
   },
   machinery: {
     title: 'Техніка',

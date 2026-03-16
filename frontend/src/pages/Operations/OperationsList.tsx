@@ -21,7 +21,6 @@ export default function OperationsList() {
   const [result, setResult] = useState<PaginatedResult<AgroOperationDto> | null>(null);
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<string | undefined>();
-  const [statusFilter, setStatusFilter] = useState<boolean | undefined>();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [modalOpen, setModalOpen] = useState(false);
@@ -41,13 +40,13 @@ export default function OperationsList() {
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
-    getOperations({ operationType: typeFilter, isCompleted: statusFilter, page: p, pageSize: ps })
+    getOperations({ operationType: typeFilter, page: p, pageSize: ps })
       .then(setResult)
       .catch(() => message.error(t.operations.loadError))
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, [typeFilter, statusFilter, page, pageSize]);
+  useEffect(() => { load(); }, [typeFilter, page, pageSize]);
 
   useEffect(() => {
     getFields({ page: 1, pageSize: 100 })
@@ -59,10 +58,10 @@ export default function OperationsList() {
     try {
       const values = await form.validateFields();
       setSaving(true);
-      const plannedDate = values.plannedDate
-        ? (values.plannedDate as { toISOString: () => string }).toISOString()
+      const performedAt = values.performedAt
+        ? (values.performedAt as { toISOString: () => string }).toISOString()
         : new Date().toISOString();
-      await createOperation({ ...values, plannedDate });
+      await createOperation({ ...values, performedAt });
       message.success(t.operations.createSuccess);
       form.resetFields();
       setModalOpen(false);
@@ -105,17 +104,9 @@ export default function OperationsList() {
       render: (v: AgroOperationType) => <Tag color={typeColors[v] || 'default'}>{t.operationTypes[v as keyof typeof t.operationTypes] || v}</Tag>,
     },
     {
-      title: t.operations.plannedDate, dataIndex: 'plannedDate', key: 'plannedDate',
-      sorter: (a: AgroOperationDto, b: AgroOperationDto) => new Date(a.plannedDate).getTime() - new Date(b.plannedDate).getTime(),
-      render: (v: string) => new Date(v).toLocaleDateString(),
-    },
-    {
-      title: t.operations.completedDate, dataIndex: 'completedDate', key: 'completedDate',
+      title: t.operations.performedAt, dataIndex: 'completedDate', key: 'completedDate',
+      sorter: (a: AgroOperationDto, b: AgroOperationDto) => new Date(a.completedDate ?? a.plannedDate).getTime() - new Date(b.completedDate ?? b.plannedDate).getTime(),
       render: (v: string) => v ? new Date(v).toLocaleDateString() : '—',
-    },
-    {
-      title: t.operations.status, dataIndex: 'isCompleted', key: 'isCompleted',
-      render: (v: boolean) => v ? <Tag color="success">{t.operations.completed}</Tag> : <Tag color="processing">{t.operations.inProgress}</Tag>,
     },
     {
       title: t.operations.area, dataIndex: 'areaProcessed', key: 'areaProcessed',
@@ -161,14 +152,6 @@ export default function OperationsList() {
           onChange={setTypeFilter}
           options={operationTypeOptions}
         />
-        <Select
-          placeholder={t.operations.statusFilter}
-          allowClear
-          style={{ width: 160 }}
-          value={statusFilter}
-          onChange={setStatusFilter}
-          options={[{ value: true, label: t.operations.completed }, { value: false, label: t.operations.inProgress }]}
-        />
         {canCreate && (
           <Button
             type="primary"
@@ -210,7 +193,7 @@ export default function OperationsList() {
           <Form.Item name="operationType" label={t.operations.type} rules={[{ required: true, message: t.common.required }]}>
             <Select options={operationTypeOptions} placeholder={t.operations.selectType} />
           </Form.Item>
-          <Form.Item name="plannedDate" label={t.operations.plannedDate} rules={[{ required: true, message: t.common.required }]}>
+          <Form.Item name="performedAt" label={t.operations.performedAt} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="areaProcessed" label={t.operations.areaProcessed}>
