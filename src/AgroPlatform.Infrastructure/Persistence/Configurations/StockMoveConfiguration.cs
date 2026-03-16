@@ -36,5 +36,8 @@ public class StockMoveConfiguration : IEntityTypeConfiguration<StockMove>
         builder.HasIndex(m => m.ClientOperationId)
             .IsUnique()
             .HasFilter("\"ClientOperationId\" IS NOT NULL");
+
+        builder.Property(m => m.TotalCost)
+            .HasPrecision(18, 2);
     }
 }

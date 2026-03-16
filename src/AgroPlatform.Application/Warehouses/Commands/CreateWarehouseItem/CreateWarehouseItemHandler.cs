@@ -30,7 +30,8 @@ public class CreateWarehouseItemHandler : IRequestHandler<CreateWarehouseItemCom
             Category = request.Category,
             BaseUnit = request.BaseUnit,
             Description = request.Description,
-            MinimumQuantity = request.MinimumQuantity
+            MinimumQuantity = request.MinimumQuantity,
+            PurchasePrice = request.PurchasePrice
         };
 
         _context.WarehouseItems.Add(item);

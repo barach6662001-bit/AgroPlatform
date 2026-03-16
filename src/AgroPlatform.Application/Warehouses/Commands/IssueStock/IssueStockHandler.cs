@@ -37,8 +37,12 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
         if (!warehouse.IsActive)
             throw new ConflictException($"Warehouse '{warehouse.Name}' is not active.");
 
-        _ = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
+        var item = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);
+
+        var totalCost = item.PurchasePrice.HasValue
+            ? item.PurchasePrice.Value * request.Quantity
+            : (decimal?)null;
 
         var move = new StockMove
         {
@@ -50,7 +54,8 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
             UnitCode = request.UnitCode,
             QuantityBase = request.Quantity,
             Note = request.Note,
-            ClientOperationId = request.ClientOperationId
+            ClientOperationId = request.ClientOperationId,
+            TotalCost = totalCost
         };
 
         _context.StockMoves.Add(move);

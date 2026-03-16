@@ -34,7 +34,8 @@ public class GetWarehouseItemsHandler : IRequestHandler<GetWarehouseItemsQuery, 
                 Code = i.Code,
                 Category = i.Category,
                 BaseUnit = i.BaseUnit,
-                Description = i.Description
+                Description = i.Description,
+                PurchasePrice = i.PurchasePrice
             })
             .ToListAsync(cancellationToken);
 
