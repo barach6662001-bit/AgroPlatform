@@ -435,6 +435,7 @@ frontend/.env.test.local
 appsettings.Production.json
 appsettings.*.Production.json
 src/**/appsettings.Production.json
+src/**/appsettings.Local.json
 
 # Database backups
 backups/
