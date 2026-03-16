@@ -25,6 +25,8 @@ public class CreateAgroOperationHandler : IRequestHandler<CreateAgroOperationCom
             FieldId = request.FieldId,
             OperationType = request.OperationType,
             PlannedDate = request.PlannedDate,
+            IsCompleted = false,
+            CompletedDate = null,
             Description = request.Description,
             AreaProcessed = request.AreaProcessed
         };
