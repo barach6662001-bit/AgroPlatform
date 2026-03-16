@@ -80,12 +80,12 @@ export default function AppLayout() {
       <Layout>
         <Header
           style={{
-            background: '#0f1b2d',
+            background: '#0B1220',
             padding: '0 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderBottom: '1px solid #1f2d42',
+            borderBottom: '1px solid #1a2535',
             height: 64,
           }}
         >
@@ -140,15 +140,7 @@ export default function AppLayout() {
             </Button>
           </Space>
         </Header>
-        <Content
-          style={{
-            margin: 24,
-            padding: 24,
-            background: '#111827',
-            borderRadius: 20,
-            minHeight: 280,
-          }}
-        >
+        <Content style={{ margin: '0', padding: '24px 28px', background: 'transparent', minHeight: 280 }}>
           <Outlet />
         </Content>
       </Layout>
