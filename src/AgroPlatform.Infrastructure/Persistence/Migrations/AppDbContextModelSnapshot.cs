@@ -702,6 +702,33 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("GrainBatches");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("GrainTypes");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainMovement", b =>
                 {
                     b.Property<Guid>("Id")

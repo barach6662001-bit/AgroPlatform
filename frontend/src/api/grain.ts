@@ -13,3 +13,9 @@ export const createGrainMovement = (batchId: string, data: Partial<GrainMovement
 
 export const getGrainMovements = (batchId: string) =>
   apiClient.get<GrainMovementDto[]>(`/api/grain-batches/${batchId}/movements`).then(r => r.data);
+
+export const getGrainTypes = () =>
+  apiClient.get<string[]>('/api/grain-types').then(r => r.data);
+
+export const addGrainType = (name: string) =>
+  apiClient.post('/api/grain-types', { name }).then(r => r.data);

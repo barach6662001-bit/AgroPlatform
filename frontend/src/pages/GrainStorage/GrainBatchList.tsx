@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber } from 'antd';
+import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements } from '../../api/grain';
+import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes } from '../../api/grain';
 import type { GrainBatchDto, GrainMovementDto, GrainOwnershipType } from '../../types/grain';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+
+const QUICK_GRAIN_TYPES = ['Пшениця озима', 'Кукурудза', 'Соняшник'];
+const LAST_GRAIN_KEY = 'lastGrainType';
 
 const ownershipOptions = (t: ReturnType<typeof useTranslation>['t']) => [
   { value: 0, label: t.grain.ownGrain },
@@ -22,6 +25,8 @@ export default function GrainBatchList() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [filterOwnership, setFilterOwnership] = useState<number | undefined>(undefined);
+
+  const [grainTypes, setGrainTypes] = useState<string[]>([]);
 
   const [batchModalOpen, setBatchModalOpen] = useState(false);
   const [savingBatch, setSavingBatch] = useState(false);
@@ -40,6 +45,12 @@ export default function GrainBatchList() {
   const { hasRole } = useRole();
   const canCreate = hasRole(['Administrator', 'Manager', 'Storekeeper']);
 
+  useEffect(() => {
+    getGrainTypes()
+      .then(setGrainTypes)
+      .catch(() => message.warning(t.grain.loadError));
+  }, []);
+
   const load = (p = page, ps = pageSize, ownership = filterOwnership) => {
     setLoading(true);
     getGrainBatches({ page: p, pageSize: ps, ownershipType: ownership })
@@ -50,6 +61,26 @@ export default function GrainBatchList() {
 
   useEffect(() => { load(); }, [page, pageSize, filterOwnership]);
 
+  const openBatchModal = () => {
+    const lastGrainType = localStorage.getItem(LAST_GRAIN_KEY);
+    batchForm.resetFields();
+    batchForm.setFieldsValue({
+      grainType: lastGrainType ?? grainTypes[0],
+      receivedDate: dayjs(),
+    });
+    setBatchModalOpen(true);
+  };
+
+  const openMovementModal = (batchId: string) => {
+    movementForm.resetFields();
+    movementForm.setFieldsValue({
+      movementType: 'In',
+      movementDate: dayjs(),
+    });
+    setMovementBatchId(batchId);
+    setMovementModalOpen(true);
+  };
+
   const handleCreateBatch = async () => {
     try {
       const values = await batchForm.validateFields();
@@ -59,6 +90,7 @@ export default function GrainBatchList() {
         receivedDate: values.receivedDate?.toISOString(),
       });
       message.success(t.grain.createSuccess);
+      localStorage.setItem(LAST_GRAIN_KEY, values.grainType);
       batchForm.resetFields();
       setBatchModalOpen(false);
       load();
@@ -166,7 +198,7 @@ export default function GrainBatchList() {
           {canCreate && (
             <Button
               size="small"
-              onClick={e => { e.stopPropagation(); setMovementBatchId(record.id); setMovementModalOpen(true); }}
+              onClick={e => { e.stopPropagation(); openMovementModal(record.id); }}
             >
               + {t.grain.createMovement}
             </Button>
@@ -231,7 +263,7 @@ export default function GrainBatchList() {
             type="primary"
             icon={<PlusOutlined />}
             style={{ background: '#d4a017', borderColor: '#d4a017' }}
-            onClick={() => setBatchModalOpen(true)}
+            onClick={openBatchModal}
           >
             {t.grain.receiveGrain}
           </Button>
@@ -261,8 +293,27 @@ export default function GrainBatchList() {
         confirmLoading={savingBatch}
       >
         <Form form={batchForm} layout="vertical" style={{ marginTop: 16 }}>
+          <div style={{ marginBottom: 8 }}>
+            <span style={{ fontSize: 12, color: '#888' }}>{t.grain.quickSelect}: </span>
+            {QUICK_GRAIN_TYPES.map(grain => (
+              <Button
+                key={grain}
+                size="small"
+                onClick={() => batchForm.setFieldsValue({ grainType: grain })}
+                style={{ marginRight: 8, marginBottom: 4 }}
+              >
+                {grain}
+              </Button>
+            ))}
+          </div>
           <Form.Item name="grainType" label={t.grain.grainType} rules={[{ required: true, message: t.common.required }]}>
-            <Input />
+            <AutoComplete
+              options={grainTypes.map(g => ({ value: g, label: g }))}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              placeholder={t.grain.selectGrainType}
+            />
           </Form.Item>
           <Form.Item name="ownershipType" label={t.grain.ownershipType} rules={[{ required: true, message: t.common.required }]}>
             <Select options={ownershipOptions(t)} />
@@ -340,3 +391,4 @@ export default function GrainBatchList() {
     </div>
   );
 }
+

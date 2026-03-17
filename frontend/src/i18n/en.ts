@@ -675,6 +675,9 @@ const en: Translations = {
     loadError: 'Error loading data',
     createSuccess: 'Batch created',
     movementSuccess: 'Movement recorded',
+    selectGrainType: 'Select or enter a crop',
+    quickSelect: 'Quick select',
+    addCustomGrainType: 'Add custom crop',
   },
   hr: {
     employeesTitle: 'Employees',
