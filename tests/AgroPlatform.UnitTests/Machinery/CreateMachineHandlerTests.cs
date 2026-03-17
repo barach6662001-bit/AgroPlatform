@@ -25,7 +25,7 @@ public class CreateMachineHandlerTests
     {
         var context = CreateDbContext();
         var handler = new CreateMachineHandler(context);
-        var command = new CreateMachineCommand("Tractor T-150", "TRC-001", MachineryType.Tractor, "Kharkiv", "T-150", 2020, FuelType.Diesel, 12.5m);
+        var command = new CreateMachineCommand("Tractor T-150", "TRC-001", MachineryType.Tractor, "Kharkiv", "T-150", 2020, FuelType.Diesel, 12.5m, null, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -37,7 +37,7 @@ public class CreateMachineHandlerTests
     {
         var context = CreateDbContext();
         var handler = new CreateMachineHandler(context);
-        var command = new CreateMachineCommand("Combine Harvester", "CMB-001", MachineryType.Combine, "John Deere", "S790", 2022, FuelType.Diesel, 20m);
+        var command = new CreateMachineCommand("Combine Harvester", "CMB-001", MachineryType.Combine, "John Deere", "S790", 2022, FuelType.Diesel, 20m, null, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -58,7 +58,7 @@ public class CreateMachineHandlerTests
     {
         var context = CreateDbContext();
         var handler = new CreateMachineHandler(context);
-        var command = new CreateMachineCommand("Sprayer SP-1", "SPR-001", MachineryType.Sprayer, null, null, null, FuelType.Diesel, null);
+        var command = new CreateMachineCommand("Sprayer SP-1", "SPR-001", MachineryType.Sprayer, null, null, null, FuelType.Diesel, null, null, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -71,7 +71,7 @@ public class CreateMachineHandlerTests
     {
         var context = CreateDbContext();
         var handler = new CreateMachineHandler(context);
-        var command = new CreateMachineCommand("Truck T-1", "TRK-001", MachineryType.Truck, null, null, null, FuelType.Diesel, null);
+        var command = new CreateMachineCommand("Truck T-1", "TRK-001", MachineryType.Truck, null, null, null, FuelType.Diesel, null, null, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 

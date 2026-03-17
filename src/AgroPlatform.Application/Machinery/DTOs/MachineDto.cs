@@ -14,4 +14,6 @@ public class MachineDto
     public MachineryStatus Status { get; set; }
     public FuelType FuelType { get; set; }
     public decimal? FuelConsumptionPerHour { get; set; }
+    public Guid? AssignedDriverId { get; set; }
+    public string? AssignedDriverName { get; set; }
 }

@@ -24,7 +24,9 @@ public class CreateMachineHandler : IRequestHandler<CreateMachineCommand, Guid>
             Model = request.Model,
             Year = request.Year,
             FuelType = request.FuelType,
-            FuelConsumptionPerHour = request.FuelConsumptionPerHour
+            FuelConsumptionPerHour = request.FuelConsumptionPerHour,
+            AssignedDriverId = request.AssignedDriverId,
+            AssignedDriverName = request.AssignedDriverName,
         };
 
         _context.Machines.Add(machine);

@@ -394,6 +394,9 @@ const uk = {
     machineUpdated: 'Техніку оновлено',
     editMachine: 'Редагувати техніку',
     machineUpdateError: 'Помилка оновлення техніки',
+    assignedDriver: 'Закріплений водій',
+    selectDriver: 'Оберіть водія',
+    noDriver: 'Водій не призначений',
   },
   machineryTypes: {
     Tractor: 'Трактор',
@@ -662,6 +665,9 @@ const uk = {
     issueSuccess: 'Видачу зафіксовано',
     insufficientFuel: 'Недостатньо пального',
     loadError: 'Помилка завантаження',
+    selectMachine: 'Оберіть машину',
+    driverNamePlaceholder: 'ПІБ водія',
+    driverAutoFilled: 'Водія підставлено автоматично',
   },
   grain: {
     title: 'Зерносховище',

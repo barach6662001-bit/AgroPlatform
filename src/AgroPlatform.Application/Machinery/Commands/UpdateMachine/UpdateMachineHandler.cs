@@ -26,6 +26,8 @@ public class UpdateMachineHandler : IRequestHandler<UpdateMachineCommand>
         machine.Status = request.Status;
         machine.FuelType = request.FuelType;
         machine.FuelConsumptionPerHour = request.FuelConsumptionPerHour;
+        machine.AssignedDriverId = request.AssignedDriverId;
+        machine.AssignedDriverName = request.AssignedDriverName;
 
         await _context.SaveChangesAsync(cancellationToken);
     }
