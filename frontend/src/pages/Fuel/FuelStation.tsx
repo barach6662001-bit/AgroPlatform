@@ -422,6 +422,7 @@ export default function FuelStation() {
                 const machine = machines.find(m => m.id === val);
                 if (machine?.assignedDriverName) {
                   issueForm.setFieldsValue({ driverName: machine.assignedDriverName });
+                  message.info(t.fuel.driverAutoFilled);
                 } else if (!val) {
                   issueForm.setFieldsValue({ driverName: undefined });
                 }
