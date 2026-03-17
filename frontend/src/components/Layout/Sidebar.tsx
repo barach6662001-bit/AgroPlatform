@@ -1,4 +1,4 @@
-import { Menu, Typography } from 'antd';
+import { Menu } from 'antd';
 import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
   DollarOutlined, LineChartOutlined, BarChartOutlined, ThunderboltOutlined,
@@ -131,7 +131,7 @@ export default function Sidebar() {
   if (isAdmin && selectedKey === '/settings/users') openKeys.push('settings-group');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)', background: 'transparent' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>
       <Menu
         theme="dark"
         mode="inline"
@@ -143,13 +143,13 @@ export default function Sidebar() {
         }}
         style={{ borderRight: 0, flex: 1, overflowY: 'auto', background: 'transparent' }}
       />
-      <div style={{ padding: '12px 16px', borderTop: '1px solid #21262d' }}>
-        <Typography.Text style={{ fontSize: 11, color: '#484f58', display: 'block' }}>
+      <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)' }}>
+        <span style={{ fontSize: 11, color: 'var(--text-disabled)', display: 'block' }}>
           v1.0.0 · Agrotech Platform
-        </Typography.Text>
-        <Typography.Text style={{ fontSize: 10, color: '#30363d' }}>
+        </span>
+        <span style={{ fontSize: 10, color: 'var(--text-disabled)' }}>
           {import.meta.env.MODE}
-        </Typography.Text>
+        </span>
       </div>
     </div>
   );

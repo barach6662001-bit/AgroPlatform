@@ -160,7 +160,7 @@ export default function SalaryPage() {
                         size="small"
                         icon={<DollarOutlined />}
                         onClick={() => openPayModal(s.employeeId, false)}
-                        style={{ background: '#238636', borderColor: '#238636' }}
+                        // button styles handled by CSS
                       >
                         {t.hr.payNow}
                       </Button>
