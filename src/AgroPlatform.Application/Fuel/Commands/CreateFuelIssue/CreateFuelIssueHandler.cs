@@ -22,7 +22,7 @@ public class CreateFuelIssueHandler : IRequestHandler<CreateFuelIssueCommand, Gu
             ?? throw new NotFoundException(nameof(FuelTank), request.FuelTankId);
 
         if (tank.CurrentLiters < request.QuantityLiters)
-            throw new ConflictException("Недостатньо пального в резервуарі");
+            throw new ConflictException("Insufficient fuel in tank");
 
         tank.CurrentLiters -= request.QuantityLiters;
 

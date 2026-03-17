@@ -152,7 +152,7 @@ export default function FuelStation() {
       width: 110,
     },
     {
-      title: t.fuel.tankName ?? 'Резервуар',
+      title: t.fuel.tankName,
       dataIndex: 'tankName',
       key: 'tankName',
     },
