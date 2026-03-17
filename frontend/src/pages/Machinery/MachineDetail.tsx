@@ -195,8 +195,8 @@ export default function MachineDetail() {
           {t.machinery.back}
         </Button>
         <Button
+          type="primary"
           icon={<PlusOutlined />}
-          style={{ background: '#52c41a', borderColor: '#52c41a', color: '#fff' }}
           onClick={() => setWorkLogOpen(true)}
         >
           {t.machinery.logWork}
