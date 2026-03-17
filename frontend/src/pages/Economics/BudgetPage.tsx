@@ -121,7 +121,7 @@ export default function BudgetPage() {
         const fact = factEntry?.amount ?? 0;
         if (!plan || plan === 0) return <span style={{ color: '#8B949E' }}>—</span>;
         const pct = (fact / plan) * 100;
-        const color = pct > 100 ? '#f5222d' : pct > 80 ? '#faad14' : '#52c41a';
+        const color = pct > 100 ? '#f85149' : pct > 80 ? '#d29922' : '#3fb950';
         return <Tag color={pct > 100 ? 'error' : pct > 80 ? 'warning' : 'success'}>{pct.toFixed(1)}%</Tag>;
       },
     },

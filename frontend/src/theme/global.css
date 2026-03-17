@@ -1,53 +1,69 @@
 /* AgroPlatform — Global Dark Theme Variables */
 :root {
-  /* Primary Brand */
-  --color-primary:        #16a34a;
-  --color-primary-hover:  #15803d;
-  --color-primary-light:  #dcfce7;
+  /* New neutral palette */
+  --agro-bg-base:       #0e1117;
+  --agro-bg-card:       #161b22;
+  --agro-bg-input:      #1c2128;
+  --agro-bg-hover:      #21262d;
+  --agro-border:        #30363d;
+  --agro-border-muted:  #21262d;
 
-  /* Background layers */
-  --color-bg-base:        #0a0f0d;
-  --color-bg-elevated:    #111814;
-  --color-bg-surface:     #1a2320;
-  --color-bg-overlay:     #243028;
+  --agro-text-primary:  #e6edf3;
+  --agro-text-secondary:#8b949e;
+  --agro-text-muted:    #484f58;
 
-  /* Legacy aliases (keep for compatibility) */
-  --color-surface:        #111814;
-  --color-surface-2:      #1a2320;
-  --color-surface-3:      #243028;
+  --agro-accent:        #238636;
+  --agro-accent-hover:  #2ea043;
+  --agro-accent-subtle: #1a2f1e;
 
-  /* Borders */
-  --color-border:         #1f2d24;
-  --color-border-strong:  #2d4a35;
-  --color-border-subtle:  #1f2d24;
+  --agro-success:       #3fb950;
+  --agro-warning:       #d29922;
+  --agro-error:         #f85149;
+  --agro-info:          #388bfd;
 
-  /* Text */
-  --color-text:           #f0fdf4;
-  --color-text-primary:   #f0fdf4;
-  --color-text-secondary: #86efac;
-  --color-text-muted:     #4ade80;
-  --color-text-disabled:  #166534;
+  --agro-radius:        6px;
+  --agro-radius-lg:     12px;
 
-  /* Accents */
-  --color-accent-green:   #22c55e;
-  --color-accent-red:     #ef4444;
-  --color-accent-blue:    #3b82f6;
-  --color-accent-yellow:  #f59e0b;
+  /* Legacy aliases for backward compatibility */
+  --color-primary:        #238636;
+  --color-primary-hover:  #2ea043;
+  --color-primary-light:  #1a2f1e;
+
+  --color-bg-base:        #0e1117;
+  --color-bg-elevated:    #161b22;
+  --color-bg-surface:     #1c2128;
+  --color-bg-overlay:     #21262d;
+
+  --color-surface:        #161b22;
+  --color-surface-2:      #1c2128;
+  --color-surface-3:      #21262d;
+
+  --color-border:         #30363d;
+  --color-border-strong:  #484f58;
+  --color-border-subtle:  #21262d;
+
+  --color-text:           #e6edf3;
+  --color-text-primary:   #e6edf3;
+  --color-text-secondary: #8b949e;
+  --color-text-muted:     #484f58;
+  --color-text-disabled:  #30363d;
+
+  --color-accent-green:   #3fb950;
+  --color-accent-red:     #f85149;
+  --color-accent-blue:    #388bfd;
+  --color-accent-yellow:  #d29922;
   --color-accent-teal:    #2dd4bf;
 
-  /* Status */
-  --color-success:        #22c55e;
-  --color-warning:        #f59e0b;
-  --color-error:          #ef4444;
-  --color-info:           #3b82f6;
+  --color-success:        #3fb950;
+  --color-warning:        #d29922;
+  --color-error:          #f85149;
+  --color-info:           #388bfd;
 
-  /* Spacing radii */
   --radius-sm:   6px;
   --radius-md:   10px;
-  --radius-lg:   16px;
-  --radius-xl:   24px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
 
-  /* Shadows */
   --shadow-card:     0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
   --shadow-elevated: 0 4px 6px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
   --shadow-modal:    0 20px 25px rgba(0,0,0,0.5), 0 10px 10px rgba(0,0,0,0.3);
@@ -61,10 +77,12 @@
 }
 
 body {
-  background-color: var(--color-bg-base);
-  color: var(--color-text);
+  background-color: var(--agro-bg-base);
+  color: var(--agro-text-primary);
   margin: 0;
-  font-family: 'Inter', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -86,29 +104,29 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg-base);
+  background: var(--agro-bg-base);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: var(--agro-border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+  background: var(--agro-text-muted);
 }
 
 /* ── Ant Design overrides ───────────────────────────────────────────────── */
-.ant-layout {
-  background: var(--color-bg-base) !important;
-}
-
+.ant-layout,
 .ant-layout-content {
-  background: transparent !important;
+  background: var(--agro-bg-base) !important;
 }
 
 .ant-card {
-  border-color: var(--color-border) !important;
+  background: var(--agro-bg-card) !important;
+  border: 1px solid var(--agro-border) !important;
+  border-radius: var(--agro-radius-lg) !important;
+  box-shadow: none !important;
 }
 
 /* Tables */
@@ -117,45 +135,211 @@ body {
 }
 
 .ant-table-thead > tr > th {
-  background: #111814 !important;
-  color: #4ade80 !important;
-  border-bottom: 1px solid #1f2d24 !important;
-  font-size: 11px !important;
+  background: var(--agro-bg-card) !important;
+  color: var(--agro-text-secondary) !important;
+  border-bottom: 1px solid var(--agro-border) !important;
+  font-size: 12px !important;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600 !important;
+  letter-spacing: 0.4px;
+  font-weight: 500 !important;
 }
 
 .ant-table-tbody > tr > td {
   background: transparent !important;
-  border-bottom: 1px solid #1a2320 !important;
-  color: #f0fdf4 !important;
+  border-bottom: 1px solid var(--agro-border-muted) !important;
+  color: var(--agro-text-primary) !important;
 }
 
 .ant-table-tbody > tr:hover > td {
-  background: #1a2320 !important;
+  background: var(--agro-bg-hover) !important;
 }
 
-/* Primary buttons */
+/* Primary buttons — green ONLY for primary actions */
 .ant-btn-primary {
-  background: linear-gradient(135deg, #16a34a, #15803d) !important;
-  border: none !important;
-  box-shadow: 0 0 20px rgba(22,163,74,0.3) !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.2px !important;
-  height: 38px !important;
-  border-radius: 8px !important;
-  transition: all 0.2s !important;
+  background: var(--agro-accent) !important;
+  border-color: var(--agro-accent) !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  border-radius: var(--agro-radius) !important;
+  box-shadow: none !important;
 }
 
 .ant-btn-primary:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: 0 0 30px rgba(22,163,74,0.4) !important;
-  background: linear-gradient(135deg, #15803d, #166534) !important;
+  background: var(--agro-accent-hover) !important;
+  border-color: var(--agro-accent-hover) !important;
+  transform: none !important;
+}
+
+.ant-btn-default {
+  background: var(--agro-bg-input) !important;
+  border-color: var(--agro-border) !important;
+  color: var(--agro-text-primary) !important;
+  border-radius: var(--agro-radius) !important;
+}
+
+.ant-btn-default:hover {
+  background: var(--agro-bg-hover) !important;
+  border-color: var(--agro-border) !important;
+  color: var(--agro-text-primary) !important;
+}
+
+/* Inputs */
+.ant-input,
+.ant-input-number,
+.ant-select-selector,
+.ant-picker {
+  background: var(--agro-bg-input) !important;
+  border-color: var(--agro-border) !important;
+  color: var(--agro-text-primary) !important;
+  border-radius: var(--agro-radius) !important;
+}
+
+.ant-input:focus,
+.ant-select-focused .ant-select-selector {
+  border-color: var(--agro-accent) !important;
+  box-shadow: 0 0 0 2px rgba(35,134,54,0.2) !important;
+}
+
+/* Modal */
+.ant-modal-content {
+  background: var(--agro-bg-card) !important;
+  border: 1px solid var(--agro-border) !important;
+  border-radius: var(--agro-radius-lg) !important;
+}
+
+.ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--agro-border) !important;
+}
+
+.ant-modal-title {
+  color: var(--agro-text-primary) !important;
+}
+
+/* Form labels */
+.ant-form-item-label > label {
+  color: var(--agro-text-secondary) !important;
+  font-size: 13px !important;
+}
+
+/* Badge and Tag — neutral */
+.ant-tag {
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  border: none !important;
+  padding: 1px 8px !important;
+}
+
+/* Menu (Sidebar) */
+.ant-menu-dark {
+  background: transparent !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background: var(--agro-accent-subtle) !important;
+  color: var(--agro-accent-hover) !important;
+}
+
+.ant-menu-dark .ant-menu-item:hover {
+  background: var(--agro-bg-hover) !important;
+}
+
+/* Pagination */
+.ant-pagination-item-active {
+  background: var(--agro-accent) !important;
+  border-color: var(--agro-accent) !important;
+}
+
+/* Dropdown */
+.ant-dropdown-menu,
+.ant-select-dropdown {
+  background: var(--agro-bg-card) !important;
+  border: 1px solid var(--agro-border) !important;
+  border-radius: var(--agro-radius) !important;
+}
+
+.ant-select-item-option-active {
+  background: var(--agro-bg-hover) !important;
+}
+
+.ant-select-item-option-selected {
+  background: var(--agro-accent-subtle) !important;
+  color: var(--agro-accent-hover) !important;
 }
 
 .ant-statistic-title {
-  color: var(--color-text-secondary) !important;
+  color: var(--agro-text-secondary) !important;
+}
+
+/* Recharts customization */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--agro-border) !important;
+}
+
+.recharts-text {
+  fill: var(--agro-text-secondary) !important;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: var(--agro-bg-card) !important;
+  border-color: var(--agro-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+.recharts-tooltip-label {
+  color: var(--agro-text-primary) !important;
+}
+
+.recharts-tooltip-item {
+  color: var(--agro-text-secondary) !important;
+}
+
+/* Page layout improvements */
+.page-container {
+  padding: 0;
+}
+
+/* Card hover states */
+.ant-card:hover {
+  border-color: var(--agro-border) !important;
+}
+
+/* KPI card style */
+.kpi-card {
+  background: var(--agro-bg-card) !important;
+  border: 1px solid var(--agro-border) !important;
+  border-radius: var(--agro-radius-lg) !important;
+  padding: 20px 24px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+/* Section header */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+/* Alert cards */
+.alert-card {
+  background: var(--agro-bg-card);
+  border-left: 3px solid var(--agro-warning);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+}
+
+.alert-card.error {
+  border-left-color: var(--agro-error);
+}
+
+.alert-card.success {
+  border-left-color: var(--agro-success);
 }
 
 /* Clickable table rows */
@@ -174,85 +358,6 @@ body {
     position: sticky;
     left: 0;
     z-index: 1;
-    background: var(--color-bg-surface);
+    background: var(--agro-bg-card);
   }
-}
-
-/* Recharts customization */
-.recharts-cartesian-grid-horizontal line,
-.recharts-cartesian-grid-vertical line {
-  stroke: var(--color-border) !important;
-}
-
-.recharts-text {
-  fill: var(--color-text-secondary) !important;
-}
-
-.recharts-tooltip-wrapper .recharts-default-tooltip {
-  background-color: var(--color-bg-surface) !important;
-  border-color: var(--color-border) !important;
-  border-radius: 10px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
-}
-
-.recharts-tooltip-label {
-  color: var(--color-text) !important;
-}
-
-.recharts-tooltip-item {
-  color: var(--color-text-secondary) !important;
-}
-
-/* Page layout improvements */
-.page-container {
-  padding: 0;
-}
-
-/* Card hover states */
-.ant-card {
-  transition: border-color 0.2s ease;
-}
-
-.ant-card:hover {
-  border-color: #2d4a35 !important;
-}
-
-/* KPI card style */
-.kpi-card {
-  background: linear-gradient(135deg, #111814 0%, #1a2320 100%) !important;
-  border: 1px solid #1f2d24 !important;
-  border-radius: 16px !important;
-  padding: 20px 24px;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.2s, transform 0.2s;
-}
-
-.kpi-card:hover {
-  border-color: #16a34a !important;
-  transform: translateY(-2px);
-}
-
-/* Section header */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-/* Alert cards */
-.alert-card {
-  background: #111814;
-  border-left: 3px solid #f59e0b;
-  border-radius: 0 8px 8px 0;
-  padding: 12px 16px;
-}
-
-.alert-card.error {
-  border-left-color: #ef4444;
-}
-
-.alert-card.success {
-  border-left-color: #22c55e;
 }

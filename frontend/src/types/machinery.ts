@@ -16,6 +16,8 @@ export interface MachineDto {
   status: MachineryStatus;
   fuelType: FuelType;
   fuelConsumptionPerHour?: number;
+  assignedDriverId?: string;
+  assignedDriverName?: string;
 }
 
 export interface WorkLogDto {

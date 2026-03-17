@@ -216,7 +216,7 @@ export default function FieldDetail() {
         <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/fields')}>
           {t.fields.backToList}
         </Button>
-        <Button icon={<PlusOutlined />} onClick={() => setAssignModalOpen(true)} style={{ background: '#52c41a', borderColor: '#52c41a', color: '#fff' }}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => setAssignModalOpen(true)}>
           {t.fields.assignCrop}
         </Button>
         <Button icon={<PlusOutlined />} onClick={() => setPlanModalOpen(true)}>
