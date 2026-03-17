@@ -27,6 +27,8 @@ const uk = {
     workLogs: 'Табель',
     salary: 'Зарплата',
     fuelStation: 'Паливна станція',
+    companySettings: 'Налаштування підприємства',
+    setup: 'Початкове налаштування',
   },
   common: {
     cancel: 'Скасувати',
@@ -111,6 +113,11 @@ const uk = {
     warehouseOverview: 'Огляд складів',
     activityFeed: 'Стрічка активності',
     noActivity: 'Немає нещодавньої активності',
+    quickActions: 'Швидкі дії',
+    newOperation: 'Нова операція',
+    receiveGrain: 'Прийняти зерно',
+    issueFuel: 'Видати пальне',
+    addWorkLog: 'Внести табель',
   },
   operationTypes: {
     Sowing: 'Посів',
@@ -729,6 +736,21 @@ const uk = {
     paymentDate: 'Дата виплати',
     paySuccess: 'Виплату зафіксовано',
     payError: 'Помилка виплати',
+  },
+  setup: {
+    title: 'Налаштування підприємства',
+    subtitle: 'Заповніть базові дані один раз',
+    step1: 'Підприємство',
+    step2: 'Поля',
+    step3: 'Техніка',
+    step4: 'Склади',
+    step5: 'Персонал',
+    finish: 'Завершити налаштування',
+    skip: 'Пропустити',
+    companyName: 'Назва підприємства',
+    region: 'Регіон',
+    welcomeTitle: 'Ласкаво просимо до АгроТех!',
+    welcomeSubtitle: 'Давайте налаштуємо систему. Це займе 5 хвилин.',
   },
 } as const;
 
