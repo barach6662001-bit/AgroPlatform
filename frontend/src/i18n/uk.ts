@@ -22,6 +22,7 @@ const uk = {
     users: 'Користувачі',
     budget: 'Бюджет',
     profile: 'Профіль',
+    leases: 'Орендні платежі',
   },
   common: {
     cancel: 'Скасувати',

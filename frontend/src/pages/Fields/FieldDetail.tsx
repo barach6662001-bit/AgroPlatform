@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker } from 'antd';
+import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined } from '@ant-design/icons';
 import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry } from '../../api/fields';
+import { getLeases, createLease, addLeasePayment } from '../../api/leases';
 import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } from '../../types/field';
+import type { LandLeaseDto } from '../../types/lease';
 import PageHeader from '../../components/PageHeader';
 import FieldDrawMap from '../../components/Map/FieldDrawMap';
 import { useTranslation } from '../../i18n';
+import { useRole } from '../../hooks/useRole';
 
 export default function FieldDetail() {
   const { id } = useParams<{ id: string }>();
@@ -21,7 +24,16 @@ export default function FieldDetail() {
   const [cadastreLoading, setCadastreLoading] = useState(false);
   const [assignForm] = Form.useForm();
   const [planForm] = Form.useForm();
+  const [leases, setLeases] = useState<LandLeaseDto[]>([]);
+  const [leaseModalOpen, setLeaseModalOpen] = useState(false);
+  const [payModalOpen, setPayModalOpen] = useState(false);
+  const [payIsAdvance, setPayIsAdvance] = useState(false);
+  const [selectedLeaseId, setSelectedLeaseId] = useState<string | null>(null);
+  const [leaseForm] = Form.useForm();
+  const [payForm] = Form.useForm();
   const { t } = useTranslation();
+  const { hasRole } = useRole();
+  const canWrite = hasRole(['Administrator', 'Manager']);
 
   const load = () => {
     if (!id) return;
@@ -29,6 +41,7 @@ export default function FieldDetail() {
       .then(setField)
       .catch(() => message.error(t.fields.notFound))
       .finally(() => setLoading(false));
+    getLeases(id).then(setLeases).catch(() => {});
   };
 
   useEffect(() => { load(); }, [id]);
@@ -121,6 +134,52 @@ export default function FieldDetail() {
       message.error(t.fields.saveGeometryError);
     } finally {
       setSavingGeometry(false);
+    }
+  };
+
+  const handleAddLease = async () => {
+    try {
+      const values = await leaseForm.validateFields();
+      setSaving(true);
+      const contractStartDate = values.contractStartDate
+        ? (values.contractStartDate as { toISOString: () => string }).toISOString()
+        : new Date().toISOString();
+      const contractEndDate = values.contractEndDate
+        ? (values.contractEndDate as { toISOString: () => string }).toISOString()
+        : undefined;
+      await createLease({ ...values, fieldId: id!, contractStartDate, contractEndDate });
+      message.success(t.lease.addSuccess);
+      setLeaseModalOpen(false);
+      leaseForm.resetFields();
+      getLeases(id!).then(setLeases);
+    } catch {
+      message.error(t.lease.addError);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePay = async () => {
+    if (!selectedLeaseId) return;
+    try {
+      const values = await payForm.validateFields();
+      setSaving(true);
+      const paymentDate = values.paymentDate
+        ? (values.paymentDate as { toISOString: () => string }).toISOString()
+        : new Date().toISOString();
+      await addLeasePayment(selectedLeaseId, {
+        ...values,
+        paymentDate,
+        paymentType: payIsAdvance ? 'Advance' : 'Payment',
+      });
+      message.success(t.lease.paySuccess);
+      setPayModalOpen(false);
+      payForm.resetFields();
+      setSelectedLeaseId(null);
+    } catch {
+      message.error(t.lease.payError);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -244,6 +303,66 @@ export default function FieldDetail() {
         />
       </Card>
 
+      {(field.ownershipType === 1 || field.ownershipType === 2) && (
+        <Card
+          title={t.lease.title}
+          style={{ marginTop: 16 }}
+          extra={
+            canWrite && (
+              <Button type="primary" icon={<PlusOutlined />} onClick={() => setLeaseModalOpen(true)} size="small">
+                {t.lease.addLease}
+              </Button>
+            )
+          }
+        >
+          {leases.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '16px 0', color: '#888' }}>
+              {t.lease.noLeases}
+              {canWrite && (
+                <div style={{ marginTop: 8 }}>
+                  <Button icon={<PlusOutlined />} onClick={() => setLeaseModalOpen(true)}>
+                    {t.lease.addLease}
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Table
+              dataSource={leases}
+              rowKey="id"
+              pagination={false}
+              columns={[
+                { title: t.lease.ownerName, dataIndex: 'ownerName', key: 'ownerName' },
+                { title: t.lease.contractNumber, dataIndex: 'contractNumber', key: 'contractNumber', render: (v: string) => v || '—' },
+                {
+                  title: t.lease.annualPayment,
+                  dataIndex: 'annualPayment',
+                  key: 'annualPayment',
+                  align: 'right' as const,
+                  render: (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 2 }),
+                },
+                { title: t.lease.paymentType, dataIndex: 'paymentType', key: 'paymentType', render: (v: string) => v === 'Cash' ? t.lease.cash : v === 'Grain' ? t.lease.grain : t.lease.mixed },
+                {
+                  title: t.common.actions,
+                  key: 'actions',
+                  render: (_: unknown, record: LandLeaseDto) =>
+                    canWrite ? (
+                      <Space>
+                        <Button size="small" icon={<DollarOutlined />} onClick={() => { setSelectedLeaseId(record.id); setPayIsAdvance(false); payForm.setFieldsValue({ year: new Date().getFullYear() }); setPayModalOpen(true); }}>
+                          {t.lease.makePayment}
+                        </Button>
+                        <Button size="small" onClick={() => { setSelectedLeaseId(record.id); setPayIsAdvance(true); payForm.setFieldsValue({ year: new Date().getFullYear() }); setPayModalOpen(true); }}>
+                          {t.lease.makeAdvance}
+                        </Button>
+                      </Space>
+                    ) : null,
+                },
+              ]}
+            />
+          )}
+        </Card>
+      )}
+
       {/* Assign Crop Modal */}
       <Modal
         title={t.fields.assignCrop}
@@ -285,6 +404,76 @@ export default function FieldDetail() {
             <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="notes" label={t.fields.notes}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+      {/* Add Lease Modal */}
+      <Modal
+        title={t.lease.addLease}
+        open={leaseModalOpen}
+        onOk={handleAddLease}
+        onCancel={() => { setLeaseModalOpen(false); leaseForm.resetFields(); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+        width={600}
+      >
+        <Form form={leaseForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="ownerName" label={t.lease.ownerName} rules={[{ required: true, message: t.common.required }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="ownerPhone" label={t.lease.ownerPhone}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="contractNumber" label={t.lease.contractNumber}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="annualPayment" label={t.lease.annualPayment} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="paymentType" label={t.lease.paymentType} initialValue="Cash">
+            <Select options={[
+              { value: 'Cash', label: t.lease.cash },
+              { value: 'Grain', label: t.lease.grain },
+              { value: 'Mixed', label: t.lease.mixed },
+            ]} />
+          </Form.Item>
+          <Form.Item name="grainPaymentTons" label={t.lease.grainTons}>
+            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="contractStartDate" label={t.lease.contractStart} rules={[{ required: true, message: t.common.required }]}>
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="contractEndDate" label={t.lease.contractEnd}>
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="notes" label={t.common.notes}>
+            <Input.TextArea rows={2} />
+          </Form.Item>
+        </Form>
+      </Modal>
+      {/* Pay / Advance Modal */}
+      <Modal
+        title={payIsAdvance ? t.lease.makeAdvance : t.lease.makePayment}
+        open={payModalOpen}
+        onOk={handlePay}
+        onCancel={() => { setPayModalOpen(false); payForm.resetFields(); setSelectedLeaseId(null); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+      >
+        <Form form={payForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="year" label={t.lease.year} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="amount" label={t.lease.paymentAmount} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="paymentDate" label={t.lease.paymentDate} rules={[{ required: true, message: t.common.required }]}>
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="notes" label={t.lease.paymentNotes}>
             <Input />
           </Form.Item>
         </Form>

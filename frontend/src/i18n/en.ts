@@ -24,6 +24,7 @@ const en: Translations = {
     users: 'Users',
     budget: 'Budget',
     profile: 'Profile',
+    leases: 'Lease Payments',
   },
   common: {
     cancel: 'Cancel',

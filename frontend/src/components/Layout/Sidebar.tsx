@@ -36,6 +36,7 @@ export default function Sidebar() {
   const allLeafItems = [
     { key: '/' },
     { key: '/fields' },
+    { key: '/fields/leases' },
     { key: '/operations' },
     { key: '/machinery' },
     { key: '/fleet' },
@@ -46,9 +47,19 @@ export default function Sidebar() {
     ...(isAdmin ? [{ key: '/settings/users' }] : []),
   ];
 
+  const fieldsChildren = [
+    { key: '/fields', label: t.nav.fields, icon: <AimOutlined />, style: { padding: '4px 8px' } },
+    { key: '/fields/leases', label: t.nav.leases, icon: <FileTextOutlined />, style: { padding: '4px 8px' } },
+  ];
+
   const menuItems = [
     { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined />, style: { padding: '4px 8px' } },
-    { key: '/fields', label: t.nav.fields, icon: <AimOutlined />, style: { padding: '4px 8px' } },
+    {
+      key: 'fields-group',
+      label: t.nav.fields,
+      icon: <AimOutlined />,
+      children: fieldsChildren,
+    },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined />, style: { padding: '4px 8px' } },
     {
       key: 'warehouses-group',
@@ -85,7 +96,7 @@ export default function Sidebar() {
       : []),
   ];
 
-  const groupKeys = new Set(['warehouses-group', 'economics-group', 'analytics-group', 'settings-group']);
+  const groupKeys = new Set(['fields-group', 'warehouses-group', 'economics-group', 'analytics-group', 'settings-group']);
 
   const selectedKey =
     allLeafItems
@@ -98,13 +109,14 @@ export default function Sidebar() {
       )?.key ?? '/';
 
   const openKeys: string[] = [];
+  if (fieldsChildren.some((c) => c.key === selectedKey)) openKeys.push('fields-group');
   if (warehouseChildren.some((c) => c.key === selectedKey)) openKeys.push('warehouses-group');
   if (economicsChildren.some((c) => c.key === selectedKey)) openKeys.push('economics-group');
   if (analyticsChildren.some((c) => c.key === selectedKey)) openKeys.push('analytics-group');
   if (isAdmin && selectedKey === '/settings/users') openKeys.push('settings-group');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)', background: 'transparent' }}>
       <Menu
         theme="dark"
         mode="inline"
@@ -114,13 +126,13 @@ export default function Sidebar() {
         onClick={({ key }) => {
           if (!groupKeys.has(key)) navigate(key);
         }}
-        style={{ borderRight: 0, flex: 1, overflowY: 'auto' }}
+        style={{ borderRight: 0, flex: 1, overflowY: 'auto', background: 'transparent' }}
       />
-      <div style={{ padding: '12px 20px', borderTop: '1px solid #1f2d42' }}>
-        <Typography.Text style={{ fontSize: 11, color: '#4B5563', display: 'block' }}>
-          AgroPlatform v1.0
+      <div style={{ padding: '12px 16px', borderTop: '1px solid #1f2d24' }}>
+        <Typography.Text style={{ fontSize: 11, color: '#166534', display: 'block' }}>
+          v1.0.0 · Agrotech Platform
         </Typography.Text>
-        <Typography.Text style={{ fontSize: 10, color: '#374151' }}>
+        <Typography.Text style={{ fontSize: 10, color: '#1f2d24' }}>
           {import.meta.env.MODE}
         </Typography.Text>
       </div>
