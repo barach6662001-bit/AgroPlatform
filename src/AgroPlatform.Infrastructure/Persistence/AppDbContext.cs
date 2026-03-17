@@ -51,7 +51,6 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<GrainType> GrainTypes => Set<GrainType>();
     public DbSet<GrainBatch> GrainBatches => Set<GrainBatch>();
     public DbSet<GrainMovement> GrainMovements => Set<GrainMovement>();
-    public DbSet<GrainType> GrainTypes => Set<GrainType>();
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
     public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
