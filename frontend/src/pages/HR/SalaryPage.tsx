@@ -86,8 +86,8 @@ export default function SalaryPage() {
   const employeeMap = Object.fromEntries(employees.map((e) => [e.id, e]));
 
   const cardStyle: React.CSSProperties = {
-    background: '#0d1510',
-    border: '1px solid #1f2d24',
+    background: '#0d1117',
+    border: '1px solid #30363d',
     borderRadius: 8,
   };
 
@@ -101,7 +101,7 @@ export default function SalaryPage() {
       </Space>
 
       {loading ? (
-        <Text style={{ color: '#86efac' }}>{t.common.loading}</Text>
+        <Text style={{ color: '#8b949e' }}>{t.common.loading}</Text>
       ) : (
         <Row gutter={[16, 16]}>
           {summary.map((s) => {
@@ -110,11 +110,11 @@ export default function SalaryPage() {
               <Col key={s.employeeId} xs={24} sm={12} md={8} lg={6}>
                 <Card style={cardStyle} bodyStyle={{ padding: 16 }}>
                   <div style={{ marginBottom: 8 }}>
-                    <Text strong style={{ color: '#f0fdf4', fontSize: 15 }}>
+                    <Text strong style={{ color: '#e6edf3', fontSize: 15 }}>
                       {s.employeeFullName}
                     </Text>
                     {s.position && (
-                      <Text style={{ color: '#86efac', display: 'block', fontSize: 12 }}>
+                      <Text style={{ color: '#8b949e', display: 'block', fontSize: 12 }}>
                         {s.position}
                       </Text>
                     )}
@@ -127,16 +127,16 @@ export default function SalaryPage() {
                   <Row gutter={8} style={{ marginBottom: 12 }}>
                     <Col span={8}>
                       <Statistic
-                        title={<span style={{ color: '#86efac', fontSize: 11 }}>{t.hr.totalAccrued}</span>}
+                        title={<span style={{ color: '#8b949e', fontSize: 11 }}>{t.hr.totalAccrued}</span>}
                         value={s.totalAccrued}
                         precision={2}
                         suffix="₴"
-                        valueStyle={{ color: '#4ade80', fontSize: 14 }}
+                        valueStyle={{ color: '#3fb950', fontSize: 14 }}
                       />
                     </Col>
                     <Col span={8}>
                       <Statistic
-                        title={<span style={{ color: '#86efac', fontSize: 11 }}>{t.hr.totalPaid}</span>}
+                        title={<span style={{ color: '#8b949e', fontSize: 11 }}>{t.hr.totalPaid}</span>}
                         value={s.totalPaid}
                         precision={2}
                         suffix="₴"
@@ -145,11 +145,11 @@ export default function SalaryPage() {
                     </Col>
                     <Col span={8}>
                       <Statistic
-                        title={<span style={{ color: '#86efac', fontSize: 11 }}>{t.hr.debt}</span>}
+                        title={<span style={{ color: '#8b949e', fontSize: 11 }}>{t.hr.debt}</span>}
                         value={s.debt}
                         precision={2}
                         suffix="₴"
-                        valueStyle={{ color: s.debt > 0 ? '#f87171' : '#4ade80', fontSize: 14 }}
+                        valueStyle={{ color: s.debt > 0 ? '#f85149' : '#3fb950', fontSize: 14 }}
                       />
                     </Col>
                   </Row>
@@ -160,7 +160,7 @@ export default function SalaryPage() {
                         size="small"
                         icon={<DollarOutlined />}
                         onClick={() => openPayModal(s.employeeId, false)}
-                        style={{ background: '#16a34a', borderColor: '#16a34a' }}
+                        style={{ background: '#238636', borderColor: '#238636' }}
                       >
                         {t.hr.payNow}
                       </Button>

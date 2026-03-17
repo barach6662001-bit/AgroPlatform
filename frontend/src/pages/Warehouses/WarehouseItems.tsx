@@ -193,7 +193,7 @@ export default function WarehouseItems() {
       title: t.warehouses.balance, key: 'balance',
       render: (_: unknown, r: BalanceDto) => (
         <span>
-          <strong style={{ color: r.balanceBase > 0 ? '#52c41a' : '#f5222d' }}>
+          <strong style={{ color: r.balanceBase > 0 ? '#3fb950' : '#f85149' }}>
             {r.balanceBase.toFixed(2)}
           </strong>
           {' '}{r.baseUnit}
@@ -286,7 +286,7 @@ export default function WarehouseItems() {
           onChange={handleWarehouseChange}
           value={selectedWarehouse}
         />
-        <Button icon={<PlusOutlined />} style={{ background: '#52c41a', borderColor: '#52c41a', color: '#fff' }} onClick={() => setReceiptOpen(true)}>
+        <Button icon={<PlusOutlined />} type="primary" onClick={() => setReceiptOpen(true)}>
           {t.warehouses.receipt}
         </Button>
         <Button icon={<PlusOutlined />} onClick={() => setIssueOpen(true)}>
