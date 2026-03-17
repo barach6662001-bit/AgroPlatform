@@ -49,4 +49,59 @@ describe('i18n', () => {
     expect(result.current.lang).toBe('en');
     expect(result.current.t.nav.dashboard).toBe(en.nav.dashboard);
   });
+
+  it('all dynamic maintenance type keys are defined in both locales', () => {
+    // MaintenancePage and MachineDetail build keys as `type${maintenanceType}`
+    const MAINTENANCE_TYPES = ['Scheduled', 'Repair', 'Inspection'] as const;
+    for (const type of MAINTENANCE_TYPES) {
+      const key = `type${type}` as keyof typeof uk.maintenance;
+      expect(uk.maintenance[key], `uk.maintenance.${key} should be defined`).toBeTruthy();
+      expect(en.maintenance[key], `en.maintenance.${key} should be defined`).toBeTruthy();
+    }
+  });
+
+  it('all dynamic machinery-type keys are defined in both locales', () => {
+    const MACHINERY_TYPES = ['Tractor', 'Combine', 'Sprayer', 'Seeder', 'Cultivator', 'Truck', 'Other'] as const;
+    for (const type of MACHINERY_TYPES) {
+      const key = type as keyof typeof uk.machineryTypes;
+      expect(uk.machineryTypes[key], `uk.machineryTypes.${key} should be defined`).toBeTruthy();
+      expect(en.machineryTypes[key], `en.machineryTypes.${key} should be defined`).toBeTruthy();
+    }
+  });
+
+  it('all dynamic machinery-status keys are defined in both locales', () => {
+    const MACHINERY_STATUSES = ['Active', 'UnderRepair', 'Decommissioned'] as const;
+    for (const status of MACHINERY_STATUSES) {
+      const key = status as keyof typeof uk.machineryStatuses;
+      expect(uk.machineryStatuses[key], `uk.machineryStatuses.${key} should be defined`).toBeTruthy();
+      expect(en.machineryStatuses[key], `en.machineryStatuses.${key} should be defined`).toBeTruthy();
+    }
+  });
+
+  it('all dynamic operation-type keys are defined in both locales', () => {
+    const OPERATION_TYPES = ['Sowing', 'Fertilizing', 'PlantProtection', 'SoilTillage', 'Harvesting'] as const;
+    for (const type of OPERATION_TYPES) {
+      const key = type as keyof typeof uk.operationTypes;
+      expect(uk.operationTypes[key], `uk.operationTypes.${key} should be defined`).toBeTruthy();
+      expect(en.operationTypes[key], `en.operationTypes.${key} should be defined`).toBeTruthy();
+    }
+  });
+
+  it('all dynamic move-type keys are defined in both locales', () => {
+    const MOVE_TYPES = ['Receipt', 'Issue', 'Transfer', 'Adjustment'] as const;
+    for (const type of MOVE_TYPES) {
+      const key = type as keyof typeof uk.moveTypes;
+      expect(uk.moveTypes[key], `uk.moveTypes.${key} should be defined`).toBeTruthy();
+      expect(en.moveTypes[key], `en.moveTypes.${key} should be defined`).toBeTruthy();
+    }
+  });
+
+  it('all dynamic fleet connection-state keys are defined in both locales', () => {
+    const CONNECTION_STATES = ['connected', 'reconnecting', 'disconnected'] as const;
+    for (const state of CONNECTION_STATES) {
+      const key = state as keyof typeof uk.fleet;
+      expect(uk.fleet[key], `uk.fleet.${key} should be defined`).toBeTruthy();
+      expect(en.fleet[key], `en.fleet.${key} should be defined`).toBeTruthy();
+    }
+  });
 });
