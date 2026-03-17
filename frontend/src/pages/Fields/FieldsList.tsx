@@ -160,7 +160,7 @@ export default function FieldsList() {
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          style={{ background: '#52c41a', borderColor: '#52c41a' }}
+          style={{ }}
           onClick={() => setModalOpen(true)}
         >
           {t.fields.addField}

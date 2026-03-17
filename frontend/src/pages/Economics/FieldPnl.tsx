@@ -89,7 +89,7 @@ export default function FieldPnl() {
       key: 'totalCosts',
       sorter: (a: FieldPnlDto, b: FieldPnlDto) => a.totalCosts - b.totalCosts,
       render: (v: number) => (
-        <span style={{ color: '#f5222d' }}>{v.toLocaleString()} UAH</span>
+        <span style={{ color: '#f85149' }}>{v.toLocaleString()} UAH</span>
       ),
     },
     {
@@ -107,7 +107,7 @@ export default function FieldPnl() {
         (a.estimatedRevenue ?? -1) - (b.estimatedRevenue ?? -1),
       render: (v: number | undefined) =>
         v != null ? (
-          <span style={{ color: '#52c41a' }}>{v.toLocaleString()} UAH</span>
+          <span style={{ color: '#3fb950' }}>{v.toLocaleString()} UAH</span>
         ) : (
           <span style={{ color: '#8B949E' }}>—</span>
         ),
@@ -120,7 +120,7 @@ export default function FieldPnl() {
         (a.netProfit ?? -Infinity) - (b.netProfit ?? -Infinity),
       render: (v: number | undefined) => {
         if (v == null) return <span style={{ color: '#8B949E' }}>—</span>;
-        const color = v >= 0 ? '#52c41a' : '#f5222d';
+        const color = v >= 0 ? '#3fb950' : '#f85149';
         return <strong style={{ color }}>{v.toLocaleString()} UAH</strong>;
       },
     },
@@ -131,7 +131,7 @@ export default function FieldPnl() {
         if (r.estimatedRevenue == null || r.estimatedRevenue === 0)
           return <span style={{ color: '#8B949E' }}>—</span>;
         const margin = ((r.netProfit ?? 0) / r.estimatedRevenue) * 100;
-        const color = margin >= 0 ? '#52c41a' : '#f5222d';
+        const color = margin >= 0 ? '#3fb950' : '#f85149';
         return (
           <Tag color={margin >= 0 ? 'success' : 'error'} style={{ color }}>
             {margin.toFixed(1)}%
@@ -179,7 +179,7 @@ export default function FieldPnl() {
               title={<span style={{ color: '#8B949E' }}>{t.economics.totalCostsSum}</span>}
               value={totalCosts}
               suffix="UAH"
-              valueStyle={{ color: '#f5222d' }}
+              valueStyle={{ color: '#f85149' }}
               prefix={<DollarOutlined />}
               formatter={(v) => Number(v).toLocaleString()}
             />
@@ -191,7 +191,7 @@ export default function FieldPnl() {
               title={<span style={{ color: '#8B949E' }}>{t.economics.avgMargin}</span>}
               value={avgMargin != null ? avgMargin.toFixed(1) : '—'}
               suffix={avgMargin != null ? '%' : ''}
-              valueStyle={{ color: avgMargin != null && avgMargin >= 0 ? '#52c41a' : '#f5222d' }}
+              valueStyle={{ color: avgMargin != null && avgMargin >= 0 ? '#3fb950' : '#f85149' }}
               prefix={<RiseOutlined />}
             />
           </Card>
@@ -229,8 +229,8 @@ export default function FieldPnl() {
                 contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }}
               />
               <Legend wrapperStyle={{ color: '#8B949E' }} />
-              <Bar dataKey={t.economics.totalCostsSum} fill="#f5222d" radius={[4, 4, 0, 0]} />
-              <Bar dataKey={t.economics.revenue} fill="#52c41a" radius={[4, 4, 0, 0]} />
+              <Bar dataKey={t.economics.totalCostsSum} fill="#f85149" radius={[4, 4, 0, 0]} />
+              <Bar dataKey={t.economics.revenue} fill="#3fb950" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
@@ -252,12 +252,12 @@ export default function FieldPnl() {
                 <strong>{t.economics.total}</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={1}>
-                <strong style={{ color: '#f5222d' }}>{totalCosts.toLocaleString()} UAH</strong>
+                <strong style={{ color: '#f85149' }}>{totalCosts.toLocaleString()} UAH</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={2} />
               <Table.Summary.Cell index={3}>
                 {pricePerTonne && (
-                  <strong style={{ color: '#52c41a' }}>{totalRevenue.toLocaleString()} UAH</strong>
+                  <strong style={{ color: '#3fb950' }}>{totalRevenue.toLocaleString()} UAH</strong>
                 )}
               </Table.Summary.Cell>
               <Table.Summary.Cell index={4} />

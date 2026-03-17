@@ -9,28 +9,24 @@ interface Props {
 export default function PageHeader({ title, subtitle, actions }: Props) {
   return (
     <div style={{
-      marginBottom: 28,
-      paddingBottom: 20,
-      borderBottom: '1px solid #1f2d24',
+      marginBottom: 24,
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h1 style={{
             margin: 0,
-            fontSize: 26,
-            fontWeight: 700,
-            color: '#f0fdf4',
-            letterSpacing: '-0.5px',
-            lineHeight: 1.2,
+            fontSize: 20,
+            fontWeight: 600,
+            color: '#e6edf3',
+            letterSpacing: '-0.3px',
           }}>
             {title}
           </h1>
           {subtitle && (
             <p style={{
-              margin: '4px 0 0',
-              fontSize: 14,
-              color: '#4ade80',
-              fontWeight: 400,
+              margin: '2px 0 0',
+              fontSize: 13,
+              color: '#8b949e',
             }}>
               {subtitle}
             </p>

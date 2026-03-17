@@ -25,9 +25,9 @@ const FUEL_TYPE_LABELS: Record<number, string> = {
 };
 
 function getFillColor(pct: number): string {
-  if (pct >= 50) return '#52c41a';
-  if (pct >= 25) return '#faad14';
-  return '#ff4d4f';
+  if (pct >= 50) return '#3fb950';
+  if (pct >= 25) return '#d29922';
+  return '#f85149';
 }
 
 export default function FuelStation() {
@@ -211,7 +211,7 @@ export default function FuelStation() {
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              style={{ background: '#52c41a', borderColor: '#52c41a' }}
+              style={{ }}
               onClick={() => setTankModalOpen(true)}
             >
               {t.fuel.addTank}
@@ -227,7 +227,7 @@ export default function FuelStation() {
       />
 
       {/* Tank cards */}
-      <Typography.Title level={5} style={{ color: '#f0fdf4', marginBottom: 16 }}>
+      <Typography.Title level={5} style={{ color: '#e6edf3', marginBottom: 16 }}>
         {t.fuel.tanks}
       </Typography.Title>
       <Row gutter={[16, 16]} style={{ marginBottom: 32 }}>
@@ -241,11 +241,11 @@ export default function FuelStation() {
           tanks.map((tank) => (
             <Col key={tank.id} xs={24} sm={12} md={8} lg={6}>
               <Card
-                style={{ background: '#0f1f13', border: '1px solid #1f2d24' }}
+                style={{ background: '#161b22', border: '1px solid #30363d' }}
                 bodyStyle={{ padding: 16 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                  <Typography.Text strong style={{ color: '#f0fdf4', fontSize: 15 }}>
+                  <Typography.Text strong style={{ color: '#e6edf3', fontSize: 15 }}>
                     {tank.name}
                   </Typography.Text>
                   <Tag color="blue">{FUEL_TYPE_LABELS[tank.fuelType] ?? tank.fuelType}</Tag>
@@ -258,7 +258,7 @@ export default function FuelStation() {
                     percent={tank.fillPercentage}
                     showInfo={false}
                     strokeColor={getFillColor(tank.fillPercentage)}
-                    trailColor="#1f2d24"
+                    trailColor="#30363d"
                     style={{ marginBottom: 4 }}
                   />
                   <Typography.Text style={{ color: '#ccc', fontSize: 12 }}>
@@ -267,7 +267,7 @@ export default function FuelStation() {
                 </div>
                 {tank.pricePerLiter != null && (
                   <div style={{ marginBottom: 8 }}>
-                    <Typography.Text style={{ color: '#52c41a', fontSize: 12 }}>
+                    <Typography.Text style={{ color: '#8b949e', fontSize: 12 }}>
                       {t.fuel.pricePerLiter}: {tank.pricePerLiter.toLocaleString('uk-UA')} грн/л
                     </Typography.Text>
                   </div>
@@ -287,7 +287,7 @@ export default function FuelStation() {
       </Row>
 
       {/* Transactions table */}
-      <Typography.Title level={5} style={{ color: '#f0fdf4', marginBottom: 16 }}>
+      <Typography.Title level={5} style={{ color: '#e6edf3', marginBottom: 16 }}>
         {t.fuel.transactions}
       </Typography.Title>
       <div style={{ marginBottom: 12 }}>
