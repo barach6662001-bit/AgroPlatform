@@ -628,6 +628,7 @@ const uk = {
     paymentNotes: 'Примітка',
     payError: 'Помилка фіксації виплати',
   },
+<<<<<<< copilot/add-fuel-tank-entity-again
   fuel: {
     title: 'Паливна станція',
     subtitle: 'Облік пального та заправок',
@@ -653,6 +654,34 @@ const uk = {
     issueSuccess: 'Видачу зафіксовано',
     insufficientFuel: 'Недостатньо пального',
     loadError: 'Помилка завантаження',
+=======
+  grain: {
+    title: 'Зерносховище',
+    subtitle: 'Облік зерна та партій',
+    batchList: 'Партії зерна',
+    grainType: 'Культура',
+    quantityTons: 'Залишок (т)',
+    initialQuantity: 'Прийнято (т)',
+    ownershipType: 'Тип власності',
+    ownerName: 'Власник',
+    contractNumber: 'Договір',
+    pricePerTon: 'Ціна/т',
+    receivedDate: 'Дата прийому',
+    receiveGrain: 'Прийняти зерно',
+    createMovement: 'Додати рух',
+    movementIn: 'Надходження',
+    movementOut: 'Відвантаження',
+    movementDate: 'Дата',
+    movementType: 'Тип руху',
+    reason: 'Причина',
+    ownGrain: 'Власне',
+    consignment: 'Реалізація',
+    storage: 'Зберігання',
+    other: 'Інше',
+    loadError: 'Помилка завантаження',
+    createSuccess: 'Партію створено',
+    movementSuccess: 'Рух зафіксовано',
+>>>>>>> main
   },
 } as const;
 
