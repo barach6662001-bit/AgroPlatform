@@ -1,6 +1,8 @@
 using AgroPlatform.Application.HR.Commands.CreateEmployee;
 using AgroPlatform.Application.HR.Commands.CreateSalaryPayment;
 using AgroPlatform.Application.HR.Commands.CreateWorkLog;
+using AgroPlatform.Application.HR.Commands.DeleteEmployee;
+using AgroPlatform.Application.HR.Commands.UpdateEmployee;
 using AgroPlatform.Application.HR.Queries.GetEmployees;
 using AgroPlatform.Application.HR.Queries.GetSalarySummary;
 using AgroPlatform.Application.HR.Queries.GetWorkLogs;
@@ -50,6 +52,33 @@ public class HRController : ControllerBase
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetEmployees), new { }, new { id });
+    }
+
+    /// <summary>Updates an existing employee.</summary>
+    /// <param name="id">Employee ID.</param>
+    /// <param name="command">Updated employee data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("api/employees/{id}")]
+    [Authorize(Roles = "Administrator,Manager")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateEmployee(Guid id, [FromBody] UpdateEmployeeCommand command, CancellationToken cancellationToken)
+    {
+        await _sender.Send(command with { Id = id }, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>Deletes (soft-deletes) an employee.</summary>
+    /// <param name="id">Employee ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpDelete("api/employees/{id}")]
+    [Authorize(Roles = "Administrator,Manager")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteEmployee(Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteEmployeeCommand(id), cancellationToken);
+        return NoContent();
     }
 
     // ── Work Logs ──────────────────────────────────────────────────────────

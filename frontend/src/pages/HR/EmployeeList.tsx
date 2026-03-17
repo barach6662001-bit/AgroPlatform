@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import {
-  Table, Button, Modal, Form, Input, InputNumber, Select, Space, Tag, message,
+  Table, Button, Modal, Form, Input, InputNumber, Select, Space, Tag, message, Popconfirm,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { getEmployees, createEmployee } from '../../api/hr';
+import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from '../../api/hr';
 import type { EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -17,6 +17,7 @@ export default function EmployeeList() {
   const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
   const [salaryType, setSalaryType] = useState<string>('Hourly');
+  const [editingEmployee, setEditingEmployee] = useState<EmployeeDto | null>(null);
   const { t } = useTranslation();
   const { hasRole } = useRole();
   const canWrite = hasRole(['Administrator', 'Manager']);
@@ -31,20 +32,52 @@ export default function EmployeeList() {
 
   useEffect(() => { load(); }, []);
 
-  const handleAdd = async () => {
+  const handleEdit = (employee: EmployeeDto) => {
+    setEditingEmployee(employee);
+    setSalaryType(employee.salaryType);
+    form.setFieldsValue({
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      position: employee.position,
+      salaryType: employee.salaryType,
+      hourlyRate: employee.hourlyRate,
+      pieceworkRate: employee.pieceworkRate,
+      notes: employee.notes,
+    });
+    setModalOpen(true);
+  };
+
+  const handleSave = async () => {
     try {
       const values = await form.validateFields();
       setSaving(true);
-      await createEmployee(values);
-      message.success(t.hr.addSuccess);
-      setModalOpen(false);
+      if (editingEmployee) {
+        await updateEmployee(editingEmployee.id, { ...values, isActive: editingEmployee.isActive });
+        message.success(t.hr.updateSuccess);
+      } else {
+        await createEmployee(values);
+        message.success(t.hr.addSuccess);
+      }
       form.resetFields();
       setSalaryType('Hourly');
+      setEditingEmployee(null);
+      setModalOpen(false);
       load();
-    } catch {
-      message.error(t.hr.addError);
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status) message.error(editingEmployee ? t.hr.updateError : t.hr.addError);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteEmployee(id);
+      message.success(t.hr.deleteSuccess);
+      load();
+    } catch {
+      message.error(t.hr.deleteError);
     }
   };
 
@@ -90,6 +123,33 @@ export default function EmployeeList() {
       key: 'isActive',
       render: (v: boolean) => <Tag color={v ? 'success' : 'default'}>{v ? t.common.active : t.common.inactive}</Tag>,
     },
+    ...(canWrite ? [{
+      title: t.common.actions,
+      key: 'actions',
+      width: 120,
+      render: (_: unknown, record: EmployeeDto) => (
+        <Space>
+          <Button
+            size="small"
+            icon={<EditOutlined />}
+            onClick={(e) => { e.stopPropagation(); handleEdit(record); }}
+          />
+          <Popconfirm
+            title={t.hr.deleteConfirm}
+            onConfirm={() => handleDelete(record.id)}
+            okText={t.common.yes}
+            cancelText={t.common.no}
+          >
+            <Button
+              size="small"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </Popconfirm>
+        </Space>
+      ),
+    }] as ColumnsType<EmployeeDto> : []),
   ];
 
   return (
@@ -119,10 +179,15 @@ export default function EmployeeList() {
       />
 
       <Modal
-        title={t.hr.addEmployee}
+        title={editingEmployee ? t.hr.editEmployee : t.hr.addEmployee}
         open={modalOpen}
-        onOk={handleAdd}
-        onCancel={() => { setModalOpen(false); form.resetFields(); setSalaryType('Hourly'); }}
+        onOk={handleSave}
+        onCancel={() => {
+          setModalOpen(false);
+          setEditingEmployee(null);
+          form.resetFields();
+          setSalaryType('Hourly');
+        }}
         confirmLoading={saving}
         okText={t.common.save}
         cancelText={t.common.cancel}
