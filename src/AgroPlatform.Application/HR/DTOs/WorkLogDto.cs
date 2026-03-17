@@ -1,10 +1,10 @@
-using AgroPlatform.Domain.Common;
+namespace AgroPlatform.Application.HR.DTOs;
 
-namespace AgroPlatform.Domain.HR;
-
-public class WorkLog : AuditableEntity
+public class WorkLogDto
 {
+    public Guid Id { get; set; }
     public Guid EmployeeId { get; set; }
+    public string EmployeeFullName { get; set; } = string.Empty;
     public DateTime WorkDate { get; set; }
     public decimal? HoursWorked { get; set; }
     public decimal? UnitsProduced { get; set; }
@@ -13,6 +13,4 @@ public class WorkLog : AuditableEntity
     public Guid? OperationId { get; set; }
     public decimal AccruedAmount { get; set; }
     public bool IsPaid { get; set; }
-
-    public Employee Employee { get; set; } = null!;
 }

@@ -4,6 +4,7 @@ import {
   DollarOutlined, LineChartOutlined, BarChartOutlined, ThunderboltOutlined,
   TeamOutlined, SwapOutlined, RiseOutlined, SettingOutlined,
   EnvironmentOutlined, FundOutlined, BankOutlined, FileTextOutlined,
+  UserOutlined, CalendarOutlined, FireOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -33,6 +34,12 @@ export default function Sidebar() {
     { key: '/analytics/efficiency', label: t.analytics.fieldEfficiency, icon: <ThunderboltOutlined />, style: { padding: '4px 8px' } },
   ];
 
+  const hrChildren = [
+    { key: '/hr/employees', label: t.nav.employees, icon: <UserOutlined />, style: { padding: '4px 8px' } },
+    { key: '/hr/worklogs', label: t.nav.workLogs, icon: <CalendarOutlined />, style: { padding: '4px 8px' } },
+    { key: '/hr/salary', label: t.nav.salary, icon: <DollarOutlined />, style: { padding: '4px 8px' } },
+  ];
+
   const allLeafItems = [
     { key: '/' },
     { key: '/fields' },
@@ -40,9 +47,11 @@ export default function Sidebar() {
     { key: '/operations' },
     { key: '/machinery' },
     { key: '/fleet' },
+    { key: '/fuel' },
     ...warehouseChildren,
     ...economicsChildren,
     ...analyticsChildren,
+    ...hrChildren,
     ...(isAdmin ? [{ key: '/settings/users' }] : []),
   ];
 
@@ -68,6 +77,7 @@ export default function Sidebar() {
     },
     { key: '/operations', label: t.nav.operations, icon: <ToolOutlined />, style: { padding: '4px 8px' } },
     { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined />, style: { padding: '4px 8px' } },
+    { key: '/fuel', label: t.nav.fuelStation, icon: <FireOutlined />, style: { padding: '4px 8px' } },
     {
       key: 'economics-group',
       label: t.nav.economics,
@@ -79,6 +89,12 @@ export default function Sidebar() {
       label: t.nav.analytics,
       icon: <LineChartOutlined />,
       children: analyticsChildren,
+    },
+    {
+      key: 'hr-group',
+      label: t.nav.hr,
+      icon: <TeamOutlined />,
+      children: hrChildren,
     },
     ...(isAdmin
       ? [
@@ -94,7 +110,7 @@ export default function Sidebar() {
       : []),
   ];
 
-  const groupKeys = new Set(['fields-group', 'warehouses-group', 'economics-group', 'analytics-group', 'settings-group']);
+  const groupKeys = new Set(['fields-group', 'warehouses-group', 'economics-group', 'analytics-group', 'hr-group', 'settings-group']);
 
   const selectedKey =
     allLeafItems
@@ -111,6 +127,7 @@ export default function Sidebar() {
   if (warehouseChildren.some((c) => c.key === selectedKey)) openKeys.push('warehouses-group');
   if (economicsChildren.some((c) => c.key === selectedKey)) openKeys.push('economics-group');
   if (analyticsChildren.some((c) => c.key === selectedKey)) openKeys.push('analytics-group');
+  if (hrChildren.some((c) => c.key === selectedKey)) openKeys.push('hr-group');
   if (isAdmin && selectedKey === '/settings/users') openKeys.push('settings-group');
 
   return (

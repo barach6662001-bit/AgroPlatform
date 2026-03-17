@@ -1942,6 +1942,54 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Navigation("StockMoves");
                 });
+
+            modelBuilder.Entity("AgroPlatform.Domain.HR.Employee", b =>
+                {
+                    b.Navigation("WorkLogs");
+
+                    b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.HR.WorkLog", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.HR.Employee", "Employee")
+                        .WithMany("WorkLogs")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_WorkLogs_Employees")
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.HR.SalaryPayment", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.HR.Employee", "Employee")
+                        .WithMany("Payments")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_SalaryPayments_Employees")
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fuel.FuelTransaction", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Fuel.FuelTank", "FuelTank")
+                        .WithMany("Transactions")
+                        .HasForeignKey("FuelTankId")
+                        .HasConstraintName("FK_FuelTransactions_FuelTanks")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FuelTank");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fuel.FuelTank", b =>
+                {
+                    b.Navigation("Transactions");
+                });
 #pragma warning restore 612, 618
         }
     }

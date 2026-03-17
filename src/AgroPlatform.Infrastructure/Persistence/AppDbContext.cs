@@ -2,6 +2,7 @@ using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
+using AgroPlatform.Domain.Fuel;
 using AgroPlatform.Domain.GrainStorage;
 using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
@@ -45,6 +46,8 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<LandLease> LandLeases => Set<LandLease>();
     public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
+    public DbSet<FuelTank> FuelTanks => Set<FuelTank>();
+    public DbSet<FuelTransaction> FuelTransactions => Set<FuelTransaction>();
     public DbSet<GrainBatch> GrainBatches => Set<GrainBatch>();
     public DbSet<GrainMovement> GrainMovements => Set<GrainMovement>();
     public DbSet<Employee> Employees => Set<Employee>();
@@ -78,6 +81,8 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<Notification>().HasQueryFilter(n => n.TenantId == _tenantId);
         builder.Entity<LandLease>().HasQueryFilter(l => !l.IsDeleted && l.TenantId == _tenantId);
         builder.Entity<LeasePayment>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
+        builder.Entity<FuelTank>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
+        builder.Entity<FuelTransaction>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
         builder.Entity<GrainBatch>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
         builder.Entity<GrainMovement>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
         builder.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == _tenantId);
