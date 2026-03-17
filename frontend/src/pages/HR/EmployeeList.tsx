@@ -81,7 +81,7 @@ export default function EmployeeList() {
       key: 'rate',
       render: (_: unknown, r: EmployeeDto) => {
         if (r.salaryType === 'Hourly') return r.hourlyRate != null ? `${r.hourlyRate} ₴/год` : '—';
-        return r.pieceworkRate != null ? `${r.pieceworkRate} ₴/od` : '—';
+        return r.pieceworkRate != null ? `${r.pieceworkRate} ₴/од` : '—';
       },
     },
     {
