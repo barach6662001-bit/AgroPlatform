@@ -2,6 +2,7 @@ using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.GrainStorage;
+using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Users;
@@ -36,6 +37,9 @@ public interface IAppDbContext
     DbSet<LeasePayment> LeasePayments { get; }
     DbSet<GrainBatch> GrainBatches { get; }
     DbSet<GrainMovement> GrainMovements { get; }
+    DbSet<Employee> Employees { get; }
+    DbSet<WorkLog> WorkLogs { get; }
+    DbSet<SalaryPayment> SalaryPayments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
