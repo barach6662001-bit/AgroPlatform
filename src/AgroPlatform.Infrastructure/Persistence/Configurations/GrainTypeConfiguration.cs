@@ -14,6 +14,9 @@ public class GrainTypeConfiguration : IEntityTypeConfiguration<GrainType>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(g => g.Description)
+            .HasMaxLength(500);
+
         builder.HasIndex(g => g.TenantId);
         builder.HasIndex(g => new { g.TenantId, g.Name }).IsUnique();
     }

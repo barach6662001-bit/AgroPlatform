@@ -17,9 +17,9 @@ function formatRelativeTime(timestampUtc: string): string {
 }
 
 const connectionTagProps: Record<ConnectionState, { color: string; statusType: 'success' | 'warning' | 'error' }> = {
-  connected: { color: '#52c41a', statusType: 'success' },
-  reconnecting: { color: '#faad14', statusType: 'warning' },
-  disconnected: { color: '#ff4d4f', statusType: 'error' },
+  connected: { color: '#3fb950', statusType: 'success' },
+  reconnecting: { color: '#d29922', statusType: 'warning' },
+  disconnected: { color: '#f85149', statusType: 'error' },
 };
 
 export default function FleetMap() {

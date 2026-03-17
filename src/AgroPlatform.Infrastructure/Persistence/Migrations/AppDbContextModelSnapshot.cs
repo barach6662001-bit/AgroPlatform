@@ -896,6 +896,13 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("AssignedDriverId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AssignedDriverName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<string>("Brand")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");

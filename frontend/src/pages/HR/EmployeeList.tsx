@@ -102,7 +102,7 @@ export default function EmployeeList() {
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setModalOpen(true)}
-              style={{ background: '#16a34a', borderColor: '#16a34a' }}
+              style={{ background: '#238636', borderColor: '#238636' }}
             >
               {t.hr.addEmployee}
             </Button>

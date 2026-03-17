@@ -34,7 +34,7 @@ public class UpdateMachineHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new UpdateMachineHandler(context);
-        var command = new UpdateMachineCommand(machine.Id, "New Tractor", "John Deere", "6120M", 2022, MachineryStatus.UnderRepair, FuelType.Diesel, 8.5m);
+        var command = new UpdateMachineCommand(machine.Id, "New Tractor", "John Deere", "6120M", 2022, MachineryStatus.UnderRepair, FuelType.Diesel, 8.5m, null, null);
         await handler.Handle(command, CancellationToken.None);
 
         var updated = await ((TestDbContext)context).Machines.FindAsync(machine.Id);
@@ -50,7 +50,7 @@ public class UpdateMachineHandlerTests
     {
         var context = CreateDbContext();
         var handler = new UpdateMachineHandler(context);
-        var command = new UpdateMachineCommand(Guid.NewGuid(), "Name", null, null, null, MachineryStatus.Active, FuelType.Diesel, null);
+        var command = new UpdateMachineCommand(Guid.NewGuid(), "Name", null, null, null, MachineryStatus.Active, FuelType.Diesel, null, null, null);
 
         var act = async () => await handler.Handle(command, CancellationToken.None);
 

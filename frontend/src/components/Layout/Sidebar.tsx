@@ -143,11 +143,11 @@ export default function Sidebar() {
         }}
         style={{ borderRight: 0, flex: 1, overflowY: 'auto', background: 'transparent' }}
       />
-      <div style={{ padding: '12px 16px', borderTop: '1px solid #1f2d24' }}>
-        <Typography.Text style={{ fontSize: 11, color: '#166534', display: 'block' }}>
+      <div style={{ padding: '12px 16px', borderTop: '1px solid #21262d' }}>
+        <Typography.Text style={{ fontSize: 11, color: '#484f58', display: 'block' }}>
           v1.0.0 · Agrotech Platform
         </Typography.Text>
-        <Typography.Text style={{ fontSize: 10, color: '#1f2d24' }}>
+        <Typography.Text style={{ fontSize: 10, color: '#30363d' }}>
           {import.meta.env.MODE}
         </Typography.Text>
       </div>

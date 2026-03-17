@@ -396,6 +396,9 @@ const en: Translations = {
     machineUpdated: 'Machine updated',
     editMachine: 'Edit Machine',
     machineUpdateError: 'Error updating machine',
+    assignedDriver: 'Assigned Driver',
+    selectDriver: 'Select driver',
+    noDriver: 'No driver assigned',
   },
   machineryTypes: {
     Tractor: 'Tractor',
@@ -728,6 +731,9 @@ const en: Translations = {
     issueSuccess: 'Issue recorded',
     insufficientFuel: 'Insufficient fuel',
     loadError: 'Error loading data',
+    selectMachine: 'Select machine',
+    driverNamePlaceholder: 'Driver full name',
+    driverAutoFilled: 'Driver filled automatically',
   },
 };
 
