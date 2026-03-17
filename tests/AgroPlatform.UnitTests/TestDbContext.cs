@@ -38,9 +38,14 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<LandLease> LandLeases => Set<LandLease>();
     public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
+<<<<<<< copilot/add-fuel-tank-entity-again
+    public DbSet<FuelTank> FuelTanks => Set<FuelTank>();
+    public DbSet<FuelTransaction> FuelTransactions => Set<FuelTransaction>();
+=======
     public DbSet<GrainBatch> GrainBatches => Set<GrainBatch>();
     public DbSet<GrainMovement> GrainMovements => Set<GrainMovement>();
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
     public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
+>>>>>>> main
 }

@@ -36,6 +36,7 @@ import ProfilePage from './pages/Profile/ProfilePage';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
 import AccessDenied from './pages/AccessDenied';
 import NotFound from './pages/NotFound';
+import FuelStation from './pages/Fuel/FuelStation';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -70,6 +71,7 @@ export default function App() {
             <Route path="/machinery/:id" element={<MachineDetail />} />
             <Route path="/machinery/:id/maintenance" element={<MaintenancePage />} />
             <Route path="/fleet" element={<FleetMap />} />
+            <Route path="/fuel" element={<FuelStation />} />
             <Route path="/economics" element={<CostRecords />} />
             <Route path="/economics/pnl" element={<FieldPnl />} />
             <Route path="/economics/budget" element={<BudgetPage />} />

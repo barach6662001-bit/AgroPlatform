@@ -1973,6 +1973,23 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Employee");
                 });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fuel.FuelTransaction", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Fuel.FuelTank", "FuelTank")
+                        .WithMany("Transactions")
+                        .HasForeignKey("FuelTankId")
+                        .HasConstraintName("FK_FuelTransactions_FuelTanks")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FuelTank");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fuel.FuelTank", b =>
+                {
+                    b.Navigation("Transactions");
+                });
 #pragma warning restore 612, 618
         }
     }

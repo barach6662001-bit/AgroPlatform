@@ -28,6 +28,7 @@ const en: Translations = {
     employees: 'Employees',
     workLogs: 'Timesheet',
     salary: 'Salary',
+    fuelStation: 'Fuel Station',
   },
   common: {
     cancel: 'Cancel',
