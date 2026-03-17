@@ -38,6 +38,7 @@ public interface IAppDbContext
     DbSet<LeasePayment> LeasePayments { get; }
     DbSet<GrainBatch> GrainBatches { get; }
     DbSet<GrainMovement> GrainMovements { get; }
+    DbSet<GrainType> GrainTypes { get; }
     DbSet<Employee> Employees { get; }
     DbSet<WorkLog> WorkLogs { get; }
     DbSet<SalaryPayment> SalaryPayments { get; }

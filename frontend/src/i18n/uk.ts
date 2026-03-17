@@ -689,6 +689,9 @@ const uk = {
     loadError: 'Помилка завантаження',
     createSuccess: 'Партію створено',
     movementSuccess: 'Рух зафіксовано',
+    selectGrainType: 'Оберіть або введіть культуру',
+    quickSelect: 'Швидкий вибір',
+    addCustomGrainType: 'Додати нову культуру',
   },
   hr: {
     employeesTitle: 'Співробітники',

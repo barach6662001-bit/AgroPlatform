@@ -204,6 +204,8 @@ try
             logger.LogError(ex, "An error occurred while applying database migrations.");
             throw; // Fail fast — don't start the app with an inconsistent database
         }
+
+        await DataSeeder.SeedAsync(app.Services);
     }
 
     app.UseMiddleware<ExceptionHandlingMiddleware>();
