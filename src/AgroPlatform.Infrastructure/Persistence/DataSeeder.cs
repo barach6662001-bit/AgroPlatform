@@ -33,7 +33,7 @@ public static class DataSeeder
                 {
                     Name = name,
                     IsDefault = true,
-                    TenantId = null,
+                    TenantId = Guid.Empty,
                 })
                 .ToList();
 
