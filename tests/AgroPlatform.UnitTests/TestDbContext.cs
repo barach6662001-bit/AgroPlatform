@@ -3,6 +3,7 @@ using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.GrainStorage;
+using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Users;
@@ -39,4 +40,7 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
     public DbSet<GrainBatch> GrainBatches => Set<GrainBatch>();
     public DbSet<GrainMovement> GrainMovements => Set<GrainMovement>();
+    public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
+    public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
 }
