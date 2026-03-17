@@ -2,6 +2,7 @@ using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
+using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Users;
@@ -43,6 +44,9 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<LandLease> LandLeases => Set<LandLease>();
     public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
+    public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
+    public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -71,5 +75,8 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<Notification>().HasQueryFilter(n => n.TenantId == _tenantId);
         builder.Entity<LandLease>().HasQueryFilter(l => !l.IsDeleted && l.TenantId == _tenantId);
         builder.Entity<LeasePayment>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
+        builder.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == _tenantId);
+        builder.Entity<WorkLog>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
+        builder.Entity<SalaryPayment>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
     }
 }

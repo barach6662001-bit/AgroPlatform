@@ -27,6 +27,9 @@ import FieldPnl from './pages/Economics/FieldPnl';
 import BudgetPage from './pages/Economics/BudgetPage';
 import ResourceConsumption from './pages/Analytics/ResourceConsumption';
 import FieldEfficiency from './pages/Analytics/FieldEfficiency';
+import EmployeeList from './pages/HR/EmployeeList';
+import WorkLogPage from './pages/HR/WorkLogPage';
+import SalaryPage from './pages/HR/SalaryPage';
 import UsersPage from './pages/Settings/UsersPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
@@ -71,6 +74,9 @@ export default function App() {
             <Route path="/economics/budget" element={<BudgetPage />} />
             <Route path="/analytics/resources" element={<ResourceConsumption />} />
             <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
+            <Route path="/hr/employees" element={<EmployeeList />} />
+            <Route path="/hr/worklogs" element={<WorkLogPage />} />
+            <Route path="/hr/salary" element={<SalaryPage />} />
             <Route path="/settings/users" element={<UsersPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
