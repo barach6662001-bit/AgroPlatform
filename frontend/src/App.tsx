@@ -11,6 +11,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import FieldsList from './pages/Fields/FieldsList';
 import FieldDetail from './pages/Fields/FieldDetail';
+import LeasePage from './pages/Fields/LeasePage';
 import WarehousesList from './pages/Warehouses/WarehousesList';
 import WarehouseItems from './pages/Warehouses/WarehouseItems';
 import StockMovements from './pages/Warehouses/StockMovements';
@@ -53,6 +54,7 @@ export default function App() {
           >
             <Route path="/" element={<Dashboard />} />
             <Route path="/fields" element={<FieldsList />} />
+            <Route path="/fields/leases" element={<LeasePage />} />
             <Route path="/fields/:id" element={<FieldDetail />} />
             <Route path="/warehouses" element={<WarehousesList />} />
             <Route path="/warehouses/items" element={<WarehouseItems />} />

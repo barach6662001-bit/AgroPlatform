@@ -34,4 +34,6 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<GpsTrack> GpsTracks => Set<GpsTrack>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<LandLease> LandLeases => Set<LandLease>();
+    public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
 }
