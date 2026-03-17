@@ -29,6 +29,8 @@ const en: Translations = {
     workLogs: 'Timesheet',
     salary: 'Salary',
     fuelStation: 'Fuel Station',
+    companySettings: 'Company Settings',
+    setup: 'Initial Setup',
   },
   common: {
     cancel: 'Cancel',
@@ -113,6 +115,11 @@ const en: Translations = {
     warehouseOverview: 'Warehouse Overview',
     activityFeed: 'Activity Feed',
     noActivity: 'No recent activity',
+    quickActions: 'Quick Actions',
+    newOperation: 'New Operation',
+    receiveGrain: 'Receive Grain',
+    issueFuel: 'Issue Fuel',
+    addWorkLog: 'Add Timesheet',
   },
   operationTypes: {
     Sowing: 'Sowing',
@@ -725,6 +732,21 @@ const en: Translations = {
     issueSuccess: 'Issue recorded',
     insufficientFuel: 'Insufficient fuel',
     loadError: 'Error loading data',
+  },
+  setup: {
+    title: 'Company Setup',
+    subtitle: 'Fill in basic details once',
+    step1: 'Company',
+    step2: 'Fields',
+    step3: 'Machinery',
+    step4: 'Warehouses',
+    step5: 'Personnel',
+    finish: 'Complete Setup',
+    skip: 'Skip',
+    companyName: 'Company Name',
+    region: 'Region',
+    welcomeTitle: 'Welcome to AgroTech!',
+    welcomeSubtitle: 'Let\'s set up the system. It will take 5 minutes.',
   },
 };
 
