@@ -8,7 +8,7 @@ import {
   InboxOutlined,
   ClockCircleOutlined,
   WarningOutlined,
-  ExclamationCircleOutlined,
+  CloseCircleOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
 import {
@@ -155,8 +155,8 @@ export default function Dashboard() {
 
   // ── Notification icon ─────────────────────────────────────────────────────
   const notifIcon = (type: string) => {
-    if (type === 'warning') return <ExclamationCircleOutlined style={{ color: '#F59E0B', fontSize: 16 }} />;
-    if (type === 'error') return <ExclamationCircleOutlined style={{ color: '#EF4444', fontSize: 16 }} />;
+    if (type === 'warning') return <WarningOutlined style={{ color: '#F59E0B', fontSize: 16 }} />;
+    if (type === 'error') return <CloseCircleOutlined style={{ color: '#EF4444', fontSize: 16 }} />;
     return <InfoCircleOutlined style={{ color: '#3B82F6', fontSize: 16 }} />;
   };
 
@@ -236,7 +236,7 @@ export default function Dashboard() {
               <ToolOutlined />{t.dashboard.cropStatus}
             </div>
             <div style={{ color: '#f0fdf4', fontSize: 32, fontWeight: 700, letterSpacing: '-1px' }}>{Object.keys(data.areaByCrop).length}</div>
-            <div style={{ color: '#86efac', fontSize: 12, marginTop: 4 }}>crops</div>
+            <div style={{ color: '#86efac', fontSize: 12, marginTop: 4 }}>{topCropName !== '—' ? topCropName : t.dashboard.cropTypes}</div>
           </div>
         </Col>
       </Row>
@@ -322,7 +322,7 @@ export default function Dashboard() {
 
       {/* Charts */}
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
-        {areaData.length > 0 && (
+        {costTrendData.length > 0 && (
           <Col xs={24} lg={8}>
             <Card title={t.dashboard.costTrend} style={CARD}>
               <ResponsiveContainer width="100%" height={240}>
@@ -356,13 +356,13 @@ export default function Dashboard() {
           </Col>
         )}
 
-        {operationsData.length > 0 && (
+        {areaData.length > 0 && (
           <Col xs={24} lg={8}>
-            <Card title={t.dashboard.operationsByType}>
+            <Card title={t.dashboard.areaByCrop}>
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
-                  <Pie data={operationsData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                    {operationsData.map((_, index) => (
+                  <Pie data={areaData} dataKey="area" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                    {areaData.map((_, index) => (
                       <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                     ))}
                   </Pie>
@@ -373,7 +373,7 @@ export default function Dashboard() {
           </Col>
         )}
 
-        {operationsData.length === 0 && areaData.length === 0 && costTrendData.length === 0 && (
+        {!hasChartData && (
           <Col span={24}>
             <Card style={CARD}>
               <Typography.Text type="secondary">{t.dashboard.noChartData}</Typography.Text>
