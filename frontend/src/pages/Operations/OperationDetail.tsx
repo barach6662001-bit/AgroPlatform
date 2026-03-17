@@ -249,7 +249,6 @@ export default function OperationDetail() {
             type="primary"
             icon={<CheckCircleOutlined />}
             onClick={() => setCompleteModalOpen(true)}
-            style={{ }}
           >
             {t.operations.completeOperation}
           </Button>

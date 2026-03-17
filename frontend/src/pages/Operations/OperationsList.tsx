@@ -156,7 +156,6 @@ export default function OperationsList() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            style={{ }}
             onClick={() => setModalOpen(true)}
           >
             {t.operations.createOperation}

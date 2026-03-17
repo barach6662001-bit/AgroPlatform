@@ -168,7 +168,6 @@ export default function MachineryList() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            style={{ }}
             onClick={() => setModalOpen(true)}
           >
             {t.machinery.createMachine}

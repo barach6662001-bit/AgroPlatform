@@ -76,7 +76,6 @@ export default function WarehousesList() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            style={{ }}
             onClick={() => setModalOpen(true)}
           >
             {t.warehouses.createWarehouse}

@@ -211,7 +211,6 @@ export default function FuelStation() {
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              style={{ }}
               onClick={() => setTankModalOpen(true)}
             >
               {t.fuel.addTank}
