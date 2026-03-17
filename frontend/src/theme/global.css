@@ -77,6 +77,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Interactive elements — smooth transitions */
+a, button, [role="button"],
+.ant-btn, .ant-menu-item, .ant-menu-submenu-title,
+.ant-tag, .ant-pagination-item {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
 /* ── Micro-animations ──────────────────────────────────────────────────── */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(12px); }
