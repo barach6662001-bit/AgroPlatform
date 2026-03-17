@@ -22,6 +22,10 @@ const uk = {
     budget: 'Бюджет',
     profile: 'Профіль',
     leases: 'Орендні платежі',
+    hr: 'Персонал',
+    employees: 'Співробітники',
+    workLogs: 'Табель',
+    salary: 'Зарплата',
   },
   common: {
     cancel: 'Скасувати',
@@ -37,6 +41,11 @@ const uk = {
     notes: 'Нотатки',
     date: 'Дата',
     required: "Обов'язкове поле",
+    loading: 'Завантаження...',
+    noData: 'Немає даних',
+    status: 'Статус',
+    active: 'Активний',
+    inactive: 'Неактивний',
   },
   auth: {
     login: 'Увійти',

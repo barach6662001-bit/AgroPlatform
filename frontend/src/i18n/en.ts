@@ -24,6 +24,10 @@ const en: Translations = {
     budget: 'Budget',
     profile: 'Profile',
     leases: 'Lease Payments',
+    hr: 'Personnel',
+    employees: 'Employees',
+    workLogs: 'Timesheet',
+    salary: 'Salary',
   },
   common: {
     cancel: 'Cancel',
@@ -39,6 +43,11 @@ const en: Translations = {
     notes: 'Notes',
     date: 'Date',
     required: 'Required field',
+    loading: 'Loading...',
+    noData: 'No data',
+    status: 'Status',
+    active: 'Active',
+    inactive: 'Inactive',
   },
   auth: {
     login: 'Log In',

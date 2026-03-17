@@ -1942,6 +1942,37 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Navigation("StockMoves");
                 });
+
+            modelBuilder.Entity("AgroPlatform.Domain.HR.Employee", b =>
+                {
+                    b.Navigation("WorkLogs");
+
+                    b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.HR.WorkLog", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.HR.Employee", "Employee")
+                        .WithMany("WorkLogs")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_WorkLogs_Employees")
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.HR.SalaryPayment", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.HR.Employee", "Employee")
+                        .WithMany("Payments")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_SalaryPayments_Employees")
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
 #pragma warning restore 612, 618
         }
     }
