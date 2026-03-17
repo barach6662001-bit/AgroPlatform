@@ -34,6 +34,9 @@ public class FieldConfiguration : IEntityTypeConfiguration<Field>
         builder.Property(f => f.CurrentCrop)
             .HasConversion<string>();
 
+        builder.Property(f => f.OwnershipType)
+            .HasConversion<int>();
+
         builder.HasMany(f => f.CropHistory)
             .WithOne(h => h.Field)
             .HasForeignKey(h => h.FieldId)
