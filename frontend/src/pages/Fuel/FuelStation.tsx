@@ -12,7 +12,9 @@ import {
   createFuelIssue,
   getFuelTransactions,
 } from '../../api/fuel';
+import { getMachines } from '../../api/machinery';
 import type { FuelTankDto, FuelTransactionDto } from '../../types/fuel';
+import type { MachineDto } from '../../types/machinery';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 
@@ -34,6 +36,7 @@ export default function FuelStation() {
   const { t } = useTranslation();
   const [tanks, setTanks] = useState<FuelTankDto[]>([]);
   const [transactions, setTransactions] = useState<FuelTransactionDto[]>([]);
+  const [machines, setMachines] = useState<MachineDto[]>([]);
   const [loadingTanks, setLoadingTanks] = useState(true);
   const [loadingTx, setLoadingTx] = useState(true);
 
@@ -66,6 +69,7 @@ export default function FuelStation() {
   useEffect(() => {
     loadTanks();
     loadTransactions();
+    getMachines({ page: 1, pageSize: 200 }).then(data => setMachines(data.items)).catch(() => {});
   }, []);
 
   const handleCreateTank = async () => {
@@ -401,6 +405,29 @@ export default function FuelStation() {
               ))}
             </Select>
           </Form.Item>
+          <Form.Item name="machineId" label={t.fuel.machine}>
+            <Select
+              allowClear
+              showSearch
+              placeholder={t.fuel.selectMachine}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
+              }
+              options={machines.map(m => ({
+                value: m.id,
+                label: m.name,
+              }))}
+              onChange={(val) => {
+                const machine = machines.find(m => m.id === val);
+                if (machine?.assignedDriverName) {
+                  issueForm.setFieldsValue({ driverName: machine.assignedDriverName });
+                  message.info(t.fuel.driverAutoFilled);
+                } else if (!val) {
+                  issueForm.setFieldsValue({ driverName: undefined });
+                }
+              }}
+            />
+          </Form.Item>
           <Form.Item name="quantityLiters" label={t.fuel.quantityLiters} rules={[{ required: true, message: t.common.required }]}>
             <InputNumber min={0.01} step={1} style={{ width: '100%' }} />
           </Form.Item>
@@ -411,7 +438,7 @@ export default function FuelStation() {
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="driverName" label={t.fuel.driver}>
-            <Input />
+            <Input placeholder={t.fuel.driverNamePlaceholder} />
           </Form.Item>
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />

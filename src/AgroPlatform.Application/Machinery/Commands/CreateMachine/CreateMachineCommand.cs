@@ -11,5 +11,7 @@ public record CreateMachineCommand(
     string? Model,
     int? Year,
     FuelType FuelType,
-    decimal? FuelConsumptionPerHour
+    decimal? FuelConsumptionPerHour,
+    Guid? AssignedDriverId,
+    string? AssignedDriverName
 ) : IRequest<Guid>;

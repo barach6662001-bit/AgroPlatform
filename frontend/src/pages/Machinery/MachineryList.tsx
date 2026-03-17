@@ -5,10 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { getMachines, createMachine, updateMachine } from '../../api/machinery';
 import type { MachineDto, MachineryType, MachineryStatus } from '../../types/machinery';
 import type { PaginatedResult } from '../../types/common';
+import type { EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { useFleetHub } from '../../hooks/useFleetHub';
+import { getEmployees } from '../../api/hr';
 
 const statusColors: Record<string, string> = {
   Active: 'success', UnderRepair: 'warning', Decommissioned: 'error',
@@ -36,6 +38,12 @@ export default function MachineryList() {
 
   const canCreate = hasRole(['Administrator', 'Manager']);
   const canEdit = hasRole(['Administrator', 'Manager']);
+
+  const [employees, setEmployees] = useState<EmployeeDto[]>([]);
+
+  useEffect(() => {
+    getEmployees(true).then(setEmployees).catch(() => {});
+  }, []);
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
@@ -117,6 +125,12 @@ export default function MachineryList() {
     {
       title: t.machinery.status, dataIndex: 'status', key: 'status',
       render: (v: MachineryStatus) => <Badge status={statusColors[v] as 'success' | 'warning' | 'error'} text={t.machineryStatuses[v as keyof typeof t.machineryStatuses] || v} />,
+    },
+    {
+      title: t.machinery.assignedDriver,
+      dataIndex: 'assignedDriverName',
+      key: 'assignedDriverName',
+      render: (v?: string) => v || <span style={{ color: '#8b949e' }}>{t.machinery.noDriver}</span>,
     },
     {
       title: t.machinery.actions, key: 'actions',
@@ -224,6 +238,28 @@ export default function MachineryList() {
               options={Object.entries(t.fuelTypes).map(([k, v]) => ({ value: k, label: v }))}
             />
           </Form.Item>
+          <Form.Item name="assignedDriverId" label={t.machinery.assignedDriver}>
+            <Select
+              allowClear
+              showSearch
+              placeholder={t.machinery.selectDriver}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
+              }
+              options={employees.map(e => ({
+                value: e.id,
+                label: `${e.lastName} ${e.firstName}`,
+              }))}
+              onChange={(_val, option) => {
+                form.setFieldsValue({
+                  assignedDriverName: option ? (option as { label: string }).label : null,
+                });
+              }}
+            />
+          </Form.Item>
+          <Form.Item name="assignedDriverName" hidden>
+            <Input />
+          </Form.Item>
         </Form>
       </Modal>
 
@@ -271,6 +307,28 @@ export default function MachineryList() {
           </Form.Item>
           <Form.Item name="fuelConsumptionPerHour" label={t.machinery.fuelConsumption}>
             <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="assignedDriverId" label={t.machinery.assignedDriver}>
+            <Select
+              allowClear
+              showSearch
+              placeholder={t.machinery.selectDriver}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
+              }
+              options={employees.map(e => ({
+                value: e.id,
+                label: `${e.lastName} ${e.firstName}`,
+              }))}
+              onChange={(_val, option) => {
+                editForm.setFieldsValue({
+                  assignedDriverName: option ? (option as { label: string }).label : null,
+                });
+              }}
+            />
+          </Form.Item>
+          <Form.Item name="assignedDriverName" hidden>
+            <Input />
           </Form.Item>
         </Form>
       </Modal>

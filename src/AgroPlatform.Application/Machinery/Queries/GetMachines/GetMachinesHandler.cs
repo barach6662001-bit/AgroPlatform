@@ -52,7 +52,9 @@ public class GetMachinesHandler : IRequestHandler<GetMachinesQuery, PaginatedRes
                 Year = m.Year,
                 Status = m.Status,
                 FuelType = m.FuelType,
-                FuelConsumptionPerHour = m.FuelConsumptionPerHour
+                FuelConsumptionPerHour = m.FuelConsumptionPerHour,
+                AssignedDriverId = m.AssignedDriverId,
+                AssignedDriverName = m.AssignedDriverName,
             })
             .ToListAsync(cancellationToken);
 

@@ -11,5 +11,7 @@ public record UpdateMachineCommand(
     int? Year,
     MachineryStatus Status,
     FuelType FuelType,
-    decimal? FuelConsumptionPerHour
+    decimal? FuelConsumptionPerHour,
+    Guid? AssignedDriverId,
+    string? AssignedDriverName
 ) : IRequest;
