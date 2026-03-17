@@ -7,12 +7,8 @@ public class Employee : AuditableEntity
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string? Position { get; set; }
-    public string SalaryType { get; set; } = "Hourly"; // "Hourly" or "Piecework"
-    public decimal? HourlyRate { get; set; }
-    public decimal? PieceworkRate { get; set; }
-    public bool IsActive { get; set; } = true;
-    public string? Notes { get; set; }
-
-    public ICollection<WorkLog> WorkLogs { get; set; } = new List<WorkLog>();
-    public ICollection<SalaryPayment> Payments { get; set; } = new List<SalaryPayment>();
+    public string? Department { get; set; }
+    public DateTime HireDate { get; set; }
+    public decimal Salary { get; set; }
+    public string Currency { get; set; } = "UAH";
 }
