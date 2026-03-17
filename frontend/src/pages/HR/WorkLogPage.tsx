@@ -127,7 +127,7 @@ export default function WorkLogPage() {
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setModalOpen(true)}
-              style={{ background: '#16a34a', borderColor: '#16a34a' }}
+              style={{ background: '#238636', borderColor: '#238636' }}
             >
               {t.hr.addWorkLog}
             </Button>
@@ -170,7 +170,7 @@ export default function WorkLogPage() {
               <strong>{t.hr.totalAccruedLabel}:</strong>
             </Table.Summary.Cell>
             <Table.Summary.Cell index={4}>
-              <strong style={{ color: '#4ade80' }}>{totalAccrued.toFixed(2)} ₴</strong>
+              <strong style={{ color: '#3fb950' }}>{totalAccrued.toFixed(2)} ₴</strong>
             </Table.Summary.Cell>
             <Table.Summary.Cell index={5} />
           </Table.Summary.Row>

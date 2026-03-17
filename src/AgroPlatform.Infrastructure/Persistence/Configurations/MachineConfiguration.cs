@@ -39,6 +39,9 @@ public class MachineConfiguration : IEntityTypeConfiguration<Machine>
         builder.Property(m => m.FuelConsumptionPerHour)
             .HasPrecision(10, 2);
 
+        builder.Property(m => m.AssignedDriverName)
+            .HasMaxLength(200);
+
         builder.HasMany(m => m.WorkLogs)
             .WithOne(w => w.Machine)
             .HasForeignKey(w => w.MachineId)

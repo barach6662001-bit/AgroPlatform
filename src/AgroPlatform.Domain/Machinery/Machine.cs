@@ -18,6 +18,9 @@ public class Machine : AuditableEntity
     public DateTime? LastMaintenanceDate { get; set; }
     public decimal? MaintenanceIntervalHours { get; set; }
 
+    public Guid? AssignedDriverId { get; set; }
+    public string? AssignedDriverName { get; set; }
+
     public ICollection<MachineWorkLog> WorkLogs { get; set; } = new List<MachineWorkLog>();
     public ICollection<FuelLog> FuelLogs { get; set; } = new List<FuelLog>();
     public ICollection<MaintenanceRecord> MaintenanceRecords { get; set; } = new List<MaintenanceRecord>();
