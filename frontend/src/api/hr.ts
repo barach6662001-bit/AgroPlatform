@@ -16,6 +16,12 @@ export const createEmployee = (data: {
   notes?: string;
 }) => apiClient.post<{ id: string }>('/api/employees', data).then((r) => r.data);
 
+export const updateEmployee = (id: string, data: Partial<EmployeeDto>) =>
+  apiClient.put(`/api/employees/${id}`, data).then((r) => r.data);
+
+export const deleteEmployee = (id: string) =>
+  apiClient.delete(`/api/employees/${id}`).then((r) => r.data);
+
 export const getWorkLogs = (params: { employeeId?: string; month?: number; year?: number }) =>
   apiClient.get<WorkLogDto[]>('/api/worklogs', { params }).then((r) => r.data);
 
