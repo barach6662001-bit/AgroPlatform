@@ -190,7 +190,7 @@ export default function GrainBatchList() {
       render: (v: string) => dayjs(v).format('DD.MM.YYYY'),
     },
     {
-      title: t.grain.ownershipType,
+      title: t.grain.movementType,
       dataIndex: 'movementType',
       key: 'movementType',
       render: (v: string) => (
@@ -299,7 +299,7 @@ export default function GrainBatchList() {
         confirmLoading={savingMovement}
       >
         <Form form={movementForm} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="movementType" label={t.grain.ownershipType} rules={[{ required: true, message: t.common.required }]}>
+          <Form.Item name="movementType" label={t.grain.movementType} rules={[{ required: true, message: t.common.required }]}>
             <Select options={[
               { value: 'In', label: t.grain.movementIn },
               { value: 'Out', label: t.grain.movementOut },

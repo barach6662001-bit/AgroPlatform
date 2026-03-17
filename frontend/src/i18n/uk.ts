@@ -644,6 +644,7 @@ const uk = {
     movementIn: 'Надходження',
     movementOut: 'Відвантаження',
     movementDate: 'Дата',
+    movementType: 'Тип руху',
     reason: 'Причина',
     ownGrain: 'Власне',
     consignment: 'Реалізація',

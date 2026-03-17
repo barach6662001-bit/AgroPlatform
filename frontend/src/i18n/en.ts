@@ -646,6 +646,7 @@ const en: Translations = {
     movementIn: 'Incoming',
     movementOut: 'Outgoing',
     movementDate: 'Date',
+    movementType: 'Movement Type',
     reason: 'Reason',
     ownGrain: 'Own',
     consignment: 'Consignment',
