@@ -27,6 +27,10 @@ export const addLeasePayment = (
     amount: number;
     paymentType: string;
     paymentDate: string;
+    paymentMethod?: string;
+    grainBatchId?: string;
+    grainQuantityTons?: number;
+    grainPricePerTon?: number;
     notes?: string;
   }
 ) => apiClient.post<{ id: string }>(`/api/land-leases/${leaseId}/payments`, data).then((r) => r.data);

@@ -17,6 +17,22 @@ public class LeasePaymentConfiguration : IEntityTypeConfiguration<LeasePayment>
             .HasMaxLength(20)
             .HasDefaultValue("Payment");
 
+        builder.Property(p => p.PaymentMethod)
+            .HasMaxLength(10)
+            .HasDefaultValue("Cash");
+
+        builder.Property(p => p.GrainQuantityTons)
+            .HasPrecision(18, 4);
+
+        builder.Property(p => p.GrainPricePerTon)
+            .HasPrecision(18, 2);
+
+        builder.HasOne(p => p.GrainBatch)
+            .WithMany()
+            .HasForeignKey(p => p.GrainBatchId)
+            .HasConstraintName("FK_LeasePayments_GrainBatches")
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasIndex(p => p.LandLeaseId)
             .HasDatabaseName("IX_LeasePayments_LandLeaseId");
     }

@@ -34,9 +34,10 @@ public class GrainStorageController : ControllerBase
         [FromQuery] GrainOwnershipType? ownershipType,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
+        [FromQuery] decimal? minQuantity = null,
         CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetGrainBatchesQuery(storageId, ownershipType, page, pageSize), cancellationToken);
+        var result = await _sender.Send(new GetGrainBatchesQuery(storageId, ownershipType, page, pageSize, minQuantity), cancellationToken);
         return Ok(result);
     }
 
