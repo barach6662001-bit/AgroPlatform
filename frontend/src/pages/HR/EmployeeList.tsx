@@ -154,6 +154,7 @@ export default function EmployeeList() {
 
   return (
     <div>
+      {/* button styles handled by CSS */}
       <PageHeader
         title={t.hr.employeesTitle}
         actions={
@@ -162,7 +163,6 @@ export default function EmployeeList() {
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setModalOpen(true)}
-              style={{ background: '#238636', borderColor: '#238636' }}
             >
               {t.hr.addEmployee}
             </Button>
