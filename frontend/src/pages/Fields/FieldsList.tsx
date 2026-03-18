@@ -28,6 +28,9 @@ export default function FieldsList() {
   const { t } = useTranslation();
   const { hasRole } = useRole();
 
+  const cropOptions = (['Wheat', 'Corn', 'Sunflower', 'Soybean', 'Barley', 'Rapeseed', 'SugarBeet', 'Fallow', 'Other'] as const)
+    .map(v => ({ value: v, label: t.crops[v] }));
+
   // Cadastre auto-fill for create form
   const [cadastreLoading, setCadastreLoading] = useState(false);
   const [cadastreArea, setCadastreArea] = useState<number | null>(null);
@@ -172,7 +175,7 @@ export default function FieldsList() {
             <Button
               size="small"
               icon={<EditOutlined />}
-              onClick={() => { setEditRecord(record); editForm.setFieldsValue(record); setEditModalOpen(true); }}
+              onClick={() => { setEditRecord(record); editForm.setFieldsValue({ ...record, currentCrop: record.currentCrop ?? undefined, currentCropYear: record.currentCropYear ?? new Date().getFullYear() }); setEditModalOpen(true); }}
             />
           )}
           {canDelete && (
@@ -277,6 +280,17 @@ export default function FieldsList() {
               <Select.Option value={2}>{t.fields.ownershipShareLease}</Select.Option>
             </Select>
           </Form.Item>
+          <Form.Item name="currentCrop" label={t.fields.currentCrop}>
+            <Select allowClear placeholder={t.fields.notSeeded} options={cropOptions} />
+          </Form.Item>
+          <Form.Item name="currentCropYear" label={t.fields.cropYear} initialValue={new Date().getFullYear()}>
+            <InputNumber
+              min={2000}
+              max={new Date().getFullYear() + 1}
+              style={{ width: '100%' }}
+              placeholder={String(new Date().getFullYear())}
+            />
+          </Form.Item>
           <Form.Item name="notes" label={t.fields.notes}>
             <Input.TextArea rows={3} />
           </Form.Item>
@@ -321,6 +335,17 @@ export default function FieldsList() {
               <Select.Option value={1}>{t.fields.ownershipLease}</Select.Option>
               <Select.Option value={2}>{t.fields.ownershipShareLease}</Select.Option>
             </Select>
+          </Form.Item>
+          <Form.Item name="currentCrop" label={t.fields.currentCrop}>
+            <Select allowClear placeholder={t.fields.notSeeded} options={cropOptions} />
+          </Form.Item>
+          <Form.Item name="currentCropYear" label={t.fields.cropYear}>
+            <InputNumber
+              min={2000}
+              max={new Date().getFullYear() + 1}
+              style={{ width: '100%' }}
+              placeholder={String(new Date().getFullYear())}
+            />
           </Form.Item>
           <Form.Item name="notes" label={t.fields.notes}>
             <Input.TextArea rows={3} />
