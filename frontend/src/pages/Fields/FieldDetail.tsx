@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined } from '@ant-design/icons';
-import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry } from '../../api/fields';
+import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry, updateField } from '../../api/fields';
 import { getLeases, createLease, addLeasePayment } from '../../api/leases';
 import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } from '../../types/field';
 import type { LandLeaseDto } from '../../types/lease';
@@ -111,6 +111,46 @@ export default function FieldDetail() {
       message.success(t.fields.cadastreLoaded);
       setLoading(true);
       load();
+
+      // Check area mismatch
+      const props = feature.properties;
+      const rawCadastreArea: number | null = props?.area ?? props?.area_ha ?? null;
+      if (rawCadastreArea) {
+        const parsedCadastreArea = parseFloat(rawCadastreArea.toFixed(4));
+        const currentArea = field.areaHectares;
+        const diff = Math.abs(parsedCadastreArea - Number(currentArea));
+        if (diff > 0.01) {
+          Modal.confirm({
+            title: t.fields.areaMismatchTitle,
+            content: (
+              <div>
+                <p>{t.fields.currentArea}: <strong>{currentArea} га</strong></p>
+                <p>{t.fields.cadastreArea}: <strong>{parsedCadastreArea} га</strong></p>
+                <p>{t.fields.areaMismatchQuestion}</p>
+              </div>
+            ),
+            okText: t.fields.updateArea,
+            cancelText: t.fields.keepCurrentArea,
+            onOk: async () => {
+              try {
+                await updateField(id!, {
+                  id: id!,
+                  name: field.name,
+                  cadastralNumber: field.cadastralNumber ?? undefined,
+                  areaHectares: parsedCadastreArea,
+                  soilType: field.soilType ?? undefined,
+                  notes: field.notes ?? undefined,
+                  ownershipType: field.ownershipType,
+                });
+                setField(prev => prev ? { ...prev, areaHectares: parsedCadastreArea } : prev);
+                message.success(t.fields.areaUpdated);
+              } catch {
+                message.error(t.fields.fieldUpdateError);
+              }
+            },
+          });
+        }
+      }
     } catch (error) {
       console.error('Cadastre loading failed:', error);
       message.error(t.fields.cadastreError);

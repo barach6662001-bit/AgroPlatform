@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, InputNumber, Segmented, Select } from 'antd';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
 import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getFields, deleteField, createField, updateField } from '../../api/fields';
@@ -27,6 +27,45 @@ export default function FieldsList() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { hasRole } = useRole();
+
+  // Cadastre auto-fill for create form
+  const [cadastreLoading, setCadastreLoading] = useState(false);
+  const [cadastreArea, setCadastreArea] = useState<number | null>(null);
+  const cadastreTimer = useRef<ReturnType<typeof setTimeout>>();
+  const handleCadastralNumberChange = useCallback((value: string) => {
+    clearTimeout(cadastreTimer.current);
+    setCadastreArea(null);
+    if (!value || value.length < 10) return;
+    // Validate cadastral number format: digits and colons only
+    const cadnum = value.replace(/\s/g, '');
+    if (!/^[\d:]+$/.test(cadnum)) return;
+    cadastreTimer.current = setTimeout(async () => {
+      setCadastreLoading(true);
+      try {
+        const url = `https://kadastr.live/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kadastr:cadaster_parcel&outputFormat=application/json&CQL_FILTER=cadnum='${encodeURIComponent(cadnum)}'`;
+        const response = await fetch(url);
+        if (!response.ok) return;
+        const geojson = await response.json();
+        if (geojson.features?.length > 0) {
+          const props = geojson.features[0].properties;
+          const rawArea: number | null = props?.area ?? props?.area_ha ?? null;
+          if (rawArea) {
+            const parsedArea = parseFloat(rawArea.toFixed(4));
+            setCadastreArea(parsedArea);
+            const currentArea = form.getFieldValue('areaHectares');
+            if (!currentArea || currentArea === 0) {
+              form.setFieldsValue({ areaHectares: parsedArea });
+              message.info(t.fields.areaAutoFilled);
+            }
+          }
+        }
+      } catch {
+        // silently ignore — cadastre unavailable
+      } finally {
+        setCadastreLoading(false);
+      }
+    }, 800);
+  }, [form, t]);
 
   const canCreate = hasRole(['Administrator', 'Manager']);
   const canDelete = hasRole(['Administrator', 'Manager']);
@@ -196,7 +235,7 @@ export default function FieldsList() {
         title={t.fields.createField}
         open={modalOpen}
         onOk={handleCreate}
-        onCancel={() => { setModalOpen(false); form.resetFields(); }}
+        onCancel={() => { setModalOpen(false); form.resetFields(); setCadastreArea(null); }}
         okText={t.common.create}
         cancelText={t.common.cancel}
         confirmLoading={saving}
@@ -206,10 +245,27 @@ export default function FieldsList() {
             <Input />
           </Form.Item>
           <Form.Item name="cadastralNumber" label={t.fields.cadastralNumber}>
-            <Input />
+            <Input
+              placeholder="1810400000:00:022:0005"
+              onChange={e => handleCadastralNumberChange(e.target.value)}
+              suffix={cadastreLoading ? <Spin size="small" /> : <SearchOutlined style={{ color: '#484f58' }} />}
+            />
           </Form.Item>
-          <Form.Item name="areaHectares" label={t.fields.area} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+          <Form.Item
+            name="areaHectares"
+            label={
+              <span>
+                {t.fields.area}
+                {cadastreArea && (
+                  <span style={{ color: '#484f58', fontSize: 12, marginLeft: 8 }}>
+                    ({t.fields.fromCadastre}: {cadastreArea} га)
+                  </span>
+                )}
+              </span>
+            }
+            rules={[{ required: true, message: t.common.required }]}
+          >
+            <InputNumber min={0} step={0.01} precision={4} style={{ width: '100%' }} addonAfter="га" />
           </Form.Item>
           <Form.Item name="soilType" label={t.fields.soilType}>
             <Input />
