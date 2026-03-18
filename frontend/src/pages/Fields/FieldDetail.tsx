@@ -104,58 +104,36 @@ export default function FieldDetail() {
     setCadastreLoading(true);
     try {
       const cadnum = field.cadastralNumber.replace(/\s/g, '');
-      const response = await apiClient.get('/api/cadastre/parcel', { params: { cadnum } });
+      const response = await apiClient.get(`/api/cadastre/parcel`, { params: { cadnum } });
       const data = response.data;
 
-      if (!data.found) {
+      if (!data.found || !data.geometry) {
         message.warning(t.fields.cadastreNotFound);
         return;
       }
 
-      // Update area if it differs
-      if (data.area) {
-        const cadastreArea = parseFloat(data.area);
-        if (!isNaN(cadastreArea) && Math.abs(cadastreArea - field.areaHectares) > 0.01) {
+      const geoJsonString = JSON.stringify(data.geometry);
+      setCurrentGeoJson(geoJsonString);
+      await updateFieldGeometry(id!, { geoJson: geoJsonString });
+      message.success(t.fields.cadastreLoaded);
+      setField(prev => prev ? { ...prev, geoJson: geoJsonString } : prev);
+
+      // Offer area update when cadastre reports a different area
+      if (data.area !== null && data.area !== undefined) {
+        const cadastreAreaHa = Number(data.area);
+        if (!isNaN(cadastreAreaHa) && Math.abs(cadastreAreaHa - field.areaHectares) > 0.01) {
           Modal.confirm({
             title: t.fields.areaMismatchTitle,
-            content: (
-              <div>
-                <p>{t.fields.currentArea}: <strong>{field.areaHectares} га</strong></p>
-                <p>{t.fields.cadastreArea}: <strong>{cadastreArea} га</strong></p>
-                <p>{t.fields.areaMismatchQuestion}</p>
-              </div>
-            ),
+            content: `${t.fields.cadastreArea}: ${cadastreAreaHa.toFixed(2)} га. ${t.fields.areaMismatchQuestion}`,
             okText: t.fields.updateArea,
             cancelText: t.fields.keepCurrentArea,
             onOk: async () => {
-              await updateField(field.id, { areaHectares: cadastreArea });
-              setField(prev => prev ? { ...prev, areaHectares: cadastreArea } : prev);
+              await updateField(id!, { areaHectares: cadastreAreaHa });
+              setField(prev => prev ? { ...prev, areaHectares: cadastreAreaHa } : prev);
               message.success(t.fields.areaUpdated);
             },
           });
         }
-      }
-
-      // Show additional cadastre info if available
-      if (data.ownership || data.purpose || data.address) {
-        message.info(`${t.fields.cadastreInfo}: ${data.area ?? '?'} га`);
-
-        const infoText = [
-          data.ownership && `Власність: ${data.ownership}`,
-          data.purpose && `Призначення: ${data.purpose}`,
-          data.address && `Адреса: ${data.address}`,
-        ].filter(Boolean).join('\n');
-
-        if (infoText) {
-          Modal.info({
-            title: t.fields.cadastreInfo,
-            content: <pre style={{ whiteSpace: 'pre-wrap' }}>{infoText}</pre>,
-          });
-        }
-      } else if (!data.area) {
-        message.warning(t.fields.cadastreNotFound);
-      } else {
-        message.info(`${t.fields.cadastreInfo}: ${data.area} га`);
       }
     } catch (error) {
       console.error('Cadastre loading failed:', error);

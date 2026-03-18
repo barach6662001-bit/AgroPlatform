@@ -15,4 +15,6 @@ public class FieldHarvest : AuditableEntity
     public decimal? TotalRevenue { get; set; }
     public DateTime HarvestDate { get; set; }
     public string? Notes { get; set; }
+    public bool SyncedFromGrainStorage { get; set; } = false;
+    public Guid? GrainBatchId { get; set; }
 }
