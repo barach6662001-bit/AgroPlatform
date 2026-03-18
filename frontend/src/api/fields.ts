@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload } from '../types/field';
+import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto } from '../types/field';
 import type { PaginatedResult } from '../types/common';
 
 export const getFields = (params?: { page?: number; pageSize?: number; search?: string; ownershipType?: number[] }) =>
@@ -31,4 +31,44 @@ export const deleteRotationPlan = (id: string) =>
 
 export const updateFieldGeometry = (id: string, data: FieldGeometryPayload) =>
   apiClient.put<void>(`/api/fields/${id}/geometry`, data).then((r) => r.data);
+
+// Seedings
+export const getFieldSeedings = (fieldId: string, year?: number) =>
+  apiClient.get<FieldSeedingDto[]>(`/api/fields/${fieldId}/seedings`, { params: year ? { year } : undefined }).then((r) => r.data);
+
+export const createFieldSeeding = (fieldId: string, data: Omit<FieldSeedingDto, 'id'>) =>
+  apiClient.post(`/api/fields/${fieldId}/seedings`, data).then((r) => r.data);
+
+export const deleteFieldSeeding = (fieldId: string, id: string) =>
+  apiClient.delete(`/api/fields/${fieldId}/seedings/${id}`);
+
+// Fertilizers
+export const getFieldFertilizers = (fieldId: string, year?: number) =>
+  apiClient.get<FieldFertilizerDto[]>(`/api/fields/${fieldId}/fertilizers`, { params: year ? { year } : undefined }).then((r) => r.data);
+
+export const createFieldFertilizer = (fieldId: string, data: Omit<FieldFertilizerDto, 'id'>) =>
+  apiClient.post(`/api/fields/${fieldId}/fertilizers`, data).then((r) => r.data);
+
+export const deleteFieldFertilizer = (fieldId: string, id: string) =>
+  apiClient.delete(`/api/fields/${fieldId}/fertilizers/${id}`);
+
+// Protections
+export const getFieldProtections = (fieldId: string, year?: number) =>
+  apiClient.get<FieldProtectionDto[]>(`/api/fields/${fieldId}/protections`, { params: year ? { year } : undefined }).then((r) => r.data);
+
+export const createFieldProtection = (fieldId: string, data: Omit<FieldProtectionDto, 'id'>) =>
+  apiClient.post(`/api/fields/${fieldId}/protections`, data).then((r) => r.data);
+
+export const deleteFieldProtection = (fieldId: string, id: string) =>
+  apiClient.delete(`/api/fields/${fieldId}/protections/${id}`);
+
+// Harvests
+export const getFieldHarvests = (fieldId: string, year?: number) =>
+  apiClient.get<FieldHarvestDto[]>(`/api/fields/${fieldId}/harvests`, { params: year ? { year } : undefined }).then((r) => r.data);
+
+export const createFieldHarvest = (fieldId: string, data: Omit<FieldHarvestDto, 'id' | 'yieldTonsPerHa' | 'totalRevenue'>) =>
+  apiClient.post(`/api/fields/${fieldId}/harvests`, data).then((r) => r.data);
+
+export const deleteFieldHarvest = (fieldId: string, id: string) =>
+  apiClient.delete(`/api/fields/${fieldId}/harvests/${id}`);
 

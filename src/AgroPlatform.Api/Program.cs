@@ -106,6 +106,7 @@ try
         // Automatically document common ProblemDetails error responses
         options.OperationFilter<ProblemDetailsOperationFilter>();
     });
+    builder.Services.AddHttpClient();
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
 

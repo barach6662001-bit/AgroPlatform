@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker } from 'antd';
+import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined } from '@ant-design/icons';
 import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry, updateField } from '../../api/fields';
 import { getLeases, createLease, addLeasePayment } from '../../api/leases';
@@ -10,6 +10,10 @@ import PageHeader from '../../components/PageHeader';
 import FieldDrawMap from '../../components/Map/FieldDrawMap';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import FieldSeedingTab from './FieldSeedingTab';
+import FieldFertilizerTab from './FieldFertilizerTab';
+import FieldProtectionTab from './FieldProtectionTab';
+import FieldHarvestTab from './FieldHarvestTab';
 
 export default function FieldDetail() {
   const { id } = useParams<{ id: string }>();
@@ -92,12 +96,15 @@ export default function FieldDetail() {
   };
 
   const handleLoadFromCadastre = async () => {
-    if (!field || !field.cadastralNumber) return;
+    if (!field?.cadastralNumber) {
+      message.warning(t.fields.noCadastralNumber);
+      return;
+    }
     setCadastreLoading(true);
     try {
-      const url = `https://kadastr.live/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kadastr:cadaster_parcel&outputFormat=application/json&CQL_FILTER=cadnum='${encodeURIComponent(field.cadastralNumber)}'`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+      const cadnum = field.cadastralNumber.replace(/\s/g, '');
+      const response = await fetch(`/api/cadastre/parcel?cadnum=${encodeURIComponent(cadnum)}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const geojson = await response.json();
 
       if (!geojson.features || geojson.features.length === 0) {
@@ -105,52 +112,17 @@ export default function FieldDetail() {
         return;
       }
 
-      const feature = geojson.features[0];
-      const geometryJson = JSON.stringify(feature.geometry);
-      await updateFieldGeometry(id!, { geoJson: geometryJson });
-      message.success(t.fields.cadastreLoaded);
-      setLoading(true);
-      load();
-
-      // Check area mismatch
-      const props = feature.properties;
-      const rawCadastreArea: number | null = props?.area ?? props?.area_ha ?? null;
-      if (rawCadastreArea) {
-        const parsedCadastreArea = parseFloat(rawCadastreArea.toFixed(4));
-        const currentArea = field.areaHectares;
-        const diff = Math.abs(parsedCadastreArea - Number(currentArea));
-        if (diff > 0.01) {
-          Modal.confirm({
-            title: t.fields.areaMismatchTitle,
-            content: (
-              <div>
-                <p>{t.fields.currentArea}: <strong>{currentArea} га</strong></p>
-                <p>{t.fields.cadastreArea}: <strong>{parsedCadastreArea} га</strong></p>
-                <p>{t.fields.areaMismatchQuestion}</p>
-              </div>
-            ),
-            okText: t.fields.updateArea,
-            cancelText: t.fields.keepCurrentArea,
-            onOk: async () => {
-              try {
-                await updateField(id!, {
-                  id: id!,
-                  name: field.name,
-                  cadastralNumber: field.cadastralNumber ?? undefined,
-                  areaHectares: parsedCadastreArea,
-                  soilType: field.soilType ?? undefined,
-                  notes: field.notes ?? undefined,
-                  ownershipType: field.ownershipType,
-                });
-                setField(prev => prev ? { ...prev, areaHectares: parsedCadastreArea } : prev);
-                message.success(t.fields.areaUpdated);
-              } catch {
-                message.error(t.fields.fieldUpdateError);
-              }
-            },
-          });
-        }
+      const geometry = geojson.features[0].geometry;
+      if (!geometry) {
+        message.warning(t.fields.cadastreNoGeometry);
+        return;
       }
+
+      const geoJsonString = JSON.stringify(geometry);
+      setCurrentGeoJson(geoJsonString);
+      await updateFieldGeometry(id!, { geoJson: geoJsonString });
+      message.success(t.fields.cadastreLoaded);
+      setField(prev => prev ? { ...prev, geoJson: geoJsonString } : prev);
     } catch (error) {
       console.error('Cadastre loading failed:', error);
       message.error(t.fields.cadastreError);
@@ -256,152 +228,186 @@ export default function FieldDetail() {
         <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/fields')}>
           {t.fields.backToList}
         </Button>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setAssignModalOpen(true)}>
-          {t.fields.assignCrop}
-        </Button>
-        <Button icon={<PlusOutlined />} onClick={() => setPlanModalOpen(true)}>
-          {t.fields.addRotationPlan}
-        </Button>
       </Space>
       <PageHeader title={field.name} subtitle={t.fields.areaSubtitle.replace('{{area}}', field.areaHectares.toFixed(2))} />
 
-      <Row gutter={[16, 16]}>
-        <Col xs={24} lg={12}>
-          <Card title={t.fields.fieldInfo}>
-            <Descriptions column={1} bordered>
-              <Descriptions.Item label={t.fields.cadastralNumber}>{field.cadastralNumber || '—'}</Descriptions.Item>
-              <Descriptions.Item label={t.fields.area}>{field.areaHectares.toFixed(2)}</Descriptions.Item>
-              <Descriptions.Item label={t.fields.soilType}>{field.soilType || '—'}</Descriptions.Item>
-              <Descriptions.Item label={t.fields.currentCrop}>
-                {field.currentCrop ? (
-                  <Tag color="green">{t.crops[field.currentCrop as keyof typeof t.crops] || field.currentCrop}{field.currentCropYear ? ` (${field.currentCropYear})` : ''}</Tag>
-                ) : t.fields.notSeeded}
-              </Descriptions.Item>
-              <Descriptions.Item label={t.fields.notes}>{field.notes || '—'}</Descriptions.Item>
-              <Descriptions.Item label={t.fields.ownershipType}>
-                {field.ownershipType === 1
-                  ? <Tag color="blue">{t.fields.ownershipLease}</Tag>
-                  : field.ownershipType === 2
-                  ? <Tag color="purple">{t.fields.ownershipShareLease}</Tag>
-                  : <Tag color="green">{t.fields.ownershipOwnLand}</Tag>}
-              </Descriptions.Item>
-            </Descriptions>
-          </Card>
-        </Col>
-
-        <Col xs={24} lg={12}>
-          <Card
-            title={t.fields.fieldMap}
-            styles={{ body: { padding: 0 } }}
-            extra={
-              <Space>
-                {field.cadastralNumber && !hasGeometry && (
-                  <Button
-                    icon={<DownloadOutlined />}
-                    size="small"
-                    loading={cadastreLoading}
-                    onClick={handleLoadFromCadastre}
-                  >
-                    {t.fields.loadFromCadastre}
-                  </Button>
-                )}
-                <Button
-                  type="primary"
-                  icon={<SaveOutlined />}
-                  size="small"
-                  loading={savingGeometry}
-                  disabled={!currentGeoJson}
-                  onClick={handleSaveGeometry}
-                >
-                  {t.fields.saveGeometry}
+      <Tabs defaultActiveKey="info" items={[
+        {
+          key: 'info',
+          label: t.fields.tabInfo,
+          children: (
+            <div>
+              <Space style={{ marginBottom: 12 }}>
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => setAssignModalOpen(true)}>
+                  {t.fields.assignCrop}
+                </Button>
+                <Button icon={<PlusOutlined />} onClick={() => setPlanModalOpen(true)}>
+                  {t.fields.addRotationPlan}
                 </Button>
               </Space>
-            }
-          >
-            <FieldDrawMap field={field} onGeometryChange={setCurrentGeoJson} height={300} />
-          </Card>
-        </Col>
-      </Row>
+              <Row gutter={[16, 16]}>
+                <Col xs={24} lg={12}>
+                  <Card title={t.fields.fieldInfo}>
+                    <Descriptions column={1} bordered>
+                      <Descriptions.Item label={t.fields.cadastralNumber}>{field.cadastralNumber || '—'}</Descriptions.Item>
+                      <Descriptions.Item label={t.fields.area}>{field.areaHectares.toFixed(2)}</Descriptions.Item>
+                      <Descriptions.Item label={t.fields.soilType}>{field.soilType || '—'}</Descriptions.Item>
+                      <Descriptions.Item label={t.fields.currentCrop}>
+                        {field.currentCrop ? (
+                          <Tag color="green">{t.crops[field.currentCrop as keyof typeof t.crops] || field.currentCrop}{field.currentCropYear ? ` (${field.currentCropYear})` : ''}</Tag>
+                        ) : t.fields.notSeeded}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.fields.notes}>{field.notes || '—'}</Descriptions.Item>
+                      <Descriptions.Item label={t.fields.ownershipType}>
+                        {field.ownershipType === 1
+                          ? <Tag color="blue">{t.fields.ownershipLease}</Tag>
+                          : field.ownershipType === 2
+                          ? <Tag color="purple">{t.fields.ownershipShareLease}</Tag>
+                          : <Tag color="green">{t.fields.ownershipOwnLand}</Tag>}
+                      </Descriptions.Item>
+                    </Descriptions>
+                  </Card>
+                </Col>
+              </Row>
 
-      <Card title={t.fields.cropHistory} style={{ marginTop: 16 }}>
-        <Table
-          dataSource={field.cropHistory}
-          columns={historyColumns}
-          rowKey="id"
-          pagination={{ pageSize: 10 }}
-          locale={{ emptyText: t.fields.cropHistoryEmpty }}
-        />
-      </Card>
+              <Card title={t.fields.cropHistory} style={{ marginTop: 16 }}>
+                <Table
+                  dataSource={field.cropHistory}
+                  columns={historyColumns}
+                  rowKey="id"
+                  pagination={{ pageSize: 10 }}
+                  locale={{ emptyText: t.fields.cropHistoryEmpty }}
+                />
+              </Card>
 
-      <Card title={t.fields.rotationPlans} style={{ marginTop: 16 }}>
-        <Table
-          dataSource={field.rotationPlans}
-          columns={planColumns}
-          rowKey="id"
-          pagination={{ pageSize: 10 }}
-          locale={{ emptyText: t.fields.rotationPlansEmpty }}
-        />
-      </Card>
+              <Card title={t.fields.rotationPlans} style={{ marginTop: 16 }}>
+                <Table
+                  dataSource={field.rotationPlans}
+                  columns={planColumns}
+                  rowKey="id"
+                  pagination={{ pageSize: 10 }}
+                  locale={{ emptyText: t.fields.rotationPlansEmpty }}
+                />
+              </Card>
 
-      {(field.ownershipType === 1 || field.ownershipType === 2) && (
-        <Card
-          title={t.lease.title}
-          style={{ marginTop: 16 }}
-          extra={
-            canWrite && (
-              <Button type="primary" icon={<PlusOutlined />} onClick={() => setLeaseModalOpen(true)} size="small">
-                {t.lease.addLease}
-              </Button>
-            )
-          }
-        >
-          {leases.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '16px 0', color: '#888' }}>
-              {t.lease.noLeases}
-              {canWrite && (
-                <div style={{ marginTop: 8 }}>
-                  <Button icon={<PlusOutlined />} onClick={() => setLeaseModalOpen(true)}>
-                    {t.lease.addLease}
-                  </Button>
-                </div>
+              {(field.ownershipType === 1 || field.ownershipType === 2) && (
+                <Card
+                  title={t.lease.title}
+                  style={{ marginTop: 16 }}
+                  extra={
+                    canWrite && (
+                      <Button type="primary" icon={<PlusOutlined />} onClick={() => setLeaseModalOpen(true)} size="small">
+                        {t.lease.addLease}
+                      </Button>
+                    )
+                  }
+                >
+                  {leases.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '16px 0', color: '#888' }}>
+                      {t.lease.noLeases}
+                      {canWrite && (
+                        <div style={{ marginTop: 8 }}>
+                          <Button icon={<PlusOutlined />} onClick={() => setLeaseModalOpen(true)}>
+                            {t.lease.addLease}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Table
+                      dataSource={leases}
+                      rowKey="id"
+                      pagination={false}
+                      columns={[
+                        { title: t.lease.ownerName, dataIndex: 'ownerName', key: 'ownerName' },
+                        { title: t.lease.contractNumber, dataIndex: 'contractNumber', key: 'contractNumber', render: (v: string) => v || '—' },
+                        {
+                          title: t.lease.annualPayment,
+                          dataIndex: 'annualPayment',
+                          key: 'annualPayment',
+                          align: 'right' as const,
+                          render: (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 2 }),
+                        },
+                        { title: t.lease.paymentType, dataIndex: 'paymentType', key: 'paymentType', render: (v: string) => v === 'Cash' ? t.lease.cash : v === 'Grain' ? t.lease.grain : t.lease.mixed },
+                        {
+                          title: t.common.actions,
+                          key: 'actions',
+                          render: (_: unknown, record: LandLeaseDto) =>
+                            canWrite ? (
+                              <Space>
+                                <Button size="small" icon={<DollarOutlined />} onClick={() => { setSelectedLeaseId(record.id); setPayIsAdvance(false); payForm.setFieldsValue({ year: new Date().getFullYear() }); setPayModalOpen(true); }}>
+                                  {t.lease.makePayment}
+                                </Button>
+                                <Button size="small" onClick={() => { setSelectedLeaseId(record.id); setPayIsAdvance(true); payForm.setFieldsValue({ year: new Date().getFullYear() }); setPayModalOpen(true); }}>
+                                  {t.lease.makeAdvance}
+                                </Button>
+                              </Space>
+                            ) : null,
+                        },
+                      ]}
+                    />
+                  )}
+                </Card>
               )}
             </div>
-          ) : (
-            <Table
-              dataSource={leases}
-              rowKey="id"
-              pagination={false}
-              columns={[
-                { title: t.lease.ownerName, dataIndex: 'ownerName', key: 'ownerName' },
-                { title: t.lease.contractNumber, dataIndex: 'contractNumber', key: 'contractNumber', render: (v: string) => v || '—' },
-                {
-                  title: t.lease.annualPayment,
-                  dataIndex: 'annualPayment',
-                  key: 'annualPayment',
-                  align: 'right' as const,
-                  render: (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 2 }),
-                },
-                { title: t.lease.paymentType, dataIndex: 'paymentType', key: 'paymentType', render: (v: string) => v === 'Cash' ? t.lease.cash : v === 'Grain' ? t.lease.grain : t.lease.mixed },
-                {
-                  title: t.common.actions,
-                  key: 'actions',
-                  render: (_: unknown, record: LandLeaseDto) =>
-                    canWrite ? (
-                      <Space>
-                        <Button size="small" icon={<DollarOutlined />} onClick={() => { setSelectedLeaseId(record.id); setPayIsAdvance(false); payForm.setFieldsValue({ year: new Date().getFullYear() }); setPayModalOpen(true); }}>
-                          {t.lease.makePayment}
-                        </Button>
-                        <Button size="small" onClick={() => { setSelectedLeaseId(record.id); setPayIsAdvance(true); payForm.setFieldsValue({ year: new Date().getFullYear() }); setPayModalOpen(true); }}>
-                          {t.lease.makeAdvance}
-                        </Button>
-                      </Space>
-                    ) : null,
-                },
-              ]}
-            />
-          )}
-        </Card>
-      )}
+          ),
+        },
+        {
+          key: 'seeding',
+          label: t.fields.tabSeeding,
+          children: <FieldSeedingTab fieldId={id!} />,
+        },
+        {
+          key: 'fertilizer',
+          label: t.fields.tabFertilizer,
+          children: <FieldFertilizerTab fieldId={id!} />,
+        },
+        {
+          key: 'protection',
+          label: t.fields.tabProtection,
+          children: <FieldProtectionTab fieldId={id!} />,
+        },
+        {
+          key: 'harvest',
+          label: t.fields.tabHarvest,
+          children: <FieldHarvestTab fieldId={id!} />,
+        },
+        {
+          key: 'map',
+          label: t.fields.tabMap,
+          children: (
+            <Card
+              styles={{ body: { padding: 0 } }}
+              extra={
+                <Space>
+                  {field.cadastralNumber && !hasGeometry && (
+                    <Button
+                      icon={<DownloadOutlined />}
+                      size="small"
+                      loading={cadastreLoading}
+                      onClick={handleLoadFromCadastre}
+                    >
+                      {t.fields.loadFromCadastre}
+                    </Button>
+                  )}
+                  <Button
+                    type="primary"
+                    icon={<SaveOutlined />}
+                    size="small"
+                    loading={savingGeometry}
+                    disabled={!currentGeoJson}
+                    onClick={handleSaveGeometry}
+                  >
+                    {t.fields.saveGeometry}
+                  </Button>
+                </Space>
+              }
+            >
+              <FieldDrawMap field={field} onGeometryChange={setCurrentGeoJson} height={500} />
+            </Card>
+          ),
+        },
+      ]} />
 
       {/* Assign Crop Modal */}
       <Modal
