@@ -105,24 +105,36 @@ export default function FieldDetail() {
     try {
       const cadnum = field.cadastralNumber.replace(/\s/g, '');
       const response = await apiClient.get(`/api/cadastre/parcel`, { params: { cadnum } });
-      const geojson = response.data;
+      const data = response.data;
 
-      if (!geojson.features || geojson.features.length === 0) {
+      if (!data.found || !data.geometry) {
         message.warning(t.fields.cadastreNotFound);
         return;
       }
 
-      const geometry = geojson.features[0].geometry;
-      if (!geometry) {
-        message.warning(t.fields.cadastreNoGeometry);
-        return;
-      }
-
-      const geoJsonString = JSON.stringify(geometry);
+      const geoJsonString = JSON.stringify(data.geometry);
       setCurrentGeoJson(geoJsonString);
       await updateFieldGeometry(id!, { geoJson: geoJsonString });
       message.success(t.fields.cadastreLoaded);
       setField(prev => prev ? { ...prev, geoJson: geoJsonString } : prev);
+
+      // Offer area update when cadastre reports a different area
+      if (data.area !== null && data.area !== undefined) {
+        const cadastreAreaHa = Number(data.area);
+        if (!isNaN(cadastreAreaHa) && Math.abs(cadastreAreaHa - field.areaHectares) > 0.01) {
+          Modal.confirm({
+            title: t.fields.areaMismatchTitle,
+            content: `${t.fields.cadastreArea}: ${cadastreAreaHa.toFixed(2)} га. ${t.fields.areaMismatchQuestion}`,
+            okText: t.fields.updateArea,
+            cancelText: t.fields.keepCurrentArea,
+            onOk: async () => {
+              await updateField(id!, { areaHectares: cadastreAreaHa });
+              setField(prev => prev ? { ...prev, areaHectares: cadastreAreaHa } : prev);
+              message.success(t.fields.areaUpdated);
+            },
+          });
+        }
+      }
     } catch (error) {
       console.error('Cadastre loading failed:', error);
       message.error(t.fields.cadastreError);
