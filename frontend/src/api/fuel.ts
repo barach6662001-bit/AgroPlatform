@@ -8,7 +8,6 @@ export const createFuelTank = (data: {
   name: string;
   fuelType: number;
   capacityLiters: number;
-  pricePerLiter?: number;
 }) =>
   apiClient.post<{ id: string }>('/api/fuel/tanks', data).then((r) => r.data);
 
@@ -26,7 +25,6 @@ export const createFuelSupply = (data: {
 export const createFuelIssue = (data: {
   fuelTankId: string;
   quantityLiters: number;
-  pricePerLiter?: number;
   transactionDate: string;
   machineId?: string;
   driverName?: string;
