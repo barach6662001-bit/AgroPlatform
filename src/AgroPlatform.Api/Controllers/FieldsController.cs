@@ -1,12 +1,24 @@
 using AgroPlatform.Application.Fields.Commands.AssignCrop;
 using AgroPlatform.Application.Fields.Commands.CreateField;
+using AgroPlatform.Application.Fields.Commands.CreateFieldFertilizer;
+using AgroPlatform.Application.Fields.Commands.CreateFieldHarvest;
+using AgroPlatform.Application.Fields.Commands.CreateFieldProtection;
+using AgroPlatform.Application.Fields.Commands.CreateFieldSeeding;
 using AgroPlatform.Application.Fields.Commands.DeleteField;
+using AgroPlatform.Application.Fields.Commands.DeleteFieldFertilizer;
+using AgroPlatform.Application.Fields.Commands.DeleteFieldHarvest;
+using AgroPlatform.Application.Fields.Commands.DeleteFieldProtection;
+using AgroPlatform.Application.Fields.Commands.DeleteFieldSeeding;
 using AgroPlatform.Application.Fields.Commands.DeleteRotationPlan;
 using AgroPlatform.Application.Fields.Commands.PlanRotation;
 using AgroPlatform.Application.Fields.Commands.UpdateField;
 using AgroPlatform.Application.Fields.Commands.UpdateFieldGeometry;
 using AgroPlatform.Application.Fields.Commands.UpdateYield;
 using AgroPlatform.Application.Fields.Queries.GetFieldById;
+using AgroPlatform.Application.Fields.Queries.GetFieldFertilizers;
+using AgroPlatform.Application.Fields.Queries.GetFieldHarvests;
+using AgroPlatform.Application.Fields.Queries.GetFieldProtections;
+using AgroPlatform.Application.Fields.Queries.GetFieldSeedings;
 using AgroPlatform.Application.Fields.Queries.GetFields;
 using AgroPlatform.Domain.Enums;
 using MediatR;
@@ -178,7 +190,189 @@ public class FieldsController : ControllerBase
         await _sender.Send(new UpdateFieldGeometryCommand(id, request.GeoJson), cancellationToken);
         return NoContent();
     }
+
+    // ─── Seedings ───────────────────────────────────────────────────────────────
+
+    /// <summary>Returns seeding records for a field.</summary>
+    [HttpGet("{fieldId:guid}/seedings")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetSeedings(Guid fieldId, [FromQuery] int? year, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetFieldSeedingsQuery(fieldId, year), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates a seeding record for a field.</summary>
+    [HttpPost("{fieldId:guid}/seedings")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateSeeding(Guid fieldId, [FromBody] CreateFieldSeedingRequest request, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(new CreateFieldSeedingCommand(
+            fieldId, request.Year, request.CropName, request.Variety,
+            request.SeedingRateKgPerHa, request.TotalSeedKg, request.SeedingDate, request.Notes), cancellationToken);
+        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+    }
+
+    /// <summary>Deletes a seeding record.</summary>
+    [HttpDelete("{fieldId:guid}/seedings/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteSeeding(Guid fieldId, Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteFieldSeedingCommand(id), cancellationToken);
+        return NoContent();
+    }
+
+    // ─── Fertilizers ────────────────────────────────────────────────────────────
+
+    /// <summary>Returns fertilizer records for a field.</summary>
+    [HttpGet("{fieldId:guid}/fertilizers")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFertilizers(Guid fieldId, [FromQuery] int? year, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetFieldFertilizersQuery(fieldId, year), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates a fertilizer record for a field.</summary>
+    [HttpPost("{fieldId:guid}/fertilizers")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateFertilizer(Guid fieldId, [FromBody] CreateFieldFertilizerRequest request, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(new CreateFieldFertilizerCommand(
+            fieldId, request.Year, request.FertilizerName, request.ApplicationType,
+            request.RateKgPerHa, request.TotalKg, request.CostPerKg, request.TotalCost,
+            request.ApplicationDate, request.Notes), cancellationToken);
+        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+    }
+
+    /// <summary>Deletes a fertilizer record.</summary>
+    [HttpDelete("{fieldId:guid}/fertilizers/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteFertilizer(Guid fieldId, Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteFieldFertilizerCommand(id), cancellationToken);
+        return NoContent();
+    }
+
+    // ─── Protections ────────────────────────────────────────────────────────────
+
+    /// <summary>Returns plant protection records for a field.</summary>
+    [HttpGet("{fieldId:guid}/protections")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetProtections(Guid fieldId, [FromQuery] int? year, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetFieldProtectionsQuery(fieldId, year), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates a plant protection record for a field.</summary>
+    [HttpPost("{fieldId:guid}/protections")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateProtection(Guid fieldId, [FromBody] CreateFieldProtectionRequest request, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(new CreateFieldProtectionCommand(
+            fieldId, request.Year, request.ProductName, request.ProtectionType,
+            request.RateLPerHa, request.TotalLiters, request.CostPerLiter, request.TotalCost,
+            request.ApplicationDate, request.Notes), cancellationToken);
+        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+    }
+
+    /// <summary>Deletes a plant protection record.</summary>
+    [HttpDelete("{fieldId:guid}/protections/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteProtection(Guid fieldId, Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteFieldProtectionCommand(id), cancellationToken);
+        return NoContent();
+    }
+
+    // ─── Harvests ───────────────────────────────────────────────────────────────
+
+    /// <summary>Returns harvest records for a field.</summary>
+    [HttpGet("{fieldId:guid}/harvests")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetHarvests(Guid fieldId, [FromQuery] int? year, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetFieldHarvestsQuery(fieldId, year), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates a harvest record for a field. Yield t/ha and total revenue are calculated automatically.</summary>
+    [HttpPost("{fieldId:guid}/harvests")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateHarvest(Guid fieldId, [FromBody] CreateFieldHarvestRequest request, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(new CreateFieldHarvestCommand(
+            fieldId, request.Year, request.CropName, request.TotalTons,
+            request.MoisturePercent, request.PricePerTon, request.HarvestDate, request.Notes), cancellationToken);
+        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+    }
+
+    /// <summary>Deletes a harvest record.</summary>
+    [HttpDelete("{fieldId:guid}/harvests/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteHarvest(Guid fieldId, Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteFieldHarvestCommand(id), cancellationToken);
+        return NoContent();
+    }
 }
 
 /// <summary>Request body for updating a field's GeoJSON geometry.</summary>
 public record UpdateFieldGeometryRequest(string GeoJson);
+
+/// <summary>Request body for creating a seeding record.</summary>
+public record CreateFieldSeedingRequest(
+    int Year,
+    string CropName,
+    string? Variety,
+    decimal? SeedingRateKgPerHa,
+    decimal? TotalSeedKg,
+    DateTime? SeedingDate,
+    string? Notes);
+
+/// <summary>Request body for creating a fertilizer record.</summary>
+public record CreateFieldFertilizerRequest(
+    int Year,
+    string FertilizerName,
+    string? ApplicationType,
+    decimal? RateKgPerHa,
+    decimal? TotalKg,
+    decimal? CostPerKg,
+    decimal? TotalCost,
+    DateTime ApplicationDate,
+    string? Notes);
+
+/// <summary>Request body for creating a plant protection record.</summary>
+public record CreateFieldProtectionRequest(
+    int Year,
+    string ProductName,
+    string? ProtectionType,
+    decimal? RateLPerHa,
+    decimal? TotalLiters,
+    decimal? CostPerLiter,
+    decimal? TotalCost,
+    DateTime ApplicationDate,
+    string? Notes);
+
+/// <summary>Request body for creating a harvest record.</summary>
+public record CreateFieldHarvestRequest(
+    int Year,
+    string CropName,
+    decimal TotalTons,
+    decimal? MoisturePercent,
+    decimal? PricePerTon,
+    DateTime HarvestDate,
+    string? Notes);
