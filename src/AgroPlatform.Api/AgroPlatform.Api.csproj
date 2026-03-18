@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <!-- Pin transitive packages to fix HIGH vulnerabilities -->
-    <PackageReference Include="Mapbox.VectorTile" Version="1.0.4-alpha2" />
     <PackageReference Include="NetTopologySuite" Version="2.6.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
