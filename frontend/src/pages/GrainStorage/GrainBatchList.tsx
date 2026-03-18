@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert } from 'antd';
+import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes } from '../../api/grain';
+import { getWarehouses } from '../../api/warehouses';
 import { getFields } from '../../api/fields';
 import type { GrainBatchDto, GrainMovementDto, GrainOwnershipType } from '../../types/grain';
 import type { FieldDto } from '../../types/field';
+import type { WarehouseDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -27,6 +29,8 @@ export default function GrainBatchList() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [filterOwnership, setFilterOwnership] = useState<number | undefined>(undefined);
+  const [selectedStorageId, setSelectedStorageId] = useState<string | undefined>(undefined);
+  const [storages, setStorages] = useState<WarehouseDto[]>([]);
 
   const [grainTypes, setGrainTypes] = useState<string[]>([]);
   const [fields, setFields] = useState<FieldDto[]>([]);
@@ -40,6 +44,11 @@ export default function GrainBatchList() {
   const [savingMovement, setSavingMovement] = useState(false);
   const [movementForm] = Form.useForm();
   const [currentMovementType, setCurrentMovementType] = useState<string>('In');
+
+  const [issueModalOpen, setIssueModalOpen] = useState(false);
+  const [savingIssue, setSavingIssue] = useState(false);
+  const [issueForm] = Form.useForm();
+  const [selectedIssueBatch, setSelectedIssueBatch] = useState<GrainBatchDto | null>(null);
 
   const [movementsModalOpen, setMovementsModalOpen] = useState(false);
   const [movements, setMovements] = useState<GrainMovementDto[]>([]);
@@ -61,15 +70,21 @@ export default function GrainBatchList() {
       .catch(() => {/* ignore */});
   }, []);
 
-  const load = (p = page, ps = pageSize, ownership = filterOwnership) => {
+  useEffect(() => {
+    getWarehouses({ type: 1, pageSize: 100 })
+      .then((r) => setStorages(r.items))
+      .catch(() => {/* ignore */});
+  }, []);
+
+  const load = (p = page, ps = pageSize, ownership = filterOwnership, storageId = selectedStorageId) => {
     setLoading(true);
-    getGrainBatches({ page: p, pageSize: ps, ownershipType: ownership })
+    getGrainBatches({ page: p, pageSize: ps, ownershipType: ownership, storageId })
       .then(setResult)
       .catch(() => message.error(t.grain.loadError))
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, [page, pageSize, filterOwnership]);
+  useEffect(() => { load(); }, [page, pageSize, filterOwnership, selectedStorageId]);
 
   const openBatchModal = () => {
     const lastGrainType = localStorage.getItem(LAST_GRAIN_KEY);
@@ -131,6 +146,36 @@ export default function GrainBatchList() {
       if (status) message.error(t.grain.loadError);
     } finally {
       setSavingMovement(false);
+    }
+  };
+
+  const openIssueModal = () => {
+    issueForm.resetFields();
+    setSelectedIssueBatch(null);
+    setIssueModalOpen(true);
+  };
+
+  const handleIssueGrain = async () => {
+    try {
+      const values = await issueForm.validateFields();
+      setSavingIssue(true);
+      await createGrainMovement(values.grainBatchId, {
+        movementType: 'Out',
+        quantityTons: values.quantityTons,
+        reason: values.reason,
+        pricePerTon: values.pricePerTon,
+        movementDate: new Date().toISOString(),
+      });
+      message.success(t.grain.issueSuccess);
+      issueForm.resetFields();
+      setSelectedIssueBatch(null);
+      setIssueModalOpen(false);
+      load();
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status) message.error(t.grain.loadError);
+    } finally {
+      setSavingIssue(false);
     }
   };
 
@@ -272,7 +317,16 @@ export default function GrainBatchList() {
   return (
     <div>
       <PageHeader title={t.grain.title} subtitle={t.grain.subtitle} />
-      <Space style={{ marginBottom: 16 }}>
+      <Space style={{ marginBottom: 16 }} wrap>
+        {storages.length > 1 && (
+          <Select
+            allowClear
+            placeholder={t.grain.selectStorage}
+            style={{ width: 200 }}
+            options={storages.map(s => ({ value: s.id, label: s.name }))}
+            onChange={v => { setSelectedStorageId(v); setPage(1); }}
+          />
+        )}
         <Select
           allowClear
           placeholder={t.grain.ownershipType}
@@ -285,10 +339,19 @@ export default function GrainBatchList() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            style={{ background: '#d4a017', borderColor: '#d4a017' }}
+            style={{ background: '#238636', borderColor: '#238636' }}
             onClick={openBatchModal}
           >
             {t.grain.receiveGrain}
+          </Button>
+        )}
+        {canCreate && (
+          <Button
+            icon={<ExportOutlined />}
+            style={{ borderColor: '#d29922', color: '#d29922' }}
+            onClick={openIssueModal}
+          >
+            {t.grain.issueGrain}
           </Button>
         )}
       </Space>
@@ -442,6 +505,67 @@ export default function GrainBatchList() {
           pagination={false}
           size="small"
         />
+      </Modal>
+
+      {/* Issue Grain Modal */}
+      <Modal
+        title={t.grain.issueGrain}
+        open={issueModalOpen}
+        onOk={handleIssueGrain}
+        onCancel={() => { setIssueModalOpen(false); issueForm.resetFields(); setSelectedIssueBatch(null); }}
+        okText={t.common.confirm}
+        cancelText={t.common.cancel}
+        confirmLoading={savingIssue}
+      >
+        <Form form={issueForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="grainBatchId" label={t.grain.selectBatch} rules={[{ required: true, message: t.common.required }]}>
+            <Select
+              showSearch
+              placeholder={t.grain.selectBatch}
+              options={(result?.items ?? []).map(b => ({
+                value: b.id,
+                label: `${b.grainType} — ${b.quantityTons.toFixed(2)} т (${ownershipLabel(b.ownershipType)})`,
+              }))}
+              onChange={(val) => {
+                const batch = (result?.items ?? []).find(b => b.id === val);
+                setSelectedIssueBatch(batch ?? null);
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+            />
+          </Form.Item>
+          {selectedIssueBatch && (
+            <Alert
+              type="info"
+              message={`${t.grain.available}: ${selectedIssueBatch.quantityTons.toFixed(3)} т`}
+              style={{ marginBottom: 12 }}
+            />
+          )}
+          <Form.Item name="quantityTons" label={t.grain.quantityTons} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber
+              min={0.001}
+              max={selectedIssueBatch?.quantityTons}
+              precision={3}
+              addonAfter="т"
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+          <Form.Item name="reason" label={t.grain.exportReason}>
+            <Select
+              allowClear
+              options={[
+                { value: 'sale', label: t.grain.reasonSale },
+                { value: 'processing', label: t.grain.reasonProcessing },
+                { value: 'transfer', label: t.grain.reasonTransfer },
+                { value: 'other', label: t.grain.reasonOther },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item name="pricePerTon" label={t.grain.exportPrice}>
+            <InputNumber min={0} precision={2} addonAfter="грн/т" style={{ width: '100%' }} />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );
