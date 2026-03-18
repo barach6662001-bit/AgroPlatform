@@ -38,6 +38,11 @@ public class CadastreController : ControllerBase
             return BadRequest(new { message = "cadnum is required" });
 
         var normalizedCadnum = cadnum.Trim();
+
+        // Validate cadastral number format: digits and colons only (e.g. 1822087200:01:000:0576)
+        if (!System.Text.RegularExpressions.Regex.IsMatch(normalizedCadnum, @"^[\d:]+$"))
+            return BadRequest(new { message = "cadnum contains invalid characters" });
+
         var url = $"https://kadastrova-karta.com/dilyanka/{normalizedCadnum}";
 
         try
