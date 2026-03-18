@@ -3,7 +3,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
-import { useTranslation } from '../i18n';
+import { useTranslation, languages } from '../i18n';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,10 +21,16 @@ export default function Login() {
     }
   };
 
-  const langMenuItems = [
-    { key: 'uk', label: '🇺🇦 Українська' },
-    { key: 'en', label: '🇬🇧 English' },
-  ];
+  const currentLang = languages.find(l => l.code === lang);
+  const langMenuItems = languages.map(l => ({
+    key: l.code,
+    label: (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 20, lineHeight: 1 }}>{l.flag}</span>
+        <span>{l.label}</span>
+      </div>
+    ),
+  }));
 
   const features = [
     t.auth.featureFieldManagement,
@@ -193,8 +199,13 @@ export default function Login() {
               onClick: ({ key }) => setLang(key as 'uk' | 'en'),
             }}
           >
-            <Button type="text" style={{ color: 'var(--text-secondary)', fontSize: 12 }}>
-              {lang === 'uk' ? '🇺🇦 UA' : '🇬🇧 EN'}
+            <Button type="text" style={{ color: 'var(--text-secondary)', padding: '4px 8px' }}>
+              <span style={{ fontSize: 20, lineHeight: 1, marginRight: 4 }}>
+                {currentLang?.flag}
+              </span>
+              <span style={{ fontSize: 13, fontWeight: 500 }}>
+                {currentLang?.shortLabel}
+              </span>
             </Button>
           </Dropdown>
         </div>
