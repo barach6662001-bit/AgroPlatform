@@ -51,7 +51,9 @@ public class GetAgroOperationsHandler : IRequestHandler<GetAgroOperationsQuery, 
                 CompletedDate = o.CompletedDate,
                 IsCompleted = o.IsCompleted,
                 Description = o.Description,
-                AreaProcessed = o.AreaProcessed
+                AreaProcessed = o.AreaProcessed,
+                PerformedByEmployeeId = o.PerformedByEmployeeId,
+                PerformedByName = o.PerformedByName,
             })
             .ToListAsync(cancellationToken);
 

@@ -29,6 +29,8 @@ public class CreateAgroOperationHandler : IRequestHandler<CreateAgroOperationCom
             IsCompleted = true,
             Description = request.Description,
             AreaProcessed = request.AreaProcessed,
+            PerformedByEmployeeId = request.PerformedByEmployeeId,
+            PerformedByName = request.PerformedByName,
         };
 
         _context.AgroOperations.Add(operation);

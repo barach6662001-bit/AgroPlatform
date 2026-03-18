@@ -4,8 +4,10 @@ import { EyeOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getOperations, createOperation, updateOperation } from '../../api/operations';
 import { getFields } from '../../api/fields';
+import { getEmployees } from '../../api/hr';
 import type { AgroOperationDto, AgroOperationType } from '../../types/operation';
 import type { FieldDto } from '../../types/field';
+import type { EmployeeDto } from '../../types/hr';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -26,6 +28,7 @@ export default function OperationsList() {
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [fields, setFields] = useState<FieldDto[]>([]);
+  const [employees, setEmployees] = useState<EmployeeDto[]>([]);
   const [form] = Form.useForm();
   const [editRecord, setEditRecord] = useState<AgroOperationDto | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -51,6 +54,12 @@ export default function OperationsList() {
   useEffect(() => {
     getFields({ page: 1, pageSize: 100 })
       .then((r) => setFields(r.items))
+      .catch(() => {/* ignore */});
+  }, []);
+
+  useEffect(() => {
+    getEmployees(true)
+      .then(setEmployees)
       .catch(() => {/* ignore */});
   }, []);
 
@@ -96,6 +105,7 @@ export default function OperationsList() {
 
   const operationTypeOptions = Object.entries(t.operationTypes).map(([k, v]) => ({ value: k, label: v }));
   const fieldOptions = fields.map((f) => ({ value: f.id, label: f.name }));
+  const employeeOptions = employees.map((e) => ({ value: e.id, label: `${e.lastName} ${e.firstName}` }));
 
   const columns = [
     { title: t.operations.field, dataIndex: 'fieldName', key: 'fieldName', sorter: (a: AgroOperationDto, b: AgroOperationDto) => a.fieldName.localeCompare(b.fieldName) },
@@ -111,6 +121,10 @@ export default function OperationsList() {
     {
       title: t.operations.area, dataIndex: 'areaProcessed', key: 'areaProcessed',
       render: (v: number) => v ? v.toFixed(2) : '—',
+    },
+    {
+      title: t.operations.performedBy, dataIndex: 'performedByName', key: 'performedByName',
+      render: (v?: string) => v || '—',
     },
     {
       title: t.operations.actions, key: 'actions',
@@ -197,6 +211,22 @@ export default function OperationsList() {
           </Form.Item>
           <Form.Item name="areaProcessed" label={t.operations.areaProcessed}>
             <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="performedByEmployeeId" label={t.operations.performedBy}>
+            <Select
+              allowClear
+              showSearch
+              placeholder={t.operations.selectPerformer}
+              options={employeeOptions}
+              optionFilterProp="label"
+              onChange={(val) => {
+                const emp = employees.find((e) => e.id === val);
+                form.setFieldsValue({ performedByName: emp ? `${emp.lastName} ${emp.firstName}` : undefined });
+              }}
+            />
+          </Form.Item>
+          <Form.Item name="performedByName" hidden>
+            <Input />
           </Form.Item>
           <Form.Item name="description" label={t.operations.description}>
             <Input.TextArea rows={3} placeholder={t.operations.enterDescription} />

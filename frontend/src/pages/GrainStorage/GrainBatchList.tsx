@@ -3,7 +3,9 @@ import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DateP
 import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes } from '../../api/grain';
+import { getFields } from '../../api/fields';
 import type { GrainBatchDto, GrainMovementDto, GrainOwnershipType } from '../../types/grain';
+import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -27,6 +29,7 @@ export default function GrainBatchList() {
   const [filterOwnership, setFilterOwnership] = useState<number | undefined>(undefined);
 
   const [grainTypes, setGrainTypes] = useState<string[]>([]);
+  const [fields, setFields] = useState<FieldDto[]>([]);
 
   const [batchModalOpen, setBatchModalOpen] = useState(false);
   const [savingBatch, setSavingBatch] = useState(false);
@@ -36,6 +39,7 @@ export default function GrainBatchList() {
   const [movementBatchId, setMovementBatchId] = useState<string | null>(null);
   const [savingMovement, setSavingMovement] = useState(false);
   const [movementForm] = Form.useForm();
+  const [currentMovementType, setCurrentMovementType] = useState<string>('In');
 
   const [movementsModalOpen, setMovementsModalOpen] = useState(false);
   const [movements, setMovements] = useState<GrainMovementDto[]>([]);
@@ -49,6 +53,12 @@ export default function GrainBatchList() {
     getGrainTypes()
       .then(setGrainTypes)
       .catch(() => message.warning(t.grain.loadError));
+  }, []);
+
+  useEffect(() => {
+    getFields({ pageSize: 200 })
+      .then((r) => setFields(r.items))
+      .catch(() => {/* ignore */});
   }, []);
 
   const load = (p = page, ps = pageSize, ownership = filterOwnership) => {
@@ -77,6 +87,7 @@ export default function GrainBatchList() {
       movementType: 'In',
       movementDate: dayjs(),
     });
+    setCurrentMovementType('In');
     setMovementBatchId(batchId);
     setMovementModalOpen(true);
   };
@@ -165,6 +176,18 @@ export default function GrainBatchList() {
           {record.ownerName && <span>({record.ownerName})</span>}
         </Space>
       ),
+    },
+    {
+      title: t.grain.sourceField,
+      dataIndex: 'sourceFieldName',
+      key: 'sourceFieldName',
+      render: (v?: string) => v || '—',
+    },
+    {
+      title: t.grain.moisture,
+      dataIndex: 'moisturePercent',
+      key: 'moisturePercent',
+      render: (v?: number) => v != null ? `${v.toFixed(1)}%` : '—',
     },
     {
       title: t.grain.initialQuantity,
@@ -321,7 +344,7 @@ export default function GrainBatchList() {
           <Form.Item name="ownerName" label={t.grain.ownerName}>
             <Input />
           </Form.Item>
-          <Form.Item name="quantityTons" label={t.grain.initialQuantity} rules={[{ required: true, message: t.common.required }]}>
+          <Form.Item name="initialQuantityTons" label={t.grain.initialQuantity} rules={[{ required: true, message: t.common.required }]}>
             <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="pricePerTon" label={t.grain.pricePerTon}>
@@ -329,6 +352,18 @@ export default function GrainBatchList() {
           </Form.Item>
           <Form.Item name="contractNumber" label={t.grain.contractNumber}>
             <Input />
+          </Form.Item>
+          <Form.Item name="sourceFieldId" label={t.grain.sourceField}>
+            <Select
+              allowClear
+              showSearch
+              placeholder={t.grain.selectSourceField}
+              options={fields.map(f => ({ value: f.id, label: f.name }))}
+              optionFilterProp="label"
+            />
+          </Form.Item>
+          <Form.Item name="moisturePercent" label={t.grain.moisture}>
+            <InputNumber min={0} max={100} precision={1} addonAfter="%" style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="receivedDate" label={t.grain.receivedDate} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker style={{ width: '100%' }} />
@@ -351,10 +386,13 @@ export default function GrainBatchList() {
       >
         <Form form={movementForm} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item name="movementType" label={t.grain.movementType} rules={[{ required: true, message: t.common.required }]}>
-            <Select options={[
-              { value: 'In', label: t.grain.movementIn },
-              { value: 'Out', label: t.grain.movementOut },
-            ]} />
+            <Select
+              options={[
+                { value: 'In', label: t.grain.movementIn },
+                { value: 'Out', label: t.grain.movementOut },
+              ]}
+              onChange={(v) => setCurrentMovementType(v)}
+            />
           </Form.Item>
           <Form.Item name="quantityTons" label={t.grain.quantityTons} rules={[{ required: true, message: t.common.required }]}>
             <InputNumber min={0.001} style={{ width: '100%' }} />
@@ -362,9 +400,26 @@ export default function GrainBatchList() {
           <Form.Item name="movementDate" label={t.grain.movementDate} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="reason" label={t.grain.reason}>
-            <Input />
-          </Form.Item>
+          {currentMovementType === 'Out' && (
+            <>
+              <Form.Item name="pricePerTon" label={t.grain.exportPrice}>
+                <InputNumber min={0} precision={2} addonAfter="грн/т" style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="reason" label={t.grain.exportReason}>
+                <Select options={[
+                  { value: 'sale', label: t.grain.reasonSale },
+                  { value: 'processing', label: t.grain.reasonProcessing },
+                  { value: 'transfer', label: t.grain.reasonTransfer },
+                  { value: 'other', label: t.grain.reasonOther },
+                ]} />
+              </Form.Item>
+            </>
+          )}
+          {currentMovementType !== 'Out' && (
+            <Form.Item name="reason" label={t.grain.reason}>
+              <Input />
+            </Form.Item>
+          )}
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />
           </Form.Item>

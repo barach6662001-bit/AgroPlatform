@@ -1,5 +1,6 @@
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Enums;
+using AgroPlatform.Domain.Fields;
 
 namespace AgroPlatform.Domain.GrainStorage;
 
@@ -14,7 +15,10 @@ public class GrainBatch : AuditableEntity
     public string? ContractNumber { get; set; }
     public decimal? PricePerTon { get; set; }
     public DateTime ReceivedDate { get; set; }
+    public Guid? SourceFieldId { get; set; }
+    public decimal? MoisturePercent { get; set; }
     public string? Notes { get; set; }
 
     public ICollection<GrainMovement> Movements { get; set; } = new List<GrainMovement>();
+    public Field? SourceField { get; set; }
 }

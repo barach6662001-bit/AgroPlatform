@@ -54,9 +54,10 @@ public class FieldsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetFields([FromQuery] CropType? currentCrop, [FromQuery] string? searchTerm, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetFields([FromQuery] CropType? currentCrop, [FromQuery] string? searchTerm, [FromQuery] int[]? ownershipType, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetFieldsQuery(currentCrop, searchTerm, page, pageSize), cancellationToken);
+        LandOwnershipType[]? ownershipTypes = ownershipType?.Select(v => (LandOwnershipType)v).ToArray();
+        var result = await _sender.Send(new GetFieldsQuery(currentCrop, searchTerm, page, pageSize, ownershipTypes), cancellationToken);
         return Ok(result);
     }
 

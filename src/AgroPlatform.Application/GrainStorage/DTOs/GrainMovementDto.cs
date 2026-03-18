@@ -9,4 +9,6 @@ public class GrainMovementDto
     public DateTime MovementDate { get; set; }
     public string? Reason { get; set; }
     public string? Notes { get; set; }
+    public decimal? PricePerTon { get; set; }
+    public decimal? TotalRevenue { get; set; }
 }

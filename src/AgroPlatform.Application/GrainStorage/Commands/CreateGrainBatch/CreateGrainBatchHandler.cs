@@ -19,13 +19,15 @@ public class CreateGrainBatchHandler : IRequestHandler<CreateGrainBatchCommand, 
         {
             GrainStorageId = request.GrainStorageId,
             GrainType = request.GrainType,
-            QuantityTons = request.QuantityTons,
-            InitialQuantityTons = request.QuantityTons,
+            QuantityTons = request.InitialQuantityTons,
+            InitialQuantityTons = request.InitialQuantityTons,
             OwnershipType = request.OwnershipType,
             OwnerName = request.OwnerName,
             ContractNumber = request.ContractNumber,
             PricePerTon = request.PricePerTon,
             ReceivedDate = request.ReceivedDate,
+            SourceFieldId = request.SourceFieldId,
+            MoisturePercent = request.MoisturePercent,
             Notes = request.Notes,
         };
 
