@@ -1,10 +1,9 @@
-import { Form, Input, Button, Dropdown } from 'antd';
+import { Form, Input, Button, Dropdown, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
 import { useTranslation } from '../i18n';
-import { message } from 'antd';
 
 export default function Login() {
   const navigate = useNavigate();
