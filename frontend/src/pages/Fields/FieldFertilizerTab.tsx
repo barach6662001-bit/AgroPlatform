@@ -76,9 +76,9 @@ export default function FieldFertilizerTab({ fieldId }: Props) {
     { title: t.fields.fertilizerName, dataIndex: 'fertilizerName', key: 'fertilizerName' },
     { title: t.fields.applicationType, dataIndex: 'applicationType', key: 'applicationType', render: (v: string) => v || '—' },
     { title: t.fields.rateKgPerHa, dataIndex: 'rateKgPerHa', key: 'rateKgPerHa', render: (v: number) => v ?? '—' },
-    { title: 'Всього (кг)', dataIndex: 'totalKg', key: 'totalKg', render: (v: number) => v ?? '—' },
-    { title: t.fields.pricePerTon, dataIndex: 'costPerKg', key: 'costPerKg', render: (v: number) => v ?? '—' },
-    { title: t.fields.totalRevenue, dataIndex: 'totalCost', key: 'totalCost', render: (v: number) => v ?? '—' },
+    { title: t.fields.totalKgLabel, dataIndex: 'totalKg', key: 'totalKg', render: (v: number) => v ?? '—' },
+    { title: t.fields.costPerKgLabel, dataIndex: 'costPerKg', key: 'costPerKg', render: (v: number) => v ?? '—' },
+    { title: t.fields.totalCostLabel, dataIndex: 'totalCost', key: 'totalCost', render: (v: number) => v ?? '—' },
     { title: t.fields.applicationDate, dataIndex: 'applicationDate', key: 'applicationDate', render: (v: string) => dayjs(v).format('DD.MM.YYYY') },
     ...(canWrite ? [{
       title: t.common.actions, key: 'actions',
@@ -129,13 +129,13 @@ export default function FieldFertilizerTab({ fieldId }: Props) {
           <Form.Item name="rateKgPerHa" label={t.fields.rateKgPerHa}>
             <InputNumber min={0} precision={4} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="totalKg" label="Всього (кг)">
+          <Form.Item name="totalKg" label={t.fields.totalKgLabel}>
             <InputNumber min={0} precision={4} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="costPerKg" label="Ціна (грн/кг)">
+          <Form.Item name="costPerKg" label={t.fields.costPerKgLabel}>
             <InputNumber min={0} precision={2} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="totalCost" label="Сума (грн)">
+          <Form.Item name="totalCost" label={t.fields.totalCostLabel}>
             <InputNumber min={0} precision={2} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="applicationDate" label={t.fields.applicationDate} rules={[{ required: true, message: t.common.required }]}>

@@ -78,8 +78,8 @@ export default function FieldProtectionTab({ fieldId }: Props) {
     { title: t.fields.protectionType, dataIndex: 'protectionType', key: 'protectionType', render: (v: string) => v || '—' },
     { title: t.fields.rateLPerHa, dataIndex: 'rateLPerHa', key: 'rateLPerHa', render: (v: number) => v ?? '—' },
     { title: t.fields.totalLiters, dataIndex: 'totalLiters', key: 'totalLiters', render: (v: number) => v ?? '—' },
-    { title: 'Ціна (грн/л)', dataIndex: 'costPerLiter', key: 'costPerLiter', render: (v: number) => v ?? '—' },
-    { title: t.fields.totalRevenue, dataIndex: 'totalCost', key: 'totalCost', render: (v: number) => v ?? '—' },
+    { title: t.fields.costPerLiterLabel, dataIndex: 'costPerLiter', key: 'costPerLiter', render: (v: number) => v ?? '—' },
+    { title: t.fields.totalCostLabel, dataIndex: 'totalCost', key: 'totalCost', render: (v: number) => v ?? '—' },
     { title: t.fields.applicationDate, dataIndex: 'applicationDate', key: 'applicationDate', render: (v: string) => dayjs(v).format('DD.MM.YYYY') },
     ...(canWrite ? [{
       title: t.common.actions, key: 'actions',
@@ -133,10 +133,10 @@ export default function FieldProtectionTab({ fieldId }: Props) {
           <Form.Item name="totalLiters" label={t.fields.totalLiters}>
             <InputNumber min={0} precision={4} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="costPerLiter" label="Ціна (грн/л)">
+          <Form.Item name="costPerLiter" label={t.fields.costPerLiterLabel}>
             <InputNumber min={0} precision={2} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="totalCost" label="Сума (грн)">
+          <Form.Item name="totalCost" label={t.fields.totalCostLabel}>
             <InputNumber min={0} precision={2} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="applicationDate" label={t.fields.applicationDate} rules={[{ required: true, message: t.common.required }]}>

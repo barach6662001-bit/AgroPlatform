@@ -246,6 +246,10 @@ const uk = {
     deleteError: 'Помилка видалення',
     addSuccess: 'Запис додано',
     addError: 'Помилка додавання',
+    totalKgLabel: 'Всього (кг)',
+    costPerKgLabel: 'Ціна (грн/кг)',
+    totalCostLabel: 'Сума (грн)',
+    costPerLiterLabel: 'Ціна (грн/л)',
   },
   warehouses: {
     title: 'Склади',
