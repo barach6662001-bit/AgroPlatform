@@ -35,6 +35,18 @@ export const createWorkLog = (data: {
   operationId?: string;
 }) => apiClient.post<{ id: string }>('/api/worklogs', data).then((r) => r.data);
 
+export const updateWorkLog = (id: string, data: {
+  workDate: string;
+  hoursWorked?: number;
+  unitsProduced?: number;
+  workDescription?: string;
+  fieldId?: string;
+  operationId?: string;
+}) => apiClient.put(`/api/worklogs/${id}`, data).then((r) => r.data);
+
+export const deleteWorkLog = (id: string) =>
+  apiClient.delete(`/api/worklogs/${id}`).then((r) => r.data);
+
 export const createSalaryPayment = (data: {
   employeeId: string;
   amount: number;

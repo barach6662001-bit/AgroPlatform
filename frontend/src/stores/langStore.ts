@@ -15,7 +15,7 @@ export const useLangStore = create<LangState>()(
       setLang: (lang) => set({ lang }),
     }),
     {
-      name: 'lang-storage',
+      name: 'agrotech_language',
     }
   )
 );

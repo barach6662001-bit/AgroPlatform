@@ -525,6 +525,8 @@ const en: Translations = {
     firstName: 'First Name',
     lastName: 'Last Name',
     role: 'Role',
+    language: 'Interface Language',
+    languageChanged: 'Language changed',
   },
   profile: {
     title: 'Profile',
@@ -722,6 +724,10 @@ const en: Translations = {
     paymentDate: 'Payment Date',
     paySuccess: 'Payment recorded',
     payError: 'Error recording payment',
+    deleteWorkLogConfirm: 'Delete this work log entry?',
+    editWorkLog: 'Edit Entry',
+    updateWorkLogSuccess: 'Entry updated',
+    deleteWorkLogSuccess: 'Entry deleted',
   },
   fuel: {
     title: 'Fuel Station',
