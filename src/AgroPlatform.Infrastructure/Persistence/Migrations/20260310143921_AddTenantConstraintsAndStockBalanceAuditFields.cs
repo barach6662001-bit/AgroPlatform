@@ -33,82 +33,25 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 oldType: "text",
                 oldNullable: true);
 
-            migrationBuilder.AddColumn<DateTime>(
-                name: "CreatedAtUtc",
-                table: "StockBalances",
-                type: "timestamp with time zone",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
-            migrationBuilder.AddColumn<string>(
-                name: "CreatedBy",
-                table: "StockBalances",
-                type: "text",
-                nullable: true);
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "DeletedAtUtc",
-                table: "StockBalances",
-                type: "timestamp with time zone",
-                nullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsDeleted",
-                table: "StockBalances",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "TenantId",
-                table: "StockBalances",
-                type: "uuid",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "UpdatedAtUtc",
-                table: "StockBalances",
-                type: "timestamp with time zone",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "UpdatedBy",
-                table: "StockBalances",
-                type: "text",
-                nullable: true);
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" ADD COLUMN IF NOT EXISTS ""CreatedAtUtc"" timestamp with time zone NOT NULL DEFAULT TIMESTAMPTZ '0001-01-01 00:00:00+00';");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" ADD COLUMN IF NOT EXISTS ""CreatedBy"" text NULL;");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" ADD COLUMN IF NOT EXISTS ""DeletedAtUtc"" timestamp with time zone NULL;");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" ADD COLUMN IF NOT EXISTS ""IsDeleted"" boolean NOT NULL DEFAULT false;");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" ADD COLUMN IF NOT EXISTS ""TenantId"" uuid NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" ADD COLUMN IF NOT EXISTS ""UpdatedAtUtc"" timestamp with time zone NULL;");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" ADD COLUMN IF NOT EXISTS ""UpdatedBy"" text NULL;");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "CreatedAtUtc",
-                table: "StockBalances");
-
-            migrationBuilder.DropColumn(
-                name: "CreatedBy",
-                table: "StockBalances");
-
-            migrationBuilder.DropColumn(
-                name: "DeletedAtUtc",
-                table: "StockBalances");
-
-            migrationBuilder.DropColumn(
-                name: "IsDeleted",
-                table: "StockBalances");
-
-            migrationBuilder.DropColumn(
-                name: "TenantId",
-                table: "StockBalances");
-
-            migrationBuilder.DropColumn(
-                name: "UpdatedAtUtc",
-                table: "StockBalances");
-
-            migrationBuilder.DropColumn(
-                name: "UpdatedBy",
-                table: "StockBalances");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" DROP COLUMN IF EXISTS ""CreatedAtUtc"";");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" DROP COLUMN IF EXISTS ""CreatedBy"";");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" DROP COLUMN IF EXISTS ""DeletedAtUtc"";");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" DROP COLUMN IF EXISTS ""IsDeleted"";");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" DROP COLUMN IF EXISTS ""TenantId"";");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" DROP COLUMN IF EXISTS ""UpdatedAtUtc"";");
+            migrationBuilder.Sql(@"ALTER TABLE ""StockBalances"" DROP COLUMN IF EXISTS ""UpdatedBy"";");
 
             migrationBuilder.AlterDatabase()
                 .OldAnnotation("Npgsql:PostgresExtension:postgis", ",,");
