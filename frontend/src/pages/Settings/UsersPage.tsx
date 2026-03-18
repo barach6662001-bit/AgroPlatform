@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Table, Select, Button, message } from 'antd';
+import { Table, Select, Button, message, Card, Radio } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { getUsers, updateUserRole } from '../../api/users';
 import type { UserDto } from '../../types/users';
 import PageHeader from '../../components/PageHeader';
-import { useTranslation } from '../../i18n';
+import { useTranslation, languages } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 
 const ROLES = ['Administrator', 'Manager', 'Agronomist', 'Storekeeper', 'Director'];
@@ -15,7 +15,7 @@ export default function UsersPage() {
   // Map of userId -> currently selected role (may differ from saved)
   const [pendingRoles, setPendingRoles] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState<Record<string, boolean>>({});
-  const { t } = useTranslation();
+  const { t, lang, setLang } = useTranslation();
   const { isAdmin } = useRole();
 
   const load = () => {
@@ -105,6 +105,19 @@ export default function UsersPage() {
   return (
     <div>
       <PageHeader title={t.settings.usersTitle} subtitle={t.settings.usersSubtitle} />
+
+      <Card title={t.settings.language} style={{ marginBottom: 24 }}>
+        <Radio.Group value={lang} onChange={(e) => setLang(e.target.value)}>
+          {languages.map((language) => (
+            <Radio.Button key={language.code} value={language.code}
+              style={{ marginRight: 8, marginBottom: 8 }}>
+              <span style={{ marginRight: 6 }}>{language.flag}</span>
+              {language.label}
+            </Radio.Button>
+          ))}
+        </Radio.Group>
+      </Card>
+
       <Table
         dataSource={users}
         columns={columns}

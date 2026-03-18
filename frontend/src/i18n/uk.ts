@@ -523,6 +523,8 @@ const uk = {
     firstName: "Ім'я",
     lastName: 'Прізвище',
     role: 'Роль',
+    language: 'Мова інтерфейсу',
+    languageChanged: 'Мову змінено',
   },
   profile: {
     title: 'Профіль',
@@ -749,6 +751,10 @@ const uk = {
     paymentDate: 'Дата виплати',
     paySuccess: 'Виплату зафіксовано',
     payError: 'Помилка виплати',
+    deleteWorkLogConfirm: 'Видалити цей запис табелю?',
+    editWorkLog: 'Редагувати запис',
+    updateWorkLogSuccess: 'Запис оновлено',
+    deleteWorkLogSuccess: 'Запис видалено',
   },
   setup: {
     title: 'Налаштування підприємства',

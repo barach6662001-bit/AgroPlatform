@@ -2,7 +2,9 @@ using AgroPlatform.Application.HR.Commands.CreateEmployee;
 using AgroPlatform.Application.HR.Commands.CreateSalaryPayment;
 using AgroPlatform.Application.HR.Commands.CreateWorkLog;
 using AgroPlatform.Application.HR.Commands.DeleteEmployee;
+using AgroPlatform.Application.HR.Commands.DeleteWorkLog;
 using AgroPlatform.Application.HR.Commands.UpdateEmployee;
+using AgroPlatform.Application.HR.Commands.UpdateWorkLog;
 using AgroPlatform.Application.HR.Queries.GetEmployees;
 using AgroPlatform.Application.HR.Queries.GetSalarySummary;
 using AgroPlatform.Application.HR.Queries.GetWorkLogs;
@@ -112,6 +114,33 @@ public class HRController : ControllerBase
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetWorkLogs), new { }, new { id });
+    }
+
+    /// <summary>Updates an existing work log entry.</summary>
+    /// <param name="id">Work log ID.</param>
+    /// <param name="command">Updated work log data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("api/worklogs/{id}")]
+    [Authorize(Roles = "Administrator,Manager")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateWorkLog(Guid id, [FromBody] UpdateWorkLogCommand command, CancellationToken cancellationToken)
+    {
+        await _sender.Send(command with { Id = id }, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>Deletes (soft-deletes) a work log entry.</summary>
+    /// <param name="id">Work log ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpDelete("api/worklogs/{id}")]
+    [Authorize(Roles = "Administrator,Manager")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteWorkLog(Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteWorkLogCommand(id), cancellationToken);
+        return NoContent();
     }
 
     // ── Salary Payments ────────────────────────────────────────────────────
