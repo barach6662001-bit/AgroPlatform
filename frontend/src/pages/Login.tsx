@@ -28,10 +28,10 @@ export default function Login() {
   ];
 
   const features = [
-    'Облік полів та врожайності',
-    'GPS моніторинг техніки',
-    'Управління зерносховищем',
-    'Аналітика та звітність',
+    t.auth.features.fieldManagement,
+    t.auth.features.gpsMonitoring,
+    t.auth.features.storageManagement,
+    t.auth.features.analyticsAndReports,
   ];
 
   return (
