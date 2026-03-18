@@ -428,9 +428,6 @@ export default function FuelStation() {
           <Form.Item name="quantityLiters" label={t.fuel.quantityLiters} rules={[{ required: true, message: t.common.required }]}>
             <InputNumber min={0.01} step={1} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="pricePerLiter" label={t.fuel.pricePerLiter}>
-            <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
-          </Form.Item>
           <Form.Item name="transactionDate" label={t.fuel.transactionDate} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>

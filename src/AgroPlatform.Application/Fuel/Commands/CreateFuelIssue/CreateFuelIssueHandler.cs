@@ -31,12 +31,6 @@ public class CreateFuelIssueHandler : IRequestHandler<CreateFuelIssueCommand, Gu
             FuelTankId = request.FuelTankId,
             TransactionType = "Issue",
             QuantityLiters = request.QuantityLiters,
-            PricePerLiter = request.PricePerLiter,
-            TotalCost = request.PricePerLiter.HasValue
-                ? request.PricePerLiter.Value * request.QuantityLiters
-                : tank.PricePerLiter.HasValue
-                    ? tank.PricePerLiter.Value * request.QuantityLiters
-                    : null,
             TransactionDate = request.TransactionDate,
             MachineId = request.MachineId,
             DriverName = request.DriverName,
