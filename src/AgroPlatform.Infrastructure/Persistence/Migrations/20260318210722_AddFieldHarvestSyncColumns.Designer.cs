@@ -3,6 +3,7 @@ using System;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroPlatform.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260318210722_AddFieldHarvestSyncColumns")]
+    partial class AddFieldHarvestSyncColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -896,17 +899,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("DeletedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("GrainBatchId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal?>("GrainPricePerTon")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<decimal?>("GrainQuantityTons")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -918,13 +910,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasDefaultValue("Cash");
 
                     b.Property<string>("PaymentType")
                         .IsRequired()
@@ -946,8 +931,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GrainBatchId");
 
                     b.HasIndex("LandLeaseId")
                         .HasDatabaseName("IX_LeasePayments_LandLeaseId");
@@ -2523,20 +2506,12 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("AgroPlatform.Domain.Fields.LeasePayment", b =>
                 {
-                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainBatch", "GrainBatch")
-                        .WithMany()
-                        .HasForeignKey("GrainBatchId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("FK_LeasePayments_GrainBatches");
-
                     b.HasOne("AgroPlatform.Domain.Fields.LandLease", "LandLease")
                         .WithMany("Payments")
                         .HasForeignKey("LandLeaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_LeasePayments_LandLeases");
-
-                    b.Navigation("GrainBatch");
 
                     b.Navigation("LandLease");
                 });

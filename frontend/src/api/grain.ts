@@ -2,7 +2,13 @@ import apiClient from './axios';
 import type { GrainBatchDto, GrainMovementDto } from '../types/grain';
 import type { PaginatedResult } from '../types/common';
 
-export const getGrainBatches = (params?: { storageId?: string; ownershipType?: number; page?: number; pageSize?: number; minQuantity?: number }) =>
+export interface GrainSummaryItem {
+  grainType: string;
+  totalTons: number;
+  batchCount: number;
+}
+
+export const getGrainBatches = (params?: { storageId?: string; ownershipType?: number; page?: number; pageSize?: number }) =>
   apiClient.get<PaginatedResult<GrainBatchDto>>('/api/grain-batches', { params }).then(r => r.data);
 
 export const createGrainBatch = (data: Partial<GrainBatchDto>) =>
@@ -19,3 +25,6 @@ export const getGrainTypes = () =>
 
 export const addGrainType = (name: string) =>
   apiClient.post('/api/grain-types', { name }).then(r => r.data);
+
+export const getGrainSummary = () =>
+  apiClient.get<GrainSummaryItem[]>('/api/grain-batches/summary').then(r => r.data);

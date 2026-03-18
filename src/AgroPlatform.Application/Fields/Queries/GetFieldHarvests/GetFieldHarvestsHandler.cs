@@ -37,6 +37,8 @@ public class GetFieldHarvestsHandler : IRequestHandler<GetFieldHarvestsQuery, Li
                 TotalRevenue = h.TotalRevenue,
                 HarvestDate = h.HarvestDate,
                 Notes = h.Notes,
+                SyncedFromGrainStorage = h.SyncedFromGrainStorage,
+                GrainBatchId = h.GrainBatchId,
             })
             .ToListAsync(cancellationToken);
     }

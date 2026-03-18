@@ -31,6 +31,7 @@ import { getDashboard } from '../api/analytics';
 import { getFields } from '../api/fields';
 import { getMachines } from '../api/machinery';
 import { getNotifications, type NotificationDto } from '../api/notifications';
+import { getGrainSummary, type GrainSummaryItem } from '../api/grain';
 import type { DashboardDto } from '../types/analytics';
 import type { FieldDto } from '../types/field';
 import type { MachineDto } from '../types/machinery';
@@ -106,6 +107,7 @@ export default function Dashboard() {
   const [fields, setFields] = useState<FieldDto[]>([]);
   const [machines, setMachines] = useState<MachineDto[]>([]);
   const [notifications, setNotifications] = useState<NotificationDto[]>([]);
+  const [grainSummary, setGrainSummary] = useState<GrainSummaryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
 
@@ -124,6 +126,10 @@ export default function Dashboard() {
       })
       .catch(() => message.error(t.dashboard.loadError))
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    getGrainSummary().then(setGrainSummary).catch(() => {});
   }, []);
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
@@ -500,6 +506,46 @@ export default function Dashboard() {
           </Row>
         </Col>
       </Row>
+
+      {/* Grain Summary */}
+      <Card
+        title={
+          <span>
+            🌾 {t.dashboard.grainSummary}
+            <span style={{ color: 'var(--text-tertiary)', fontSize: 12, marginLeft: 8 }}>
+              {t.dashboard.allStorages}
+            </span>
+          </span>
+        }
+        style={{ marginTop: 16, ...CARD }}
+      >
+        {grainSummary.length === 0 ? (
+          <Typography.Text style={{ color: 'var(--text-secondary)' }}>{t.dashboard.noGrainData}</Typography.Text>
+        ) : (
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            {grainSummary.map(item => (
+              <div key={item.grainType} style={{
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border)',
+                borderRadius: 8,
+                padding: '12px 20px',
+                minWidth: 150,
+              }}>
+                <div style={{ color: 'var(--text-tertiary)', fontSize: 12, marginBottom: 4 }}>
+                  {item.grainType}
+                </div>
+                <div style={{ color: 'var(--text-primary)', fontSize: 24, fontWeight: 600 }}>
+                  {item.totalTons.toFixed(1)}
+                  <span style={{ color: 'var(--text-tertiary)', fontSize: 13, marginLeft: 4 }}>т</span>
+                </div>
+                <div style={{ color: 'var(--text-disabled)', fontSize: 11, marginTop: 2 }}>
+                  {item.batchCount} {t.grain.batches}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

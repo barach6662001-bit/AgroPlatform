@@ -42,7 +42,7 @@ public class FuelController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateFuelTank([FromBody] CreateFuelTankRequest request, CancellationToken cancellationToken)
     {
-        var command = new CreateFuelTankCommand(request.Name, (FuelType)request.FuelType, request.CapacityLiters, request.PricePerLiter);
+        var command = new CreateFuelTankCommand(request.Name, (FuelType)request.FuelType, request.CapacityLiters);
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetFuelTanks), new { }, new { id });
     }
@@ -86,6 +86,5 @@ public class FuelController : ControllerBase
 public record CreateFuelTankRequest(
     string Name,
     int FuelType,
-    decimal CapacityLiters,
-    decimal? PricePerLiter
+    decimal CapacityLiters
 );
