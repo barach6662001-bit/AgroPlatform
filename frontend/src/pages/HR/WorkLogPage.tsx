@@ -127,8 +127,8 @@ export default function WorkLogPage() {
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setModalOpen(true)}
-              // button styles handled by CSS
             >
+              {/* button styles handled by CSS */}
               {t.hr.addWorkLog}
             </Button>
           ) : undefined
