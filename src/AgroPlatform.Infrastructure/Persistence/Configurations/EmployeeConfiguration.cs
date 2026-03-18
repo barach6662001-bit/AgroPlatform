@@ -21,6 +21,12 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.Property(e => e.Position)
             .HasMaxLength(100);
 
+        builder.Property(e => e.Department)
+            .HasMaxLength(100);
+
+        builder.Property(e => e.PhoneNumber)
+            .HasMaxLength(50);
+
         builder.Property(e => e.SalaryType)
             .IsRequired()
             .HasMaxLength(20)

@@ -8,7 +8,9 @@ public class Employee : AuditableEntity
     public string LastName { get; set; } = string.Empty;
     public string? Position { get; set; }
     public string? Department { get; set; }
+    public string? PhoneNumber { get; set; }
     public DateTime HireDate { get; set; }
+    public DateTime? DateOfBirth { get; set; }
     public string SalaryType { get; set; } = "Hourly"; // "Hourly" or "Piecework"
     public decimal? HourlyRate { get; set; }
     public decimal? PieceworkRate { get; set; }
