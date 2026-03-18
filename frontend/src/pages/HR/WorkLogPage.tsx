@@ -1,11 +1,11 @@
 import { useEffect, useState, useMemo } from 'react';
 import {
-  Table, Select, Button, Modal, Form, DatePicker, InputNumber, Input, message, Space,
+  Table, Select, Button, Modal, Form, DatePicker, InputNumber, Input, message, Space, Popconfirm,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { getWorkLogs, createWorkLog, getEmployees } from '../../api/hr';
+import { getWorkLogs, createWorkLog, updateWorkLog, deleteWorkLog, getEmployees } from '../../api/hr';
 import type { WorkLogDto, EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -21,6 +21,7 @@ export default function WorkLogPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingLog, setEditingLog] = useState<WorkLogDto | null>(null);
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const { hasRole } = useRole();
@@ -66,15 +67,43 @@ export default function WorkLogPage() {
       const workDate = values.workDate
         ? (values.workDate as { toISOString: () => string }).toISOString()
         : new Date().toISOString();
-      await createWorkLog({ ...values, workDate });
-      message.success(t.hr.addSuccess);
+      if (editingLog) {
+        await updateWorkLog(editingLog.id, { ...values, workDate });
+        message.success(t.hr.updateWorkLogSuccess);
+      } else {
+        await createWorkLog({ ...values, workDate });
+        message.success(t.hr.addSuccess);
+      }
       setModalOpen(false);
+      setEditingLog(null);
       form.resetFields();
       load();
     } catch {
       message.error(t.hr.addError);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleEditWorkLog = (log: WorkLogDto) => {
+    setEditingLog(log);
+    form.setFieldsValue({
+      workDate: dayjs(log.workDate),
+      hoursWorked: log.hoursWorked,
+      unitsProduced: log.unitsProduced,
+      workDescription: log.workDescription,
+      fieldId: log.fieldId,
+    });
+    setModalOpen(true);
+  };
+
+  const handleDeleteWorkLog = async (id: string) => {
+    try {
+      await deleteWorkLog(id);
+      message.success(t.hr.deleteWorkLogSuccess);
+      load();
+    } catch {
+      message.error(t.hr.addError);
     }
   };
 
@@ -115,6 +144,21 @@ export default function WorkLogPage() {
       key: 'workDescription',
       render: (v?: string) => v ?? '—',
     },
+    ...(canWrite ? [{
+      title: t.common.actions,
+      key: 'actions',
+      width: 100,
+      render: (_: unknown, record: WorkLogDto) => (
+        <Space>
+          <Button size="small" icon={<EditOutlined />}
+            onClick={() => handleEditWorkLog(record)} />
+          <Popconfirm title={t.hr.deleteWorkLogConfirm}
+            onConfirm={() => handleDeleteWorkLog(record.id)}>
+            <Button size="small" danger icon={<DeleteOutlined />} />
+          </Popconfirm>
+        </Space>
+      ),
+    }] : []),
   ];
 
   return (
@@ -173,23 +217,26 @@ export default function WorkLogPage() {
               <strong style={{ color: '#3fb950' }}>{totalAccrued.toFixed(2)} ₴</strong>
             </Table.Summary.Cell>
             <Table.Summary.Cell index={5} />
+            <Table.Summary.Cell index={6} />
           </Table.Summary.Row>
         )}
       />
 
       <Modal
-        title={t.hr.addWorkLogTitle}
+        title={editingLog ? t.hr.editWorkLog : t.hr.addWorkLogTitle}
         open={modalOpen}
         onOk={handleAdd}
-        onCancel={() => { setModalOpen(false); form.resetFields(); }}
+        onCancel={() => { setModalOpen(false); setEditingLog(null); form.resetFields(); }}
         confirmLoading={saving}
         okText={t.common.save}
         cancelText={t.common.cancel}
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="employeeId" label={`${t.hr.lastName} / ${t.hr.firstName}`} rules={[{ required: true, message: t.common.required }]}>
-            <Select options={employeeOptions} showSearch optionFilterProp="label" />
-          </Form.Item>
+          {!editingLog && (
+            <Form.Item name="employeeId" label={`${t.hr.lastName} / ${t.hr.firstName}`} rules={[{ required: true, message: t.common.required }]}>
+              <Select options={employeeOptions} showSearch optionFilterProp="label" />
+            </Form.Item>
+          )}
           <Form.Item name="workDate" label={t.common.date} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker style={{ width: '100%' }} format="DD.MM.YYYY" />
           </Form.Item>
