@@ -2,7 +2,7 @@ import { Form, Input, Button, Card, Typography, Select, message, Dropdown } from
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { register } from '../api/auth';
-import { useTranslation } from '../i18n';
+import { useTranslation, languages } from '../i18n';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -34,10 +34,16 @@ export default function Register() {
     }
   };
 
-  const langMenuItems = [
-    { key: 'uk', label: '🇺🇦 Українська' },
-    { key: 'en', label: '🇬🇧 English' },
-  ];
+  const currentLang = languages.find(l => l.code === lang);
+  const langMenuItems = languages.map(l => ({
+    key: l.code,
+    label: (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 20, lineHeight: 1 }}>{l.flag}</span>
+        <span>{l.label}</span>
+      </div>
+    ),
+  }));
 
   return (
     <div
@@ -58,8 +64,13 @@ export default function Register() {
             onClick: ({ key }) => setLang(key as 'uk' | 'en'),
           }}
         >
-          <Button type="default">
-            {lang === 'uk' ? '🇺🇦 UA' : '🇬🇧 EN'}
+          <Button type="text" style={{ color: '#8b949e', padding: '4px 8px' }}>
+            <span style={{ fontSize: 20, lineHeight: 1, marginRight: 4 }}>
+              {currentLang?.flag}
+            </span>
+            <span style={{ fontSize: 13, fontWeight: 500 }}>
+              {currentLang?.shortLabel}
+            </span>
           </Button>
         </Dropdown>
       </div>
