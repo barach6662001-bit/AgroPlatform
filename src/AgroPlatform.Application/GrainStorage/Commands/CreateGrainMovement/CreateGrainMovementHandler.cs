@@ -29,7 +29,11 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
             MovementDate = request.MovementDate,
             Reason = request.Reason,
             Notes = request.Notes,
+            PricePerTon = request.PricePerTon,
         };
+
+        if (request.MovementType == "Out" && request.PricePerTon.HasValue)
+            movement.TotalRevenue = request.QuantityTons * request.PricePerTon.Value;
 
         _context.GrainMovements.Add(movement);
 

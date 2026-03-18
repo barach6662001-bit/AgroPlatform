@@ -8,5 +8,7 @@ public record CreateAgroOperationCommand(
     AgroOperationType OperationType,
     DateTime PerformedAt,
     string? Description,
-    decimal? AreaProcessed
+    decimal? AreaProcessed,
+    Guid? PerformedByEmployeeId = null,
+    string? PerformedByName = null
 ) : IRequest<Guid>;

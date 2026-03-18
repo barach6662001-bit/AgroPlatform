@@ -9,5 +9,6 @@ public record GetFieldsQuery(
     CropType? CurrentCrop,
     string? SearchTerm,
     int Page = 1,
-    int PageSize = 20
+    int PageSize = 20,
+    LandOwnershipType[]? OwnershipTypes = null
 ) : IRequest<PaginatedResult<FieldDto>>;

@@ -13,6 +13,8 @@ public class AgroOperation : AuditableEntity
     public bool IsCompleted { get; set; }
     public string? Description { get; set; }
     public decimal? AreaProcessed { get; set; }
+    public Guid? PerformedByEmployeeId { get; set; }
+    public string? PerformedByName { get; set; }
 
     public Field Field { get; set; } = null!;
     public ICollection<AgroOperationResource> Resources { get; set; } = new List<AgroOperationResource>();

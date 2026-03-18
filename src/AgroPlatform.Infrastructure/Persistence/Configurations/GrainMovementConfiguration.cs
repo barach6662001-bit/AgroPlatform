@@ -16,5 +16,11 @@ public class GrainMovementConfiguration : IEntityTypeConfiguration<GrainMovement
 
         builder.Property(m => m.QuantityTons)
             .HasPrecision(18, 4);
+
+        builder.Property(m => m.PricePerTon)
+            .HasPrecision(18, 2);
+
+        builder.Property(m => m.TotalRevenue)
+            .HasPrecision(18, 2);
     }
 }

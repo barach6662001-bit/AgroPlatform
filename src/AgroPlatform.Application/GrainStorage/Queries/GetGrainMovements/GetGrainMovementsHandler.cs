@@ -28,6 +28,8 @@ public class GetGrainMovementsHandler : IRequestHandler<GetGrainMovementsQuery, 
                 MovementDate = m.MovementDate,
                 Reason = m.Reason,
                 Notes = m.Notes,
+                PricePerTon = m.PricePerTon,
+                TotalRevenue = m.TotalRevenue,
             })
             .ToListAsync(cancellationToken);
     }

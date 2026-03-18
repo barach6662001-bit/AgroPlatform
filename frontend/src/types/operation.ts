@@ -11,6 +11,8 @@ export interface AgroOperationDto {
   isCompleted: boolean;
   description?: string;
   areaProcessed?: number;
+  performedByEmployeeId?: string;
+  performedByName?: string;
 }
 
 export interface AgroOperationResourceDto {

@@ -3,13 +3,16 @@ import {
   Table, Tag, Space, Select, message, Button, Modal, Form, Input,
   InputNumber, DatePicker, Card, Typography,
 } from 'antd';
-import { PlusOutlined, DollarOutlined } from '@ant-design/icons';
+import { PlusOutlined, DollarOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { getLeaseSummary, createLease, addLeasePayment, getLeases } from '../../api/leases';
+import { getLeaseSummary, createLease, addLeasePayment, getLeases, updateLease } from '../../api/leases';
+import { getFields } from '../../api/fields';
 import type { LeaseSummaryDto, LandLeaseDto } from '../../types/lease';
+import type { FieldDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import dayjs from 'dayjs';
 
 const { Text } = Typography;
 
@@ -23,14 +26,18 @@ const statusColors: Record<string, string> = {
 export default function LeasePage() {
   const [summary, setSummary] = useState<LeaseSummaryDto[]>([]);
   const [leases, setLeases] = useState<LandLeaseDto[]>([]);
+  const [fields, setFields] = useState<FieldDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [year, setYear] = useState(new Date().getFullYear());
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingLease, setEditingLease] = useState<LandLeaseDto | null>(null);
   const [payModalOpen, setPayModalOpen] = useState(false);
   const [payIsAdvance, setPayIsAdvance] = useState(false);
   const [selectedLeaseId, setSelectedLeaseId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [addForm] = Form.useForm();
+  const [editForm] = Form.useForm();
   const [payForm] = Form.useForm();
   const { t } = useTranslation();
   const { hasRole } = useRole();
@@ -42,6 +49,12 @@ export default function LeasePage() {
     return { value: y, label: String(y) };
   });
 
+  useEffect(() => {
+    getFields({ ownershipType: [1, 2], pageSize: 200 })
+      .then((r) => setFields(r.items))
+      .catch(() => {/* ignore */});
+  }, []);
+
   const load = () => {
     setLoading(true);
     Promise.all([getLeaseSummary(year), getLeases()])
@@ -52,9 +65,9 @@ export default function LeasePage() {
 
   useEffect(() => { load(); }, [year]);
 
-  const leaseOptions = leases.map((l) => ({
-    value: l.id,
-    label: `${l.fieldName} — ${l.ownerName}`,
+  const fieldOptions = fields.map((f) => ({
+    value: f.id,
+    label: `${f.name} (${f.areaHectares.toFixed(1)} га)`,
   }));
 
   const handleAddLease = async () => {
@@ -77,6 +90,43 @@ export default function LeasePage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleEditLease = async () => {
+    if (!editingLease) return;
+    try {
+      const values = await editForm.validateFields();
+      setSaving(true);
+      const contractEndDate = values.contractEndDate
+        ? (values.contractEndDate as { toISOString: () => string }).toISOString()
+        : undefined;
+      await updateLease(editingLease.id, { ...values, contractEndDate });
+      message.success(t.lease.editSuccess);
+      setEditModalOpen(false);
+      editForm.resetFields();
+      setEditingLease(null);
+      load();
+    } catch {
+      message.error(t.lease.editError);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const openEditModal = (lease: LandLeaseDto) => {
+    setEditingLease(lease);
+    editForm.setFieldsValue({
+      ownerName: lease.ownerName,
+      ownerPhone: lease.ownerPhone,
+      contractNumber: lease.contractNumber,
+      annualPayment: lease.annualPayment,
+      paymentType: lease.paymentType,
+      grainPaymentTons: lease.grainPaymentTons,
+      contractEndDate: lease.contractEndDate ? dayjs(lease.contractEndDate) : undefined,
+      notes: lease.notes,
+      isActive: lease.isActive,
+    });
+    setEditModalOpen(true);
   };
 
   const handlePay = async () => {
@@ -155,6 +205,7 @@ export default function LeasePage() {
           record.status === 'Partial' ? t.lease.statusPartial :
           record.status === 'Overpaid' ? t.lease.statusOverpaid :
           t.lease.statusUnpaid;
+        const lease = leases.find((l) => l.id === record.landLeaseId);
         return (
           <Space>
             <Tag color={statusColors[record.status]}>{statusLabel}</Tag>
@@ -166,6 +217,9 @@ export default function LeasePage() {
                 <Button size="small" onClick={() => openPayModal(record.landLeaseId, true)}>
                   {t.lease.makeAdvance}
                 </Button>
+                {lease && (
+                  <Button size="small" icon={<EditOutlined />} onClick={() => openEditModal(lease)} />
+                )}
               </>
             )}
           </Space>
@@ -217,7 +271,12 @@ export default function LeasePage() {
       >
         <Form form={addForm} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item name="fieldId" label={t.lease.field} rules={[{ required: true, message: t.common.required }]}>
-            <Select options={leaseOptions.length > 0 ? leaseOptions : []} showSearch placeholder={t.lease.field} />
+            <Select
+              showSearch
+              placeholder={t.lease.selectField}
+              options={fieldOptions}
+              optionFilterProp="label"
+            />
           </Form.Item>
           <Form.Item name="ownerName" label={t.lease.ownerName} rules={[{ required: true, message: t.common.required }]}>
             <Input />
@@ -243,6 +302,49 @@ export default function LeasePage() {
           </Form.Item>
           <Form.Item name="contractStartDate" label={t.lease.contractStart} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="contractEndDate" label={t.lease.contractEnd}>
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="notes" label={t.common.notes}>
+            <Input.TextArea rows={2} />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Edit Lease Modal */}
+      <Modal
+        title={t.lease.editLease}
+        open={editModalOpen}
+        onOk={handleEditLease}
+        onCancel={() => { setEditModalOpen(false); editForm.resetFields(); setEditingLease(null); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={saving}
+        width={600}
+      >
+        <Form form={editForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="ownerName" label={t.lease.ownerName} rules={[{ required: true, message: t.common.required }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="ownerPhone" label={t.lease.ownerPhone}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="contractNumber" label={t.lease.contractNumber}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="annualPayment" label={t.lease.annualPayment} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="paymentType" label={t.lease.paymentType}>
+            <Select options={[
+              { value: 'Cash', label: t.lease.cash },
+              { value: 'Grain', label: t.lease.grain },
+              { value: 'Mixed', label: t.lease.mixed },
+            ]} />
+          </Form.Item>
+          <Form.Item name="grainPaymentTons" label={t.lease.grainTons}>
+            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="contractEndDate" label={t.lease.contractEnd}>
             <DatePicker style={{ width: '100%' }} />

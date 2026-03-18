@@ -29,6 +29,8 @@ export interface FieldEfficiencyDto {
   totalCosts: number;
   costPerHectare: number;
   yieldPerHectare: number | null;
+  totalHarvestTons: number | null;
+  revenueTotal: number | null;
 }
 
 export interface DashboardDto {

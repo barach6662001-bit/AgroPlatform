@@ -2,7 +2,7 @@ import apiClient from './axios';
 import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload } from '../types/field';
 import type { PaginatedResult } from '../types/common';
 
-export const getFields = (params?: { page?: number; pageSize?: number; search?: string }) =>
+export const getFields = (params?: { page?: number; pageSize?: number; search?: string; ownershipType?: number[] }) =>
   apiClient.get<PaginatedResult<FieldDto>>('/api/fields', { params }).then((r) => r.data);
 
 export const getFieldById = (id: string) =>

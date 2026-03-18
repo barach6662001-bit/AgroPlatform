@@ -26,6 +26,15 @@ public class GrainBatchConfiguration : IEntityTypeConfiguration<GrainBatch>
         builder.Property(b => b.PricePerTon)
             .HasPrecision(18, 2);
 
+        builder.Property(b => b.MoisturePercent)
+            .HasPrecision(5, 2);
+
+        builder.HasOne(b => b.SourceField)
+            .WithMany()
+            .HasForeignKey(b => b.SourceFieldId)
+            .OnDelete(DeleteBehavior.SetNull)
+            .IsRequired(false);
+
         builder.HasMany(b => b.Movements)
             .WithOne(m => m.GrainBatch)
             .HasForeignKey(m => m.GrainBatchId)
