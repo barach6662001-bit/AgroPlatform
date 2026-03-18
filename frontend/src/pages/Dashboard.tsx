@@ -51,11 +51,13 @@ interface StatCardProps {
 }
 
 function StatCard({ label, value, subtitle, icon }: StatCardProps) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div
       style={{
         background: 'var(--bg-surface)',
-        border: '1px solid var(--border)',
+        border: `1px solid ${hovered ? 'var(--border-strong)' : 'var(--border)'}`,
         borderRadius: 'var(--radius-lg)',
         padding: '16px 20px',
         position: 'relative',
@@ -63,8 +65,8 @@ function StatCard({ label, value, subtitle, icon }: StatCardProps) {
         transition: 'border-color 0.15s ease',
         cursor: 'default',
       }}
-      onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--border-strong)')}
-      onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
         <span style={{ fontSize: 11, color: 'var(--text-tertiary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
