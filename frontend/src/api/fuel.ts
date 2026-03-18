@@ -25,7 +25,6 @@ export const createFuelSupply = (data: {
 export const createFuelIssue = (data: {
   fuelTankId: string;
   quantityLiters: number;
-  pricePerLiter?: number;
   transactionDate: string;
   machineId?: string;
   driverName?: string;
