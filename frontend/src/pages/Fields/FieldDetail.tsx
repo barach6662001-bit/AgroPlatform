@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined } from '@ant-design/icons';
+import apiClient from '../../api/axios';
 import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry, updateField } from '../../api/fields';
 import { getLeases, createLease, addLeasePayment } from '../../api/leases';
 import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } from '../../types/field';
@@ -103,9 +104,8 @@ export default function FieldDetail() {
     setCadastreLoading(true);
     try {
       const cadnum = field.cadastralNumber.replace(/\s/g, '');
-      const response = await fetch(`/api/cadastre/parcel?cadnum=${encodeURIComponent(cadnum)}`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const geojson = await response.json();
+      const response = await apiClient.get(`/api/cadastre/parcel`, { params: { cadnum } });
+      const geojson = response.data;
 
       if (!geojson.features || geojson.features.length === 0) {
         message.warning(t.fields.cadastreNotFound);
