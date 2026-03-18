@@ -155,12 +155,12 @@ export default function SalaryPage() {
                   </Row>
                   {canWrite && (
                     <Space>
+                      {/* button styles handled by CSS */}
                       <Button
                         type="primary"
                         size="small"
                         icon={<DollarOutlined />}
                         onClick={() => openPayModal(s.employeeId, false)}
-                        // button styles handled by CSS
                       >
                         {t.hr.payNow}
                       </Button>
