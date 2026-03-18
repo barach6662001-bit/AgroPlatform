@@ -18,11 +18,11 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
       onClose={onClose}
       width={240}
       styles={{
-        header: { background: '#0D1117', borderBottom: '1px solid #30363D', color: '#2DD4BF' },
-        body: { background: '#0D1117', padding: 0 },
+        header: { background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)', color: 'var(--accent)' },
+        body: { background: 'var(--bg-surface)', padding: 0 },
         mask: { background: 'rgba(0,0,0,0.6)' },
       }}
-      closeIcon={<span style={{ color: '#E6EDF3' }}>✕</span>}
+      closeIcon={<span style={{ color: 'var(--text-primary)' }}>✕</span>}
     >
       <div onClick={onClose}>
         <Sidebar />

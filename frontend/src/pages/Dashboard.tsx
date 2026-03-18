@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { Row, Col, Card, Spin, message, Typography, Table, Tag, List, Badge } from 'antd';
 import {
   AimOutlined,
@@ -39,8 +40,66 @@ import { CHART_COLORS } from '../theme/darkTheme';
 
 dayjs.extend(relativeTime);
 
-const CARD = { background: '#161b22', border: '1px solid #30363d', borderRadius: 12 };
+const CARD = { background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12 };
 const SECTION_GAP = { marginTop: 24 };
+
+interface StatCardProps {
+  label: string;
+  value: ReactNode;
+  subtitle?: string;
+  icon?: ReactNode;
+}
+
+function StatCard({ label, value, subtitle, icon }: StatCardProps) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      style={{
+        background: 'var(--bg-surface)',
+        border: `1px solid ${hovered ? 'var(--border-strong)' : 'var(--border)'}`,
+        borderRadius: 'var(--radius-lg)',
+        padding: '16px 20px',
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'border-color 0.15s ease',
+        cursor: 'default',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+        <span style={{ fontSize: 11, color: 'var(--text-tertiary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          {label}
+        </span>
+        {icon && (
+          <div style={{
+            width: 28,
+            height: 28,
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-md)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--text-secondary)',
+            fontSize: 13,
+          }}>
+            {icon}
+          </div>
+        )}
+      </div>
+      <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.5px', lineHeight: 1 }}>
+        {value}
+      </div>
+      {subtitle && (
+        <div style={{ marginTop: 6, fontSize: 12, color: 'var(--text-tertiary)' }}>
+          {subtitle}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const [data, setData] = useState<DashboardDto | null>(null);
@@ -101,7 +160,7 @@ export default function Dashboard() {
       dataIndex: 'name',
       key: 'name',
       ellipsis: true,
-      render: (v: string) => <Typography.Text style={{ color: '#e6edf3' }}>{v}</Typography.Text>,
+      render: (v: string) => <Typography.Text style={{ color: 'var(--text-primary)' }}>{v}</Typography.Text>,
     },
     {
       title: t.fields.currentCrop,
@@ -110,13 +169,13 @@ export default function Dashboard() {
       render: (crop: string | undefined) =>
         crop
           ? <Tag color="green" style={{ borderRadius: 4, fontSize: 11 }}>{t.crops[crop as keyof typeof t.crops] || crop}</Tag>
-          : <Tag style={{ borderRadius: 4, fontSize: 11, color: '#8b949e', border: '1px solid #30363d', background: 'transparent' }}>{t.fields.notSeeded}</Tag>,
+          : <Tag style={{ borderRadius: 4, fontSize: 11, color: 'var(--text-secondary)', border: '1px solid var(--border)', background: 'transparent' }}>{t.fields.notSeeded}</Tag>,
     },
     {
       title: t.fields.area,
       dataIndex: 'areaHectares',
       key: 'areaHectares',
-      render: (v: number) => <Typography.Text style={{ color: '#8b949e', fontSize: 12 }}>{v.toFixed(1)} ha</Typography.Text>,
+      render: (v: number) => <Typography.Text style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{v.toFixed(1)} ha</Typography.Text>,
     },
   ];
 
@@ -133,13 +192,13 @@ export default function Dashboard() {
       dataIndex: 'name',
       key: 'name',
       ellipsis: true,
-      render: (v: string) => <Typography.Text style={{ color: '#e6edf3' }}>{v}</Typography.Text>,
+      render: (v: string) => <Typography.Text style={{ color: 'var(--text-primary)' }}>{v}</Typography.Text>,
     },
     {
       title: t.machinery.type,
       dataIndex: 'type',
       key: 'type',
-      render: (v: string) => <Typography.Text style={{ color: '#8b949e', fontSize: 12 }}>{t.machineryTypes[v as keyof typeof t.machineryTypes] || v}</Typography.Text>,
+      render: (v: string) => <Typography.Text style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.machineryTypes[v as keyof typeof t.machineryTypes] || v}</Typography.Text>,
     },
     {
       title: t.machinery.status,
@@ -155,9 +214,9 @@ export default function Dashboard() {
 
   // ── Notification icon ─────────────────────────────────────────────────────
   const notifIcon = (type: string) => {
-    if (type === 'warning') return <WarningOutlined style={{ color: '#F59E0B', fontSize: 16 }} />;
-    if (type === 'error') return <CloseCircleOutlined style={{ color: '#EF4444', fontSize: 16 }} />;
-    return <InfoCircleOutlined style={{ color: '#3B82F6', fontSize: 16 }} />;
+    if (type === 'warning') return <WarningOutlined style={{ color: 'var(--warning)', fontSize: 16 }} />;
+    if (type === 'error') return <CloseCircleOutlined style={{ color: 'var(--error)', fontSize: 16 }} />;
+    return <InfoCircleOutlined style={{ color: 'var(--info)', fontSize: 16 }} />;
   };
 
   const hasChartData = operationsData.length > 0 || areaData.length > 0 || costTrendData.length > 0;
@@ -166,113 +225,59 @@ export default function Dashboard() {
     <div className="page-enter">
       <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
 
-      {/* KPI Row 1 */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
-          <div style={{
-            background: '#161b22',
-            border: '1px solid #30363d',
-            borderRadius: 12,
-            padding: '16px 20px',
-          }}>
-            <div style={{ color: '#8b949e', fontSize: 12, marginBottom: 8, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <AimOutlined />{t.dashboard.fields}
-            </div>
-            <div style={{ color: '#e6edf3', fontSize: 28, fontWeight: 600, letterSpacing: '-0.5px' }}>{data.totalFields}</div>
-            <div style={{ color: '#8b949e', fontSize: 12, marginTop: 4 }}>{data.totalAreaHectares.toFixed(0)} ha {t.dashboard.areaLabel}</div>
-          </div>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <div style={{
-            background: '#161b22',
-            border: '1px solid #30363d',
-            borderRadius: 12,
-            padding: '16px 20px',
-          }}>
-            <div style={{ color: '#8b949e', fontSize: 12, marginBottom: 8, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <CarOutlined />{t.dashboard.activeMachinery}
-            </div>
-            <div style={{ color: '#e6edf3', fontSize: 28, fontWeight: 600, letterSpacing: '-0.5px' }}>{data.activeMachines}<span style={{ fontSize: 16, color: '#8b949e', fontWeight: 400 }}>/{data.totalMachines}</span></div>
-            <div style={{ color: '#8b949e', fontSize: 12, marginTop: 4 }}>{cropCount} {t.dashboard.cropTypes}</div>
-          </div>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <div style={{
-            background: '#161b22',
-            border: '1px solid #30363d',
-            borderRadius: 12,
-            padding: '16px 20px',
-          }}>
-            <div style={{ color: '#8b949e', fontSize: 12, marginBottom: 8, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <InboxOutlined />{t.dashboard.warehouses}
-            </div>
-            <div style={{ color: '#e6edf3', fontSize: 28, fontWeight: 600, letterSpacing: '-0.5px' }}>{data.totalWarehouseItems}</div>
-          </div>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <div style={{
-            background: '#161b22',
-            border: '1px solid #30363d',
-            borderRadius: 12,
-            padding: '16px 20px',
-          }}>
-            <div style={{ color: '#8b949e', fontSize: 12, marginBottom: 8, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <ToolOutlined />{t.dashboard.cropStatus}
-            </div>
-            <div style={{ color: '#e6edf3', fontSize: 28, fontWeight: 600, letterSpacing: '-0.5px' }}>{Object.keys(data.areaByCrop).length}</div>
-            <div style={{ color: '#8b949e', fontSize: 12, marginTop: 4 }}>{topCropName !== '—' ? topCropName : t.dashboard.cropTypes}</div>
-          </div>
-        </Col>
-      </Row>
-
-      {/* KPI Row 2 */}
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} sm={8}>
-          <div style={{
-            background: '#161b22',
-            border: '1px solid #30363d',
-            borderRadius: 12,
-            padding: '16px 20px',
-          }}>
-            <div style={{ color: '#8b949e', fontSize: 12, marginBottom: 8, fontWeight: 500 }}>{t.dashboard.area}</div>
-            <div style={{ color: '#e6edf3', fontSize: 28, fontWeight: 600, letterSpacing: '-0.5px' }}>{data.totalAreaHectares.toFixed(1)}<span style={{ fontSize: 14, color: '#8b949e', marginLeft: 4 }}>ha</span></div>
-          </div>
-        </Col>
-        <Col xs={24} sm={8}>
-          <div style={{
-            background: '#161b22',
-            border: '1px solid #30363d',
-            borderRadius: 12,
-            padding: '16px 20px',
-          }}>
-            <div style={{ color: '#8b949e', fontSize: 12, marginBottom: 8, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <ClockCircleOutlined />{t.dashboard.hoursWorked}
-            </div>
-            <div style={{ color: '#e6edf3', fontSize: 28, fontWeight: 600, letterSpacing: '-0.5px' }}>{data.totalHoursWorked.toFixed(1)}<span style={{ fontSize: 14, color: '#8b949e', marginLeft: 4 }}>h</span></div>
-          </div>
-        </Col>
-        <Col xs={24} sm={8}>
-          <div style={{
-            background: '#161b22',
-            border: '1px solid #30363d',
-            borderRadius: 12,
-            padding: '16px 20px',
-          }}>
-            <div style={{ color: '#8b949e', fontSize: 12, marginBottom: 8, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <DollarOutlined />{t.dashboard.costs}
-            </div>
-            <div style={{ color: '#f85149', fontSize: 28, fontWeight: 600, letterSpacing: '-0.5px' }}>{data.totalCosts.toFixed(0)}<span style={{ fontSize: 14, color: '#8b949e', marginLeft: 4 }}>UAH</span></div>
-          </div>
-        </Col>
-      </Row>
+      {/* KPI Grid */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+        gap: 12,
+        marginBottom: 24,
+      }}>
+        <StatCard
+          label={t.dashboard.fields}
+          value={data.totalFields}
+          subtitle={`${data.totalAreaHectares.toFixed(0)} ha ${t.dashboard.areaLabel}`}
+          icon={<AimOutlined />}
+        />
+        <StatCard
+          label={t.dashboard.activeMachinery}
+          value={<>{data.activeMachines}<span style={{ fontSize: 16, color: 'var(--text-tertiary)', fontWeight: 400 }}>/{data.totalMachines}</span></>}
+          subtitle={`${cropCount} ${t.dashboard.cropTypes}`}
+          icon={<CarOutlined />}
+        />
+        <StatCard
+          label={t.dashboard.warehouses}
+          value={data.totalWarehouseItems}
+          icon={<InboxOutlined />}
+        />
+        <StatCard
+          label={t.dashboard.cropStatus}
+          value={Object.keys(data.areaByCrop).length}
+          subtitle={topCropName !== '—' ? topCropName : t.dashboard.cropTypes}
+          icon={<ToolOutlined />}
+        />
+        <StatCard
+          label={t.dashboard.area}
+          value={<>{data.totalAreaHectares.toFixed(1)}<span style={{ fontSize: 14, color: 'var(--text-tertiary)', marginLeft: 4 }}>ha</span></>}
+        />
+        <StatCard
+          label={t.dashboard.hoursWorked}
+          value={<>{data.totalHoursWorked.toFixed(1)}<span style={{ fontSize: 14, color: 'var(--text-tertiary)', marginLeft: 4 }}>h</span></>}
+          icon={<ClockCircleOutlined />}
+        />
+        <StatCard
+          label={t.dashboard.costs}
+          value={<>{data.totalCosts.toFixed(0)}<span style={{ fontSize: 14, color: 'var(--text-tertiary)', marginLeft: 4 }}>₴</span></>}
+          icon={<DollarOutlined />}
+        />
+      </div>
 
       {/* Alerts section */}
       {(data.underRepairMachines > 0 || data.pendingOperations > 0) && (
-        <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
+        <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
           {data.underRepairMachines > 0 && (
             <Col xs={24} sm={12}>
               <div className="alert-card error">
-                <Typography.Text style={{ color: '#EF4444', fontWeight: 600, fontSize: 13 }}>
+                <Typography.Text style={{ color: 'var(--error)', fontWeight: 600, fontSize: 13 }}>
                   <WarningOutlined style={{ marginRight: 8 }} />
                   {data.underRepairMachines} {t.dashboard.machinesUnderRepair}
                 </Typography.Text>
@@ -282,7 +287,7 @@ export default function Dashboard() {
           {data.pendingOperations > 0 && (
             <Col xs={24} sm={12}>
               <div className="alert-card">
-                <Typography.Text style={{ color: '#F59E0B', fontWeight: 600, fontSize: 13 }}>
+                <Typography.Text style={{ color: 'var(--warning)', fontWeight: 600, fontSize: 13 }}>
                   <ClockCircleOutlined style={{ marginRight: 8 }} />
                   {data.pendingOperations} {t.dashboard.pendingOpsAlert}
                 </Typography.Text>
@@ -299,11 +304,11 @@ export default function Dashboard() {
             <Card title={t.dashboard.costTrend} style={CARD}>
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={costTrendData} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1f2d42" />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94A3B8' }} stroke="#1f2d42" />
-                  <YAxis stroke="#1f2d42" tick={{ fill: '#94A3B8', fontSize: 11 }} width={48} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }} stroke="var(--border)" />
+                  <YAxis stroke="var(--border)" tick={{ fill: 'var(--text-tertiary)', fontSize: 11 }} width={48} />
                   <Tooltip />
-                  <Line type="monotone" dataKey="cost" stroke="#EF4444" name={t.dashboard.costsUAH} strokeWidth={2} />
+                  <Line type="monotone" dataKey="cost" stroke="var(--error)" name={t.dashboard.costsUAH} strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </Card>
@@ -363,7 +368,7 @@ export default function Dashboard() {
             <Col span={24}>
               <Card
                 title={
-                  <Typography.Text strong style={{ color: '#e6edf3' }}>
+                  <Typography.Text strong style={{ color: 'var(--text-primary)' }}>
                     {t.dashboard.fieldsStatus}
                   </Typography.Text>
                 }
@@ -376,7 +381,7 @@ export default function Dashboard() {
                   rowKey="id"
                   size="small"
                   pagination={false}
-                  locale={{ emptyText: <Typography.Text style={{ color: '#8b949e' }}>{t.dashboard.noFieldsData}</Typography.Text> }}
+                  locale={{ emptyText: <Typography.Text style={{ color: 'var(--text-secondary)' }}>{t.dashboard.noFieldsData}</Typography.Text> }}
                   scroll={{ x: true }}
                 />
               </Card>
@@ -386,7 +391,7 @@ export default function Dashboard() {
             <Col span={24}>
               <Card
                 title={
-                  <Typography.Text strong style={{ color: '#e6edf3' }}>
+                  <Typography.Text strong style={{ color: 'var(--text-primary)' }}>
                     {t.dashboard.machineryStatus}
                   </Typography.Text>
                 }
@@ -399,7 +404,7 @@ export default function Dashboard() {
                   rowKey="id"
                   size="small"
                   pagination={false}
-                  locale={{ emptyText: <Typography.Text style={{ color: '#8b949e' }}>{t.dashboard.noMachineryData}</Typography.Text> }}
+                  locale={{ emptyText: <Typography.Text style={{ color: 'var(--text-secondary)' }}>{t.dashboard.noMachineryData}</Typography.Text> }}
                   scroll={{ x: true }}
                 />
               </Card>
@@ -414,7 +419,7 @@ export default function Dashboard() {
             <Col span={24}>
               <Card
                 title={
-                  <Typography.Text strong style={{ color: '#e6edf3' }}>
+                  <Typography.Text strong style={{ color: 'var(--text-primary)' }}>
                     {t.dashboard.warehouseOverview}
                   </Typography.Text>
                 }
@@ -426,20 +431,20 @@ export default function Dashboard() {
                   rowKey="itemId"
                   size="small"
                   pagination={false}
-                  locale={{ emptyText: <Typography.Text style={{ color: '#8b949e' }}>—</Typography.Text> }}
+                  locale={{ emptyText: <Typography.Text style={{ color: 'var(--text-secondary)' }}>—</Typography.Text> }}
                   columns={[
                     {
                       title: t.warehouses.item,
                       dataIndex: 'itemName',
                       key: 'itemName',
                       ellipsis: true,
-                      render: (v: string) => <Typography.Text style={{ color: '#e6edf3', fontSize: 13 }}>{v}</Typography.Text>,
+                      render: (v: string) => <Typography.Text style={{ color: 'var(--text-primary)', fontSize: 13 }}>{v}</Typography.Text>,
                     },
                     {
                       title: t.warehouses.balance,
                       key: 'balance',
                       render: (_: unknown, r: { totalBalance: number; baseUnit: string }) => (
-                        <Typography.Text style={{ color: '#8b949e', fontSize: 12 }}>
+                        <Typography.Text style={{ color: 'var(--text-secondary)', fontSize: 12 }}>
                           {r.totalBalance.toFixed(1)} {r.baseUnit}
                         </Typography.Text>
                       ),
@@ -453,14 +458,14 @@ export default function Dashboard() {
             <Col span={24}>
               <Card
                 title={
-                  <Typography.Text strong style={{ color: '#e6edf3' }}>
+                  <Typography.Text strong style={{ color: 'var(--text-primary)' }}>
                     {t.dashboard.activityFeed}
                   </Typography.Text>
                 }
                 style={CARD}
               >
                 {notifications.length === 0 ? (
-                  <Typography.Text style={{ color: '#8b949e', fontSize: 13 }}>
+                  <Typography.Text style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
                     {t.dashboard.noActivity}
                   </Typography.Text>
                 ) : (
@@ -469,18 +474,18 @@ export default function Dashboard() {
                     split={false}
                     renderItem={(item) => (
                       <List.Item
-                        style={{ padding: '8px 0', borderBottom: '1px solid #30363d', alignItems: 'flex-start' }}
-                        extra={!item.isRead ? <Badge dot color="#3fb950" style={{ marginTop: 6 }} /> : null}
+                        style={{ padding: '8px 0', borderBottom: '1px solid var(--border)', alignItems: 'flex-start' }}
+                        extra={!item.isRead ? <Badge dot color="var(--accent)" style={{ marginTop: 6 }} /> : null}
                       >
                         <List.Item.Meta
                           avatar={notifIcon(item.type)}
                           title={
-                            <Typography.Text style={{ fontSize: 13, color: item.isRead ? '#8b949e' : '#e6edf3' }}>
+                            <Typography.Text style={{ fontSize: 13, color: item.isRead ? 'var(--text-secondary)' : 'var(--text-primary)' }}>
                               {item.title}
                             </Typography.Text>
                           }
                           description={
-                            <Typography.Text style={{ color: '#8b949e', fontSize: 11 }}>
+                            <Typography.Text style={{ color: 'var(--text-secondary)', fontSize: 11 }}>
                               <ClockCircleOutlined style={{ marginRight: 4 }} />
                               {dayjs(item.createdAtUtc).fromNow()}
                             </Typography.Text>
