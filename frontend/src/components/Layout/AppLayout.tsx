@@ -56,38 +56,45 @@ export default function AppLayout() {
         }}>
           {/* Logo */}
           <div style={{
-            padding: '0 16px',
-            height: 56,
+            padding: '16px 20px',
+            borderBottom: '1px solid #21262d',
             display: 'flex',
             alignItems: 'center',
             gap: 10,
-            borderBottom: '1px solid var(--border)',
             flexShrink: 0,
           }}>
             <div style={{
-              width: 30,
-              height: 30,
-              background: 'var(--accent)',
+              width: 32,
+              height: 32,
+              background: 'linear-gradient(135deg, #238636 0%, #2ea043 100%)',
               borderRadius: 8,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              boxShadow: 'var(--shadow-glow)',
+              boxShadow: '0 0 12px rgba(35,134,54,0.3)',
             }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                      stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <span style={{ fontSize: 16 }}>🌿</span>
             </div>
-            <span style={{
-              color: 'var(--text-primary)',
-              fontWeight: 700,
-              fontSize: 15,
-              letterSpacing: '-0.3px',
-            }}>
-              АгроТех
-            </span>
+            <div>
+              <div style={{
+                color: '#e6edf3',
+                fontWeight: 700,
+                fontSize: 16,
+                letterSpacing: '-0.3px',
+                lineHeight: 1.1,
+              }}>
+                Agro<span style={{ color: '#2ea043' }}>Tech</span>
+              </div>
+              <div style={{
+                color: '#484f58',
+                fontSize: 10,
+                letterSpacing: '0.5px',
+                textTransform: 'uppercase',
+              }}>
+                Farm Management
+              </div>
+            </div>
           </div>
 
           {/* Navigation */}
@@ -164,9 +171,14 @@ export default function AppLayout() {
             >
               <Button
                 type="text"
-                style={{ fontWeight: 600, color: 'var(--text-secondary)', fontSize: 12, height: 32, padding: '0 10px' }}
+                style={{ color: '#8b949e', padding: '4px 8px', height: 32 }}
               >
-                {lang === 'uk' ? '🇺🇦 UA' : '🇬🇧 EN'}
+                <span style={{ fontSize: 16, marginRight: 4 }}>
+                  {lang === 'uk' ? '🇺🇦' : '🇬🇧'}
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 500 }}>
+                  {lang === 'uk' ? 'UA' : 'EN'}
+                </span>
               </Button>
             </Dropdown>
             <NotificationBell />

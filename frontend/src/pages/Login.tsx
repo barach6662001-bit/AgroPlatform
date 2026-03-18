@@ -93,21 +93,24 @@ export default function Login() {
           <div style={{
             width: 36,
             height: 36,
-            background: 'var(--accent)',
+            background: 'linear-gradient(135deg, #238636 0%, #2ea043 100%)',
             borderRadius: 10,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: 'var(--shadow-glow)',
+            boxShadow: '0 0 12px rgba(35,134,54,0.3)',
           }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                    stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <span style={{ fontSize: 20 }}>🌿</span>
           </div>
-          <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: 18, letterSpacing: '-0.3px' }}>
-            АгроТех
-          </span>
+          <div>
+            <div>
+              <span style={{ color: '#e6edf3', fontWeight: 700, fontSize: 24 }}>Agro</span>
+              <span style={{ color: '#2ea043', fontWeight: 700, fontSize: 24 }}>Tech</span>
+            </div>
+            <p style={{ color: '#8b949e', fontSize: 13, margin: '4px 0 0' }}>
+              Farm Management Platform
+            </p>
+          </div>
         </div>
 
         {/* Center content */}
