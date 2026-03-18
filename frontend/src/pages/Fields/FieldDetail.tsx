@@ -92,12 +92,15 @@ export default function FieldDetail() {
   };
 
   const handleLoadFromCadastre = async () => {
-    if (!field || !field.cadastralNumber) return;
+    if (!field?.cadastralNumber) {
+      message.warning(t.fields.noCadastralNumber);
+      return;
+    }
     setCadastreLoading(true);
     try {
-      const url = `https://kadastr.live/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kadastr:cadaster_parcel&outputFormat=application/json&CQL_FILTER=cadnum='${encodeURIComponent(field.cadastralNumber)}'`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+      const cadnum = field.cadastralNumber.replace(/\s/g, '');
+      const response = await fetch(`/api/cadastre/parcel?cadnum=${encodeURIComponent(cadnum)}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const geojson = await response.json();
 
       if (!geojson.features || geojson.features.length === 0) {
@@ -105,12 +108,17 @@ export default function FieldDetail() {
         return;
       }
 
-      const feature = geojson.features[0];
-      const geometryJson = JSON.stringify(feature.geometry);
-      await updateFieldGeometry(id!, { geoJson: geometryJson });
+      const geometry = geojson.features[0].geometry;
+      if (!geometry) {
+        message.warning(t.fields.cadastreNoGeometry);
+        return;
+      }
+
+      const geoJsonString = JSON.stringify(geometry);
+      setCurrentGeoJson(geoJsonString);
+      await updateFieldGeometry(id!, { geoJson: geoJsonString });
       message.success(t.fields.cadastreLoaded);
-      setLoading(true);
-      load();
+      setField(prev => prev ? { ...prev, geoJson: geoJsonString } : prev);
     } catch (error) {
       console.error('Cadastre loading failed:', error);
       message.error(t.fields.cadastreError);
@@ -255,7 +263,7 @@ export default function FieldDetail() {
             styles={{ body: { padding: 0 } }}
             extra={
               <Space>
-                {field.cadastralNumber && !hasGeometry && (
+                {field.cadastralNumber && (
                   <Button
                     icon={<DownloadOutlined />}
                     size="small"
