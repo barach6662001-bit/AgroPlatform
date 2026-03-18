@@ -20,7 +20,6 @@ export default function Sidebar() {
     { key: '/warehouses', label: t.nav.warehouses, icon: <BankOutlined />, style: { padding: '4px 8px' } },
     { key: '/warehouses/items', label: t.nav.warehouseItems, icon: <InboxOutlined />, style: { padding: '4px 8px' } },
     { key: '/warehouses/movements', label: t.nav.stockMovements, icon: <SwapOutlined />, style: { padding: '4px 8px' } },
-    { key: '/warehouses/grain', label: t.nav.grainStorage, icon: <InboxOutlined />, style: { padding: '4px 8px' } },
   ];
 
   const economicsChildren = [
@@ -48,6 +47,7 @@ export default function Sidebar() {
     { key: '/machinery' },
     { key: '/fleet' },
     { key: '/fuel' },
+    { key: '/grain' },
     ...warehouseChildren,
     ...economicsChildren,
     ...analyticsChildren,
@@ -75,6 +75,7 @@ export default function Sidebar() {
       icon: <InboxOutlined />,
       children: warehouseChildren,
     },
+    { key: '/grain', label: t.nav.grainStorage, icon: <BankOutlined />, style: { padding: '4px 8px' } },
     { key: '/operations', label: t.nav.operations, icon: <ToolOutlined />, style: { padding: '4px 8px' } },
     { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined />, style: { padding: '4px 8px' } },
     { key: '/fuel', label: t.nav.fuelStation, icon: <FireOutlined />, style: { padding: '4px 8px' } },
