@@ -22,4 +22,8 @@ public class Field : AuditableEntity
     public ICollection<AgroOperation> Operations { get; set; } = new List<AgroOperation>();
     public ICollection<CropRotationPlan> RotationPlans { get; set; } = new List<CropRotationPlan>();
     public ICollection<LandLease> LandLeases { get; set; } = new List<LandLease>();
+    public ICollection<FieldSeeding> Seedings { get; set; } = new List<FieldSeeding>();
+    public ICollection<FieldFertilizer> Fertilizers { get; set; } = new List<FieldFertilizer>();
+    public ICollection<FieldProtection> Protections { get; set; } = new List<FieldProtection>();
+    public ICollection<FieldHarvest> Harvests { get; set; } = new List<FieldHarvest>();
 }

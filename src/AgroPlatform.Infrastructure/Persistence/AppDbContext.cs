@@ -32,6 +32,10 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<Field> Fields => Set<Field>();
     public DbSet<FieldCropHistory> FieldCropHistories => Set<FieldCropHistory>();
     public DbSet<CropRotationPlan> CropRotationPlans => Set<CropRotationPlan>();
+    public DbSet<FieldSeeding> FieldSeedings => Set<FieldSeeding>();
+    public DbSet<FieldFertilizer> FieldFertilizers => Set<FieldFertilizer>();
+    public DbSet<FieldProtection> FieldProtections => Set<FieldProtection>();
+    public DbSet<FieldHarvest> FieldHarvests => Set<FieldHarvest>();
     public DbSet<AgroOperation> AgroOperations => Set<AgroOperation>();
     public DbSet<AgroOperationResource> AgroOperationResources => Set<AgroOperationResource>();
     public DbSet<AgroOperationMachinery> AgroOperationMachineries => Set<AgroOperationMachinery>();
@@ -64,6 +68,10 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<Field>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
         builder.Entity<FieldCropHistory>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
         builder.Entity<CropRotationPlan>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
+        builder.Entity<FieldSeeding>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
+        builder.Entity<FieldFertilizer>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
+        builder.Entity<FieldProtection>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
+        builder.Entity<FieldHarvest>().HasQueryFilter(h => !h.IsDeleted && h.TenantId == _tenantId);
         builder.Entity<AgroOperation>().HasQueryFilter(o => !o.IsDeleted && o.TenantId == _tenantId);
         builder.Entity<AgroOperationResource>().HasQueryFilter(r => !r.IsDeleted && r.TenantId == _tenantId);
         builder.Entity<AgroOperationMachinery>().HasQueryFilter(m => !m.IsDeleted && m.TenantId == _tenantId);

@@ -6,7 +6,7 @@ import Sidebar from './Sidebar';
 import MobileDrawer from './MobileDrawer';
 import NotificationBell from './NotificationBell';
 import { useAuthStore } from '../../stores/authStore';
-import { useTranslation } from '../../i18n';
+import { useTranslation, languages } from '../../i18n';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -29,10 +29,16 @@ export default function AppLayout() {
     navigate('/login');
   };
 
-  const langMenuItems = [
-    { key: 'uk', label: '🇺🇦 Українська' },
-    { key: 'en', label: '🇬🇧 English' },
-  ];
+  const currentLang = languages.find(l => l.code === lang);
+  const langMenuItems = languages.map(lang => ({
+    key: lang.code,
+    label: (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 20, lineHeight: 1 }}>{lang.flag}</span>
+        <span>{lang.label}</span>
+      </div>
+    ),
+  }));
 
   const userInitial = email ? email.charAt(0).toUpperCase() : '?';
 
@@ -174,10 +180,10 @@ export default function AppLayout() {
                 style={{ color: '#8b949e', padding: '4px 8px', height: 32 }}
               >
                 <span style={{ fontSize: 16, marginRight: 4 }}>
-                  {lang === 'uk' ? '🇺🇦' : '🇬🇧'}
+                  {currentLang?.flag}
                 </span>
                 <span style={{ fontSize: 13, fontWeight: 500 }}>
-                  {lang === 'uk' ? 'UA' : 'EN'}
+                  {currentLang?.shortLabel}
                 </span>
               </Button>
             </Dropdown>
