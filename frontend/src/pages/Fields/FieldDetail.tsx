@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined } from '@ant-design/icons';
-import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry } from '../../api/fields';
+import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry, updateField } from '../../api/fields';
 import { getLeases, createLease, addLeasePayment } from '../../api/leases';
 import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } from '../../types/field';
 import type { LandLeaseDto } from '../../types/lease';
