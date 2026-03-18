@@ -43,6 +43,29 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
             batch.QuantityTons -= request.QuantityTons;
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (request.MovementType == "In" && batch.SourceFieldId.HasValue)
+        {
+            var field = await _context.Fields.FindAsync(new object[] { batch.SourceFieldId.Value }, cancellationToken);
+
+            // Find harvest by batch ID first, then fall back to field+year match
+            var harvest = await _context.FieldHarvests
+                .FirstOrDefaultAsync(h =>
+                    (h.GrainBatchId == batch.Id ||
+                    (h.FieldId == batch.SourceFieldId && h.Year == request.MovementDate.Year)) &&
+                    !h.IsDeleted, cancellationToken);
+
+            if (harvest != null)
+            {
+                harvest.TotalTons += request.QuantityTons;
+                harvest.YieldTonsPerHa = field?.AreaHectares > 0
+                    ? Math.Round(harvest.TotalTons / field.AreaHectares, 2)
+                    : null;
+                harvest.UpdatedAtUtc = DateTime.UtcNow;
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+
         return movement.Id;
     }
 }
