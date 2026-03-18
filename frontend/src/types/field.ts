@@ -38,3 +38,53 @@ export interface FieldDetailDto extends FieldDto {
 export interface FieldGeometryPayload {
   geoJson: string;
 }
+
+export interface FieldSeedingDto {
+  id: string;
+  year: number;
+  cropName: string;
+  variety?: string;
+  seedingRateKgPerHa?: number;
+  totalSeedKg?: number;
+  seedingDate?: string;
+  notes?: string;
+}
+
+export interface FieldFertilizerDto {
+  id: string;
+  year: number;
+  fertilizerName: string;
+  applicationType?: string;
+  rateKgPerHa?: number;
+  totalKg?: number;
+  costPerKg?: number;
+  totalCost?: number;
+  applicationDate: string;
+  notes?: string;
+}
+
+export interface FieldProtectionDto {
+  id: string;
+  year: number;
+  productName: string;
+  protectionType?: string;
+  rateLPerHa?: number;
+  totalLiters?: number;
+  costPerLiter?: number;
+  totalCost?: number;
+  applicationDate: string;
+  notes?: string;
+}
+
+export interface FieldHarvestDto {
+  id: string;
+  year: number;
+  cropName: string;
+  totalTons: number;
+  yieldTonsPerHa?: number;
+  moisturePercent?: number;
+  pricePerTon?: number;
+  totalRevenue?: number;
+  harvestDate: string;
+  notes?: string;
+}
