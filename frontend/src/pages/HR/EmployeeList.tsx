@@ -154,6 +154,7 @@ export default function EmployeeList() {
 
   return (
     <div>
+      {/* button styles handled by CSS */}
       <PageHeader
         title={t.hr.employeesTitle}
         actions={
