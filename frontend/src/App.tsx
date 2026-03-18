@@ -64,6 +64,7 @@ export default function App() {
             <Route path="/warehouses" element={<WarehousesList />} />
             <Route path="/warehouses/items" element={<WarehouseItems />} />
             <Route path="/warehouses/movements" element={<StockMovements />} />
+            <Route path="/grain" element={<GrainBatchList />} />
             <Route path="/warehouses/grain" element={<GrainBatchList />} />
             <Route path="/operations" element={<OperationsList />} />
             <Route path="/operations/:id" element={<OperationDetail />} />

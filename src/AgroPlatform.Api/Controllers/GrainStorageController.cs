@@ -2,6 +2,7 @@ using AgroPlatform.Application.GrainStorage.Commands.CreateGrainBatch;
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainMovement;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainBatches;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainMovements;
+using AgroPlatform.Application.GrainStorage.Queries.GetGrainSummary;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -67,6 +68,15 @@ public class GrainStorageController : ControllerBase
     public async Task<IActionResult> GetGrainMovements(Guid id, CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new GetGrainMovementsQuery(id), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns a summary of grain across all storages, grouped by grain type.</summary>
+    [HttpGet("summary")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGrainSummary(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetGrainSummaryQuery(), cancellationToken);
         return Ok(result);
     }
 }

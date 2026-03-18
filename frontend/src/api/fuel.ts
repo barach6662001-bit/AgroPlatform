@@ -8,7 +8,6 @@ export const createFuelTank = (data: {
   name: string;
   fuelType: number;
   capacityLiters: number;
-  pricePerLiter?: number;
 }) =>
   apiClient.post<{ id: string }>('/api/fuel/tanks', data).then((r) => r.data);
 

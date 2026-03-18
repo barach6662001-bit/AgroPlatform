@@ -342,9 +342,6 @@ export default function FuelStation() {
           <Form.Item name="capacityLiters" label={t.fuel.capacity} rules={[{ required: true, message: t.common.required }]}>
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="pricePerLiter" label={t.fuel.pricePerLiter}>
-            <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
-          </Form.Item>
         </Form>
       </Modal>
 
