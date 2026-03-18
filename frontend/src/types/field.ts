@@ -87,4 +87,6 @@ export interface FieldHarvestDto {
   totalRevenue?: number;
   harvestDate: string;
   notes?: string;
+  syncedFromGrainStorage: boolean;
+  grainBatchId?: string;
 }
