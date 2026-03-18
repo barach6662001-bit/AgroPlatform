@@ -169,7 +169,7 @@ export default function Dashboard() {
       render: (crop: string | undefined) =>
         crop
           ? <Tag color="green" style={{ borderRadius: 4, fontSize: 11 }}>{t.crops[crop as keyof typeof t.crops] || crop}</Tag>
-          : <Tag style={{ borderRadius: 4, fontSize: 11, color: 'var(--text-secondary)', border: '1px solid #30363d', background: 'transparent' }}>{t.fields.notSeeded}</Tag>,
+          : <Tag style={{ borderRadius: 4, fontSize: 11, color: 'var(--text-secondary)', border: '1px solid var(--border)', background: 'transparent' }}>{t.fields.notSeeded}</Tag>,
     },
     {
       title: t.fields.area,
