@@ -93,6 +93,7 @@ export default function WorkLogPage() {
       unitsProduced: log.unitsProduced,
       workDescription: log.workDescription,
       fieldId: log.fieldId,
+      operationId: log.operationId,
     });
     setModalOpen(true);
   };
@@ -103,7 +104,7 @@ export default function WorkLogPage() {
       message.success(t.hr.deleteWorkLogSuccess);
       load();
     } catch {
-      message.error(t.hr.addError);
+      message.error(t.hr.deleteError);
     }
   };
 
