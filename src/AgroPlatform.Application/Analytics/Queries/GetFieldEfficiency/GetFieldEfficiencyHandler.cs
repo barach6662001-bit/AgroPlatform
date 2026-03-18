@@ -48,9 +48,24 @@ public class GetFieldEfficiencyHandler : IRequestHandler<GetFieldEfficiencyQuery
         var costMap = costsByField.ToDictionary(x => x.FieldId, x => x.TotalCosts);
         var yieldMap = latestYields.ToDictionary(x => x.FieldId, x => x.YieldPerHectare);
 
+        // Compute total harvest tons per field from crop history (yield × area)
+        var harvestTonsMap = yieldRows
+            .GroupBy(h => h.FieldId)
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    var latestYield = g.OrderByDescending(h => h.Year).First().YieldPerHectare;
+                    var field = fields.FirstOrDefault(f => f.Id == g.Key);
+                    return latestYield.HasValue && field != null
+                        ? (decimal?)(latestYield.Value * field.AreaHectares)
+                        : null;
+                });
+
         return fields.Select(f =>
         {
             var costs = costMap.GetValueOrDefault(f.Id, 0m);
+            var totalHarvestTons = harvestTonsMap.GetValueOrDefault(f.Id);
             return new FieldEfficiencyDto
             {
                 FieldId = f.Id,
@@ -60,7 +75,8 @@ public class GetFieldEfficiencyHandler : IRequestHandler<GetFieldEfficiencyQuery
                 OperationsCount = opCountMap.GetValueOrDefault(f.Id, 0),
                 TotalCosts = costs,
                 CostPerHectare = f.AreaHectares > 0 ? Math.Round(costs / f.AreaHectares, 2) : 0m,
-                YieldPerHectare = yieldMap.GetValueOrDefault(f.Id)
+                YieldPerHectare = yieldMap.GetValueOrDefault(f.Id),
+                TotalHarvestTons = totalHarvestTons.HasValue ? Math.Round(totalHarvestTons.Value, 1) : null,
             };
         })
         .OrderBy(d => d.FieldName)

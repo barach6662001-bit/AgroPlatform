@@ -14,5 +14,8 @@ public class GrainBatchDto
     public string? ContractNumber { get; set; }
     public decimal? PricePerTon { get; set; }
     public DateTime ReceivedDate { get; set; }
+    public Guid? SourceFieldId { get; set; }
+    public string? SourceFieldName { get; set; }
+    public decimal? MoisturePercent { get; set; }
     public string? Notes { get; set; }
 }

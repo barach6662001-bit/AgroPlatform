@@ -10,4 +10,6 @@ public class FieldEfficiencyDto
     public decimal TotalCosts { get; set; }
     public decimal CostPerHectare { get; set; }
     public decimal? YieldPerHectare { get; set; }
+    public decimal? TotalHarvestTons { get; set; }
+    public decimal? RevenueTotal { get; set; }
 }

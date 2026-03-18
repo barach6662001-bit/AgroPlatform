@@ -11,6 +11,9 @@ export interface GrainBatchDto {
   contractNumber?: string;
   pricePerTon?: number;
   receivedDate: string;
+  sourceFieldId?: string;
+  sourceFieldName?: string;
+  moisturePercent?: number;
   notes?: string;
 }
 
@@ -22,4 +25,6 @@ export interface GrainMovementDto {
   movementDate: string;
   reason?: string;
   notes?: string;
+  pricePerTon?: number;
+  totalRevenue?: number;
 }

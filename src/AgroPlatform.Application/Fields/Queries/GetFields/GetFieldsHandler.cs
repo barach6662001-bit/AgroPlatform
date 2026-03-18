@@ -30,6 +30,9 @@ public class GetFieldsHandler : IRequestHandler<GetFieldsQuery, PaginatedResult<
                 (f.CadastralNumber != null && f.CadastralNumber.ToLower().Contains(term)));
         }
 
+        if (request.OwnershipTypes != null && request.OwnershipTypes.Length > 0)
+            query = query.Where(f => request.OwnershipTypes.Contains(f.OwnershipType));
+
         var totalCount = await query.CountAsync(cancellationToken);
 
         var items = await query

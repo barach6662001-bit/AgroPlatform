@@ -13,4 +13,6 @@ public class AgroOperationDto
     public bool IsCompleted { get; set; }
     public string? Description { get; set; }
     public decimal? AreaProcessed { get; set; }
+    public Guid? PerformedByEmployeeId { get; set; }
+    public string? PerformedByName { get; set; }
 }

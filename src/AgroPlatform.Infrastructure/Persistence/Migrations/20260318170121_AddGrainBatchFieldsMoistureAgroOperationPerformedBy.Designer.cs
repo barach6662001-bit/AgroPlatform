@@ -3,6 +3,7 @@ using System;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroPlatform.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260318170121_AddGrainBatchFieldsMoistureAgroOperationPerformedBy")]
+    partial class AddGrainBatchFieldsMoistureAgroOperationPerformedBy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -494,298 +497,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("FieldCropHistories");
-                });
-
-            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldFertilizer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("ApplicationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ApplicationType")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<decimal?>("CostPerKg")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FertilizerName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<decimal?>("RateKgPerHa")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal?>("TotalCost")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<decimal?>("TotalKg")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId")
-                        .HasDatabaseName("IX_FieldFertilizers_FieldId");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("IX_FieldFertilizers_TenantId");
-
-                    b.ToTable("FieldFertilizers");
-                });
-
-            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldHarvest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CropName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime?>("DeletedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("HarvestDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal?>("MoisturePercent")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("numeric(5,2)");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<decimal?>("PricePerTon")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal?>("TotalRevenue")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<decimal>("TotalTons")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal?>("YieldTonsPerHa")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId")
-                        .HasDatabaseName("IX_FieldHarvests_FieldId");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("IX_FieldHarvests_TenantId");
-
-                    b.ToTable("FieldHarvests");
-                });
-
-            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldProtection", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("ApplicationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal?>("CostPerLiter")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("ProtectionType")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<decimal?>("RateLPerHa")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal?>("TotalCost")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<decimal?>("TotalLiters")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId")
-                        .HasDatabaseName("IX_FieldProtections_FieldId");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("IX_FieldProtections_TenantId");
-
-                    b.ToTable("FieldProtections");
-                });
-
-            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldSeeding", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CropName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime?>("DeletedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("SeedingDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal?>("SeedingRateKgPerHa")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal?>("TotalSeedKg")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Variety")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId")
-                        .HasDatabaseName("IX_FieldSeedings_FieldId");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("IX_FieldSeedings_TenantId");
-
-                    b.ToTable("FieldSeedings");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Fields.LandLease", b =>
@@ -2435,54 +2146,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Field");
                 });
 
-            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldFertilizer", b =>
-                {
-                    b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
-                        .WithMany("Fertilizers")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_FieldFertilizers_Fields");
-
-                    b.Navigation("Field");
-                });
-
-            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldHarvest", b =>
-                {
-                    b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
-                        .WithMany("Harvests")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_FieldHarvests_Fields");
-
-                    b.Navigation("Field");
-                });
-
-            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldProtection", b =>
-                {
-                    b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
-                        .WithMany("Protections")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_FieldProtections_Fields");
-
-                    b.Navigation("Field");
-                });
-
-            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldSeeding", b =>
-                {
-                    b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
-                        .WithMany("Seedings")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_FieldSeedings_Fields");
-
-                    b.Navigation("Field");
-                });
-
             modelBuilder.Entity("AgroPlatform.Domain.Fields.LandLease", b =>
                 {
                     b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
@@ -2733,19 +2396,11 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 {
                     b.Navigation("CropHistory");
 
-                    b.Navigation("Fertilizers");
-
-                    b.Navigation("Harvests");
-
                     b.Navigation("LandLeases");
 
                     b.Navigation("Operations");
 
-                    b.Navigation("Protections");
-
                     b.Navigation("RotationPlans");
-
-                    b.Navigation("Seedings");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Fields.LandLease", b =>

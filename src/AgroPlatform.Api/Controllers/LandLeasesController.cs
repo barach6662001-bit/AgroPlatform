@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Fields.Commands.AddLeasePayment;
 using AgroPlatform.Application.Fields.Commands.CreateLandLease;
+using AgroPlatform.Application.Fields.Commands.UpdateLandLease;
 using AgroPlatform.Application.Fields.Queries.GetLeases;
 using AgroPlatform.Application.Fields.Queries.GetLeasesSummary;
 using MediatR;
@@ -61,6 +62,22 @@ public class LandLeasesController : ControllerBase
         return CreatedAtAction(nameof(GetLeases), new { fieldId = command.FieldId }, new { id });
     }
 
+    /// <summary>Updates a land lease contract.</summary>
+    /// <param name="id">Lease contract ID.</param>
+    /// <param name="request">Updated lease data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateLease(Guid id, [FromBody] UpdateLandLeaseRequest request, CancellationToken cancellationToken)
+    {
+        var command = new UpdateLandLeaseCommand(id, request.OwnerName, request.OwnerPhone, request.ContractNumber,
+            request.AnnualPayment, request.PaymentType, request.GrainPaymentTons, request.ContractEndDate, request.Notes, request.IsActive);
+        await _sender.Send(command, cancellationToken);
+        return NoContent();
+    }
+
     /// <summary>Registers a payment (or advance) for a land lease contract.</summary>
     /// <param name="id">Lease contract ID.</param>
     /// <param name="request">Payment data (year, amount, type, date).</param>
@@ -80,3 +97,16 @@ public class LandLeasesController : ControllerBase
 
 /// <summary>Request body for adding a lease payment.</summary>
 public record AddLeasePaymentRequest(int Year, decimal Amount, string PaymentType, DateTime PaymentDate, string? Notes);
+
+/// <summary>Request body for updating a land lease contract.</summary>
+public record UpdateLandLeaseRequest(
+    string OwnerName,
+    string? OwnerPhone,
+    string? ContractNumber,
+    decimal AnnualPayment,
+    string PaymentType,
+    decimal? GrainPaymentTons,
+    DateTime? ContractEndDate,
+    string? Notes,
+    bool IsActive
+);

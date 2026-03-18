@@ -43,6 +43,11 @@ public class GetGrainBatchesHandler : IRequestHandler<GetGrainBatchesQuery, Pagi
                 ContractNumber = b.ContractNumber,
                 PricePerTon = b.PricePerTon,
                 ReceivedDate = b.ReceivedDate,
+                SourceFieldId = b.SourceFieldId,
+                SourceFieldName = b.SourceFieldId != null
+                    ? b.SourceField!.Name
+                    : null,
+                MoisturePercent = b.MoisturePercent,
                 Notes = b.Notes,
             })
             .ToListAsync(cancellationToken);

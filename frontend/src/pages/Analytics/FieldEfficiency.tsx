@@ -56,6 +56,13 @@ export default function FieldEfficiency() {
       render: (v: number) => `${v.toFixed(2)} UAH`,
       sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.costPerHectare - b.costPerHectare,
     },
+    {
+      title: t.analytics.totalHarvestTons,
+      dataIndex: 'totalHarvestTons',
+      key: 'totalHarvestTons',
+      render: (v?: number) => v != null ? `${v.toFixed(1)} т` : '—',
+      sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => (a.totalHarvestTons ?? 0) - (b.totalHarvestTons ?? 0),
+    },
   ];
 
   const chartData = data.map((item) => ({

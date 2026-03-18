@@ -22,6 +22,9 @@ public class AgroOperationConfiguration : IEntityTypeConfiguration<AgroOperation
         builder.Property(o => o.AreaProcessed)
             .HasPrecision(12, 4);
 
+        builder.Property(o => o.PerformedByName)
+            .HasMaxLength(200);
+
         builder.HasOne(o => o.Field)
             .WithMany(f => f.Operations)
             .HasForeignKey(o => o.FieldId)

@@ -30,3 +30,18 @@ export const addLeasePayment = (
     notes?: string;
   }
 ) => apiClient.post<{ id: string }>(`/api/land-leases/${leaseId}/payments`, data).then((r) => r.data);
+
+export const updateLease = (
+  id: string,
+  data: {
+    ownerName: string;
+    ownerPhone?: string;
+    contractNumber?: string;
+    annualPayment: number;
+    paymentType: string;
+    grainPaymentTons?: number;
+    contractEndDate?: string;
+    notes?: string;
+    isActive: boolean;
+  }
+) => apiClient.put<void>(`/api/land-leases/${id}`, data).then((r) => r.data);

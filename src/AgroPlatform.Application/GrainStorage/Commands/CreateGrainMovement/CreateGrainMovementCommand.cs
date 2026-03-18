@@ -8,5 +8,6 @@ public record CreateGrainMovementCommand(
     decimal QuantityTons,
     DateTime MovementDate,
     string? Reason,
-    string? Notes
+    string? Notes,
+    decimal? PricePerTon = null
 ) : IRequest<Guid>;
