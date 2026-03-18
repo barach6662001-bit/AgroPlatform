@@ -21,7 +21,6 @@ public class CreateFuelTankHandler : IRequestHandler<CreateFuelTankCommand, Guid
             FuelType = request.FuelType,
             CapacityLiters = request.CapacityLiters,
             CurrentLiters = 0,
-            PricePerLiter = request.PricePerLiter,
             IsActive = true,
         };
 
