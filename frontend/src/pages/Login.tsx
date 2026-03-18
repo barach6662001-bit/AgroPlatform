@@ -27,10 +27,10 @@ export default function Login() {
   ];
 
   const features = [
-    t.auth.features.fieldManagement,
-    t.auth.features.gpsMonitoring,
-    t.auth.features.storageManagement,
-    t.auth.features.analyticsAndReports,
+    t.auth.featureFieldManagement,
+    t.auth.featureGpsMonitoring,
+    t.auth.featureStorageManagement,
+    t.auth.featureAnalyticsAndReports,
   ];
 
   return (
@@ -247,5 +247,6 @@ export default function Login() {
         </div>
       </div>
     </div>
+    </>
   );
 }

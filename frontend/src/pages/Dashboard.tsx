@@ -474,13 +474,13 @@ export default function Dashboard() {
                     split={false}
                     renderItem={(item) => (
                       <List.Item
-                        style={{ padding: '8px 0', borderBottom: '1px solid #30363d', alignItems: 'flex-start' }}
-                        extra={!item.isRead ? <Badge dot color="#3fb950" style={{ marginTop: 6 }} /> : null}
+                        style={{ padding: '8px 0', borderBottom: '1px solid var(--border)', alignItems: 'flex-start' }}
+                        extra={!item.isRead ? <Badge dot color="var(--accent)" style={{ marginTop: 6 }} /> : null}
                       >
                         <List.Item.Meta
                           avatar={notifIcon(item.type)}
                           title={
-                            <Typography.Text style={{ fontSize: 13, color: item.isRead ? '#8b949e' : '#e6edf3' }}>
+                            <Typography.Text style={{ fontSize: 13, color: item.isRead ? 'var(--text-secondary)' : 'var(--text-primary)' }}>
                               {item.title}
                             </Typography.Text>
                           }

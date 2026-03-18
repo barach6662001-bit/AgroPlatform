@@ -75,6 +75,10 @@ const en: Translations = {
     registerSuccess: 'Registration successful!',
     registerError: 'Registration error. Please try again.',
     haveAccount: 'Already have an account? Log In',
+    featureFieldManagement:    'Field and crop tracking',
+    featureGpsMonitoring:      'GPS fleet monitoring',
+    featureStorageManagement:  'Grain storage management',
+    featureAnalyticsAndReports:'Analytics and reporting',
   },
   roles: {
     Administrator: 'Administrator',

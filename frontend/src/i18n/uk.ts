@@ -73,6 +73,10 @@ const uk = {
     registerSuccess: 'Реєстрація пройшла успішно!',
     registerError: 'Помилка реєстрації. Спробуйте ще раз.',
     haveAccount: 'Вже є акаунт? Увійти',
+    featureFieldManagement:    'Облік полів та врожайності',
+    featureGpsMonitoring:      'GPS моніторинг техніки',
+    featureStorageManagement:  'Управління зерносховищем',
+    featureAnalyticsAndReports:'Аналітика та звітність',
   },
   roles: {
     Administrator: 'Адміністратор',

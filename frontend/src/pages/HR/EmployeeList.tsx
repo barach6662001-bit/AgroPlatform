@@ -158,7 +158,6 @@ export default function EmployeeList() {
         title={t.hr.employeesTitle}
         actions={
           canWrite ? (
-            {/* button styles handled by CSS */}
             <Button
               type="primary"
               icon={<PlusOutlined />}
