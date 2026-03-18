@@ -35,24 +35,50 @@ export default function Login() {
   ];
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'grid',
-      gridTemplateColumns: '1fr 420px',
-      background: 'var(--bg-app)',
-    }}>
-      {/* Left side — branding */}
-      <div style={{
-        background: 'var(--bg-surface)',
-        borderRight: '1px solid var(--border)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '48px',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        {/* Decorative gradient */}
+    <>
+      <style>{`
+        .login-layout {
+          display: grid;
+          grid-template-columns: 1fr 420px;
+        }
+
+        .login-left-side {
+          padding: 48px;
+        }
+
+        @media (max-width: 768px) {
+          .login-layout {
+            grid-template-columns: 1fr;
+          }
+
+          .login-left-side {
+            padding: 24px 16px;
+            border-right: none;
+            border-bottom: 1px solid var(--border);
+          }
+        }
+      `}</style>
+      <div
+        className="login-layout"
+        style={{
+          minHeight: '100vh',
+          background: 'var(--bg-app)',
+        }}
+      >
+        {/* Left side — branding */}
+        <div
+          className="login-left-side"
+          style={{
+            background: 'var(--bg-surface)',
+            borderRight: '1px solid var(--border)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Decorative gradient */}
         <div style={{
           position: 'absolute',
           top: -100,
