@@ -12,4 +12,6 @@ public class FieldHarvestDto
     public decimal? TotalRevenue { get; set; }
     public DateTime HarvestDate { get; set; }
     public string? Notes { get; set; }
+    public bool SyncedFromGrainStorage { get; set; }
+    public Guid? GrainBatchId { get; set; }
 }
