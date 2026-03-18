@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useLangStore } from '../stores/langStore';
-import { useTranslation } from '../i18n';
+import { useTranslation, languages } from '../i18n';
 import uk from '../i18n/uk';
 import en from '../i18n/en';
 
@@ -103,5 +103,33 @@ describe('i18n', () => {
       expect(uk.fleet[key], `uk.fleet.${key} should be defined`).toBeTruthy();
       expect(en.fleet[key], `en.fleet.${key} should be defined`).toBeTruthy();
     }
+  });
+
+  describe('languages array', () => {
+    it('contains Ukrainian and English entries', () => {
+      const codes = languages.map(l => l.code);
+      expect(codes).toContain('uk');
+      expect(codes).toContain('en');
+    });
+
+    it('each language has a flag emoji', () => {
+      for (const lang of languages) {
+        expect(lang.flag, `${lang.code} should have a flag`).toBeTruthy();
+        // Emoji flags are surrogate pairs — length > 1
+        expect(lang.flag.length, `${lang.code} flag should be an emoji`).toBeGreaterThan(1);
+      }
+    });
+
+    it('Ukrainian entry has correct flag and shortLabel', () => {
+      const uk = languages.find(l => l.code === 'uk');
+      expect(uk?.flag).toBe('🇺🇦');
+      expect(uk?.shortLabel).toBe('UA');
+    });
+
+    it('English entry has correct flag and shortLabel', () => {
+      const en = languages.find(l => l.code === 'en');
+      expect(en?.flag).toBe('🇬🇧');
+      expect(en?.shortLabel).toBe('EN');
+    });
   });
 });
