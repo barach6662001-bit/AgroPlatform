@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined, ExportOutlined } from '@ant-design/icons';
 import apiClient from '../../api/axios';
 import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry, updateField } from '../../api/fields';
 import { getLeases, createLease, addLeasePayment } from '../../api/leases';
@@ -104,25 +104,59 @@ export default function FieldDetail() {
     setCadastreLoading(true);
     try {
       const cadnum = field.cadastralNumber.replace(/\s/g, '');
-      const response = await apiClient.get(`/api/cadastre/parcel`, { params: { cadnum } });
-      const geojson = response.data;
+      const response = await apiClient.get('/api/cadastre/parcel', { params: { cadnum } });
+      const data = response.data;
 
-      if (!geojson.features || geojson.features.length === 0) {
+      if (!data.found) {
         message.warning(t.fields.cadastreNotFound);
         return;
       }
 
-      const geometry = geojson.features[0].geometry;
-      if (!geometry) {
-        message.warning(t.fields.cadastreNoGeometry);
-        return;
+      // Update area if it differs
+      if (data.area) {
+        const cadastreArea = parseFloat(data.area);
+        if (!isNaN(cadastreArea) && Math.abs(cadastreArea - field.areaHectares) > 0.01) {
+          Modal.confirm({
+            title: t.fields.areaMismatchTitle,
+            content: (
+              <div>
+                <p>{t.fields.currentArea}: <strong>{field.areaHectares} га</strong></p>
+                <p>{t.fields.cadastreArea}: <strong>{cadastreArea} га</strong></p>
+                <p>{t.fields.areaMismatchQuestion}</p>
+              </div>
+            ),
+            okText: t.fields.updateArea,
+            cancelText: t.fields.keepCurrentArea,
+            onOk: async () => {
+              await updateField(field.id, { areaHectares: cadastreArea });
+              setField(prev => prev ? { ...prev, areaHectares: cadastreArea } : prev);
+              message.success(t.fields.areaUpdated);
+            },
+          });
+        }
       }
 
-      const geoJsonString = JSON.stringify(geometry);
-      setCurrentGeoJson(geoJsonString);
-      await updateFieldGeometry(id!, { geoJson: geoJsonString });
-      message.success(t.fields.cadastreLoaded);
-      setField(prev => prev ? { ...prev, geoJson: geoJsonString } : prev);
+      // Show additional cadastre info if available
+      if (data.ownership || data.purpose || data.address) {
+        message.info(`${t.fields.cadastreInfo}: ${data.area ?? '?'} га`);
+
+        const infoText = [
+          data.ownership && `Власність: ${data.ownership}`,
+          data.purpose && `Призначення: ${data.purpose}`,
+          data.address && `Адреса: ${data.address}`,
+        ].filter(Boolean).join('\n');
+
+        if (infoText) {
+          Modal.info({
+            title: t.fields.cadastreInfo,
+            content: <pre style={{ whiteSpace: 'pre-wrap' }}>{infoText}</pre>,
+          });
+        }
+      } else if (!data.area) {
+        message.warning(t.fields.cadastreNotFound);
+      } else {
+        message.info(`${t.fields.cadastreInfo}: ${data.area} га`);
+      }
     } catch (error) {
       console.error('Cadastre loading failed:', error);
       message.error(t.fields.cadastreError);
@@ -380,6 +414,18 @@ export default function FieldDetail() {
               styles={{ body: { padding: 0 } }}
               extra={
                 <Space>
+                  {field.cadastralNumber && (
+                    <Button
+                      icon={<ExportOutlined />}
+                      size="small"
+                      onClick={() => window.open(
+                        `https://kadastrova-karta.com/dilyanka/${field.cadastralNumber}`,
+                        '_blank'
+                      )}
+                    >
+                      {t.fields.openInCadastre}
+                    </Button>
+                  )}
                   {field.cadastralNumber && !hasGeometry && (
                     <Button
                       icon={<DownloadOutlined />}

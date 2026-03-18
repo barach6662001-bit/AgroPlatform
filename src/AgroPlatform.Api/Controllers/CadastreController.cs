@@ -1,10 +1,11 @@
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgroPlatform.Api.Controllers;
 
 /// <summary>
-/// Proxies requests to the Ukrainian cadastre API to avoid browser CORS restrictions.
+/// Retrieves Ukrainian cadastral parcel data by scraping kadastrova-karta.com.
 /// </summary>
 [ApiController]
 [Authorize]
@@ -23,55 +24,90 @@ public class CadastreController : ControllerBase
     }
 
     /// <summary>
-    /// Returns GeoJSON for a Ukrainian cadastral parcel by its cadastral number.
-    /// Tries kadastr.live first, falls back to map.land.gov.ua.
+    /// Returns cadastral parcel data for a Ukrainian land parcel by its cadastral number.
+    /// Scrapes kadastrova-karta.com and returns parsed metadata (area, ownership, purpose, address).
     /// </summary>
-    /// <param name="cadnum">Cadastral number (e.g. 1810400000:00:022:0005).</param>
+    /// <param name="cadnum">Cadastral number (e.g. 1822087200:01:000:0576).</param>
     /// <param name="ct">Cancellation token.</param>
     [HttpGet("parcel")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status502BadGateway)]
     public async Task<IActionResult> GetParcel([FromQuery] string cadnum, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(cadnum))
             return BadRequest(new { message = "cadnum is required" });
 
-        var encodedCadnum = Uri.EscapeDataString(cadnum);
-        using var http = _httpClientFactory.CreateClient();
-
-        // Primary source: kadastr.live (WFS 2.0.0)
-        var primaryUrl =
-            $"https://kadastr.live/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature" +
-            $"&typeNames=kadastr:cadaster_parcel&outputFormat=application/json" +
-            $"&CQL_FILTER=cadnum='{encodedCadnum}'&srsName=EPSG:4326";
+        var normalizedCadnum = cadnum.Trim();
+        var url = $"https://kadastrova-karta.com/dilyanka/{normalizedCadnum}";
 
         try
         {
-            var body = await http.GetStringAsync(primaryUrl, ct);
-            return Content(body, "application/json");
+            var http = _httpClientFactory.CreateClient();
+            http.Timeout = TimeSpan.FromSeconds(15);
+
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.TryAddWithoutValidation("User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+            request.Headers.TryAddWithoutValidation("Accept",
+                "text/html,application/xhtml+xml");
+
+            var response = await http.SendAsync(request, ct);
+            response.EnsureSuccessStatusCode();
+            var html = await response.Content.ReadAsStringAsync(ct);
+
+            if (string.IsNullOrEmpty(html))
+                return Ok(new { found = false, error = "Empty response" });
+
+            // Parse area (площа)
+            var areaMatch = Regex.Match(html,
+                @"Площа[:\s]*<[^>]+>\s*([\d.,]+)\s*га",
+                RegexOptions.IgnoreCase);
+
+            // Parse ownership form (форма власності)
+            var ownershipMatch = Regex.Match(html,
+                @"Форма власності[:\s]*<[^>]+>\s*([^<]+)",
+                RegexOptions.IgnoreCase);
+
+            // Parse intended purpose (цільове призначення)
+            var purposeMatch = Regex.Match(html,
+                @"Цільове призначення[:\s]*<[^>]+>\s*([^<]+)",
+                RegexOptions.IgnoreCase);
+
+            // Parse address (адреса)
+            var addressMatch = Regex.Match(html,
+                @"Адреса[:\s]*<[^>]+>\s*([^<]+)",
+                RegexOptions.IgnoreCase);
+
+            var result = new
+            {
+                found = true,
+                cadnum = normalizedCadnum,
+                area = areaMatch.Success
+                    ? areaMatch.Groups[1].Value.Trim().Replace(",", ".")
+                    : (string?)null,
+                ownership = ownershipMatch.Success
+                    ? ownershipMatch.Groups[1].Value.Trim()
+                    : (string?)null,
+                purpose = purposeMatch.Success
+                    ? purposeMatch.Groups[1].Value.Trim()
+                    : (string?)null,
+                address = addressMatch.Success
+                    ? addressMatch.Groups[1].Value.Trim()
+                    : (string?)null,
+                sourceUrl = url
+            };
+
+            return Ok(result);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogWarning("Cadastre request failed for {Cadnum}: {Error}", cadnum, ex.Message);
+            return Ok(new { found = false, error = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Primary cadastre source (kadastr.live) failed for cadnum={Cadnum}. Trying fallback.", cadnum);
-        }
-
-        // Fallback: public cadastre map (WFS 1.0.0)
-        var fallbackUrl =
-            $"https://map.land.gov.ua/geowebcache/service/wfs?service=WFS&version=1.0.0&request=GetFeature" +
-            $"&typeName=kadastr:cadaster_parcel&outputFormat=application/json" +
-            $"&CQL_FILTER=cadnum='{encodedCadnum}'";
-
-        try
-        {
-            var body = await http.GetStringAsync(fallbackUrl, ct);
-            return Content(body, "application/json");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(
-                StatusCodes.Status502BadGateway,
-                new { message = "Failed to retrieve cadastral data from all sources", detail = ex.Message });
+            _logger.LogError(ex, "Cadastre scraping error for {Cadnum}", cadnum);
+            return Ok(new { found = false, error = "Scraping error" });
         }
     }
 }

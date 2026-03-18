@@ -208,6 +208,8 @@ const uk = {
     cadastreLoaded: 'Межі ділянки завантажено',
     cadastreError: 'Помилка завантаження з кадастру',
     loadFromCadastre: 'Завантажити з кадастру',
+    cadastreInfo: 'Дані з кадастру',
+    openInCadastre: 'Переглянути в кадастрі',
     tabInfo: 'Інформація',
     tabSeeding: 'Посів',
     tabFertilizer: 'Добрива',
