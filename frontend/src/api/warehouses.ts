@@ -8,6 +8,15 @@ export const getWarehouses = (params?: { page?: number; pageSize?: number; type?
 export const getWarehouseItems = (params?: { page?: number; pageSize?: number }) =>
   apiClient.get<PaginatedResult<WarehouseItemDto>>('/api/warehouses/items', { params }).then((r) => r.data);
 
+export const getWarehouseItemsByCategory = (category: string) => {
+  const CATEGORY_PAGE_SIZE = 200;
+  return apiClient
+    .get<PaginatedResult<WarehouseItemDto>>('/api/warehouses/items', {
+      params: { category, pageSize: CATEGORY_PAGE_SIZE },
+    })
+    .then((r) => r.data);
+};
+
 export const getBalances = (params?: { warehouseId?: string; itemId?: string; page?: number; pageSize?: number }) =>
   apiClient.get<PaginatedResult<BalanceDto>>('/api/warehouses/balances', { params }).then((r) => r.data);
 

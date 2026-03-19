@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Modal, Form, Input, InputNumber, Select, DatePicker, Popconfirm, Space, message } from 'antd';
+import { Button, Table, Modal, Form, InputNumber, Select, DatePicker, Popconfirm, Space, message } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getFieldProtections, createFieldProtection, deleteFieldProtection } from '../../api/fields';
+import { getWarehouseItemsByCategory } from '../../api/warehouses';
 import type { FieldProtectionDto } from '../../types/field';
+import type { WarehouseItemDto } from '../../types/warehouse';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 
 interface Props {
   fieldId: string;
+  fieldArea?: number;
 }
 
-export default function FieldProtectionTab({ fieldId }: Props) {
+export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
   const { t } = useTranslation();
   const { hasRole } = useRole();
   const canWrite = hasRole(['Administrator', 'Manager', 'Agronomist']);
@@ -21,6 +24,13 @@ export default function FieldProtectionTab({ fieldId }: Props) {
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
+  const [warehouseItems, setWarehouseItems] = useState<WarehouseItemDto[]>([]);
+
+  useEffect(() => {
+    getWarehouseItemsByCategory('Pesticides')
+      .then((r) => setWarehouseItems(r.items))
+      .catch(() => {});
+  }, []);
 
   const load = () => {
     setLoading(true);
@@ -122,13 +132,49 @@ export default function FieldProtectionTab({ fieldId }: Props) {
             <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="productName" label={t.fields.productName} rules={[{ required: true, message: t.common.required }]}>
-            <Input />
+            <Select
+              showSearch
+              allowClear
+              placeholder={t.fields.selectPesticide}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={warehouseItems.map((item) => ({
+                value: item.name,
+                label: `${item.name} (${item.purchasePrice != null ? item.purchasePrice + ' UAH/' + item.baseUnit : 'ціна не вказана'})`,
+              }))}
+              onChange={(val) => {
+                const item = warehouseItems.find((i) => i.name === val);
+                if (item?.purchasePrice != null) {
+                  form.setFieldsValue({ costPerLiter: item.purchasePrice });
+                  const totalLiters = form.getFieldValue('totalLiters');
+                  if (totalLiters) {
+                    form.setFieldsValue({ totalCost: Math.round(Number(totalLiters) * item.purchasePrice * 100) / 100 });
+                  }
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item name="protectionType" label={t.fields.protectionType}>
             <Select options={protectionTypeOptions} allowClear />
           </Form.Item>
           <Form.Item name="rateLPerHa" label={t.fields.rateLPerHa}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber
+              min={0}
+              precision={4}
+              style={{ width: '100%' }}
+              onChange={(val) => {
+                const area = fieldArea ?? 0;
+                if (val != null && area > 0) {
+                  const total = Math.round(Number(val) * area * 100) / 100;
+                  form.setFieldsValue({ totalLiters: total });
+                  const price = form.getFieldValue('costPerLiter');
+                  if (price) {
+                    form.setFieldsValue({ totalCost: Math.round(total * Number(price) * 100) / 100 });
+                  }
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item name="totalLiters" label={t.fields.totalLiters}>
             <InputNumber min={0} precision={4} style={{ width: '100%' }} />
@@ -137,7 +183,7 @@ export default function FieldProtectionTab({ fieldId }: Props) {
             <InputNumber min={0} precision={2} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="totalCost" label={t.fields.totalCostLabel}>
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={2} style={{ width: '100%' }} addonAfter="грн" />
           </Form.Item>
           <Form.Item name="applicationDate" label={t.fields.applicationDate} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker style={{ width: '100%' }} />
