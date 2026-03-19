@@ -1,21 +1,15 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace AgroPlatform.Api.Controllers;
 
-/// <summary>
-/// Proxies requests to Ukrainian cadastre APIs to avoid browser CORS restrictions.
-/// </summary>
 [ApiController]
-[Authorize]
 [Route("api/cadastre")]
-[Produces("application/json")]
 public class CadastreController : ControllerBase
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<CadastreController> _logger;
 
-    /// <summary>Initializes a new instance of <see cref="CadastreController"/>.</summary>
     public CadastreController(IHttpClientFactory httpClientFactory, ILogger<CadastreController> logger)
     {
         _httpClientFactory = httpClientFactory;
@@ -121,10 +115,8 @@ public class CadastreController : ControllerBase
         }
     }
 
-    /// <summary>Search parcel by cadnum via kadastrova-karta.com page scraping</summary>
+    /// <summary>Get parcel info by cadnum via kadastrova-karta.com</summary>
     [HttpGet("parcel")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetParcel([FromQuery] string cadnum, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(cadnum))
@@ -145,24 +137,17 @@ public class CadastreController : ControllerBase
             if (string.IsNullOrEmpty(html))
                 return Ok(new { found = false });
 
-            // Парсимо площу з HTML
-            var areaMatch = System.Text.RegularExpressions.Regex.Match(
-                html, @"Площа[:\s]*[\d\s]*<[^>]+>\s*([\d.,]+)\s*га",
-                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-
-            // Другий варіант пошуку площі
-            if (!areaMatch.Success)
-            {
-                areaMatch = System.Text.RegularExpressions.Regex.Match(
-                    html, @"([\d.,]+)\s*га",
-                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            }
+            var areaMatch = Regex.Match(html,
+                @"([\d]+[.,][\d]+)\s*га",
+                RegexOptions.IgnoreCase);
 
             var result = new
             {
                 found = html.Contains(normalizedCadnum),
                 cadnum = normalizedCadnum,
-                area = areaMatch.Success ? areaMatch.Groups[1].Value.Trim().Replace(",", ".") : null,
+                area = areaMatch.Success
+                    ? areaMatch.Groups[1].Value.Trim().Replace(",", ".")
+                    : (string?)null,
                 sourceUrl = url
             };
 
@@ -170,7 +155,7 @@ public class CadastreController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogWarning("Cadastre scraping failed for {Cadnum}: {Error}", cadnum, ex.Message);
+            _logger.LogWarning("Cadastre failed for {Cadnum}: {Error}", cadnum, ex.Message);
             return Ok(new { found = false, error = ex.Message });
         }
     }
