@@ -7,8 +7,11 @@ import { PlusOutlined, DollarOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { getLeaseSummary, createLease, addLeasePayment, getLeases, updateLease } from '../../api/leases';
 import { getFields } from '../../api/fields';
+import { getGrainBatches } from '../../api/grain';
 import type { LeaseSummaryDto, LandLeaseDto } from '../../types/lease';
 import type { FieldDto } from '../../types/field';
+import type { GrainBatchDto } from '../../types/grain';
+import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
@@ -55,6 +58,14 @@ export default function LeasePage() {
   useEffect(() => {
     getFields({ ownershipType: [1, 2], pageSize: 200 })
       .then((r) => setFields(r.items))
+      .catch(() => {/* ignore */});
+  }, []);
+
+  useEffect(() => {
+    getGrainBatches({ pageSize: 200 })
+      .then((r: PaginatedResult<GrainBatchDto>) =>
+        setGrainBatches((r.items ?? []).filter(b => b.quantityTons >= 0.001))
+      )
       .catch(() => {/* ignore */});
   }, []);
 
