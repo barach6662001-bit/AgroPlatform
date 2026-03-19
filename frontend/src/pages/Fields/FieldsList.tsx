@@ -199,13 +199,15 @@ export default function FieldsList() {
           onChange={(e) => handleSearchChange(e.target.value)}
           style={{ width: 320 }}
         />
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setModalOpen(true)}
-        >
-          {t.fields.addField}
-        </Button>
+        {canCreate && (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setModalOpen(true)}
+          >
+            {t.fields.addField}
+          </Button>
+        )}
         <Segmented
           value={viewMode}
           onChange={(v) => setViewMode(v as 'list' | 'map')}
