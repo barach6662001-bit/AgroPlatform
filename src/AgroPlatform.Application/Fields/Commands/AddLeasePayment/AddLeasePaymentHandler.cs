@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.GrainStorage;
 using MediatR;
@@ -18,10 +19,10 @@ public class AddLeasePaymentHandler : IRequestHandler<AddLeasePaymentCommand, Gu
 
     public async Task<Guid> Handle(AddLeasePaymentCommand request, CancellationToken cancellationToken)
     {
-        var leaseExists = await _context.LandLeases
-            .AnyAsync(l => l.Id == request.LandLeaseId, cancellationToken);
+        var leaseForCheck = await _context.LandLeases
+            .FirstOrDefaultAsync(l => l.Id == request.LandLeaseId, cancellationToken);
 
-        if (!leaseExists)
+        if (leaseForCheck == null)
             throw new NotFoundException(nameof(LandLease), request.LandLeaseId);
 
         var payment = new LeasePayment
@@ -67,6 +68,25 @@ public class AddLeasePaymentHandler : IRequestHandler<AddLeasePaymentCommand, Gu
 
             batch.QuantityTons -= qty;
         }
+
+        // Auto-create cost record for lease payment
+        var costAmount = request.PaymentMethod == "Grain"
+            && request.GrainQuantityTons.HasValue
+            && request.GrainPricePerTon.HasValue
+                ? Math.Round(request.GrainQuantityTons.Value * request.GrainPricePerTon.Value, 2)
+                : request.Amount;
+
+        _context.CostRecords.Add(new CostRecord
+        {
+            Category = "Lease",
+            Amount = costAmount,
+            Currency = "UAH",
+            Date = request.PaymentDate,
+            FieldId = leaseForCheck.FieldId,
+            Description = request.PaymentMethod == "Grain"
+                ? $"Оренда (зерно): {request.GrainQuantityTons:F2}т × {request.GrainPricePerTon:F0} UAH/т"
+                : $"Оренда: {costAmount:F2} UAH ({request.PaymentType})"
+        });
 
         await _context.SaveChangesAsync(cancellationToken);
         return payment.Id;

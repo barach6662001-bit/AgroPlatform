@@ -765,6 +765,8 @@ const uk = {
     selectMachine: 'Оберіть машину',
     driverNamePlaceholder: 'ПІБ водія',
     driverAutoFilled: 'Водія підставлено автоматично',
+    field: 'Поле',
+    selectField: 'Оберіть поле',
   },
   grain: {
     title: 'Зерносховище',
