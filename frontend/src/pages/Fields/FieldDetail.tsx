@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined, ExportOutlined } from '@ant-design/icons';
 import apiClient from '../../api/axios';
 import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry, updateField } from '../../api/fields';
 import { getLeases, createLease, addLeasePayment } from '../../api/leases';
@@ -392,6 +392,18 @@ export default function FieldDetail() {
               styles={{ body: { padding: 0 } }}
               extra={
                 <Space>
+                  {field.cadastralNumber && (
+                    <Button
+                      icon={<ExportOutlined />}
+                      size="small"
+                      onClick={() => window.open(
+                        `https://kadastrova-karta.com/dilyanka/${field.cadastralNumber}`,
+                        '_blank'
+                      )}
+                    >
+                      {t.fields.openInCadastre}
+                    </Button>
+                  )}
                   {field.cadastralNumber && !hasGeometry && (
                     <Button
                       icon={<DownloadOutlined />}

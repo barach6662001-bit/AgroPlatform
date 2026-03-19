@@ -214,6 +214,8 @@ const en: Translations = {
     cadastreLoaded: 'Cadastre data loaded successfully.',
     cadastreError: 'Failed to load cadastral data.',
     loadFromCadastre: 'Load from Cadastre',
+    cadastreInfo: 'Cadastre data',
+    openInCadastre: 'View in cadastre',
     tabInfo: 'Information',
     tabSeeding: 'Seeding',
     tabFertilizer: 'Fertilizers',
