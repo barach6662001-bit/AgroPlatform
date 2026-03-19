@@ -12,6 +12,10 @@ export interface FieldDto {
   soilType?: string;
   notes?: string;
   ownershipType: number;
+  cadastralArea?: number;
+  cadastralPurpose?: string;
+  cadastralOwnership?: string;
+  cadastralFetchedAt?: string;
 }
 
 export interface CropHistoryDto {

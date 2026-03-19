@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined, ExportOutlined } from '@ant-design/icons';
-import apiClient from '../../api/axios';
-import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry, updateField } from '../../api/fields';
+import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined, ExportOutlined, ReloadOutlined } from '@ant-design/icons';
+import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry } from '../../api/fields';
+import { getCadastreParcel, cacheCadastreData } from '../../api/cadastre';
 import { getLeases, createLease, addLeasePayment } from '../../api/leases';
 import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } from '../../types/field';
 import type { LandLeaseDto } from '../../types/lease';
@@ -27,6 +27,7 @@ export default function FieldDetail() {
   const [currentGeoJson, setCurrentGeoJson] = useState<string | null>(null);
   const [savingGeometry, setSavingGeometry] = useState(false);
   const [cadastreLoading, setCadastreLoading] = useState(false);
+  const [cadInput, setCadInput] = useState('');
   const [assignForm] = Form.useForm();
   const [planForm] = Form.useForm();
   const [leases, setLeases] = useState<LandLeaseDto[]>([]);
@@ -97,46 +98,32 @@ export default function FieldDetail() {
   };
 
   const handleLoadFromCadastre = async () => {
-    if (!field?.cadastralNumber) {
+    const cadnum = (field?.cadastralNumber || cadInput).trim();
+    if (!cadnum) {
       message.warning(t.fields.noCadastralNumber);
+      return;
+    }
+    if (!/^\d{10}:\d{2}:\d{3}:\d{4}$/.test(cadnum)) {
+      message.error(t.fields.invalidCadastralFormat);
       return;
     }
     setCadastreLoading(true);
     try {
-      const cadnum = field.cadastralNumber.replace(/\s/g, '');
-      const response = await apiClient.get(`/api/cadastre/parcel`, { params: { cadnum } });
-      const data = response.data;
-
-      if (!data.found || !data.geometry) {
+      const result = await getCadastreParcel(cadnum);
+      if (!result.found) {
         message.warning(t.fields.cadastreNotFound);
         return;
       }
-
-      const geoJsonString = JSON.stringify(data.geometry);
-      setCurrentGeoJson(geoJsonString);
-      await updateFieldGeometry(id!, { geoJson: geoJsonString });
+      await cacheCadastreData(id!, {
+        cadastralNumber: cadnum,
+        area: result.area ? parseFloat(result.area) : undefined,
+        purpose: result.purpose,
+        ownership: result.ownership,
+      });
       message.success(t.fields.cadastreLoaded);
-      setField(prev => prev ? { ...prev, geoJson: geoJsonString } : prev);
-
-      // Offer area update when cadastre reports a different area
-      if (data.area !== null && data.area !== undefined) {
-        const cadastreAreaHa = Number(data.area);
-        if (!isNaN(cadastreAreaHa) && Math.abs(cadastreAreaHa - field.areaHectares) > 0.01) {
-          Modal.confirm({
-            title: t.fields.areaMismatchTitle,
-            content: `${t.fields.cadastreArea}: ${cadastreAreaHa.toFixed(2)} га. ${t.fields.areaMismatchQuestion}`,
-            okText: t.fields.updateArea,
-            cancelText: t.fields.keepCurrentArea,
-            onOk: async () => {
-              await updateField(id!, { areaHectares: cadastreAreaHa });
-              setField(prev => prev ? { ...prev, areaHectares: cadastreAreaHa } : prev);
-              message.success(t.fields.areaUpdated);
-            },
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Cadastre loading failed:', error);
+      setLoading(true);
+      load();
+    } catch {
       message.error(t.fields.cadastreError);
     } finally {
       setCadastreLoading(false);
@@ -392,27 +379,45 @@ export default function FieldDetail() {
               styles={{ body: { padding: 0 } }}
               extra={
                 <Space>
-                  {field.cadastralNumber && (
-                    <Button
-                      icon={<ExportOutlined />}
-                      size="small"
-                      onClick={() => window.open(
-                        `https://kadastrova-karta.com/dilyanka/${field.cadastralNumber}`,
-                        '_blank'
-                      )}
-                    >
-                      {t.fields.openInCadastre}
-                    </Button>
-                  )}
-                  {field.cadastralNumber && !hasGeometry && (
-                    <Button
-                      icon={<DownloadOutlined />}
-                      size="small"
-                      loading={cadastreLoading}
-                      onClick={handleLoadFromCadastre}
-                    >
-                      {t.fields.loadFromCadastre}
-                    </Button>
+                  {field.cadastralNumber ? (
+                    <>
+                      <Button
+                        icon={<ExportOutlined />}
+                        size="small"
+                        onClick={() => window.open(
+                          `https://kadastrova-karta.com/dilyanka/${field.cadastralNumber}`,
+                          '_blank'
+                        )}
+                      >
+                        {t.fields.openInCadastre}
+                      </Button>
+                      <Button
+                        icon={<ReloadOutlined />}
+                        size="small"
+                        loading={cadastreLoading}
+                        onClick={handleLoadFromCadastre}
+                      >
+                        {t.fields.refreshFromCadastre}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Input
+                        placeholder="XXXXXXXXXX:XX:XXX:XXXX"
+                        value={cadInput}
+                        onChange={(e) => setCadInput(e.target.value)}
+                        style={{ width: 220 }}
+                        size="small"
+                      />
+                      <Button
+                        icon={<DownloadOutlined />}
+                        size="small"
+                        loading={cadastreLoading}
+                        onClick={handleLoadFromCadastre}
+                      >
+                        {t.fields.loadFromCadastre}
+                      </Button>
+                    </>
                   )}
                   <Button
                     type="primary"
