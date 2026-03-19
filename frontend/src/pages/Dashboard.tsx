@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { Row, Col, Card, Spin, message, Typography, Table, Tag, List, Badge } from 'antd';
+import { Row, Col, Card, Spin, message, Typography, Table, Tag, List, Badge, Space, Button, Divider } from 'antd';
 import {
   AimOutlined,
   CarOutlined,
@@ -27,11 +27,13 @@ import {
 } from 'recharts';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useNavigate } from 'react-router-dom';
 import { getDashboard } from '../api/analytics';
 import { getFields } from '../api/fields';
 import { getMachines } from '../api/machinery';
 import { getNotifications, type NotificationDto } from '../api/notifications';
 import { getGrainSummary, type GrainSummaryItem } from '../api/grain';
+import apiClient from '../api/axios';
 import type { DashboardDto } from '../types/analytics';
 import type { FieldDto } from '../types/field';
 import type { MachineDto } from '../types/machinery';
@@ -43,6 +45,7 @@ dayjs.extend(relativeTime);
 
 const CARD = { background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12 };
 const SECTION_GAP = { marginTop: 24 };
+const ONBOARDING_THRESHOLD_FIELDS = 3;
 
 interface StatCardProps {
   label: string;
@@ -110,6 +113,7 @@ export default function Dashboard() {
   const [grainSummary, setGrainSummary] = useState<GrainSummaryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     Promise.all([
@@ -231,6 +235,49 @@ export default function Dashboard() {
     <div className="page-enter">
       <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
 
+      {(data.totalFields ?? 0) < ONBOARDING_THRESHOLD_FIELDS ? (
+        <Card style={{ background: 'var(--agro-bg-card)', textAlign: 'center', padding: '40px 20px' }}>
+          <Typography.Title level={3} style={{ color: 'var(--agro-text-primary)' }}>
+            {t.dashboard.welcome || 'Вітаємо в AgroTech!'}
+          </Typography.Title>
+          <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
+            {t.dashboard.setupGuide || 'Щоб розпочати, додайте перші дані:'}
+          </Typography.Text>
+
+          <Space direction="vertical" size={12} style={{ width: 300 }}>
+            <Button block type="primary" icon={<AimOutlined />} onClick={() => navigate('/fields')}>
+              1. Додати поля
+            </Button>
+            <Button block icon={<CarOutlined />} onClick={() => navigate('/machinery')}>
+              2. Додати техніку
+            </Button>
+            <Button block icon={<InboxOutlined />} onClick={() => navigate('/warehouses/items')}>
+              3. Створити склад
+            </Button>
+            <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>
+              4. Записати операцію
+            </Button>
+          </Space>
+
+          <Divider />
+
+          <Button
+            onClick={async () => {
+              try {
+                await apiClient.post('/api/tenants/seed-demo');
+                message.success('Демо-дані завантажено!');
+                navigate(0);
+              } catch {
+                message.error('Помилка завантаження');
+              }
+            }}
+            style={{ marginTop: 12 }}
+          >
+            Або завантажити демо-дані для ознайомлення
+          </Button>
+        </Card>
+      ) : (
+        <>
       {/* KPI Grid */}
       <div style={{
         display: 'grid',
@@ -546,6 +593,8 @@ export default function Dashboard() {
           </div>
         )}
       </Card>
+      </>
+      )}
     </div>
   );
 }
