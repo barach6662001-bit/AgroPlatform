@@ -18,6 +18,12 @@ public class Field : AuditableEntity
     public string? Notes { get; set; }
     public LandOwnershipType OwnershipType { get; set; } = LandOwnershipType.OwnLand;
 
+    // Cadastre integration
+    public decimal? CadastralArea { get; set; }        // площа в га з кадастру
+    public string? CadastralPurpose { get; set; }       // цільове призначення
+    public string? CadastralOwnership { get; set; }     // форма власності (Приватна, Державна, Комунальна)
+    public DateTime? CadastralFetchedAt { get; set; }   // коли востаннє підтягнули дані
+
     public ICollection<FieldCropHistory> CropHistory { get; set; } = new List<FieldCropHistory>();
     public ICollection<AgroOperation> Operations { get; set; } = new List<AgroOperation>();
     public ICollection<CropRotationPlan> RotationPlans { get; set; } = new List<CropRotationPlan>();

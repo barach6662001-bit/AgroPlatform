@@ -7,6 +7,10 @@ public class FieldDto
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? CadastralNumber { get; set; }
+    public decimal? CadastralArea { get; set; }
+    public string? CadastralPurpose { get; set; }
+    public string? CadastralOwnership { get; set; }
+    public DateTime? CadastralFetchedAt { get; set; }
     public decimal AreaHectares { get; set; }
     public CropType? CurrentCrop { get; set; }
     public int? CurrentCropYear { get; set; }

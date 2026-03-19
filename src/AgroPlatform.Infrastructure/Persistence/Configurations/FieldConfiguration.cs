@@ -15,7 +15,16 @@ public class FieldConfiguration : IEntityTypeConfiguration<Field>
             .HasMaxLength(200);
 
         builder.Property(f => f.CadastralNumber)
-            .HasMaxLength(50);
+            .HasMaxLength(25);
+
+        builder.Property(f => f.CadastralArea)
+            .HasColumnType("numeric(18,4)");
+
+        builder.Property(f => f.CadastralPurpose)
+            .HasMaxLength(500);
+
+        builder.Property(f => f.CadastralOwnership)
+            .HasMaxLength(100);
 
         builder.Property(f => f.AreaHectares)
             .HasPrecision(12, 4)
