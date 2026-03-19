@@ -81,7 +81,7 @@ export default function LeasePage() {
 
   useEffect(() => {
     if (payModalOpen) {
-      getGrainBatches({ pageSize: 200, minQuantity: 0.001 })
+      getGrainBatches({ pageSize: 200 })
         .then(r => setGrainBatches(r.items ?? []))
         .catch(() => {/* ignore */});
     }
