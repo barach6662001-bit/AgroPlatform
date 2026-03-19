@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Warehouses;
 using MediatR;
@@ -82,6 +83,40 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
                         $"Товар '{item.Name}' нижче мінімуму: {balance.BalanceBase:F2} {item.BaseUnit} (мін: {item.MinimumQuantity:F2})",
                         cancellationToken);
                 }
+            }
+        }
+
+        // === AUTO-CREATE COST RECORDS ===
+        // For each resource with actual quantity used, create a cost record tied to the field
+        foreach (var resource in operation.Resources.Where(r => r.ActualQuantity.HasValue && r.ActualQuantity > 0))
+        {
+            var warehouseItem = await _context.WarehouseItems
+                .FirstOrDefaultAsync(wi => wi.Id == resource.WarehouseItemId, cancellationToken);
+
+            if (warehouseItem != null && warehouseItem.PurchasePrice.HasValue && warehouseItem.PurchasePrice.Value > 0)
+            {
+                var totalCost = resource.ActualQuantity!.Value * warehouseItem.PurchasePrice.Value;
+
+                // Map warehouse item category to cost category
+                var costCategory = warehouseItem.Category switch
+                {
+                    "Fertilizers" => "Fertilizers",
+                    "Seeds" => "Seeds",
+                    "Pesticides" => "Pesticides",
+                    "Fuel" => "Fuel",
+                    _ => "Other"
+                };
+
+                _context.CostRecords.Add(new CostRecord
+                {
+                    Category = costCategory,
+                    Amount = totalCost,
+                    Currency = "UAH",
+                    Date = request.CompletedDate,
+                    FieldId = operation.FieldId,
+                    AgroOperationId = operation.Id,
+                    Description = $"{warehouseItem.Name}: {resource.ActualQuantity.Value:F2} {resource.UnitCode} × {warehouseItem.PurchasePrice.Value:F2} UAH"
+                });
             }
         }
 
