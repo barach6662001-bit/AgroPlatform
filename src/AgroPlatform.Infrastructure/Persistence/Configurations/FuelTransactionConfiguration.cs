@@ -33,6 +33,8 @@ public class FuelTransactionConfiguration : IEntityTypeConfiguration<FuelTransac
 
         builder.HasIndex(t => t.MachineId);
 
+        builder.HasIndex(t => t.FieldId);
+
         builder.HasQueryFilter(t => !t.IsDeleted);
     }
 }

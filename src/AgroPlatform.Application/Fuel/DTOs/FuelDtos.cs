@@ -23,6 +23,8 @@ public class FuelTransactionDto
     public decimal? TotalCost { get; set; }
     public DateTime TransactionDate { get; set; }
     public Guid? MachineId { get; set; }
+    public Guid? FieldId { get; set; }
+    public string? FieldName { get; set; }
     public string? DriverName { get; set; }
     public string? SupplierName { get; set; }
     public string? InvoiceNumber { get; set; }
