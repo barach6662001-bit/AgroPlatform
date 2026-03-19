@@ -4,7 +4,9 @@ import { PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons'
 import { useSearchParams } from 'react-router-dom';
 import apiClient from '../../api/axios';
 import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue, createWarehouseItem, createTransfer, updateWarehouseItem } from '../../api/warehouses';
+import { getFields } from '../../api/fields';
 import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
+import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -17,6 +19,7 @@ export default function WarehouseItems() {
   const [result, setResult] = useState<PaginatedResult<BalanceDto> | null>(null);
   const [warehouses, setWarehouses] = useState<WarehouseDto[]>([]);
   const [items, setItems] = useState<WarehouseItemDto[]>([]);
+  const [fields, setFields] = useState<FieldDto[]>([]);
   const [selectedWarehouse, setSelectedWarehouse] = useState<string | undefined>(initialWarehouse);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -64,6 +67,10 @@ export default function WarehouseItems() {
     loadBalances(initialWarehouse);
   }, []);
 
+  useEffect(() => {
+    getFields({ pageSize: 200 }).then((r) => setFields(r.items)).catch(() => {});
+  }, []);
+
   useEffect(() => { loadBalances(selectedWarehouse, page, pageSize); }, [page, pageSize]);
 
   const handleWarehouseChange = (val: string | undefined) => {
@@ -107,6 +114,7 @@ export default function WarehouseItems() {
         itemId: values.itemId,
         unitCode,
         quantity: values.quantity,
+        fieldId: values.fieldId,
         note: values.notes,
       });
       message.success(t.warehouses.issueSuccess);
@@ -346,6 +354,20 @@ export default function WarehouseItems() {
       >
         <Form form={issueForm} layout="vertical" style={{ marginTop: 16 }}>
           <MovementForm />
+          <Form.Item name="fieldId" label={t.warehouses.field || 'Поле'}>
+            <Select
+              allowClear
+              showSearch
+              placeholder={t.warehouses.selectField || 'Оберіть поле (опціонально)'}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={fields.map(f => ({
+                value: f.id,
+                label: `${f.name} (${f.areaHectares} га)`,
+              }))}
+            />
+          </Form.Item>
         </Form>
       </Modal>
       {/* Create Item Modal */}

@@ -34,6 +34,8 @@ export const createIssue = (data: {
   itemId: string;
   unitCode: string;
   quantity: number;
+  fieldId?: string;
+  agroOperationId?: string;
   note?: string;
 }) =>
   apiClient.post('/api/warehouses/issue', data).then((r) => r.data);
