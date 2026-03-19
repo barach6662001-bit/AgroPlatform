@@ -19,6 +19,7 @@ import type { MachineDto } from '../../types/machinery';
 import type { FieldDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import EmptyState from '../../components/EmptyState';
 
 const { Option } = Select;
 
@@ -320,6 +321,11 @@ export default function FuelStation() {
         loading={loadingTx}
         pagination={{ pageSize: 20, showSizeChanger: false }}
         scroll={{ x: 800 }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.fuel.noTransactions || 'Ще немає заправок'}
+          />,
+        }}
       />
 
       {/* Add tank modal */}

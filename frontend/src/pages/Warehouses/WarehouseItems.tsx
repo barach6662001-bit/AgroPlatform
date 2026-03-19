@@ -9,6 +9,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import EmptyState from '../../components/EmptyState';
 
 export default function WarehouseItems() {
   const [searchParams] = useSearchParams();
@@ -313,6 +314,13 @@ export default function WarehouseItems() {
           total: result?.totalCount ?? 0,
           showTotal: (total) => t.warehouses.totalItems.replace('{{count}}', String(total)),
           onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+        }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.warehouses.noBalances || 'Складські залишки відсутні. Створіть товар і запишіть прихід'}
+            actionLabel={canManageItems ? t.warehouses.receipt : undefined}
+            onAction={canManageItems ? () => setReceiptOpen(true) : undefined}
+          />,
         }}
       />
 

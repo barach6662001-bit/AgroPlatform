@@ -15,6 +15,7 @@ import type { MachineDetailDto, WorkLogDto, FuelLogDto } from '../../types/machi
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import EmptyState from '../../components/EmptyState';
 
 const statusColors: Record<string, string> = {
   Active: 'success', UnderRepair: 'warning', Decommissioned: 'error',
@@ -290,7 +291,7 @@ export default function MachineDetail() {
           columns={workLogColumns}
           rowKey="id"
           pagination={{ pageSize: 10 }}
-          locale={{ emptyText: t.machinery.workLogEmpty }}
+          locale={{ emptyText: <EmptyState message={t.machinery.workLogEmpty || 'Напрацювань немає'} actionLabel={t.machinery.logWork} onAction={() => setWorkLogOpen(true)} /> }}
         />
         {workChartData.length > 1 && (
           <div style={{ marginTop: 16 }}>
@@ -314,7 +315,7 @@ export default function MachineDetail() {
           columns={fuelLogColumns}
           rowKey="id"
           pagination={{ pageSize: 10 }}
-          locale={{ emptyText: t.machinery.fuelLogEmpty }}
+          locale={{ emptyText: <EmptyState message={t.machinery.fuelLogEmpty || 'Заправок немає'} actionLabel={t.machinery.logFuel} onAction={() => setFuelLogOpen(true)} /> }}
         />
         {fuelChartData.length > 1 && (
           <div style={{ marginTop: 16 }}>
@@ -346,7 +347,7 @@ export default function MachineDetail() {
           columns={maintenanceColumns}
           rowKey="id"
           pagination={{ pageSize: 10 }}
-          locale={{ emptyText: t.maintenance.noRecords }}
+          locale={{ emptyText: <EmptyState message={t.maintenance.noRecords || 'Записів ТО немає'} actionLabel={canEdit ? t.maintenance.addRecord : undefined} onAction={canEdit ? () => setMaintenanceOpen(true) : undefined} /> }}
         />
       </Card>
 

@@ -6,6 +6,7 @@ import type { StockMoveDto, WarehouseDto, WarehouseItemDto } from '../../types/w
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import EmptyState from '../../components/EmptyState';
 
 const { RangePicker } = DatePicker;
 
@@ -165,6 +166,11 @@ export default function StockMovements() {
           pageSize,
           total: result?.totalCount ?? 0,
           onChange: (p) => setPage(p),
+        }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.warehouses.noMovements || 'Ще немає рухів товарів'}
+          />,
         }}
       />
     </div>

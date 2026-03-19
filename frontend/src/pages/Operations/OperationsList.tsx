@@ -13,6 +13,7 @@ import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
+import EmptyState from '../../components/EmptyState';
 
 const typeColors: Record<string, string> = {
   Sowing: 'green', Fertilizing: 'blue', PlantProtection: 'orange',
@@ -188,6 +189,13 @@ export default function OperationsList() {
           showTotal: (total) => t.operations.total.replace('{{count}}', String(total)),
           onChange: (p, ps) => { setPage(p); setPageSize(ps); },
         }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.operations.noOperations || 'Ще немає операцій. Створіть першу'}
+            actionLabel={canCreate ? t.operations.createOperation : undefined}
+            onAction={canCreate ? () => setModalOpen(true) : undefined}
+          />,
+        }}
       />
 
       <Modal
@@ -201,7 +209,18 @@ export default function OperationsList() {
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item name="fieldId" label={t.operations.field} rules={[{ required: true, message: t.common.required }]}>
-            <Select options={fieldOptions} placeholder={t.operations.selectField} showSearch optionFilterProp="label" />
+            <Select
+              options={fieldOptions}
+              placeholder={t.operations.selectField}
+              showSearch
+              optionFilterProp="label"
+              onChange={(val) => {
+                const field = fields.find(f => f.id === val);
+                if (field) {
+                  form.setFieldsValue({ areaProcessed: field.areaHectares });
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item name="operationType" label={t.operations.type} rules={[{ required: true, message: t.common.required }]}>
             <Select options={operationTypeOptions} placeholder={t.operations.selectType} />

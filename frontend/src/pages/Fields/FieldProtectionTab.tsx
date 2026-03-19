@@ -6,6 +6,7 @@ import { getFieldProtections, createFieldProtection, deleteFieldProtection } fro
 import type { FieldProtectionDto } from '../../types/field';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import EmptyState from '../../components/EmptyState';
 
 interface Props {
   fieldId: string;
@@ -94,11 +95,14 @@ export default function FieldProtectionTab({ fieldId }: Props) {
   return (
     <div>
       <Space style={{ marginBottom: 12 }}>
+        <span style={{ color: 'var(--agro-text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
         <Select
-          style={{ width: 120 }}
+          style={{ width: 90 }}
           value={year}
           onChange={setYear}
           options={yearOptions}
+          allowClear
+          placeholder={t.fields.allYears}
         />
         {canWrite && (
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
@@ -106,7 +110,20 @@ export default function FieldProtectionTab({ fieldId }: Props) {
           </Button>
         )}
       </Space>
-      <Table dataSource={data} columns={columns} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} locale={{ emptyText: t.common.noData }} />
+      <Table
+        dataSource={data}
+        columns={columns}
+        rowKey="id"
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.fields.noProtection || 'Ще немає записів про захист'}
+            actionLabel={canWrite ? t.fields.addProtection : undefined}
+            onAction={canWrite ? () => setModalOpen(true) : undefined}
+          />,
+        }}
+      />
 
       <Modal
         title={t.fields.addProtection}

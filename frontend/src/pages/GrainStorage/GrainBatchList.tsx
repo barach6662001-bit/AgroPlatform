@@ -12,6 +12,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import EmptyState from '../../components/EmptyState';
 
 const QUICK_GRAIN_TYPES = ['Пшениця озима', 'Кукурудза', 'Соняшник'];
 const LAST_GRAIN_KEY = 'lastGrainType';
@@ -365,6 +366,13 @@ export default function GrainBatchList() {
           pageSize,
           total: result?.totalCount ?? 0,
           onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+        }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.grain.noBatches || 'Ще немає партій зерна. Прийміть перше зерно'}
+            actionLabel={canCreate ? t.grain.receiveGrain : undefined}
+            onAction={canCreate ? openBatchModal : undefined}
+          />,
         }}
       />
 

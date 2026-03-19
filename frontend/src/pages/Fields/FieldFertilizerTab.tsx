@@ -6,6 +6,7 @@ import { getFieldFertilizers, createFieldFertilizer, deleteFieldFertilizer } fro
 import type { FieldFertilizerDto } from '../../types/field';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import EmptyState from '../../components/EmptyState';
 
 interface Props {
   fieldId: string;
@@ -93,11 +94,14 @@ export default function FieldFertilizerTab({ fieldId }: Props) {
   return (
     <div>
       <Space style={{ marginBottom: 12 }}>
+        <span style={{ color: 'var(--agro-text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
         <Select
-          style={{ width: 120 }}
+          style={{ width: 90 }}
           value={year}
           onChange={setYear}
           options={yearOptions}
+          allowClear
+          placeholder={t.fields.allYears}
         />
         {canWrite && (
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
@@ -105,7 +109,20 @@ export default function FieldFertilizerTab({ fieldId }: Props) {
           </Button>
         )}
       </Space>
-      <Table dataSource={data} columns={columns} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} locale={{ emptyText: t.common.noData }} />
+      <Table
+        dataSource={data}
+        columns={columns}
+        rowKey="id"
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.fields.noFertilizers || 'Ще немає записів про добрива'}
+            actionLabel={canWrite ? t.fields.addFertilizer : undefined}
+            onAction={canWrite ? () => setModalOpen(true) : undefined}
+          />,
+        }}
+      />
 
       <Modal
         title={t.fields.addFertilizer}
