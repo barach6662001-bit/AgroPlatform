@@ -28,6 +28,8 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
     {
         var operation = await _context.AgroOperations
             .Include(o => o.Resources)
+            .Include(o => o.MachineryUsed)
+                .ThenInclude(mu => mu.Machine)
             .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(AgroOperation), request.Id);
 
@@ -86,6 +88,26 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Check if any machinery used in operation needs upcoming maintenance
+        if (operation.MachineryUsed?.Any() == true)
+        {
+            var threshold = DateTime.UtcNow.AddDays(7);
+            var machinesNeedingMaintenance = operation.MachineryUsed
+                .Select(mu => mu.Machine)
+                .Where(m => m.NextMaintenanceDate.HasValue && m.NextMaintenanceDate <= threshold)
+                .ToList();
+
+            foreach (var machine in machinesNeedingMaintenance)
+            {
+                await _notifications.SendAsync(
+                    _currentUser.TenantId,
+                    "warning",
+                    "ТО наближається",
+                    $"Техніка '{machine.Name}': планове ТО {machine.NextMaintenanceDate:dd.MM.yyyy}",
+                    cancellationToken);
+            }
+        }
 
         // Notify operation completed
         await _notifications.SendAsync(
