@@ -13,8 +13,10 @@ import {
   getFuelTransactions,
 } from '../../api/fuel';
 import { getMachines } from '../../api/machinery';
+import { getFields } from '../../api/fields';
 import type { FuelTankDto, FuelTransactionDto } from '../../types/fuel';
 import type { MachineDto } from '../../types/machinery';
+import type { FieldDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 
@@ -37,6 +39,7 @@ export default function FuelStation() {
   const [tanks, setTanks] = useState<FuelTankDto[]>([]);
   const [transactions, setTransactions] = useState<FuelTransactionDto[]>([]);
   const [machines, setMachines] = useState<MachineDto[]>([]);
+  const [fields, setFields] = useState<FieldDto[]>([]);
   const [loadingTanks, setLoadingTanks] = useState(true);
   const [loadingTx, setLoadingTx] = useState(true);
 
@@ -70,6 +73,7 @@ export default function FuelStation() {
     loadTanks();
     loadTransactions();
     getMachines({ page: 1, pageSize: 200 }).then(data => setMachines(data.items)).catch(() => {});
+    getFields({ pageSize: 200 }).then((r) => setFields(r.items)).catch(() => {});
   }, []);
 
   const handleCreateTank = async () => {
@@ -423,6 +427,20 @@ export default function FuelStation() {
                   issueForm.setFieldsValue({ driverName: undefined });
                 }
               }}
+            />
+          </Form.Item>
+          <Form.Item name="fieldId" label={t.fuel.field || 'Поле'}>
+            <Select
+              allowClear
+              showSearch
+              placeholder={t.fuel.selectField || 'Оберіть поле'}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
+              }
+              options={fields.map(f => ({
+                value: f.id,
+                label: `${f.name} (${f.areaHectares} га)`,
+              }))}
             />
           </Form.Item>
           <Form.Item name="quantityLiters" label={t.fuel.quantityLiters} rules={[{ required: true, message: t.common.required }]}>

@@ -7,6 +7,7 @@ public record CreateFuelIssueCommand(
     decimal QuantityLiters,
     DateTime TransactionDate,
     Guid? MachineId,
+    Guid? FieldId,
     string? DriverName,
     string? Notes
 ) : IRequest<Guid>;

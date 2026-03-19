@@ -44,6 +44,7 @@ public class GetFuelTransactionsHandler : IRequestHandler<GetFuelTransactionsQue
                 TotalCost = t.TotalCost,
                 TransactionDate = t.TransactionDate,
                 MachineId = t.MachineId,
+                FieldId = t.FieldId,
                 DriverName = t.DriverName,
                 SupplierName = t.SupplierName,
                 InvoiceNumber = t.InvoiceNumber,
