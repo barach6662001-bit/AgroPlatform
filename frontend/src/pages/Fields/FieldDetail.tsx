@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs } from 'antd';
+import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs, Typography } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined, ExportOutlined, ReloadOutlined } from '@ant-design/icons';
 import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry } from '../../api/fields';
 import { getCadastreParcel, cacheCadastreData } from '../../api/cadastre';
 import { getLeases, createLease, addLeasePayment } from '../../api/leases';
+import { getFieldPnl } from '../../api/economics';
 import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } from '../../types/field';
 import type { LandLeaseDto } from '../../types/lease';
+import type { FieldPnlDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
 import FieldDrawMap from '../../components/Map/FieldDrawMap';
 import { useTranslation } from '../../i18n';
@@ -37,6 +39,7 @@ export default function FieldDetail() {
   const [selectedLeaseId, setSelectedLeaseId] = useState<string | null>(null);
   const [leaseForm] = Form.useForm();
   const [payForm] = Form.useForm();
+  const [pnl, setPnl] = useState<FieldPnlDto | null>(null);
   const { t } = useTranslation();
   const { hasRole } = useRole();
   const canWrite = hasRole(['Administrator', 'Manager']);
@@ -51,6 +54,14 @@ export default function FieldDetail() {
   };
 
   useEffect(() => { load(); }, [id]);
+
+  useEffect(() => {
+    if (field?.id) {
+      getFieldPnl({ year: new Date().getFullYear(), fieldId: field.id })
+        .then((data) => setPnl(data[0] || null))
+        .catch(() => {});
+    }
+  }, [field?.id]);
 
   const handleAssignCrop = async () => {
     try {
@@ -229,6 +240,56 @@ export default function FieldDetail() {
         </Button>
       </Space>
       <PageHeader title={field.name} subtitle={t.fields.areaSubtitle.replace('{{area}}', field.areaHectares.toFixed(2))} />
+
+      {pnl && (
+        <Row gutter={12} style={{ marginBottom: 20 }}>
+          <Col span={6}>
+            <Card size="small" style={{ background: 'var(--agro-bg-card)', borderColor: 'var(--agro-border)' }}>
+              <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
+                {t.fields.expenses}
+              </Typography.Text>
+              <div style={{ fontSize: 20, fontWeight: 600, color: '#f85149' }}>
+                {(pnl.totalCosts || 0).toLocaleString()} ₴
+              </div>
+              {pnl.costPerHectare != null && pnl.costPerHectare > 0 && (
+                <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+                  {pnl.costPerHectare.toLocaleString()} ₴/га
+                </Typography.Text>
+              )}
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ background: 'var(--agro-bg-card)', borderColor: 'var(--agro-border)' }}>
+              <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
+                {t.fields.revenue}
+              </Typography.Text>
+              <div style={{ fontSize: 20, fontWeight: 600, color: '#3fb950' }}>
+                {(pnl.estimatedRevenue || 0).toLocaleString()} ₴
+              </div>
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ background: 'var(--agro-bg-card)', borderColor: 'var(--agro-border)' }}>
+              <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
+                {t.fields.profit}
+              </Typography.Text>
+              <div style={{ fontSize: 20, fontWeight: 600, color: (pnl.netProfit || 0) >= 0 ? '#3fb950' : '#f85149' }}>
+                {(pnl.netProfit || 0).toLocaleString()} ₴
+              </div>
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ background: 'var(--agro-bg-card)', borderColor: 'var(--agro-border)' }}>
+              <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
+                {t.fields.yield}
+              </Typography.Text>
+              <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--agro-text-primary)' }}>
+                {pnl.actualYieldPerHectare ? `${pnl.actualYieldPerHectare.toFixed(1)} т/га` : '—'}
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      )}
 
       <Tabs defaultActiveKey="info" items={[
         {

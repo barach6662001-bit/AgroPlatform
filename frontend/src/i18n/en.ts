@@ -276,6 +276,10 @@ const en: Translations = {
     cadastreDataNote: 'Cadastre data as of 2022.',
     cadastrePurpose: 'Purpose',
     cadastreOwnership: 'Ownership',
+    expenses: 'Expenses',
+    revenue: 'Revenue',
+    profit: 'Profit',
+    yield: 'Yield',
   },
   warehouses: {
     title: 'Warehouses',
