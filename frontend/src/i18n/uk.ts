@@ -344,6 +344,7 @@ const uk = {
     updateItemError: 'Помилка оновлення товару',
     minimumQuantity: 'Мінімальний залишок',
     purchasePrice: 'Ціна закупівлі',
+    pricePerUnit: 'Ціна за одиницю (UAH)',
     totalCost: 'Вартість',
     grainStorageTitle: 'Зерносховища',
     grainStorageSubtitle: 'Управління зерносховищами',

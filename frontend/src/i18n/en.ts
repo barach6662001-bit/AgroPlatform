@@ -346,6 +346,7 @@ const en: Translations = {
     updateItemError: 'Error updating item',
     minimumQuantity: 'Minimum Stock Level',
     purchasePrice: 'Purchase Price',
+    pricePerUnit: 'Price per unit (UAH)',
     totalCost: 'Total Cost',
     grainStorageTitle: 'Grain Storage',
     grainStorageSubtitle: 'Manage grain storage facilities',
