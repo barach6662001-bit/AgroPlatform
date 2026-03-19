@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Table, Tag, Space, Select, message, Button, Modal, Form, Input,
-  InputNumber, DatePicker, Card, Typography,
+  InputNumber, DatePicker, Card, Typography, Radio,
 } from 'antd';
 import { PlusOutlined, DollarOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -39,7 +39,9 @@ export default function LeasePage() {
   const [payIsAdvance, setPayIsAdvance] = useState(false);
   const [selectedLeaseId, setSelectedLeaseId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'grain'>('cash');
   const [grainBatches, setGrainBatches] = useState<GrainBatchDto[]>([]);
+  const [selectedBatch, setSelectedBatch] = useState<GrainBatchDto | undefined>(undefined);
   const [addForm] = Form.useForm();
   const [editForm] = Form.useForm();
   const [payForm] = Form.useForm();
@@ -77,6 +79,14 @@ export default function LeasePage() {
 
   useEffect(() => { load(); }, [year]);
 
+  useEffect(() => {
+    if (payModalOpen) {
+      getGrainBatches({ pageSize: 200 })
+        .then(r => setGrainBatches(r.items ?? []))
+        .catch(() => {/* ignore */});
+    }
+  }, [payModalOpen]);
+
   const fieldOptions = fields.map((f) => ({
     value: f.id,
     label: `${f.name} (${f.areaHectares.toFixed(1)} га)`,
@@ -112,7 +122,7 @@ export default function LeasePage() {
       const contractEndDate = values.contractEndDate
         ? (values.contractEndDate as { toISOString: () => string }).toISOString()
         : undefined;
-      await updateLease(editingLease.id, { ...values, contractEndDate });
+      await updateLease(editingLease.id, { ...values, contractEndDate, isActive: editingLease.isActive });
       message.success(t.lease.editSuccess);
       setEditModalOpen(false);
       editForm.resetFields();
@@ -153,10 +163,16 @@ export default function LeasePage() {
         ...values,
         paymentDate,
         paymentType: payIsAdvance ? 'Advance' : 'Payment',
+        paymentMethod: paymentMethod === 'grain' ? 'Grain' : 'Cash',
+        grainBatchId: paymentMethod === 'grain' ? values.grainBatchId : undefined,
+        grainQuantityTons: paymentMethod === 'grain' ? values.grainQuantityTons : undefined,
+        grainPricePerTon: paymentMethod === 'grain' ? values.grainPricePerTon : undefined,
       });
       message.success(t.lease.paySuccess);
       setPayModalOpen(false);
       payForm.resetFields();
+      setPaymentMethod('cash');
+      setSelectedBatch(undefined);
       setSelectedLeaseId(null);
       load();
     } catch {
@@ -169,6 +185,8 @@ export default function LeasePage() {
   const openPayModal = (leaseId: string, isAdvance: boolean) => {
     setSelectedLeaseId(leaseId);
     setPayIsAdvance(isAdvance);
+    setPaymentMethod('cash');
+    setSelectedBatch(undefined);
     payForm.setFieldsValue({ year });
     setPayModalOpen(true);
   };
@@ -372,18 +390,79 @@ export default function LeasePage() {
         title={payIsAdvance ? t.lease.makeAdvance : t.lease.makePayment}
         open={payModalOpen}
         onOk={handlePay}
-        onCancel={() => { setPayModalOpen(false); payForm.resetFields(); setSelectedLeaseId(null); }}
+        onCancel={() => { setPayModalOpen(false); payForm.resetFields(); setSelectedLeaseId(null); setPaymentMethod('cash'); setSelectedBatch(undefined); }}
         okText={t.common.save}
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
         <Form form={payForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="paymentMethod" label={t.lease.paymentMethod} initialValue="cash">
+            <Radio.Group onChange={e => setPaymentMethod(e.target.value)}>
+              <Radio.Button value="cash">{t.lease.paymentCash}</Radio.Button>
+              <Radio.Button value="grain">{t.lease.paymentGrain}</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
           <Form.Item name="year" label={t.lease.year} rules={[{ required: true, message: t.common.required }]}>
             <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="amount" label={t.lease.paymentAmount} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
-          </Form.Item>
+          {paymentMethod === 'cash' && (
+            <Form.Item name="amount" label={t.lease.paymentAmount} rules={[{ required: true, message: t.common.required }]}>
+              <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+            </Form.Item>
+          )}
+          {paymentMethod === 'grain' && (
+            <>
+              <Form.Item name="grainBatchId" label={t.lease.grainBatch} rules={[{ required: true, message: t.common.required }]}>
+                <Select
+                  showSearch
+                  placeholder={t.lease.grainBatch}
+                  options={grainBatches.map(b => ({
+                    value: b.id,
+                    label: `${b.grainType} — ${t.lease.grainQuantity.split(' ')[0]}: ${b.quantityTons} т`,
+                  }))}
+                  onChange={(val) => {
+                    const batch = grainBatches.find(b => b.id === val);
+                    setSelectedBatch(batch);
+                    if (batch?.pricePerTon) {
+                      payForm.setFieldsValue({ grainPricePerTon: batch.pricePerTon });
+                    }
+                  }}
+                />
+              </Form.Item>
+              <Form.Item name="grainQuantityTons" label={t.lease.grainQuantity} rules={[{ required: true, message: t.common.required }]}>
+                <InputNumber
+                  min={0.001}
+                  max={selectedBatch?.quantityTons}
+                  precision={3}
+                  addonAfter="т"
+                  style={{ width: '100%' }}
+                  onChange={(val) => {
+                    const price = payForm.getFieldValue('grainPricePerTon');
+                    if (val && price) {
+                      payForm.setFieldsValue({ amount: parseFloat((val * price).toFixed(2)) });
+                    }
+                  }}
+                />
+              </Form.Item>
+              <Form.Item name="grainPricePerTon" label={t.lease.grainPricePerTon}>
+                <InputNumber
+                  min={0}
+                  precision={2}
+                  addonAfter="грн/т"
+                  style={{ width: '100%' }}
+                  onChange={(price) => {
+                    const qty = payForm.getFieldValue('grainQuantityTons');
+                    if (qty && price) {
+                      payForm.setFieldsValue({ amount: parseFloat((qty * price).toFixed(2)) });
+                    }
+                  }}
+                />
+              </Form.Item>
+              <Form.Item name="amount" label={t.lease.calculatedAmount}>
+                <InputNumber disabled addonAfter="грн" style={{ width: '100%' }} />
+              </Form.Item>
+            </>
+          )}
           <Form.Item name="paymentDate" label={t.lease.paymentDate} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>

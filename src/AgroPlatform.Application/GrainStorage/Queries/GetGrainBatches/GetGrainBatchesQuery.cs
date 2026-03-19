@@ -9,5 +9,6 @@ public record GetGrainBatchesQuery(
     Guid? StorageId = null,
     GrainOwnershipType? OwnershipType = null,
     int Page = 1,
-    int PageSize = 20
+    int PageSize = 20,
+    decimal? MinQuantity = null
 ) : IRequest<PaginatedResult<GrainBatchDto>>;

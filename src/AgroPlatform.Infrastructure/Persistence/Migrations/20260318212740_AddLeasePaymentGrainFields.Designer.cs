@@ -3,6 +3,7 @@ using System;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroPlatform.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260318212740_AddLeasePaymentGrainFields")]
+    partial class AddLeasePaymentGrainFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -594,9 +597,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GrainBatchId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("HarvestDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -613,9 +613,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<decimal?>("PricePerTon")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
-
-                    b.Property<bool>("SyncedFromGrainStorage")
-                        .HasColumnType("boolean");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");

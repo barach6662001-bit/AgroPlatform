@@ -25,6 +25,9 @@ public class GetGrainBatchesHandler : IRequestHandler<GetGrainBatchesQuery, Pagi
         if (request.OwnershipType.HasValue)
             query = query.Where(b => b.OwnershipType == request.OwnershipType.Value);
 
+        if (request.MinQuantity.HasValue)
+            query = query.Where(b => b.QuantityTons >= request.MinQuantity.Value);
+
         var totalCount = await query.CountAsync(cancellationToken);
 
         var items = await query

@@ -89,14 +89,33 @@ public class LandLeasesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddPayment(Guid id, [FromBody] AddLeasePaymentRequest request, CancellationToken cancellationToken)
     {
-        var command = new AddLeasePaymentCommand(id, request.Year, request.Amount, request.PaymentType, request.PaymentDate, request.Notes);
+        var command = new AddLeasePaymentCommand(
+            id,
+            request.Year,
+            request.Amount,
+            request.PaymentType,
+            request.PaymentMethod ?? "Cash",
+            request.PaymentDate,
+            request.GrainBatchId,
+            request.GrainQuantityTons,
+            request.GrainPricePerTon,
+            request.Notes);
         var paymentId = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetLeases), new { }, new { id = paymentId });
     }
 }
 
 /// <summary>Request body for adding a lease payment.</summary>
-public record AddLeasePaymentRequest(int Year, decimal Amount, string PaymentType, DateTime PaymentDate, string? Notes);
+public record AddLeasePaymentRequest(
+    int Year,
+    decimal Amount,
+    string PaymentType,
+    DateTime PaymentDate,
+    string? PaymentMethod,
+    Guid? GrainBatchId,
+    decimal? GrainQuantityTons,
+    decimal? GrainPricePerTon,
+    string? Notes);
 
 /// <summary>Request body for updating a land lease contract.</summary>
 public record UpdateLandLeaseRequest(
