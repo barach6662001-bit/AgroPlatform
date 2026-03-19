@@ -1,0 +1,59 @@
+name: Setup branch protection
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/setup-branch-protection.yml'
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      administration: write
+    steps:
+      - name: Enable auto-delete branches and allow update branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api -X PATCH /repos/${{ github.repository }} \
+            -F delete_branch_on_merge=true \
+            -F allow_update_branch=true
+
+      - name: Set branch protection for main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api -X PUT /repos/${{ github.repository }}/branches/main/protection \
+            --input - <<'EOF'
+          {
+            "required_status_checks": {
+              "strict": true,
+              "contexts": [
+                "CI / build-and-test",
+                "CI / frontend-build-and-test"
+              ]
+            },
+            "enforce_admins": false,
+            "required_pull_request_reviews": null,
+            "restrictions": null
+          }
+          EOF
+
+      - name: Verify settings
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "=== Repo settings ==="
+          gh api /repos/${{ github.repository }} \
+            --jq '{delete_branch_on_merge, allow_update_branch}'
+
+          echo "=== Branch protection ==="
+          gh api /repos/${{ github.repository }}/branches/main/protection \
+            --jq '{
+              strict: .required_status_checks.strict,
+              contexts: .required_status_checks.contexts,
+              enforce_admins: .enforce_admins.enabled
+            }'
