@@ -1,10 +1,8 @@
 import { Menu } from 'antd';
 import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
-  DollarOutlined, LineChartOutlined, BarChartOutlined, ThunderboltOutlined,
-  TeamOutlined, SwapOutlined, RiseOutlined, SettingOutlined,
-  EnvironmentOutlined, FundOutlined, BankOutlined, FileTextOutlined,
-  UserOutlined, CalendarOutlined, FireOutlined,
+  DollarOutlined, LineChartOutlined, TeamOutlined, SettingOutlined,
+  EnvironmentOutlined, BankOutlined, FireOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -16,102 +14,89 @@ export default function Sidebar() {
   const { t } = useTranslation();
   const { isAdmin } = useRole();
 
-  const warehouseChildren = [
-    { key: '/warehouses', label: t.nav.warehouses, icon: <BankOutlined />, style: { padding: '4px 8px' } },
-    { key: '/warehouses/items', label: t.nav.warehouseItems, icon: <InboxOutlined />, style: { padding: '4px 8px' } },
-    { key: '/warehouses/movements', label: t.nav.stockMovements, icon: <SwapOutlined />, style: { padding: '4px 8px' } },
+  const storageChildren = [
+    { key: '/warehouses/items', label: t.nav.materials, style: { padding: '4px 8px' } },
+    { key: '/warehouses/movements', label: t.nav.movements, style: { padding: '4px 8px' } },
   ];
 
-  const economicsChildren = [
-    { key: '/economics', label: t.nav.costs, icon: <DollarOutlined />, style: { padding: '4px 8px' } },
-    { key: '/economics/pnl', label: t.nav.pnl, icon: <RiseOutlined />, style: { padding: '4px 8px' } },
-    { key: '/economics/budget', label: t.nav.budget, icon: <FundOutlined />, style: { padding: '4px 8px' } },
-  ];
-
-  const analyticsChildren = [
-    { key: '/analytics/resources', label: t.analytics.resourceConsumption, icon: <BarChartOutlined />, style: { padding: '4px 8px' } },
-    { key: '/analytics/efficiency', label: t.analytics.fieldEfficiency, icon: <ThunderboltOutlined />, style: { padding: '4px 8px' } },
+  const financeChildren = [
+    { key: '/economics', label: t.nav.costs, style: { padding: '4px 8px' } },
+    { key: '/economics/pnl', label: t.nav.pnl, style: { padding: '4px 8px' } },
+    { key: '/economics/budget', label: t.nav.budget, style: { padding: '4px 8px' } },
+    { key: '/fields/leases', label: t.nav.leases, style: { padding: '4px 8px' } },
   ];
 
   const hrChildren = [
-    { key: '/hr/employees', label: t.nav.employees, icon: <UserOutlined />, style: { padding: '4px 8px' } },
-    { key: '/hr/worklogs', label: t.nav.workLogs, icon: <CalendarOutlined />, style: { padding: '4px 8px' } },
-    { key: '/hr/salary', label: t.nav.salary, icon: <DollarOutlined />, style: { padding: '4px 8px' } },
+    { key: '/hr/employees', label: t.nav.employees, style: { padding: '4px 8px' } },
+    { key: '/hr/worklogs', label: t.nav.workLogs, style: { padding: '4px 8px' } },
+    { key: '/hr/salary', label: t.nav.salary, style: { padding: '4px 8px' } },
   ];
 
   const allLeafItems = [
     { key: '/' },
     { key: '/fields' },
-    { key: '/fields/leases' },
     { key: '/operations' },
     { key: '/machinery' },
     { key: '/fleet' },
     { key: '/fuel' },
     { key: '/grain' },
-    ...warehouseChildren,
-    ...economicsChildren,
-    ...analyticsChildren,
+    { key: '/analytics/efficiency' },
+    ...storageChildren,
+    ...financeChildren,
     ...hrChildren,
     ...(isAdmin ? [{ key: '/settings/users' }] : []),
   ];
 
-  const fieldsChildren = [
-    { key: '/fields', label: t.nav.fields, icon: <AimOutlined />, style: { padding: '4px 8px' } },
-    { key: '/fields/leases', label: t.nav.leases, icon: <FileTextOutlined />, style: { padding: '4px 8px' } },
-  ];
-
   const menuItems = [
     { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined />, style: { padding: '4px 8px' } },
-    {
-      key: 'fields-group',
-      label: t.nav.fields,
-      icon: <AimOutlined />,
-      children: fieldsChildren,
-    },
+    { type: 'divider' },
+    { key: '/fields', label: t.nav.fields, icon: <AimOutlined />, style: { padding: '4px 8px' } },
+    { key: '/operations', label: t.nav.operations, icon: <ToolOutlined />, style: { padding: '4px 8px' } },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined />, style: { padding: '4px 8px' } },
+    { type: 'divider' },
     {
-      key: 'warehouses-group',
-      label: t.nav.warehouses,
+      key: 'storage-group',
+      label: t.nav.storage,
       icon: <InboxOutlined />,
-      children: warehouseChildren,
+      style: { padding: '4px 8px' },
+      children: storageChildren,
     },
     { key: '/grain', label: t.nav.grainStorage, icon: <BankOutlined />, style: { padding: '4px 8px' } },
-    { key: '/operations', label: t.nav.operations, icon: <ToolOutlined />, style: { padding: '4px 8px' } },
-    { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined />, style: { padding: '4px 8px' } },
     { key: '/fuel', label: t.nav.fuelStation, icon: <FireOutlined />, style: { padding: '4px 8px' } },
+    { type: 'divider' },
     {
-      key: 'economics-group',
-      label: t.nav.economics,
+      key: 'finance-group',
+      label: t.nav.finance,
       icon: <DollarOutlined />,
-      children: economicsChildren,
-    },
-    {
-      key: 'analytics-group',
-      label: t.nav.analytics,
-      icon: <LineChartOutlined />,
-      children: analyticsChildren,
+      style: { padding: '4px 8px' },
+      children: financeChildren,
     },
     {
       key: 'hr-group',
       label: t.nav.hr,
       icon: <TeamOutlined />,
+      style: { padding: '4px 8px' },
       children: hrChildren,
     },
+    { type: 'divider' },
+    { key: '/analytics/efficiency', label: t.nav.analytics, icon: <LineChartOutlined />, style: { padding: '4px 8px' } },
+    { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined />, style: { padding: '4px 8px' } },
     ...(isAdmin
       ? [
           {
             key: 'settings-group',
             label: t.nav.settings,
             icon: <SettingOutlined />,
+            style: { padding: '4px 8px' },
             children: [
-              { key: '/settings/users', label: t.nav.users, icon: <TeamOutlined />, style: { padding: '4px 8px' } },
+              { key: '/settings/users', label: t.nav.users, style: { padding: '4px 8px' } },
             ],
           },
         ]
       : []),
   ];
 
-  const groupKeys = new Set(['fields-group', 'warehouses-group', 'economics-group', 'analytics-group', 'hr-group', 'settings-group']);
+  const groupKeys = new Set(['storage-group', 'finance-group', 'hr-group', 'settings-group']);
 
   const selectedKey =
     allLeafItems
@@ -123,13 +108,7 @@ export default function Sidebar() {
           (item.key !== '/' && location.pathname.startsWith(item.key))
       )?.key ?? '/';
 
-  const openKeys: string[] = [];
-  if (fieldsChildren.some((c) => c.key === selectedKey)) openKeys.push('fields-group');
-  if (warehouseChildren.some((c) => c.key === selectedKey)) openKeys.push('warehouses-group');
-  if (economicsChildren.some((c) => c.key === selectedKey)) openKeys.push('economics-group');
-  if (analyticsChildren.some((c) => c.key === selectedKey)) openKeys.push('analytics-group');
-  if (hrChildren.some((c) => c.key === selectedKey)) openKeys.push('hr-group');
-  if (isAdmin && selectedKey === '/settings/users') openKeys.push('settings-group');
+  const openKeys = ['storage-group', 'finance-group', 'hr-group', ...(isAdmin ? ['settings-group'] : [])];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>

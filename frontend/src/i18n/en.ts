@@ -31,6 +31,10 @@ const en: Translations = {
     fuelStation: 'Fuel Station',
     companySettings: 'Company Settings',
     setup: 'Initial Setup',
+    storage: 'Storage',
+    materials: 'Materials',
+    movements: 'Movements',
+    finance: 'Finance',
   },
   common: {
     cancel: 'Cancel',
