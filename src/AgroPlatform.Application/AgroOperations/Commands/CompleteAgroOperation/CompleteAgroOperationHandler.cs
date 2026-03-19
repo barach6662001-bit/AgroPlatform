@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Warehouses;
 using MediatR;
@@ -28,6 +29,8 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
     {
         var operation = await _context.AgroOperations
             .Include(o => o.Resources)
+            .Include(o => o.MachineryUsed)
+                .ThenInclude(mu => mu.Machine)
             .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(AgroOperation), request.Id);
 
@@ -85,7 +88,61 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
             }
         }
 
+        // === AUTO-CREATE COST RECORDS ===
+        // For each resource with actual quantity used, create a cost record tied to the field
+        foreach (var resource in operation.Resources.Where(r => r.ActualQuantity.HasValue && r.ActualQuantity > 0))
+        {
+            var warehouseItem = await _context.WarehouseItems
+                .FirstOrDefaultAsync(wi => wi.Id == resource.WarehouseItemId, cancellationToken);
+
+            if (warehouseItem != null && warehouseItem.PurchasePrice.HasValue && warehouseItem.PurchasePrice.Value > 0)
+            {
+                var totalCost = resource.ActualQuantity!.Value * warehouseItem.PurchasePrice.Value;
+
+                // Map warehouse item category to cost category
+                var costCategory = warehouseItem.Category switch
+                {
+                    "Fertilizers" => "Fertilizers",
+                    "Seeds" => "Seeds",
+                    "Pesticides" => "Pesticides",
+                    "Fuel" => "Fuel",
+                    _ => "Other"
+                };
+
+                _context.CostRecords.Add(new CostRecord
+                {
+                    Category = costCategory,
+                    Amount = totalCost,
+                    Currency = "UAH",
+                    Date = request.CompletedDate,
+                    FieldId = operation.FieldId,
+                    AgroOperationId = operation.Id,
+                    Description = $"{warehouseItem.Name}: {resource.ActualQuantity.Value:F2} {resource.UnitCode} × {warehouseItem.PurchasePrice.Value:F2} UAH"
+                });
+            }
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Check if any machinery used in operation needs upcoming maintenance
+        if (operation.MachineryUsed?.Any() == true)
+        {
+            var threshold = DateTime.UtcNow.AddDays(7);
+            var machinesNeedingMaintenance = operation.MachineryUsed
+                .Select(mu => mu.Machine)
+                .Where(m => m.NextMaintenanceDate.HasValue && m.NextMaintenanceDate <= threshold)
+                .ToList();
+
+            foreach (var machine in machinesNeedingMaintenance)
+            {
+                await _notifications.SendAsync(
+                    _currentUser.TenantId,
+                    "warning",
+                    "ТО наближається",
+                    $"Техніка '{machine.Name}': планове ТО {machine.NextMaintenanceDate:dd.MM.yyyy}",
+                    cancellationToken);
+            }
+        }
 
         // Notify operation completed
         await _notifications.SendAsync(

@@ -862,6 +862,8 @@ const en: Translations = {
     selectMachine: 'Select machine',
     driverNamePlaceholder: 'Driver full name',
     driverAutoFilled: 'Driver filled automatically',
+    field: 'Field',
+    selectField: 'Select field',
   },
   setup: {
     title: 'Company Setup',
