@@ -173,4 +173,86 @@ public class GetFieldPnlHandlerTests
         result[0].CostsByCategory.Should().BeEmpty();
         result[0].NetProfit.Should().BeNull();
     }
+
+    [Fact]
+    public async Task GetFieldPnl_FieldHarvestTakesPriorityOverCropHistory()
+    {
+        var context = CreateDbContext();
+        var field = new Field { Name = "Priority Field", AreaHectares = 40m, CurrentCrop = CropType.Corn };
+        context.Fields.Add(field);
+        // FieldCropHistory with lower yield
+        context.FieldCropHistories.Add(new FieldCropHistory
+        {
+            FieldId = field.Id,
+            Crop = CropType.Corn,
+            Year = 2025,
+            YieldPerHectare = 3m,
+        });
+        // FieldHarvest with higher yield (should take priority)
+        context.FieldHarvests.Add(new FieldHarvest
+        {
+            FieldId = field.Id,
+            Year = 2025,
+            CropName = "Corn",
+            TotalTons = 320m,
+            YieldTonsPerHa = 8m,
+            HarvestDate = new DateTime(2025, 9, 1, 0, 0, 0, DateTimeKind.Utc),
+        });
+        await context.SaveChangesAsync();
+
+        var handler = new GetFieldPnlHandler(context);
+        // 8 t/ha * 40 ha * 5000 UAH/t = 1 600 000 revenue (using FieldHarvest yield)
+        var result = await handler.Handle(new GetFieldPnlQuery(2025, 5000m, null), CancellationToken.None);
+
+        result.Should().HaveCount(1);
+        var dto = result[0];
+        dto.ActualYieldPerHectare.Should().Be(8m); // FieldHarvest wins
+        dto.EstimatedRevenue.Should().Be(1_600_000m);
+    }
+
+    [Fact]
+    public async Task GetFieldPnl_ActualRevenueFromNegativeCostRecord_OverridesEstimate()
+    {
+        var context = CreateDbContext();
+        var field = new Field { Name = "Revenue Field", AreaHectares = 50m, CurrentCrop = CropType.Wheat };
+        context.Fields.Add(field);
+        // Expense
+        context.CostRecords.Add(new CostRecord
+        {
+            Category = "Fertilizer",
+            Amount = 30000m,
+            Currency = "UAH",
+            Date = new DateTime(2025, 4, 1, 0, 0, 0, DateTimeKind.Utc),
+            FieldId = field.Id,
+        });
+        // Actual revenue stored as negative amount
+        context.CostRecords.Add(new CostRecord
+        {
+            Category = "Revenue",
+            Amount = -120000m,
+            Currency = "UAH",
+            Date = new DateTime(2025, 10, 1, 0, 0, 0, DateTimeKind.Utc),
+            FieldId = field.Id,
+        });
+        context.FieldCropHistories.Add(new FieldCropHistory
+        {
+            FieldId = field.Id,
+            Crop = CropType.Wheat,
+            Year = 2025,
+            YieldPerHectare = 4m,
+        });
+        await context.SaveChangesAsync();
+
+        var handler = new GetFieldPnlHandler(context);
+        // Estimated: 4 * 50 * 1000 = 200 000 — but actual revenue (120 000) wins
+        var result = await handler.Handle(new GetFieldPnlQuery(2025, 1000m, null), CancellationToken.None);
+
+        result.Should().HaveCount(1);
+        var dto = result[0];
+        dto.TotalCosts.Should().Be(30000m);   // only expenses
+        dto.EstimatedRevenue.Should().Be(120000m); // actual revenue used
+        dto.NetProfit.Should().Be(90000m);    // 120 000 - 30 000
+        dto.RevenuePerHectare.Should().Be(2400m); // 120 000 / 50
+        dto.CostsByCategory.Should().NotContainKey("Revenue"); // negative entries excluded
+    }
 }

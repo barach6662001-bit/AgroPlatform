@@ -208,6 +208,84 @@ public class AgroOperationHandlerTests
     }
 
     [Fact]
+    public async Task CompleteAgroOperation_WithPurchasePrice_CreatesCostRecord()
+    {
+        var context = CreateDbContext();
+        var field = new Field { Name = "Field", AreaHectares = 10m };
+        context.Fields.Add(field);
+        var warehouse = new Warehouse { Name = "Main", IsActive = true };
+        context.Warehouses.Add(warehouse);
+        var item = new WarehouseItem { Name = "NPK", Code = "NPK001", Category = "Fertilizers", BaseUnit = "kg", PurchasePrice = 25m };
+        context.WarehouseItems.Add(item);
+        var balance = new StockBalance { WarehouseId = warehouse.Id, ItemId = item.Id, BalanceBase = 100m, BaseUnit = "kg", LastUpdatedUtc = DateTime.UtcNow };
+        context.StockBalances.Add(balance);
+        var op = new AgroOperation { FieldId = field.Id, OperationType = AgroOperationType.Fertilizing, PlannedDate = DateTime.UtcNow };
+        context.AgroOperations.Add(op);
+        await context.SaveChangesAsync();
+
+        var resource = new AgroOperationResource
+        {
+            AgroOperationId = op.Id,
+            WarehouseItemId = item.Id,
+            WarehouseId = warehouse.Id,
+            PlannedQuantity = 50m,
+            ActualQuantity = 40m,
+            UnitCode = "kg"
+        };
+        context.AgroOperationResources.Add(resource);
+        await context.SaveChangesAsync();
+
+        var completedDate = DateTime.UtcNow;
+        var handler = new CompleteAgroOperationHandler(context, new TestNotificationService(), new TestCurrentUserService());
+        await handler.Handle(new CompleteAgroOperationCommand(op.Id, completedDate, null), CancellationToken.None);
+
+        var costRecord = await ((TestDbContext)context).CostRecords
+            .FirstOrDefaultAsync(c => c.AgroOperationId == op.Id);
+        costRecord.Should().NotBeNull();
+        costRecord!.Amount.Should().Be(1000m); // 40 kg × 25 UAH
+        costRecord.Category.Should().Be("Fertilizers");
+        costRecord.Currency.Should().Be("UAH");
+        costRecord.FieldId.Should().Be(field.Id);
+        costRecord.Date.Should().Be(completedDate);
+    }
+
+    [Fact]
+    public async Task CompleteAgroOperation_WithNoPurchasePrice_NoCostRecord()
+    {
+        var context = CreateDbContext();
+        var field = new Field { Name = "Field", AreaHectares = 10m };
+        context.Fields.Add(field);
+        var warehouse = new Warehouse { Name = "Main", IsActive = true };
+        context.Warehouses.Add(warehouse);
+        var item = new WarehouseItem { Name = "Agrochemical", Code = "FERT002", Category = "Chemicals", BaseUnit = "kg" }; // No PurchasePrice
+        context.WarehouseItems.Add(item);
+        var balance = new StockBalance { WarehouseId = warehouse.Id, ItemId = item.Id, BalanceBase = 100m, BaseUnit = "kg", LastUpdatedUtc = DateTime.UtcNow };
+        context.StockBalances.Add(balance);
+        var op = new AgroOperation { FieldId = field.Id, OperationType = AgroOperationType.Fertilizing, PlannedDate = DateTime.UtcNow };
+        context.AgroOperations.Add(op);
+        await context.SaveChangesAsync();
+
+        var resource = new AgroOperationResource
+        {
+            AgroOperationId = op.Id,
+            WarehouseItemId = item.Id,
+            WarehouseId = warehouse.Id,
+            PlannedQuantity = 50m,
+            ActualQuantity = 40m,
+            UnitCode = "kg"
+        };
+        context.AgroOperationResources.Add(resource);
+        await context.SaveChangesAsync();
+
+        var handler = new CompleteAgroOperationHandler(context, new TestNotificationService(), new TestCurrentUserService());
+        await handler.Handle(new CompleteAgroOperationCommand(op.Id, DateTime.UtcNow, null), CancellationToken.None);
+
+        var costRecordCount = await ((TestDbContext)context).CostRecords
+            .CountAsync(c => c.AgroOperationId == op.Id);
+        costRecordCount.Should().Be(0);
+    }
+
+    [Fact]
     public async Task CompleteAgroOperation_NotFound_ThrowsNotFoundException()
     {
         var context = CreateDbContext();

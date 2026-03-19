@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.GrainStorage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,20 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
             batch.QuantityTons += request.QuantityTons;
         else if (request.MovementType == "Out")
             batch.QuantityTons -= request.QuantityTons;
+
+        // Auto-create revenue record for grain sales
+        if (request.MovementType == "Out" && movement.TotalRevenue.HasValue && movement.TotalRevenue > 0)
+        {
+            _context.CostRecords.Add(new CostRecord
+            {
+                Category = "Revenue",
+                Amount = -movement.TotalRevenue.Value, // Negative = income (revenue)
+                Currency = "UAH",
+                Date = request.MovementDate,
+                FieldId = batch.SourceFieldId,
+                Description = $"Продаж зерна: {request.QuantityTons:F2}т × {request.PricePerTon ?? 0:F0} UAH/т"
+            });
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 
