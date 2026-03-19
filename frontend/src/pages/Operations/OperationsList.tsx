@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Table, Tag, Button, Space, Select, message, Modal, Form, Input, InputNumber, DatePicker } from 'antd';
-import { EyeOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { EyeOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getOperations, createOperation, updateOperation } from '../../api/operations';
 import { getFields } from '../../api/fields';
@@ -13,6 +13,7 @@ import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
+import { exportToCsv } from '../../utils/exportCsv';
 
 const typeColors: Record<string, string> = {
   Sowing: 'green', Fertilizing: 'blue', PlantProtection: 'orange',
@@ -175,6 +176,19 @@ export default function OperationsList() {
             {t.operations.createOperation}
           </Button>
         )}
+        <Button
+          icon={<DownloadOutlined />}
+          onClick={() => exportToCsv('operations', result?.items ?? [], [
+            { key: 'fieldName', title: t.operations.field },
+            { key: 'operationType', title: t.operations.type },
+            { key: 'status', title: t.common.status },
+            { key: 'performedByName', title: t.operations.performedBy },
+            { key: 'areaProcessed', title: t.operations.areaProcessed },
+            { key: 'description', title: t.operations.description },
+          ])}
+        >
+          {t.common.export}
+        </Button>
       </Space>
       <Table
         dataSource={result?.items ?? []}

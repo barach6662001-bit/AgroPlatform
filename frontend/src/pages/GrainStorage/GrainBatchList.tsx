@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert } from 'antd';
-import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
+import { PlusOutlined, ExportOutlined, DownloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes } from '../../api/grain';
 import { getWarehouses } from '../../api/warehouses';
@@ -12,6 +12,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { exportToCsv } from '../../utils/exportCsv';
 
 const QUICK_GRAIN_TYPES = ['Пшениця озима', 'Кукурудза', 'Соняшник'];
 const LAST_GRAIN_KEY = 'lastGrainType';
@@ -354,6 +355,20 @@ export default function GrainBatchList() {
             {t.grain.issueGrain}
           </Button>
         )}
+        <Button
+          icon={<DownloadOutlined />}
+          onClick={() => exportToCsv('grain-batches', result?.items ?? [], [
+            { key: 'grainType', title: t.grain.grainType },
+            { key: 'sourceFieldName', title: t.grain.sourceField },
+            { key: 'moisturePercent', title: t.grain.moisture },
+            { key: 'initialQuantityTons', title: t.grain.initialQuantity },
+            { key: 'quantityTons', title: t.grain.quantityTons },
+            { key: 'pricePerTon', title: t.grain.pricePerTon },
+            { key: 'receivedDate', title: t.grain.receivedDate },
+          ])}
+        >
+          {t.common.export}
+        </Button>
       </Space>
       <Table
         dataSource={result?.items ?? []}

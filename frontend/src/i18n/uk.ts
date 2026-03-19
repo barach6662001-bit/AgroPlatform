@@ -49,6 +49,7 @@ const uk = {
     status: 'Статус',
     active: 'Активний',
     inactive: 'Неактивний',
+    export: 'Експорт',
   },
   auth: {
     login: 'Увійти',
@@ -603,6 +604,14 @@ const uk = {
     role: 'Роль',
     language: 'Мова інтерфейсу',
     languageChanged: 'Мову змінено',
+    companyInfo: 'Інформація про компанію',
+    companyName: 'Назва компанії',
+    edrpou: 'ЄДРПОУ',
+    address: 'Адреса',
+    phone: 'Телефон',
+    companySaveSuccess: 'Інформацію про компанію збережено',
+    companySaveError: 'Помилка збереження',
+    companyLoadError: 'Помилка завантаження даних компанії',
   },
   profile: {
     title: 'Профіль',

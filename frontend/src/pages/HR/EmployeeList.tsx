@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import {
   Table, Button, Modal, Form, Input, InputNumber, Select, Space, Tag, message, Popconfirm,
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from '../../api/hr';
 import type { EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { exportToCsv } from '../../utils/exportCsv';
 
 export default function EmployeeList() {
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
@@ -158,15 +159,30 @@ export default function EmployeeList() {
       <PageHeader
         title={t.hr.employeesTitle}
         actions={
-          canWrite ? (
+          <Space>
+            {canWrite && (
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setModalOpen(true)}
+              >
+                {t.hr.addEmployee}
+              </Button>
+            )}
             <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setModalOpen(true)}
+              icon={<DownloadOutlined />}
+              onClick={() => exportToCsv('employees', employees, [
+                { key: 'lastName', title: t.hr.lastName },
+                { key: 'firstName', title: t.hr.firstName },
+                { key: 'position', title: t.hr.position },
+                { key: 'salaryType', title: t.hr.salaryType },
+                { key: 'hourlyRate', title: t.hr.hourlyRate },
+                { key: 'pieceworkRate', title: t.hr.pieceworkRate },
+              ])}
             >
-              {t.hr.addEmployee}
+              {t.common.export}
             </Button>
-          ) : undefined
+          </Space>
         }
       />
       <Table
