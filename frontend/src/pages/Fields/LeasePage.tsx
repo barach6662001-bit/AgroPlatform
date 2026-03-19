@@ -7,10 +7,8 @@ import { PlusOutlined, DollarOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { getLeaseSummary, createLease, addLeasePayment, getLeases, updateLease } from '../../api/leases';
 import { getFields } from '../../api/fields';
-import { getGrainBatches } from '../../api/grain';
 import type { LeaseSummaryDto, LandLeaseDto } from '../../types/lease';
 import type { FieldDto } from '../../types/field';
-import type { GrainBatchDto } from '../../types/grain';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
@@ -29,7 +27,6 @@ export default function LeasePage() {
   const [summary, setSummary] = useState<LeaseSummaryDto[]>([]);
   const [leases, setLeases] = useState<LandLeaseDto[]>([]);
   const [fields, setFields] = useState<FieldDto[]>([]);
-  const [grainBatches, setGrainBatches] = useState<GrainBatchDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [year, setYear] = useState(new Date().getFullYear());
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -59,9 +56,6 @@ export default function LeasePage() {
     getFields({ ownershipType: [1, 2], pageSize: 200 })
       .then((r) => setFields(r.items))
       .catch(() => {/* ignore */});
-    getGrainBatches({ pageSize: 200 }).then(r =>
-      setGrainBatches((r.items ?? []).filter(b => b.quantityTons >= 0.001))
-    ).catch(() => {/* ignore */});
   }, []);
 
   const load = () => {

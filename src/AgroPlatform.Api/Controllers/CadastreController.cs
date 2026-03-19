@@ -21,8 +21,8 @@ public class CadastreController : ControllerBase
     public async Task<IActionResult> GetTile(int z, int x, int y, CancellationToken ct)
     {
         var http = _httpClientFactory.CreateClient();
-        http.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; AgroTech/1.0)");
-        http.DefaultRequestHeaders.Add("Referer", "https://kadastrova-karta.com.ua/");
+        http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (compatible; AgroTech/1.0)");
+        http.DefaultRequestHeaders.TryAddWithoutValidation("Referer", "https://kadastrova-karta.com.ua/");
 
         var url = $"https://kadastrova-karta.com/tiles/maps/kadastr/{z}/{x}/{y}.pbf";
 
@@ -52,7 +52,7 @@ public class CadastreController : ControllerBase
         var normalizedCadnum = cadnum.Trim();
         var http = _httpClientFactory.CreateClient();
         http.Timeout = TimeSpan.FromSeconds(15);
-        http.DefaultRequestHeaders.Add("User-Agent",
+        http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
 
         var url = $"https://kadastrova-karta.com/dilyanka/{normalizedCadnum}";
