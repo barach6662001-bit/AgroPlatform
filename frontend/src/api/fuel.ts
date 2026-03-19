@@ -27,6 +27,7 @@ export const createFuelIssue = (data: {
   quantityLiters: number;
   transactionDate: string;
   machineId?: string;
+  fieldId?: string;
   driverName?: string;
   notes?: string;
 }) =>
