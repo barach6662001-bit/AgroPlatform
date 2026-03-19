@@ -480,6 +480,7 @@ const en: Translations = {
     assignedDriver: 'Assigned Driver',
     selectDriver: 'Select driver',
     noDriver: 'No driver assigned',
+    refuelAtStation: 'Refuel at Fuel Station',
   },
   machineryTypes: {
     Tractor: 'Tractor',

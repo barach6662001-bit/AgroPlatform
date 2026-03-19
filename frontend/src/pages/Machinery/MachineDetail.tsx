@@ -9,9 +9,11 @@ import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
 } from 'recharts';
-import { getMachineById, addWorkLog, addFuelLog } from '../../api/machinery';
+import { getMachineById, addWorkLog } from '../../api/machinery';
 import { getMaintenanceRecords, addMaintenanceRecord, exportMaintenanceRecords, type MaintenanceRecordDto } from '../../api/maintenance';
-import type { MachineDetailDto, WorkLogDto, FuelLogDto } from '../../types/machinery';
+import { getFuelTransactions } from '../../api/fuel';
+import type { MachineDetailDto, WorkLogDto } from '../../types/machinery';
+import type { FuelTransactionDto } from '../../types/fuel';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
@@ -28,13 +30,12 @@ export default function MachineDetail() {
   const [machine, setMachine] = useState<MachineDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [workLogOpen, setWorkLogOpen] = useState(false);
-  const [fuelLogOpen, setFuelLogOpen] = useState(false);
   const [maintenanceOpen, setMaintenanceOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [exportingMaintenance, setExportingMaintenance] = useState(false);
   const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecordDto[]>([]);
+  const [fuelTransactions, setFuelTransactions] = useState<FuelTransactionDto[]>([]);
   const [workForm] = Form.useForm();
-  const [fuelForm] = Form.useForm();
   const [maintenanceForm] = Form.useForm();
   const { t } = useTranslation();
   const { hasRole } = useRole();
@@ -52,6 +53,9 @@ export default function MachineDetail() {
       })
       .catch(() => message.error(t.machinery.notFound))
       .finally(() => setLoading(false));
+    getFuelTransactions({ machineId: id, pageSize: 50 })
+      .then(setFuelTransactions)
+      .catch(() => {});
   };
 
   useEffect(() => { load(); }, [id]);
@@ -72,27 +76,6 @@ export default function MachineDetail() {
       load();
     } catch {
       message.error(t.machinery.workLogError);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleFuelLog = async () => {
-    if (!id || !machine) return;
-    try {
-      const values = await fuelForm.validateFields();
-      setSaving(true);
-      const date = values.date
-        ? (values.date as { toISOString: () => string }).toISOString()
-        : new Date().toISOString();
-      await addFuelLog(id, { date, quantity: values.quantity, fuelType: machine.fuelType, note: values.note });
-      message.success(t.machinery.fuelLogSuccess);
-      fuelForm.resetFields();
-      setFuelLogOpen(false);
-      setLoading(true);
-      load();
-    } catch {
-      message.error(t.machinery.fuelLogError);
     } finally {
       setSaving(false);
     }
@@ -157,9 +140,11 @@ export default function MachineDetail() {
   ];
 
   const fuelLogColumns = [
-    { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
-    { title: t.machinery.liters, dataIndex: 'quantity', key: 'quantity', render: (v: number) => v != null ? v.toFixed(2) : '—' },
-    { title: t.machinery.notes, dataIndex: 'note', key: 'note', render: (v: string) => v || '—' },
+    { title: t.machinery.date, dataIndex: 'transactionDate', key: 'transactionDate', render: (v: string) => new Date(v).toLocaleDateString() },
+    { title: t.machinery.litersLabel, dataIndex: 'quantityLiters', key: 'quantityLiters', render: (v: number) => `${v.toFixed(0)} л` },
+    { title: t.fuel.tankName, dataIndex: 'tankName', key: 'tankName' },
+    { title: t.fuel.driver, dataIndex: 'driverName', key: 'driverName', render: (v: string) => v || '—' },
+    { title: t.warehouses.totalCost, dataIndex: 'totalCost', key: 'totalCost', render: (v: number | null) => v ? `${v.toFixed(0)} ₴` : '—' },
   ];
 
   const maintenanceColumns = [
@@ -183,10 +168,11 @@ export default function MachineDetail() {
     .slice(-15)
     .map((l: WorkLogDto) => ({ date: new Date(l.date).toLocaleDateString(), [t.machinery.hours]: l.hoursWorked }));
 
-  const fuelChartData = [...machine.recentFuelLogs]
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  const fuelChartData = [...fuelTransactions]
+    .filter((tx) => tx.transactionType === 'Issue')
+    .sort((a, b) => new Date(a.transactionDate).getTime() - new Date(b.transactionDate).getTime())
     .slice(-15)
-    .map((l: FuelLogDto) => ({ date: new Date(l.date).toLocaleDateString(), [t.machinery.liters]: l.quantity }));
+    .map((l: FuelTransactionDto) => ({ date: new Date(l.transactionDate).toLocaleDateString(), [t.machinery.liters]: l.quantityLiters }));
 
   return (
     <div>
@@ -201,8 +187,8 @@ export default function MachineDetail() {
         >
           {t.machinery.logWork}
         </Button>
-        <Button icon={<PlusOutlined />} onClick={() => setFuelLogOpen(true)}>
-          {t.machinery.logFuel}
+        <Button icon={<PlusOutlined />} onClick={() => navigate('/fuel')}>
+          {t.machinery.refuelAtStation}
         </Button>
         {canEdit && (
           <Button icon={<ToolOutlined />} onClick={() => setMaintenanceOpen(true)}>
@@ -310,10 +296,10 @@ export default function MachineDetail() {
       {/* Fuel Log Table + Chart */}
       <Card title={t.machinery.fuelLog} style={{ marginTop: 16 }}>
         <Table
-          dataSource={machine.recentFuelLogs}
+          dataSource={fuelTransactions.filter((tx) => tx.transactionType === 'Issue')}
           columns={fuelLogColumns}
           rowKey="id"
-          pagination={{ pageSize: 10 }}
+          pagination={false}
           locale={{ emptyText: t.machinery.fuelLogEmpty }}
         />
         {fuelChartData.length > 1 && (
@@ -368,29 +354,6 @@ export default function MachineDetail() {
             <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="description" label={t.machinery.notes}>
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Fuel Log Modal */}
-      <Modal
-        title={t.machinery.logFuel}
-        open={fuelLogOpen}
-        onOk={handleFuelLog}
-        onCancel={() => { setFuelLogOpen(false); fuelForm.resetFields(); }}
-        okText={t.common.save}
-        cancelText={t.common.cancel}
-        confirmLoading={saving}
-      >
-        <Form form={fuelForm} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="date" label={t.machinery.date} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item name="quantity" label={t.machinery.litersLabel} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item name="note" label={t.machinery.notes}>
             <Input />
           </Form.Item>
         </Form>

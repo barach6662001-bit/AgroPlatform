@@ -478,6 +478,7 @@ const uk = {
     assignedDriver: 'Закріплений водій',
     selectDriver: 'Оберіть водія',
     noDriver: 'Водій не призначений',
+    refuelAtStation: 'Заправити на Паливній станції',
   },
   machineryTypes: {
     Tractor: 'Трактор',
