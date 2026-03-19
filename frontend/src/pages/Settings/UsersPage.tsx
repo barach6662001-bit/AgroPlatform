@@ -47,8 +47,7 @@ export default function UsersPage() {
       .catch(() => message.error(t.settings.companyLoadError));
   };
 
-  useEffect(() => { load(); }, []);
-  useEffect(() => { loadCompany(); }, []);
+  useEffect(() => { load(); loadCompany(); }, []);
 
   const handleSave = async (userId: string) => {
     const role = pendingRoles[userId];
