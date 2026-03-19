@@ -271,6 +271,11 @@ const en: Translations = {
     updateArea: 'Update area',
     keepCurrentArea: 'Keep current',
     areaUpdated: 'Area updated',
+    invalidCadastralFormat: 'Invalid cadastral number format (XXXXXXXXXX:XX:XXX:XXXX)',
+    refreshFromCadastre: 'Refresh from cadastre',
+    cadastreDataNote: 'Cadastre data as of 2022.',
+    cadastrePurpose: 'Purpose',
+    cadastreOwnership: 'Ownership',
   },
   warehouses: {
     title: 'Warehouses',

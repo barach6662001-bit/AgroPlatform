@@ -269,6 +269,11 @@ const uk = {
     updateArea: 'Оновити площу',
     keepCurrentArea: 'Залишити поточну',
     areaUpdated: 'Площу оновлено',
+    invalidCadastralFormat: 'Невірний формат кадастрового номера (XXXXXXXXXX:XX:XXX:XXXX)',
+    refreshFromCadastre: 'Оновити з кадастру',
+    cadastreDataNote: 'Дані з кадастру станом на 2022 р.',
+    cadastrePurpose: 'Призначення',
+    cadastreOwnership: 'Власність',
   },
   warehouses: {
     title: 'Склади',

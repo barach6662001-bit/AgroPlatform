@@ -3,6 +3,8 @@ import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, Inp
 import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getFields, deleteField, createField, updateField } from '../../api/fields';
+import { getCadastreParcel } from '../../api/cadastre';
+import type { CadastreParcelResult } from '../../api/cadastre';
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
@@ -33,34 +35,31 @@ export default function FieldsList() {
 
   // Cadastre auto-fill for create form
   const [cadastreLoading, setCadastreLoading] = useState(false);
+  const [cadastreResult, setCadastreResult] = useState<CadastreParcelResult | null>(null);
   const [cadastreArea, setCadastreArea] = useState<number | null>(null);
   const cadastreTimer = useRef<ReturnType<typeof setTimeout>>();
   const handleCadastralNumberChange = useCallback((value: string) => {
     clearTimeout(cadastreTimer.current);
     setCadastreArea(null);
+    setCadastreResult(null);
     if (!value || value.length < 10) return;
-    // Validate cadastral number format: digits and colons only
     const cadnum = value.replace(/\s/g, '');
-    if (!/^[\d:]+$/.test(cadnum)) return;
+    if (!/^\d{10}:\d{2}:\d{3}:\d{4}$/.test(cadnum)) return;
     cadastreTimer.current = setTimeout(async () => {
       setCadastreLoading(true);
       try {
-        const url = `https://kadastr.live/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kadastr:cadaster_parcel&outputFormat=application/json&CQL_FILTER=cadnum='${encodeURIComponent(cadnum)}'`;
-        const response = await fetch(url);
-        if (!response.ok) return;
-        const geojson = await response.json();
-        if (geojson.features?.length > 0) {
-          const props = geojson.features[0].properties;
-          const rawArea: number | null = props?.area ?? props?.area_ha ?? null;
-          if (rawArea) {
-            const parsedArea = parseFloat(rawArea.toFixed(4));
-            setCadastreArea(parsedArea);
-            const currentArea = form.getFieldValue('areaHectares');
-            if (!currentArea || currentArea === 0) {
-              form.setFieldsValue({ areaHectares: parsedArea });
-              message.info(t.fields.areaAutoFilled);
-            }
+        const result = await getCadastreParcel(cadnum);
+        setCadastreResult(result);
+        if (result.found && result.area) {
+          const parsedArea = parseFloat(parseFloat(result.area).toFixed(4));
+          setCadastreArea(parsedArea);
+          const currentArea = form.getFieldValue('areaHectares');
+          if (!currentArea || currentArea === 0) {
+            form.setFieldsValue({ areaHectares: parsedArea });
+            message.info(t.fields.areaAutoFilled);
           }
+        } else if (!result.found) {
+          message.warning(t.fields.cadastreNotFound);
         }
       } catch {
         // silently ignore — cadastre unavailable
@@ -240,7 +239,7 @@ export default function FieldsList() {
         title={t.fields.createField}
         open={modalOpen}
         onOk={handleCreate}
-        onCancel={() => { setModalOpen(false); form.resetFields(); setCadastreArea(null); }}
+        onCancel={() => { setModalOpen(false); form.resetFields(); setCadastreArea(null); setCadastreResult(null); }}
         okText={t.common.create}
         cancelText={t.common.cancel}
         confirmLoading={saving}
@@ -256,6 +255,31 @@ export default function FieldsList() {
               suffix={cadastreLoading ? <Spin size="small" /> : <SearchOutlined style={{ color: '#484f58' }} />}
             />
           </Form.Item>
+          {cadastreResult?.found && (
+            <div style={{ marginBottom: 16, padding: '8px 12px', background: 'var(--agro-bg-input)', borderRadius: 6 }}>
+              <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>
+                {t.fields.cadastreInfo} — {t.fields.cadastreDataNote}
+              </div>
+              {cadastreResult.purpose && (
+                <div style={{ fontSize: 13 }}>
+                  <span style={{ color: 'rgba(0,0,0,0.45)' }}>{t.fields.cadastrePurpose}: </span>
+                  {cadastreResult.purpose}
+                </div>
+              )}
+              {cadastreResult.ownership && (
+                <div style={{ fontSize: 13 }}>
+                  <span style={{ color: 'rgba(0,0,0,0.45)' }}>{t.fields.cadastreOwnership}: </span>
+                  {cadastreResult.ownership}
+                </div>
+              )}
+              {cadastreResult.area && (
+                <div style={{ fontSize: 13 }}>
+                  <span style={{ color: 'rgba(0,0,0,0.45)'}}>{t.fields.area}: </span>
+                  {cadastreResult.area} га
+                </div>
+              )}
+            </div>
+          )}
           <Form.Item
             name="areaHectares"
             label={
