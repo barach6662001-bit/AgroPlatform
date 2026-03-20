@@ -109,6 +109,7 @@ export default function FieldSeedingTab({ fieldId, fieldArea }: Props) {
         columns={columns}
         rowKey="id"
         loading={loading}
+        scroll={{ x: 800 }}
         pagination={{ pageSize: 10 }}
         locale={{
           emptyText: <EmptyState

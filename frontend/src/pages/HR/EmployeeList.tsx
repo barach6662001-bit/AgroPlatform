@@ -191,6 +191,7 @@ export default function EmployeeList() {
         dataSource={employees}
         rowKey="id"
         loading={loading}
+        scroll={{ x: 800 }}
         pagination={{ pageSize: 20 }}
         style={{ background: 'transparent' }}
         locale={{

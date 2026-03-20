@@ -275,6 +275,7 @@ export default function MachineDetail() {
           dataSource={machine.recentWorkLogs}
           columns={workLogColumns}
           rowKey="id"
+          scroll={{ x: 800 }}
           pagination={{ pageSize: 10 }}
           locale={{ emptyText: <EmptyState message={t.machinery.workLogEmpty || 'Напрацювань немає'} actionLabel={t.machinery.logWork} onAction={() => setWorkLogOpen(true)} /> }}
         />
@@ -300,6 +301,7 @@ export default function MachineDetail() {
           columns={fuelLogColumns}
           rowKey="id"
           pagination={false}
+          scroll={{ x: 800 }}
           locale={{ emptyText: t.machinery.fuelLogEmpty }}
         />
         {fuelChartData.length > 1 && (
@@ -331,6 +333,7 @@ export default function MachineDetail() {
           dataSource={maintenanceRecords}
           columns={maintenanceColumns}
           rowKey="id"
+          scroll={{ x: 800 }}
           pagination={{ pageSize: 10 }}
           locale={{ emptyText: <EmptyState message={t.maintenance.noRecords || 'Записів ТО немає'} actionLabel={canEdit ? t.maintenance.addRecord : undefined} onAction={canEdit ? () => setMaintenanceOpen(true) : undefined} /> }}
         />

@@ -13,7 +13,7 @@ const MOBILE_BREAKPOINT = 768;
 export default function AppLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
-  const { email, role, logout } = useAuthStore();
+  const { logout } = useAuthStore();
   const navigate = useNavigate();
   const { t, lang, setLang } = useTranslation();
 
@@ -40,8 +40,6 @@ export default function AppLayout() {
     ),
   }));
 
-  const userInitial = email ? email.charAt(0).toUpperCase() : '?';
-
   return (
     <div style={{
       display: 'flex',
@@ -49,98 +47,8 @@ export default function AppLayout() {
       background: 'var(--bg-app)',
       overflow: 'hidden',
     }}>
-      {/* Sidebar — desktop only */}
-      {!isMobile && (
-        <aside style={{
-          width: 220,
-          flexShrink: 0,
-          background: 'var(--bg-surface)',
-          borderRight: '1px solid var(--border)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}>
-          {/* Logo */}
-          <div style={{
-            padding: '16px 20px',
-            borderBottom: '1px solid #21262d',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            flexShrink: 0,
-          }}>
-            <div style={{
-              width: 32,
-              height: 32,
-              background: 'linear-gradient(135deg, #238636 0%, #2ea043 100%)',
-              borderRadius: 8,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              boxShadow: '0 0 12px rgba(35,134,54,0.3)',
-            }}>
-              <span style={{ fontSize: 16 }}>🌿</span>
-            </div>
-            <div>
-              <div style={{
-                color: '#e6edf3',
-                fontWeight: 700,
-                fontSize: 16,
-                letterSpacing: '-0.3px',
-                lineHeight: 1.1,
-              }}>
-                Agro<span style={{ color: '#2ea043' }}>Tech</span>
-              </div>
-              <div style={{
-                color: '#484f58',
-                fontSize: 10,
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-              }}>
-                Farm Management
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <div style={{ flex: 1, overflow: 'auto', padding: '8px 0' }}>
-            <Sidebar />
-          </div>
-
-          {/* User info at bottom */}
-          <div style={{
-            padding: '12px 16px',
-            borderTop: '1px solid var(--border)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}>
-            <div style={{
-              width: 28,
-              height: 28,
-              background: 'var(--accent-muted)',
-              border: '1px solid var(--accent-border)',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 11,
-              color: 'var(--accent)',
-              fontWeight: 600,
-              flexShrink: 0,
-            }}>
-              {userInitial}
-            </div>
-            <div style={{ overflow: 'hidden', flex: 1 }}>
-              <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {email}
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{role}</div>
-            </div>
-          </div>
-        </aside>
-      )}
+      {/* Sidebar — desktop/tablet only */}
+      {!isMobile && <Sidebar />}
 
       {/* Main area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>

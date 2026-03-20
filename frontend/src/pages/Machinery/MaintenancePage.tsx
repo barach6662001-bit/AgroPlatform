@@ -143,6 +143,7 @@ export default function MaintenancePage() {
           dataSource={records}
           columns={columns}
           rowKey="id"
+          scroll={{ x: 800 }}
           pagination={{ pageSize: 20 }}
           locale={{ emptyText: t.maintenance.noRecords }}
         />

@@ -335,6 +335,7 @@ export default function FieldDetail() {
                   dataSource={field.cropHistory}
                   columns={historyColumns}
                   rowKey="id"
+                  scroll={{ x: 800 }}
                   pagination={{ pageSize: 10 }}
                   locale={{ emptyText: t.fields.cropHistoryEmpty }}
                 />
@@ -345,6 +346,7 @@ export default function FieldDetail() {
                   dataSource={field.rotationPlans}
                   columns={planColumns}
                   rowKey="id"
+                  scroll={{ x: 800 }}
                   pagination={{ pageSize: 10 }}
                   locale={{ emptyText: t.fields.rotationPlansEmpty }}
                 />
@@ -378,6 +380,7 @@ export default function FieldDetail() {
                       dataSource={leases}
                       rowKey="id"
                       pagination={false}
+                      scroll={{ x: 800 }}
                       columns={[
                         { title: t.lease.ownerName, dataIndex: 'ownerName', key: 'ownerName' },
                         { title: t.lease.contractNumber, dataIndex: 'contractNumber', key: 'contractNumber', render: (v: string) => v || '—' },

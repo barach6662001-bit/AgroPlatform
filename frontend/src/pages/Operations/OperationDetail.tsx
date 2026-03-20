@@ -308,6 +308,7 @@ export default function OperationDetail() {
           columns={resourceColumns}
           rowKey="id"
           pagination={false}
+          scroll={{ x: 800 }}
           locale={{ emptyText: t.operations.resourcesEmpty }}
         />
       </Card>
@@ -329,6 +330,7 @@ export default function OperationDetail() {
           columns={machineryColumns}
           rowKey="id"
           pagination={false}
+          scroll={{ x: 800 }}
           locale={{ emptyText: t.operations.machineryEmpty }}
         />
       </Card>

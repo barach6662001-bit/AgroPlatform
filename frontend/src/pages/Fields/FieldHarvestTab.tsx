@@ -105,6 +105,7 @@ export default function FieldHarvestTab({ fieldId }: Props) {
         columns={columns}
         rowKey="id"
         loading={loading}
+        scroll={{ x: 800 }}
         pagination={{ pageSize: 10 }}
         locale={{
           emptyText: <EmptyState

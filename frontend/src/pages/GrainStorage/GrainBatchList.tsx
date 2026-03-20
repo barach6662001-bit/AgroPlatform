@@ -376,6 +376,7 @@ export default function GrainBatchList() {
         columns={columns}
         rowKey="id"
         loading={loading}
+        scroll={{ x: 800 }}
         pagination={{
           current: page,
           pageSize,
@@ -526,6 +527,7 @@ export default function GrainBatchList() {
           rowKey="id"
           loading={loadingMovements}
           pagination={false}
+          scroll={{ x: 800 }}
           size="small"
         />
       </Modal>

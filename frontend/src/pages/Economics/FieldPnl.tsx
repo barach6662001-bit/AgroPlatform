@@ -257,6 +257,7 @@ export default function FieldPnl() {
           rowKey="fieldId"
           loading={loading}
           pagination={false}
+          scroll={{ x: 800 }}
           summary={() => (
             <Table.Summary.Row>
               <Table.Summary.Cell index={0} colSpan={3}>

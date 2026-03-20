@@ -225,6 +225,7 @@ export default function WorkLogPage() {
         dataSource={workLogs}
         rowKey="id"
         loading={loading}
+        scroll={{ x: 800 }}
         pagination={{ pageSize: 50 }}
         locale={{
           emptyText: <EmptyState

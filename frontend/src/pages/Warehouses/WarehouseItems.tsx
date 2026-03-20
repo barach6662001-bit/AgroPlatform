@@ -318,6 +318,7 @@ export default function WarehouseItems() {
         columns={columns}
         rowKey={(r) => `${r.warehouseId}-${r.itemId}-${r.batchId ?? ''}`}
         loading={loading}
+        scroll={{ x: 800 }}
         pagination={{
           current: page,
           pageSize,

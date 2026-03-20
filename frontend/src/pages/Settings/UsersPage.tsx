@@ -181,6 +181,7 @@ export default function UsersPage() {
         columns={columns}
         rowKey="id"
         loading={loading}
+        scroll={{ x: 800 }}
         pagination={false}
       />
     </div>

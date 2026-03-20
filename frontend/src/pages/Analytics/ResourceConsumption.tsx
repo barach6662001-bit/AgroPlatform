@@ -68,6 +68,7 @@ export default function ResourceConsumption() {
             columns={columns}
             rowKey="itemId"
             pagination={false}
+            scroll={{ x: 800 }}
             style={{ marginBottom: 32 }}
           />
           {chartData.length > 0 && (

@@ -123,6 +123,7 @@ export default function NotificationsPage() {
         rowKey="id"
         loading={loading}
         locale={{ emptyText: t.notifications.noNotifications }}
+        scroll={{ x: 800 }}
         pagination={{ pageSize: 20 }}
       />
     </div>

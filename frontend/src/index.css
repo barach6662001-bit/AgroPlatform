@@ -1,0 +1,11 @@
+@media (max-width: 1024px) {
+  .ant-table { font-size: 13px; }
+  .ant-card { padding: 12px; }
+  .ant-modal { max-width: 95vw !important; }
+  .ant-layout-sider { position: fixed !important; z-index: 100; }
+}
+@media (max-width: 768px) {
+  .ant-table-wrapper { overflow-x: auto; }
+  .ant-row { flex-direction: column; }
+  .ant-col { max-width: 100% !important; flex: 0 0 100% !important; }
+}

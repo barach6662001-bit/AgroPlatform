@@ -290,6 +290,7 @@ export default function LeasePage() {
         rowKey="landLeaseId"
         loading={loading}
         pagination={false}
+        scroll={{ x: 800 }}
         locale={{ emptyText: t.lease.noLeases }}
       />
 

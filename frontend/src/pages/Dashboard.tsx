@@ -239,7 +239,7 @@ export default function Dashboard() {
               size="small"
               pagination={false}
               locale={{ emptyText: <Text style={{ color: 'var(--text-secondary)' }}>{t.dashboard.noFieldsData}</Text> }}
-              scroll={{ x: true }}
+              scroll={{ x: 800 }}
             />
           </Card>
         </Col>

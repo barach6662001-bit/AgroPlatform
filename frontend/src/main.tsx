@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/uk';
 import 'leaflet/dist/leaflet.css';
 import './theme/global.css';
+import './index.css';
 import './utils/leafletFix';
 import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary.tsx';

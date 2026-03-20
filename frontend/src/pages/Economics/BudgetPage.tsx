@@ -163,6 +163,7 @@ export default function BudgetPage() {
         columns={columns}
         rowKey="category"
         loading={loading}
+        scroll={{ x: 800 }}
         pagination={false}
       />
     </div>

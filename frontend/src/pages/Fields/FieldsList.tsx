@@ -242,6 +242,7 @@ export default function FieldsList() {
           columns={columns}
           rowKey="id"
           loading={loading}
+          scroll={{ x: 800 }}
           pagination={{
             current: page,
             pageSize,
