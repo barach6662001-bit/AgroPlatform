@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber, Popconfirm, Card, Divider, Empty } from 'antd';
-import { PlusOutlined, DeleteOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined, HomeOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined, HomeOutlined, PrinterOutlined } from '@ant-design/icons';
+import { printReport } from '../../utils/printReport';
 import { getCostRecords, getCostSummary, createCostRecord, deleteCostRecord } from '../../api/economics';
 import type { CostSummaryDto } from '../../api/economics';
 import { getBudgets } from '../../api/budgets';
@@ -231,6 +232,7 @@ export default function CostRecords() {
         <Button icon={<DownloadOutlined />} loading={exporting} onClick={handleExport}>
           {t.warehouses_export.exportCosts}
         </Button>
+        <Button icon={<PrinterOutlined />} onClick={() => printReport(t.economics.title || 'Витрати', `<table><thead><tr><th>Дата</th><th>Категорія</th><th>Сума</th><th>Опис</th></tr></thead><tbody>${records.map(r => `<tr><td>${r.date}</td><td>${r.category}</td><td>${r.amount}</td><td>${r.description || ''}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
       </Space>
 
       <Table

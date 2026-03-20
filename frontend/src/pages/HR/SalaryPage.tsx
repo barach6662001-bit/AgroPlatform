@@ -3,7 +3,8 @@ import {
   Card, Row, Col, Select, Statistic, Button, Modal, Form, InputNumber,
   DatePicker, Input, message, Space, Typography,
 } from 'antd';
-import { DollarOutlined } from '@ant-design/icons';
+import { DollarOutlined, PrinterOutlined } from '@ant-design/icons';
+import { printReport } from '../../utils/printReport';
 import dayjs from 'dayjs';
 import { getSalarySummary, createSalaryPayment, getEmployees } from '../../api/hr';
 import type { SalarySummaryDto, EmployeeDto } from '../../types/hr';
@@ -98,6 +99,7 @@ export default function SalaryPage() {
       <Space style={{ marginBottom: 20 }}>
         <Select options={monthOptions} value={month} onChange={setMonth} style={{ width: 130 }} />
         <Select options={yearOptions} value={year} onChange={setYear} style={{ width: 90 }} />
+        <Button icon={<PrinterOutlined />} onClick={() => printReport(t.hr.salaryTitle || 'Зарплата', `<table><thead><tr><th>Прізвище</th><th>Нарахована</th><th>Виплачена</th><th>Залишок</th></tr></thead><tbody>${summary.map(s => `<tr><td>${s.employeeFullName}</td><td>${s.totalAccrued}</td><td>${s.totalPaid}</td><td>${s.balance}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
       </Space>
 
       {loading ? (

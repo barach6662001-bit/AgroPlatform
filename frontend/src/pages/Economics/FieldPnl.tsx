@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Table, InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space } from 'antd';
+import { Table, InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space, Button } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { DollarOutlined, RiseOutlined, TrophyOutlined } from '@ant-design/icons';
+import { DollarOutlined, RiseOutlined, TrophyOutlined, PrinterOutlined } from '@ant-design/icons';
 import { getFieldPnl } from '../../api/economics';
 import type { FieldPnlDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { printReport } from '../../utils/printReport';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -174,6 +175,7 @@ export default function FieldPnl() {
           placeholder="UAH"
           style={{ width: 140 }}
         />
+        <Button icon={<PrinterOutlined />} onClick={() => printReport(t.economics.pnlTitle, `<table><thead><tr><th>Поле</th><th>Витрати</th><th>Дохід</th><th>Прибуток</th></tr></thead><tbody>${data.map(d => `<tr><td>${d.fieldName}</td><td>${d.totalCosts.toLocaleString()}</td><td>${(d.estimatedRevenue ?? 0).toLocaleString()}</td><td>${(d.netProfit ?? 0).toLocaleString()}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
       </Space>
 
       {!pricePerTonne && (
