@@ -138,6 +138,7 @@ const uk = {
     monthlyExpenses: 'Витрати за місяць',
     monthlyRevenue: 'Дохід за місяць',
     monthlyProfit: 'Прибуток',
+    welcome: 'Вітаємо в AgroTech!',
   },
   operationTypes: {
     Sowing: 'Посів',
