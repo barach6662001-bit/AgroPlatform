@@ -1,8 +1,9 @@
+import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState, useMemo } from 'react';
 import {
   Table, Select, Button, Modal, Form, DatePicker, InputNumber, Input, message, Space, Popconfirm,
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { getWorkLogs, createWorkLog, updateWorkLog, deleteWorkLog, getEmployees } from '../../api/hr';
@@ -10,6 +11,7 @@ import type { WorkLogDto, EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import EmptyState from '../../components/EmptyState';
 
 export default function WorkLogPage() {
   const now = new Date();
@@ -167,16 +169,31 @@ export default function WorkLogPage() {
       <PageHeader
         title={t.hr.workLogsTitle}
         actions={
-          canWrite ? (
+          <Space>
+            {canWrite && (
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setModalOpen(true)}
+              >
+                {/* button styles handled by CSS */}
+                {t.hr.addWorkLog}
+              </Button>
+            )}
             <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setModalOpen(true)}
+              icon={<DownloadOutlined />}
+              onClick={() => exportToCsv('worklogs', workLogs, [
+                { key: 'workDate', title: t.common.date },
+                { key: 'employeeFullName', title: `${t.hr.firstName} / ${t.hr.lastName}` },
+                { key: 'hoursWorked', title: t.hr.hoursWorked },
+                { key: 'unitsProduced', title: t.hr.unitsProduced },
+                { key: 'accruedAmount', title: t.hr.accrued },
+                { key: 'workDescription', title: t.hr.workDescription },
+              ])}
             >
-              {/* button styles handled by CSS */}
-              {t.hr.addWorkLog}
+              {t.common.export}
             </Button>
-          ) : undefined
+          </Space>
         }
       />
 
@@ -209,6 +226,13 @@ export default function WorkLogPage() {
         rowKey="id"
         loading={loading}
         pagination={{ pageSize: 50 }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.hr.noWorkLogs || 'Ще немає записів у табелі'}
+            actionLabel={canWrite ? t.hr.addWorkLog : undefined}
+            onAction={canWrite ? () => setModalOpen(true) : undefined}
+          />,
+        }}
         summary={() => (
           <Table.Summary.Row>
             <Table.Summary.Cell index={0} colSpan={4}>

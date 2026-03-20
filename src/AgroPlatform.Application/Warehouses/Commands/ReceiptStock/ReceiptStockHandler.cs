@@ -37,8 +37,14 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
         if (!warehouse.IsActive)
             throw new ConflictException($"Warehouse '{warehouse.Name}' is not active.");
 
-        _ = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
+        var item = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);
+
+        // Update purchase price from latest receipt
+        if (request.PricePerUnit.HasValue && request.PricePerUnit.Value > 0)
+        {
+            item.PurchasePrice = request.PricePerUnit.Value;
+        }
 
         var move = new StockMove
         {
@@ -50,7 +56,10 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
             UnitCode = request.UnitCode,
             QuantityBase = request.Quantity,
             Note = request.Note,
-            ClientOperationId = request.ClientOperationId
+            ClientOperationId = request.ClientOperationId,
+            TotalCost = request.PricePerUnit.HasValue
+                ? Math.Round(request.Quantity * request.PricePerUnit.Value, 2)
+                : (decimal?)null,
         };
 
         _context.StockMoves.Add(move);

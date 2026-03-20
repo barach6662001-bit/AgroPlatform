@@ -213,7 +213,12 @@ export default function LeasePage() {
       dataIndex: 'totalPaid',
       key: 'totalPaid',
       align: 'right',
-      render: (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 2 }),
+      render: (v: number, record: LeaseSummaryDto) => {
+        const pct = record.annualPayment > 0 ? v / record.annualPayment : 0;
+        if (pct >= 1) return <Tag color="green">{t.lease.statusPaid || 'Сплачено'}</Tag>;
+        if (pct > 0) return <Tag color="orange">{`${t.lease.statusPartial || 'Частково'} (${(pct * 100).toFixed(0)}%)`}</Tag>;
+        return <Tag color="red">{t.lease.statusUnpaid || 'Не сплачено'}</Tag>;
+      },
     },
     {
       title: t.lease.remaining,

@@ -48,7 +48,7 @@ public class IssueStockHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new IssueStockHandler(context, dateTime, stockBalance);
-        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null);
+        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null, null, null);
 
         // Act
         var moveId = await handler.Handle(command, CancellationToken.None);
@@ -86,7 +86,7 @@ public class IssueStockHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new IssueStockHandler(context, dateTime, stockBalance);
-        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null);
+        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null, null, null);
 
         // Act
         var act = () => handler.Handle(command, CancellationToken.None);
@@ -110,7 +110,7 @@ public class IssueStockHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new IssueStockHandler(context, dateTime, stockBalance);
-        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 10m, "kg", null, null);
+        var command = new IssueStockCommand(warehouse.Id, item.Id, null, 10m, "kg", null, null, null, null);
 
         // Act
         var act = () => handler.Handle(command, CancellationToken.None);
