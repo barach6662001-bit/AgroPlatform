@@ -351,6 +351,8 @@ const en: Translations = {
     grainStorageTitle: 'Grain Storage',
     grainStorageSubtitle: 'Manage grain storage facilities',
     createGrainStorage: 'Add Grain Storage',
+    field: 'Field',
+    selectField: 'Select field (optional)',
   },
   moveTypes: {
     Receipt: 'Receipt',
