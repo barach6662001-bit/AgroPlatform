@@ -6,7 +6,7 @@ import type { StockMoveDto, WarehouseDto, WarehouseItemDto } from '../../types/w
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
-import EmptyState from '../../components/EmptyState';
+import { formatDate } from '../../utils/dateFormat';
 
 const { RangePicker } = DatePicker;
 
@@ -70,7 +70,7 @@ export default function StockMovements() {
       title: t.warehouses.moveDate,
       dataIndex: 'date',
       key: 'date',
-      render: (v: string) => new Date(v).toLocaleDateString(),
+      render: (v: string) => formatDate(v),
       sorter: (a: StockMoveDto, b: StockMoveDto) =>
         new Date(a.date).getTime() - new Date(b.date).getTime(),
     },

@@ -4,12 +4,14 @@ import { PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons'
 import { useSearchParams } from 'react-router-dom';
 import apiClient from '../../api/axios';
 import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue, createWarehouseItem, createTransfer, updateWarehouseItem } from '../../api/warehouses';
+import { getFields } from '../../api/fields';
 import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
+import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
-import EmptyState from '../../components/EmptyState';
+import { formatDate } from '../../utils/dateFormat';
 
 export default function WarehouseItems() {
   const [searchParams] = useSearchParams();
@@ -18,6 +20,7 @@ export default function WarehouseItems() {
   const [result, setResult] = useState<PaginatedResult<BalanceDto> | null>(null);
   const [warehouses, setWarehouses] = useState<WarehouseDto[]>([]);
   const [items, setItems] = useState<WarehouseItemDto[]>([]);
+  const [fields, setFields] = useState<FieldDto[]>([]);
   const [selectedWarehouse, setSelectedWarehouse] = useState<string | undefined>(initialWarehouse);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -65,6 +68,10 @@ export default function WarehouseItems() {
     loadBalances(initialWarehouse);
   }, []);
 
+  useEffect(() => {
+    getFields({ pageSize: 200 }).then((r) => setFields(r.items)).catch(() => {});
+  }, []);
+
   useEffect(() => { loadBalances(selectedWarehouse, page, pageSize); }, [page, pageSize]);
 
   const handleWarehouseChange = (val: string | undefined) => {
@@ -84,6 +91,7 @@ export default function WarehouseItems() {
         itemId: values.itemId,
         unitCode,
         quantity: values.quantity,
+        pricePerUnit: values.pricePerUnit,
         note: values.notes,
       });
       message.success(t.warehouses.receiptSuccess);
@@ -108,6 +116,7 @@ export default function WarehouseItems() {
         itemId: values.itemId,
         unitCode,
         quantity: values.quantity,
+        fieldId: values.fieldId,
         note: values.notes,
       });
       message.success(t.warehouses.issueSuccess);
@@ -203,7 +212,7 @@ export default function WarehouseItems() {
     },
     {
       title: t.warehouses.updated, dataIndex: 'lastUpdatedUtc', key: 'lastUpdatedUtc',
-      render: (v: string) => new Date(v).toLocaleDateString(),
+      render: (v: string) => formatDate(v),
     },
     {
       title: t.warehouses.purchasePrice,
@@ -336,6 +345,21 @@ export default function WarehouseItems() {
       >
         <Form form={receiptForm} layout="vertical" style={{ marginTop: 16 }}>
           <MovementForm />
+          <Form.Item name="pricePerUnit" label={t.warehouses.pricePerUnit}>
+            <InputNumber
+              min={0}
+              step={0.01}
+              precision={2}
+              addonAfter="UAH"
+              style={{ width: '100%' }}
+              onChange={(val) => {
+                const qty = receiptForm.getFieldValue('quantity');
+                if (val && qty) {
+                  message.info(`${t.warehouses.totalCost}: ${(Number(val) * Number(qty)).toFixed(2)} UAH`);
+                }
+              }}
+            />
+          </Form.Item>
           <Form.Item name="batchCode" label={t.warehouses.batchCode}>
             <Input />
           </Form.Item>
@@ -354,6 +378,20 @@ export default function WarehouseItems() {
       >
         <Form form={issueForm} layout="vertical" style={{ marginTop: 16 }}>
           <MovementForm />
+          <Form.Item name="fieldId" label={t.warehouses.field || 'Поле'}>
+            <Select
+              allowClear
+              showSearch
+              placeholder={t.warehouses.selectField || 'Оберіть поле (опціонально)'}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={fields.map(f => ({
+                value: f.id,
+                label: `${f.name} (${f.areaHectares} га)`,
+              }))}
+            />
+          </Form.Item>
         </Form>
       </Modal>
       {/* Create Item Modal */}

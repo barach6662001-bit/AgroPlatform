@@ -19,7 +19,7 @@ import type { MachineDto } from '../../types/machinery';
 import type { FieldDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
-import EmptyState from '../../components/EmptyState';
+import { formatDate } from '../../utils/dateFormat';
 
 const { Option } = Select;
 
@@ -157,7 +157,7 @@ export default function FuelStation() {
       title: t.fuel.transactionDate,
       dataIndex: 'transactionDate',
       key: 'transactionDate',
-      render: (v: string) => new Date(v).toLocaleDateString('uk-UA'),
+      render: (v: string) => formatDate(v),
       width: 110,
     },
     {

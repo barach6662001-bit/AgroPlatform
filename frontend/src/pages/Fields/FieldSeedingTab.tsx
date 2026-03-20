@@ -10,9 +10,10 @@ import EmptyState from '../../components/EmptyState';
 
 interface Props {
   fieldId: string;
+  fieldArea?: number;
 }
 
-export default function FieldSeedingTab({ fieldId }: Props) {
+export default function FieldSeedingTab({ fieldId, fieldArea }: Props) {
   const { t } = useTranslation();
   const { hasRole } = useRole();
   const canWrite = hasRole(['Administrator', 'Manager', 'Agronomist']);
@@ -138,7 +139,17 @@ export default function FieldSeedingTab({ fieldId }: Props) {
             <Input />
           </Form.Item>
           <Form.Item name="seedingRateKgPerHa" label={t.fields.seedingRate}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber
+              min={0}
+              precision={4}
+              style={{ width: '100%' }}
+              onChange={(val) => {
+                const area = fieldArea ?? 0;
+                if (val != null && area > 0) {
+                  form.setFieldsValue({ totalSeedKg: Math.round(Number(val) * area * 100) / 100 });
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item name="totalSeedKg" label={t.fields.totalSeed}>
             <InputNumber min={0} precision={4} style={{ width: '100%' }} />

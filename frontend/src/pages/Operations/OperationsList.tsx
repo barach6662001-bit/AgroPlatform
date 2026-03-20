@@ -13,7 +13,7 @@ import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
-import EmptyState from '../../components/EmptyState';
+import { formatDate } from '../../utils/dateFormat';
 
 const typeColors: Record<string, string> = {
   Sowing: 'green', Fertilizing: 'blue', PlantProtection: 'orange',
@@ -117,7 +117,7 @@ export default function OperationsList() {
     {
       title: t.operations.performedAt, dataIndex: 'completedDate', key: 'completedDate',
       sorter: (a: AgroOperationDto, b: AgroOperationDto) => new Date(a.completedDate ?? a.plannedDate).getTime() - new Date(b.completedDate ?? b.plannedDate).getTime(),
-      render: (v: string) => v ? new Date(v).toLocaleDateString() : '—',
+      render: (v: string) => formatDate(v),
     },
     {
       title: t.operations.area, dataIndex: 'areaProcessed', key: 'areaProcessed',
