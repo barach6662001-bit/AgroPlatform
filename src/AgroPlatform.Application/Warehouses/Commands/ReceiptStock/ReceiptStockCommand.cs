@@ -8,6 +8,7 @@ public record ReceiptStockCommand(
     Guid? BatchId,
     decimal Quantity,
     string UnitCode,
+    decimal? PricePerUnit,
     string? Note,
     string? ClientOperationId
 ) : IRequest<Guid>;

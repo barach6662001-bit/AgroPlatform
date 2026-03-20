@@ -9,7 +9,7 @@ import type { EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
-import { exportToCsv } from '../../utils/exportCsv';
+import EmptyState from '../../components/EmptyState';
 
 export default function EmployeeList() {
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
@@ -192,6 +192,13 @@ export default function EmployeeList() {
         loading={loading}
         pagination={{ pageSize: 20 }}
         style={{ background: 'transparent' }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.hr.noEmployees || 'Ще немає співробітників'}
+            actionLabel={canWrite ? t.hr.addEmployee : undefined}
+            onAction={canWrite ? () => setModalOpen(true) : undefined}
+          />,
+        }}
       />
 
       <Modal
