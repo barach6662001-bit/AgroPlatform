@@ -1,6 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Table, InputNumber, Button, Select, message, Space, Tag } from 'antd';
+import { Table, InputNumber, Button, Select, message, Space, Tag, Progress } from 'antd';
 import { SaveOutlined, DownloadOutlined } from '@ant-design/icons';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 import { getBudgets, upsertBudget, exportBudgets, type BudgetDto } from '../../api/budgets';
 import { getCostSummary, type CostSummaryDto } from '../../api/economics';
 import PageHeader from '../../components/PageHeader';
@@ -104,7 +114,7 @@ export default function BudgetPage() {
       ),
     },
     {
-      title: t.economics.plColFact,
+      title: t.budget.fact,
       key: 'fact',
       render: (_: unknown, row: { category: string }) => {
         const factEntry = summary?.byCategory.find((c) => c.category === row.category);
@@ -113,7 +123,23 @@ export default function BudgetPage() {
       },
     },
     {
-      title: t.economics.plColExecution,
+      title: t.budget.difference,
+      key: 'difference',
+      render: (_: unknown, row: { category: string }) => {
+        const plan = pendingAmounts[row.category] ?? 0;
+        const factEntry = summary?.byCategory.find((c) => c.category === row.category);
+        const fact = factEntry?.amount ?? 0;
+        if (!plan) return <span style={{ color: '#8B949E' }}>—</span>;
+        const diff = plan - fact;
+        return (
+          <span style={{ color: diff >= 0 ? '#3fb950' : '#f85149', fontWeight: 500 }}>
+            {diff >= 0 ? '+' : ''}{diff.toLocaleString()} UAH
+          </span>
+        );
+      },
+    },
+    {
+      title: t.budget.execution,
       key: 'execution',
       render: (_: unknown, row: { category: string }) => {
         const plan = pendingAmounts[row.category];
@@ -122,6 +148,31 @@ export default function BudgetPage() {
         if (!plan || plan === 0) return <span style={{ color: '#8B949E' }}>—</span>;
         const pct = (fact / plan) * 100;
         return <Tag color={pct > 100 ? 'error' : pct > 80 ? 'warning' : 'success'}>{pct.toFixed(1)}%</Tag>;
+      },
+    },
+    {
+      title: t.budget.progress,
+      key: 'progress',
+      width: 180,
+      render: (_: unknown, row: { category: string }) => {
+        const plan = pendingAmounts[row.category];
+        const factEntry = summary?.byCategory.find((c) => c.category === row.category);
+        const fact = factEntry?.amount ?? 0;
+        if (!plan || plan === 0) return <span style={{ color: '#8B949E' }}>—</span>;
+        const rawPct = (fact / plan) * 100;
+        const displayPct = Math.min(rawPct, 100);
+        const isOverBudget = rawPct > 100;
+        const status = isOverBudget ? 'exception' : 'normal';
+        const strokeColor = isOverBudget ? '#f85149' : rawPct > 80 ? '#faad14' : '#3fb950';
+        return (
+          <Progress
+            percent={Number(displayPct.toFixed(1))}
+            size="small"
+            status={status}
+            strokeColor={strokeColor}
+            style={{ marginBottom: 0 }}
+          />
+        );
       },
     },
     {
@@ -148,6 +199,17 @@ export default function BudgetPage() {
 
   const tableData = CATEGORIES.map((cat) => ({ category: cat, key: cat }));
 
+  const chartData = CATEGORIES.map((cat) => {
+    const plan = pendingAmounts[cat] ?? 0;
+    const factEntry = summary?.byCategory.find((c) => c.category === cat);
+    const fact = factEntry?.amount ?? 0;
+    return {
+      name: t.costCategories[cat as keyof typeof t.costCategories] ?? cat,
+      plan,
+      fact,
+    };
+  }).filter((d) => d.plan > 0 || d.fact > 0);
+
   return (
     <div>
       <PageHeader title={t.budget.title} subtitle={t.budget.subtitle} />
@@ -164,7 +226,33 @@ export default function BudgetPage() {
         rowKey="category"
         loading={loading}
         pagination={false}
+        scroll={{ x: 'max-content' }}
       />
+      {chartData.length > 0 && (
+        <div style={{ marginTop: 32 }}>
+          <h3 style={{ color: '#E6EDF3', marginBottom: 16 }}>{t.budget.chartTitle}</h3>
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 60 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
+              <XAxis
+                dataKey="name"
+                tick={{ fill: '#8B949E', fontSize: 12 }}
+                angle={-30}
+                textAnchor="end"
+                interval={0}
+              />
+              <YAxis tick={{ fill: '#8B949E', fontSize: 12 }} />
+              <Tooltip
+                contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }}
+                formatter={(value: number) => `${value.toLocaleString()} UAH`}
+              />
+              <Legend wrapperStyle={{ color: '#8B949E', paddingTop: 16 }} />
+              <Bar dataKey="plan" name={t.budget.plannedAmount} fill="#388bfd" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="fact" name={t.budget.fact} fill="#3fb950" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }
