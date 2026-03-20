@@ -29,6 +29,10 @@ const uk = {
     fuelStation: 'Паливна станція',
     companySettings: 'Налаштування підприємства',
     setup: 'Початкове налаштування',
+    storage: 'Сховище',
+    materials: 'Матеріали',
+    movements: 'Рухи',
+    finance: 'Фінанси',
   },
   common: {
     cancel: 'Скасувати',
