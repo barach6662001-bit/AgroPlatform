@@ -6,6 +6,7 @@ import enUS from 'antd/locale/en_US';
 import dayjs from 'dayjs';
 import { useTranslation } from './i18n';
 import { darkTheme } from './theme/darkTheme';
+import { useFcmToken } from './hooks/useFcmToken';
 import AppLayout from './components/Layout/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
@@ -41,6 +42,7 @@ import FuelStation from './pages/Fuel/FuelStation';
 
 export default function App() {
   const { lang } = useTranslation();
+  useFcmToken();
 
   useEffect(() => {
     dayjs.locale(lang === 'uk' ? 'uk' : 'en');

@@ -20,3 +20,7 @@ export const markAllNotificationsRead = () =>
 
 export const clearReadNotifications = () =>
   apiClient.delete('/api/notifications');
+
+export const saveFcmToken = (token: string) =>
+  apiClient.put('/api/notifications/fcm-token', { token });
+

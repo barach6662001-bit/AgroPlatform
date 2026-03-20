@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Notifications.Commands.ClearNotifications;
 using AgroPlatform.Application.Notifications.Commands.MarkNotificationRead;
+using AgroPlatform.Application.Notifications.Commands.SaveFcmToken;
 using AgroPlatform.Application.Notifications.Queries.GetNotifications;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -55,4 +56,14 @@ public class NotificationsController : ControllerBase
         await _sender.Send(new ClearNotificationsCommand(), cancellationToken);
         return NoContent();
     }
+
+    /// <summary>Registers or updates the FCM push token for the current user.</summary>
+    [HttpPut("fcm-token")]
+    public async Task<IActionResult> SaveFcmToken([FromBody] SaveFcmTokenRequest request, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new SaveFcmTokenCommand(request.Token), cancellationToken);
+        return NoContent();
+    }
 }
+
+public record SaveFcmTokenRequest(string Token);

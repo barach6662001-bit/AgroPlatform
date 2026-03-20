@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
 
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+        services.Configure<FcmSettings>(configuration.GetSection("Fcm"));
 
         services.AddScoped<AuditableEntityInterceptor>();
         services.AddScoped<SoftDeleteInterceptor>();
@@ -43,6 +44,7 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<ITenantService, TenantService>();
         services.AddSingleton<IDateTimeService, DateTimeService>();
+        services.AddSingleton<IFcmService, FcmService>();
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
 
