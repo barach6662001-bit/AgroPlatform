@@ -25,7 +25,9 @@ export const createReceipt = (data: {
   itemId: string;
   unitCode: string;
   quantity: number;
+  pricePerUnit?: number;
   note?: string;
+  batchCode?: string;
 }) =>
   apiClient.post('/api/warehouses/receipt', data).then((r) => r.data);
 

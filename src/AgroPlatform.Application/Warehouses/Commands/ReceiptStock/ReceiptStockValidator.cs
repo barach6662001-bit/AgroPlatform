@@ -10,5 +10,7 @@ public class ReceiptStockValidator : AbstractValidator<ReceiptStockCommand>
         RuleFor(x => x.ItemId).NotEmpty();
         RuleFor(x => x.Quantity).GreaterThan(0);
         RuleFor(x => x.UnitCode).NotEmpty().MaximumLength(20);
+        RuleFor(x => x.PricePerUnit)
+            .GreaterThanOrEqualTo(0).When(x => x.PricePerUnit.HasValue);
     }
 }

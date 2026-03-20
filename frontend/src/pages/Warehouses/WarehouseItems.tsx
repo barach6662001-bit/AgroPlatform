@@ -11,6 +11,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { formatDate } from '../../utils/dateFormat';
 
 export default function WarehouseItems() {
   const [searchParams] = useSearchParams();
@@ -90,6 +91,7 @@ export default function WarehouseItems() {
         itemId: values.itemId,
         unitCode,
         quantity: values.quantity,
+        pricePerUnit: values.pricePerUnit,
         note: values.notes,
       });
       message.success(t.warehouses.receiptSuccess);
@@ -210,7 +212,7 @@ export default function WarehouseItems() {
     },
     {
       title: t.warehouses.updated, dataIndex: 'lastUpdatedUtc', key: 'lastUpdatedUtc',
-      render: (v: string) => new Date(v).toLocaleDateString(),
+      render: (v: string) => formatDate(v),
     },
     {
       title: t.warehouses.purchasePrice,
@@ -336,6 +338,21 @@ export default function WarehouseItems() {
       >
         <Form form={receiptForm} layout="vertical" style={{ marginTop: 16 }}>
           <MovementForm />
+          <Form.Item name="pricePerUnit" label={t.warehouses.pricePerUnit}>
+            <InputNumber
+              min={0}
+              step={0.01}
+              precision={2}
+              addonAfter="UAH"
+              style={{ width: '100%' }}
+              onChange={(val) => {
+                const qty = receiptForm.getFieldValue('quantity');
+                if (val && qty) {
+                  message.info(`${t.warehouses.totalCost}: ${(Number(val) * Number(qty)).toFixed(2)} UAH`);
+                }
+              }}
+            />
+          </Form.Item>
           <Form.Item name="batchCode" label={t.warehouses.batchCode}>
             <Input />
           </Form.Item>
