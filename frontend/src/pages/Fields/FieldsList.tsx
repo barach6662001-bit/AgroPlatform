@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
-import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getFields, deleteField, createField, updateField } from '../../api/fields';
 import { getCadastreParcel } from '../../api/cadastre';
@@ -11,6 +11,7 @@ import PageHeader from '../../components/PageHeader';
 import FieldMap from '../../components/Map/FieldMap';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { exportToCsv } from '../../utils/exportCsv';
 
 export default function FieldsList() {
   const [result, setResult] = useState<PaginatedResult<FieldDto> | null>(null);
@@ -211,6 +212,18 @@ export default function FieldsList() {
             {t.fields.addField}
           </Button>
         )}
+        <Button
+          icon={<DownloadOutlined />}
+          onClick={() => exportToCsv('fields', result?.items ?? [], [
+            { key: 'name', title: t.fields.name },
+            { key: 'cadastralNumber', title: t.fields.cadastralNumber },
+            { key: 'areaHectares', title: t.fields.area },
+            { key: 'currentCrop', title: t.fields.currentCrop },
+            { key: 'soilType', title: t.fields.soilType },
+          ])}
+        >
+          {t.common.export}
+        </Button>
         <Segmented
           value={viewMode}
           onChange={(v) => setViewMode(v as 'list' | 'map')}

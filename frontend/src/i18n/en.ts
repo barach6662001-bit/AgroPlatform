@@ -55,6 +55,7 @@ const en: Translations = {
     status: 'Status',
     active: 'Active',
     inactive: 'Inactive',
+    export: 'Export',
   },
   auth: {
     login: 'Log In',
@@ -643,6 +644,14 @@ const en: Translations = {
     role: 'Role',
     language: 'Interface Language',
     languageChanged: 'Language changed',
+    companyInfo: 'Company Information',
+    companyName: 'Company Name',
+    edrpou: 'EDRPOU',
+    address: 'Address',
+    phone: 'Phone',
+    companySaveSuccess: 'Company information saved',
+    companySaveError: 'Error saving company info',
+    companyLoadError: 'Error loading company data',
   },
   profile: {
     title: 'Profile',

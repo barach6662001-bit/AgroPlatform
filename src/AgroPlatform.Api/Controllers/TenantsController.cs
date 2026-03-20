@@ -11,7 +11,6 @@ namespace AgroPlatform.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/tenants")]
-[AllowAnonymous]
 [Produces("application/json")]
 public class TenantsController : ControllerBase
 {
@@ -28,6 +27,7 @@ public class TenantsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The created tenant on success.</returns>
     [HttpPost("register")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
