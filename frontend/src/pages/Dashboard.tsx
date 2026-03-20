@@ -29,6 +29,7 @@ import { getNotifications, type NotificationDto } from '../api/notifications';
 import type { DashboardDto } from '../types/analytics';
 import type { FieldDto } from '../types/field';
 import PageHeader from '../components/PageHeader';
+import WeatherWidget from '../components/WeatherWidget';
 import { useTranslation } from '../i18n';
 
 dayjs.extend(relativeTime);
@@ -116,7 +117,10 @@ export default function Dashboard() {
 
   return (
     <div className="page-enter">
-      <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 12 }}>
+        <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
+        <WeatherWidget />
+      </div>
 
       {fields.length < ONBOARDING_THRESHOLD_FIELDS && (
         <Card style={{ background: 'var(--agro-bg-card)', textAlign: 'center', padding: '40px 20px', marginBottom: 24, borderRadius: 12, border: '1px solid var(--agro-border)' }}>
