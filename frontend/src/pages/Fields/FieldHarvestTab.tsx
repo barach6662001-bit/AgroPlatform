@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Table, Tag, Tooltip, Select, Space, message } from 'antd';
+import { Alert, Button, Popconfirm, Table, Tag, Tooltip, Select, Space, message } from 'antd';
 import { DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getFieldHarvests, deleteFieldHarvest } from '../../api/fields';
@@ -74,9 +74,10 @@ export default function FieldHarvestTab({ fieldId }: Props) {
             <Tag color="green">{t.fields.fromGrainStorage}</Tag>
           </Tooltip>
         ) : (
-          <Button size="small" danger icon={<DeleteOutlined />}
-            aria-label={t.fields.deleteHarvestLabel}
-            onClick={() => handleDelete(record.id)} />
+          <Popconfirm title={t.common.confirm} onConfirm={() => handleDelete(record.id)}>
+            <Button size="small" danger icon={<DeleteOutlined />}
+              aria-label={t.fields.deleteHarvestLabel} />
+          </Popconfirm>
         ),
     }] : []),
   ];
