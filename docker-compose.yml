@@ -37,6 +37,7 @@ services:
       Cors__AllowedOrigins__1: "${CODESPACES_URL:-}"
       Swagger__Enabled: "${SWAGGER_ENABLED:-true}"
       AUTO_MIGRATE: "${AUTO_MIGRATE:-true}"
+      SentinelHub__InstanceId: "${SENTINEL_HUB_INSTANCE_ID:-}"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health/live || exit 1"]
       interval: 15s
