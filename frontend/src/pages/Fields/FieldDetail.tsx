@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs, Typography } from 'antd';
+import { Card, Descriptions, Table, Tag, Button, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs, Typography } from 'antd';
+import TableSkeleton from '../../components/TableSkeleton';
 import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined, ExportOutlined, ReloadOutlined } from '@ant-design/icons';
 import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry } from '../../api/fields';
 import { getCadastreParcel, cacheCadastreData } from '../../api/cadastre';
@@ -205,7 +206,7 @@ export default function FieldDetail() {
     }
   };
 
-  if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
+  if (loading) return <TableSkeleton rows={8} />;
   if (!field) return null;
 
   const hasGeometry = !!field.geoJson;

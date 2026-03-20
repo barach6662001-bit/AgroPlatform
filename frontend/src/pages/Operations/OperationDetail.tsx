@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Card, Descriptions, Table, Tag, Button, Spin, message, Row, Col,
+  Card, Descriptions, Table, Tag, Button, message, Row, Col,
   Space, Modal, Form, DatePicker, InputNumber, Select, Popconfirm,
 } from 'antd';
 import {
@@ -186,7 +187,7 @@ export default function OperationDetail() {
   };
 
   // ── Render ──────────────────────────────────────────────────────────────────
-  if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
+  if (loading) return <TableSkeleton rows={8} />;
   if (!op) return null;
 
   const resourceColumns = [

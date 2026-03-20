@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Row, Col, Card, Spin, message, Typography, Table, Tag, List, Button, Space, Divider } from 'antd';
+import { Row, Col, Card, message, Typography, Table, Tag, List, Button, Space, Divider } from 'antd';
+import TableSkeleton from '../components/TableSkeleton';
 import {
   ToolOutlined,
   DollarOutlined,
@@ -61,7 +62,7 @@ export default function Dashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
+  if (loading) return <TableSkeleton rows={8} />;
   if (!data) return null;
 
   // ── Chart data ────────────────────────────────────────────────────────────

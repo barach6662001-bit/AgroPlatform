@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Card, Table, Button, Spin, message, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag,
+  Card, Table, Button, message, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag,
 } from 'antd';
+import TableSkeleton from '../../components/TableSkeleton';
 import { ArrowLeftOutlined, PlusOutlined, DownloadOutlined } from '@ant-design/icons';
 import { getMaintenanceRecords, addMaintenanceRecord, exportMaintenanceRecords, type MaintenanceRecordDto } from '../../api/maintenance';
 import PageHeader from '../../components/PageHeader';
@@ -82,7 +83,7 @@ export default function MaintenancePage() {
     }
   };
 
-  if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
+  if (loading) return <TableSkeleton rows={8} />;
 
   const columns = [
     {

@@ -1,8 +1,9 @@
 import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Card, Descriptions, Table, Button, Spin, message, Row, Col,
+  Card, Descriptions, Table, Button, message, Row, Col,
   Statistic, Badge, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag,
 } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined, ToolOutlined, DownloadOutlined } from '@ant-design/icons';
@@ -132,7 +133,7 @@ export default function MachineDetail() {
     }
   };
 
-  if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
+  if (loading) return <TableSkeleton rows={8} />;
   if (!machine) return null;
 
   const workLogColumns = [
