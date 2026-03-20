@@ -49,11 +49,11 @@ export default function Sidebar() {
 
   const menuItems = [
     { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined />, style: { padding: '4px 8px' } },
-    { type: 'divider' },
+    { type: 'divider' as const },
     { key: '/fields', label: t.nav.fields, icon: <AimOutlined />, style: { padding: '4px 8px' } },
     { key: '/operations', label: t.nav.operations, icon: <ToolOutlined />, style: { padding: '4px 8px' } },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined />, style: { padding: '4px 8px' } },
-    { type: 'divider' },
+    { type: 'divider' as const },
     {
       key: 'storage-group',
       label: t.nav.storage,
@@ -63,7 +63,7 @@ export default function Sidebar() {
     },
     { key: '/grain', label: t.nav.grainStorage, icon: <BankOutlined />, style: { padding: '4px 8px' } },
     { key: '/fuel', label: t.nav.fuelStation, icon: <FireOutlined />, style: { padding: '4px 8px' } },
-    { type: 'divider' },
+    { type: 'divider' as const },
     {
       key: 'finance-group',
       label: t.nav.finance,
@@ -78,7 +78,7 @@ export default function Sidebar() {
       style: { padding: '4px 8px' },
       children: hrChildren,
     },
-    { type: 'divider' },
+    { type: 'divider' as const },
     { key: '/analytics/efficiency', label: t.nav.analytics, icon: <LineChartOutlined />, style: { padding: '4px 8px' } },
     { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined />, style: { padding: '4px 8px' } },
     ...(isAdmin
