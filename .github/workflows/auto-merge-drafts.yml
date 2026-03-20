@@ -1,0 +1,72 @@
+name: Auto-merge Copilot PRs
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Specific PR number (leave empty for all Copilot PRs)
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Process PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          INPUT="${{ github.event.inputs.pr_number }}"
+          if [ -n "$INPUT" ]; then
+            PRS="$INPUT"
+          else
+            PRS=$(gh pr list --state open --author "app/copilot" --json number --jq ".[].number" 2>/dev/null || echo "")
+          fi
+          if [ -z "$PRS" ]; then
+            echo "No PRs to process"
+            exit 0
+          fi
+          PASSED=0; FAILED=0; SKIPPED=0
+          for PR in $PRS; do
+            echo "========================================="
+            echo "Processing PR #$PR"
+            TITLE=$(gh pr view "$PR" --json title --jq ".title")
+            IS_DRAFT=$(gh pr view "$PR" --json isDraft --jq ".isDraft")
+            echo "Title: $TITLE"
+            if [ "$IS_DRAFT" = "true" ]; then
+              echo "Converting draft to ready..."
+              gh pr ready "$PR" || { echo "SKIP"; SKIPPED=$((SKIPPED+1)); continue; }
+              echo "Waiting 60s for CI..."
+              sleep 60
+            fi
+            echo "Waiting for CI checks..."
+            TRIES=0; MAX_TRIES=20; CI_RESULT="timeout"
+            while [ $TRIES -lt $MAX_TRIES ]; do
+              TRIES=$((TRIES + 1))
+              CHECK_OUTPUT=$(gh pr checks "$PR" 2>/dev/null || echo "")
+              if echo "$CHECK_OUTPUT" | grep -q "fail"; then CI_RESULT="fail"; break; fi
+              if echo "$CHECK_OUTPUT" | grep -q "pass" && ! echo "$CHECK_OUTPUT" | grep -q "pending"; then CI_RESULT="pass"; break; fi
+              echo "  Attempt $TRIES/$MAX_TRIES: pending..."
+              sleep 30
+            done
+            echo "CI result: $CI_RESULT"
+            if [ "$CI_RESULT" = "pass" ]; then
+              echo "Merging PR #$PR..."
+              if gh pr merge "$PR" --squash --admin; then
+                echo "MERGED PR #$PR"; PASSED=$((PASSED+1))
+              else
+                echo "FAIL merge PR #$PR"; FAILED=$((FAILED+1))
+              fi
+            else
+              echo "SKIP PR #$PR ($CI_RESULT)"; FAILED=$((FAILED+1))
+            fi
+            echo ""
+          done
+          echo "========================================="
+          echo "SUMMARY: Merged=$PASSED Failed=$FAILED Skipped=$SKIPPED"
