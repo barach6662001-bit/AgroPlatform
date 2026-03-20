@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Warehouses;
 using MediatR;
@@ -61,6 +62,30 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
         _context.StockMoves.Add(move);
 
         await _stockBalance.DecreaseBalance(request.WarehouseId, request.ItemId, request.BatchId, request.Quantity, cancellationToken);
+
+        // Auto-create cost record for manual stock issue
+        if (totalCost.HasValue && totalCost.Value > 0)
+        {
+            var costCategory = item.Category switch
+            {
+                "Fertilizers" => "Fertilizers",
+                "Seeds" => "Seeds",
+                "Pesticides" => "Pesticides",
+                "Fuel" => "Fuel",
+                _ => "Other"
+            };
+
+            _context.CostRecords.Add(new CostRecord
+            {
+                Category = costCategory,
+                Amount = totalCost.Value,
+                Currency = "UAH",
+                Date = _dateTime.UtcNow,
+                FieldId = request.FieldId,
+                AgroOperationId = request.AgroOperationId,
+                Description = $"{item.Name}: {request.Quantity:F2} {request.UnitCode} × {item.PurchasePrice:F2} UAH"
+            });
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
         return move.Id;
