@@ -291,6 +291,29 @@ export default function LeasePage() {
         loading={loading}
         pagination={false}
         locale={{ emptyText: t.lease.noLeases }}
+        expandable={{
+          expandedRowRender: (record) => {
+            const payments = record.payments || [];
+            if (!payments.length) {
+              return <Text type="secondary">{t.lease.noPayments}</Text>;
+            }
+            return (
+              <Table
+                size="small"
+                dataSource={payments}
+                columns={[
+                  { title: t.lease.paymentDate, dataIndex: 'paymentDate', render: (d: string) => dayjs(d).format('DD.MM.YYYY') },
+                  { title: t.lease.amount, dataIndex: 'amount', render: (v: number) => `${v.toLocaleString()} ₴` },
+                  { title: t.lease.paymentType, dataIndex: 'paymentType' },
+                  { title: t.lease.paymentMethod, dataIndex: 'paymentMethod', render: (v: string) => v === 'Grain' ? t.lease.grain : t.lease.cash },
+                  { title: t.common.notes, dataIndex: 'notes', render: (v: string) => v || '—' },
+                ]}
+                rowKey="id"
+                pagination={false}
+              />
+            );
+          },
+        }}
       />
 
       {/* Add Lease Modal */}

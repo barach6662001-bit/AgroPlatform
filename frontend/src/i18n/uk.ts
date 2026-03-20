@@ -789,6 +789,8 @@ const uk = {
     grainQuantity: 'Кількість зерна (т)',
     grainPricePerTon: 'Ціна (грн/т)',
     calculatedAmount: 'Розрахована сума',
+    noPayments: 'Виплат ще не було',
+    amount: 'Сума',
   },
   fuel: {
     title: 'Паливна станція',

@@ -791,6 +791,8 @@ const en: Translations = {
     grainQuantity: 'Grain Quantity (t)',
     grainPricePerTon: 'Price (UAH/t)',
     calculatedAmount: 'Calculated Amount',
+    noPayments: 'No payments yet',
+    amount: 'Amount',
   },
   grain: {
     title: 'Grain Storage',
