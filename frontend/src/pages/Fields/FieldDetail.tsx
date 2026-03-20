@@ -415,17 +415,17 @@ export default function FieldDetail() {
         {
           key: 'seeding',
           label: t.fields.tabSeeding,
-          children: <FieldSeedingTab fieldId={id!} />,
+          children: <FieldSeedingTab fieldId={id!} fieldArea={field?.areaHectares} />,
         },
         {
           key: 'fertilizer',
           label: t.fields.tabFertilizer,
-          children: <FieldFertilizerTab fieldId={id!} />,
+          children: <FieldFertilizerTab fieldId={id!} fieldArea={field?.areaHectares} />,
         },
         {
           key: 'protection',
           label: t.fields.tabProtection,
-          children: <FieldProtectionTab fieldId={id!} />,
+          children: <FieldProtectionTab fieldId={id!} fieldArea={field?.areaHectares} />,
         },
         {
           key: 'harvest',

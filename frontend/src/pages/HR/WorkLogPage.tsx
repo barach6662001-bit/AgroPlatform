@@ -10,6 +10,7 @@ import type { WorkLogDto, EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import EmptyState from '../../components/EmptyState';
 
 export default function WorkLogPage() {
   const now = new Date();
@@ -209,6 +210,13 @@ export default function WorkLogPage() {
         rowKey="id"
         loading={loading}
         pagination={{ pageSize: 50 }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.hr.noWorkLogs || 'Ще немає записів у табелі'}
+            actionLabel={canWrite ? t.hr.addWorkLog : undefined}
+            onAction={canWrite ? () => setModalOpen(true) : undefined}
+          />,
+        }}
         summary={() => (
           <Table.Summary.Row>
             <Table.Summary.Cell index={0} colSpan={4}>

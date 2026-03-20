@@ -1,3 +1,4 @@
+import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
 import { Table, Select, DatePicker, message, Tag, Space } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
@@ -6,6 +7,7 @@ import type { StockMoveDto, WarehouseDto, WarehouseItemDto } from '../../types/w
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { formatDate } from '../../utils/dateFormat';
 
 const { RangePicker } = DatePicker;
 
@@ -69,7 +71,7 @@ export default function StockMovements() {
       title: t.warehouses.moveDate,
       dataIndex: 'date',
       key: 'date',
-      render: (v: string) => new Date(v).toLocaleDateString(),
+      render: (v: string) => formatDate(v),
       sorter: (a: StockMoveDto, b: StockMoveDto) =>
         new Date(a.date).getTime() - new Date(b.date).getTime(),
     },
@@ -165,6 +167,11 @@ export default function StockMovements() {
           pageSize,
           total: result?.totalCount ?? 0,
           onChange: (p) => setPage(p),
+        }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.warehouses.noMovements || 'Ще немає рухів товарів'}
+          />,
         }}
       />
     </div>

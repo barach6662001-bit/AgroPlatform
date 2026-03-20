@@ -6,12 +6,14 @@ import { getFieldSeedings, createFieldSeeding, deleteFieldSeeding } from '../../
 import type { FieldSeedingDto } from '../../types/field';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import EmptyState from '../../components/EmptyState';
 
 interface Props {
   fieldId: string;
+  fieldArea?: number;
 }
 
-export default function FieldSeedingTab({ fieldId }: Props) {
+export default function FieldSeedingTab({ fieldId, fieldArea }: Props) {
   const { t } = useTranslation();
   const { hasRole } = useRole();
   const canWrite = hasRole(['Administrator', 'Manager', 'Agronomist']);
@@ -87,11 +89,14 @@ export default function FieldSeedingTab({ fieldId }: Props) {
   return (
     <div>
       <Space style={{ marginBottom: 12 }}>
+        <span style={{ color: 'var(--agro-text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
         <Select
-          style={{ width: 120 }}
+          style={{ width: 90 }}
           value={year}
           onChange={setYear}
           options={yearOptions}
+          allowClear
+          placeholder={t.fields.allYears}
         />
         {canWrite && (
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
@@ -99,7 +104,20 @@ export default function FieldSeedingTab({ fieldId }: Props) {
           </Button>
         )}
       </Space>
-      <Table dataSource={data} columns={columns} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} locale={{ emptyText: t.common.noData }} />
+      <Table
+        dataSource={data}
+        columns={columns}
+        rowKey="id"
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.fields.noSeedings || 'Ще немає записів про посів'}
+            actionLabel={canWrite ? t.fields.addSeeding : undefined}
+            onAction={canWrite ? () => setModalOpen(true) : undefined}
+          />,
+        }}
+      />
 
       <Modal
         title={t.fields.addSeeding}
@@ -121,7 +139,17 @@ export default function FieldSeedingTab({ fieldId }: Props) {
             <Input />
           </Form.Item>
           <Form.Item name="seedingRateKgPerHa" label={t.fields.seedingRate}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber
+              min={0}
+              precision={4}
+              style={{ width: '100%' }}
+              onChange={(val) => {
+                const area = fieldArea ?? 0;
+                if (val != null && area > 0) {
+                  form.setFieldsValue({ totalSeedKg: Math.round(Number(val) * area * 100) / 100 });
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item name="totalSeedKg" label={t.fields.totalSeed}>
             <InputNumber min={0} precision={4} style={{ width: '100%' }} />
