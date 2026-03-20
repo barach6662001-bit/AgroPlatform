@@ -15,6 +15,7 @@ import type { MachineDetailDto, WorkLogDto, FuelLogDto } from '../../types/machi
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { formatDate } from '../../utils/dateFormat';
 
 const statusColors: Record<string, string> = {
   Active: 'success', UnderRepair: 'warning', Decommissioned: 'error',
@@ -151,19 +152,19 @@ export default function MachineDetail() {
   if (!machine) return null;
 
   const workLogColumns = [
-    { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
+    { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => formatDate(v) },
     { title: t.machinery.hours, dataIndex: 'hoursWorked', key: 'hoursWorked', render: (v: number) => v.toFixed(2) },
     { title: t.machinery.notes, dataIndex: 'description', key: 'description', render: (v: string) => v || '—' },
   ];
 
   const fuelLogColumns = [
-    { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
+    { title: t.machinery.date, dataIndex: 'date', key: 'date', render: (v: string) => formatDate(v) },
     { title: t.machinery.liters, dataIndex: 'quantity', key: 'quantity', render: (v: number) => v != null ? v.toFixed(2) : '—' },
     { title: t.machinery.notes, dataIndex: 'note', key: 'note', render: (v: string) => v || '—' },
   ];
 
   const maintenanceColumns = [
-    { title: t.maintenance.date, dataIndex: 'date', key: 'date', render: (v: string) => new Date(v).toLocaleDateString() },
+    { title: t.maintenance.date, dataIndex: 'date', key: 'date', render: (v: string) => formatDate(v) },
     {
       title: t.maintenance.type, dataIndex: 'type', key: 'type',
       render: (v: string) => {
@@ -181,12 +182,12 @@ export default function MachineDetail() {
   const workChartData = [...machine.recentWorkLogs]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(-15)
-    .map((l: WorkLogDto) => ({ date: new Date(l.date).toLocaleDateString(), [t.machinery.hours]: l.hoursWorked }));
+    .map((l: WorkLogDto) => ({ date: formatDate(l.date), [t.machinery.hours]: l.hoursWorked }));
 
   const fuelChartData = [...machine.recentFuelLogs]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(-15)
-    .map((l: FuelLogDto) => ({ date: new Date(l.date).toLocaleDateString(), [t.machinery.liters]: l.quantity }));
+    .map((l: FuelLogDto) => ({ date: formatDate(l.date), [t.machinery.liters]: l.quantity }));
 
   return (
     <div>
@@ -245,13 +246,13 @@ export default function MachineDetail() {
               {machine.nextMaintenanceDate && (
                 <Descriptions.Item label={t.maintenance.nextMaintenanceDate}>
                   <Tag color={new Date(machine.nextMaintenanceDate) < new Date() ? 'error' : 'warning'}>
-                    {new Date(machine.nextMaintenanceDate).toLocaleDateString()}
+                    {formatDate(machine.nextMaintenanceDate)}
                   </Tag>
                 </Descriptions.Item>
               )}
               {machine.lastMaintenanceDate && (
                 <Descriptions.Item label={t.maintenance.lastMaintenanceDate}>
-                  {new Date(machine.lastMaintenanceDate).toLocaleDateString()}
+                  {formatDate(machine.lastMaintenanceDate)}
                 </Descriptions.Item>
               )}
             </Descriptions>

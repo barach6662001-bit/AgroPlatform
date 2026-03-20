@@ -9,6 +9,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { formatDate } from '../../utils/dateFormat';
 
 export default function WarehouseItems() {
   const [searchParams] = useSearchParams();
@@ -202,7 +203,7 @@ export default function WarehouseItems() {
     },
     {
       title: t.warehouses.updated, dataIndex: 'lastUpdatedUtc', key: 'lastUpdatedUtc',
-      render: (v: string) => new Date(v).toLocaleDateString(),
+      render: (v: string) => formatDate(v),
     },
     {
       title: t.warehouses.purchasePrice,

@@ -789,6 +789,11 @@ const en: Translations = {
     reasonProcessing: 'Processing',
     reasonTransfer: 'Transfer',
     reasonOther: 'Other',
+    issueQuantity: 'Quantity (t)',
+    ownershipOwn: 'Own',
+    ownershipConsignment: 'Consignment',
+    ownershipStorage: 'Storage',
+    ownershipOther: 'Other',
   },
   hr: {
     employeesTitle: 'Employees',
