@@ -29,6 +29,9 @@ public class GetFuelTransactionsHandler : IRequestHandler<GetFuelTransactionsQue
         if (request.DateTo.HasValue)
             query = query.Where(t => t.TransactionDate <= request.DateTo.Value);
 
+        if (request.MachineId.HasValue)
+            query = query.Where(t => t.MachineId == request.MachineId.Value);
+
         return await query
             .OrderByDescending(t => t.TransactionDate)
             .Skip((request.Page - 1) * request.PageSize)

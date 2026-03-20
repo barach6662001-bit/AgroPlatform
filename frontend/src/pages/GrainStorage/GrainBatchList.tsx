@@ -12,15 +12,16 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import EmptyState from '../../components/EmptyState';
 
 const QUICK_GRAIN_TYPES = ['Пшениця озима', 'Кукурудза', 'Соняшник'];
 const LAST_GRAIN_KEY = 'lastGrainType';
 
 const ownershipOptions = (t: ReturnType<typeof useTranslation>['t']) => [
-  { value: 0, label: t.grain.ownGrain },
-  { value: 1, label: t.grain.consignment },
-  { value: 2, label: t.grain.storage },
-  { value: 3, label: t.grain.other },
+  { value: 0, label: t.grain.ownershipOwn },
+  { value: 1, label: t.grain.ownershipConsignment },
+  { value: 2, label: t.grain.ownershipStorage },
+  { value: 3, label: t.grain.ownershipOther },
 ];
 
 export default function GrainBatchList() {
@@ -192,14 +193,14 @@ export default function GrainBatchList() {
     }
   };
 
-  const ownershipLabel = (type: GrainOwnershipType) => {
+  const ownershipLabel = (type: GrainOwnershipType): string => {
     const labels: Record<number, string> = {
-      0: t.grain.ownGrain,
-      1: t.grain.consignment,
-      2: t.grain.storage,
-      3: t.grain.other,
+      0: t.grain.ownershipOwn,
+      1: t.grain.ownershipConsignment,
+      2: t.grain.ownershipStorage,
+      3: t.grain.ownershipOther,
     };
-    return labels[type] ?? type;
+    return labels[type] ?? String(type);
   };
 
   const columns = [
@@ -366,6 +367,13 @@ export default function GrainBatchList() {
           total: result?.totalCount ?? 0,
           onChange: (p, ps) => { setPage(p); setPageSize(ps); },
         }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.grain.noBatches || 'Ще немає партій зерна. Прийміть перше зерно'}
+            actionLabel={canCreate ? t.grain.receiveGrain : undefined}
+            onAction={canCreate ? openBatchModal : undefined}
+          />,
+        }}
       />
 
       {/* Create Batch Modal */}
@@ -457,7 +465,7 @@ export default function GrainBatchList() {
               onChange={(v) => setCurrentMovementType(v)}
             />
           </Form.Item>
-          <Form.Item name="quantityTons" label={t.grain.quantityTons} rules={[{ required: true, message: t.common.required }]}>
+          <Form.Item name="quantityTons" label={t.grain.issueQuantity} rules={[{ required: true, message: t.common.required }]}>
             <InputNumber min={0.001} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="movementDate" label={t.grain.movementDate} rules={[{ required: true, message: t.common.required }]}>
@@ -542,7 +550,7 @@ export default function GrainBatchList() {
               style={{ marginBottom: 12 }}
             />
           )}
-          <Form.Item name="quantityTons" label={t.grain.quantityTons} rules={[{ required: true, message: t.common.required }]}>
+          <Form.Item name="quantityTons" label={t.grain.issueQuantity} rules={[{ required: true, message: t.common.required }]}>
             <InputNumber
               min={0.001}
               max={selectedIssueBatch?.quantityTons}
