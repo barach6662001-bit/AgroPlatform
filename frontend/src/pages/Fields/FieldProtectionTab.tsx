@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Modal, Form, Input, InputNumber, Select, DatePicker, Popconfirm, Space, message } from 'antd';
+import { Button, Table, Modal, Form, Input, InputNumber, Select, DatePicker, Popconfirm, Space, message, Typography } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getFieldProtections, createFieldProtection, deleteFieldProtection } from '../../api/fields';
@@ -16,6 +16,7 @@ interface Props {
 }
 
 export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
+  const { Text } = Typography;
   const { t } = useTranslation();
   const { hasRole } = useRole();
   const canWrite = hasRole(['Administrator', 'Manager', 'Agronomist']);
@@ -105,7 +106,7 @@ export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
   return (
     <div>
       <Space style={{ marginBottom: 12 }}>
-        <span style={{ color: 'var(--agro-text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
+        <Text type="secondary" style={{ fontSize: 13 }}>{t.fields.year}:</Text>
         <Select
           style={{ width: 90 }}
           value={year}
