@@ -11,6 +11,7 @@ using AgroPlatform.Application.Fields.Commands.DeleteFieldProtection;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldSeeding;
 using AgroPlatform.Application.Fields.Commands.DeleteRotationPlan;
 using AgroPlatform.Application.Fields.Commands.PlanRotation;
+using AgroPlatform.Application.Fields.Commands.ReportNdviProblems;
 using AgroPlatform.Application.Fields.Commands.UpdateField;
 using AgroPlatform.Application.Fields.Commands.UpdateFieldGeometry;
 using AgroPlatform.Application.Fields.Commands.UpdateYield;
@@ -328,6 +329,25 @@ public class FieldsController : ControllerBase
         await _sender.Send(new DeleteFieldHarvestCommand(id), cancellationToken);
         return NoContent();
     }
+
+    // ─── NDVI ───────────────────────────────────────────────────────────────────
+
+    /// <summary>Reports NDVI problem zones detected on a field and creates a notification when problems are found.</summary>
+    /// <param name="fieldId">Field ID.</param>
+    /// <param name="request">Number of detected problem zones.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("{fieldId:guid}/ndvi-analysis")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ReportNdviProblems(
+        Guid fieldId,
+        [FromBody] ReportNdviProblemsRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _sender.Send(new ReportNdviProblemsCommand(fieldId, request.ProblemZoneCount), cancellationToken);
+        return NoContent();
+    }
 }
 
 /// <summary>Request body for updating a field's GeoJSON geometry.</summary>
@@ -376,3 +396,6 @@ public record CreateFieldHarvestRequest(
     decimal? PricePerTon,
     DateTime HarvestDate,
     string? Notes);
+
+/// <summary>Request body for reporting NDVI problem zones.</summary>
+public record ReportNdviProblemsRequest(int ProblemZoneCount);

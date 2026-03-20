@@ -72,3 +72,7 @@ export const createFieldHarvest = (fieldId: string, data: Omit<FieldHarvestDto, 
 export const deleteFieldHarvest = (fieldId: string, id: string) =>
   apiClient.delete(`/api/fields/${fieldId}/harvests/${id}`);
 
+// NDVI analysis
+export const reportNdviProblems = (fieldId: string, problemZoneCount: number) =>
+  apiClient.post(`/api/fields/${fieldId}/ndvi-analysis`, { problemZoneCount });
+
