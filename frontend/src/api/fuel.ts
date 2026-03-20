@@ -37,6 +37,7 @@ export const getFuelTransactions = (params?: {
   tankId?: string;
   dateFrom?: string;
   dateTo?: string;
+  machineId?: string;
   page?: number;
   pageSize?: number;
 }) =>
