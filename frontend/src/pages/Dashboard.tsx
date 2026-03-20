@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Row, Col, Card, Spin, message, Typography, Table, Tag, List, Button, Space } from 'antd';
+import { Row, Col, Card, Spin, message, Typography, Table, Tag, List, Button, Space, Divider } from 'antd';
 import {
   ToolOutlined,
   DollarOutlined,
@@ -9,6 +9,9 @@ import {
   ClockCircleOutlined,
   BankOutlined,
   FireOutlined,
+  AimOutlined,
+  CarOutlined,
+  InboxOutlined,
 } from '@ant-design/icons';
 import {
   XAxis,
@@ -116,6 +119,57 @@ export default function Dashboard() {
   return (
     <div className="page-enter">
       <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
+
+      {/* Onboarding wizard — shown when fewer than ONBOARDING_THRESHOLD_FIELDS fields exist */}
+      {fields.length < ONBOARDING_THRESHOLD_FIELDS && (
+        <Card style={{
+          background: 'var(--agro-bg-card)',
+          border: '1px solid var(--agro-border)',
+          textAlign: 'center',
+          padding: '40px 20px',
+          marginBottom: 24,
+          borderRadius: 12,
+        }}>
+          <Typography.Title level={3} style={{ color: 'var(--agro-text-primary)' }}>
+            {t.dashboard.welcome}
+          </Typography.Title>
+          <Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
+            {t.dashboard.setupGuide}
+          </Text>
+
+          <Space direction="vertical" size={12} style={{ width: 280 }}>
+            <Button block type="primary" icon={<AimOutlined />} onClick={() => navigate('/fields')}>
+              1. {t.dashboard.addFields}
+            </Button>
+            <Button block icon={<CarOutlined />} onClick={() => navigate('/machinery')}>
+              2. {t.dashboard.addMachinery}
+            </Button>
+            <Button block icon={<InboxOutlined />} onClick={() => navigate('/warehouses/items')}>
+              3. {t.dashboard.addWarehouse}
+            </Button>
+            <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>
+              4. {t.dashboard.addOperation}
+            </Button>
+          </Space>
+
+          <Divider style={{ borderColor: 'var(--agro-border)' }} />
+
+          <Button
+            onClick={async () => {
+              try {
+                const { default: apiClient } = await import('../api/axios');
+                await apiClient.post('/api/tenants/seed-demo');
+                message.success(t.dashboard.demoLoaded);
+                setTimeout(() => window.location.reload(), 500);
+              } catch {
+                message.error(t.dashboard.demoError);
+              }
+            }}
+          >
+            {t.dashboard.loadDemo}
+          </Button>
+        </Card>
+      )}
 
       {/* KPI Section — 4 cards */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
