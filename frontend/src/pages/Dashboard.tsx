@@ -34,6 +34,7 @@ dayjs.extend(relativeTime);
 
 const CARD = { background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12 };
 const SECTION_GAP = { marginTop: 24 };
+const ONBOARDING_THRESHOLD_FIELDS = 3;
 
 const { Text } = Typography;
 
