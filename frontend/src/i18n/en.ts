@@ -251,6 +251,7 @@ const en: Translations = {
     fertilizerName: 'Fertilizer',
     applicationType: 'Application Type',
     mainFertilizer: 'Base Application',
+    noFertilizers: 'No fertilizers found',
     topDressing: 'Top Dressing',
     rateKgPerHa: 'Rate (kg/ha)',
     applicationDate: 'Application Date',

@@ -249,6 +249,7 @@ const uk = {
     fertilizerName: 'Добриво',
     applicationType: 'Тип внесення',
     mainFertilizer: 'Основне',
+    noFertilizers: 'Добрив не знайдено',
     topDressing: 'Підживлення',
     rateKgPerHa: 'Норма (кг/га)',
     applicationDate: 'Дата внесення',
