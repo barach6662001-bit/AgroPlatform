@@ -842,6 +842,9 @@ const en: Translations = {
     ownershipConsignment: 'Consignment',
     ownershipStorage: 'Storage',
     ownershipOther: 'Other',
+    totalVolume: 'Total volume',
+    totalValue: 'Total value',
+    cultures: 'Cultures',
   },
   hr: {
     employeesTitle: 'Employees',

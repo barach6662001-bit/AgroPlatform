@@ -872,6 +872,9 @@ const uk = {
     ownershipConsignment: 'Консигнація',
     ownershipStorage: 'Зберігання',
     ownershipOther: 'Інше',
+    totalVolume: 'Загальний обсяг',
+    totalValue: 'Загальна вартість',
+    cultures: 'Культури',
   },
   hr: {
     employeesTitle: 'Співробітники',
