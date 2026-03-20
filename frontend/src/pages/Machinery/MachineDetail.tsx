@@ -265,6 +265,22 @@ export default function MachineDetail() {
                 />
               </Card>
             </Col>
+            <Col span={24}>
+              <Card>
+                <Statistic
+                  title={t.machinery.nextMaintenance || 'Наступне ТО'}
+                  value={machine.nextMaintenanceDate
+                    ? (() => {
+                        const days = Math.ceil((new Date(machine.nextMaintenanceDate).getTime() - Date.now()) / 86400000);
+                        if (days < 0) return `Прострочено на ${Math.abs(days)} дн.`;
+                        if (days === 0) return 'Сьогодні';
+                        return `Через ${days} дн. (${new Date(machine.nextMaintenanceDate).toLocaleDateString('uk-UA')})`;
+                      })()
+                    : '—'}
+                  valueStyle={{ color: machine.nextMaintenanceDate && Math.ceil((new Date(machine.nextMaintenanceDate).getTime() - Date.now()) / 86400000) < 0 ? '#f85149' : machine.nextMaintenanceDate && Math.ceil((new Date(machine.nextMaintenanceDate).getTime() - Date.now()) / 86400000) <= 7 ? '#f0883e' : '#8b949e' }}
+                />
+              </Card>
+            </Col>
           </Row>
         </Col>
       </Row>
