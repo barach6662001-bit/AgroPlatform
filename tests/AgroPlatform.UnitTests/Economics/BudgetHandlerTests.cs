@@ -127,6 +127,22 @@ public class BudgetHandlerTests
         result[0].Note.Should().Be("labor note");
     }
 
+    [Fact]
+    public async Task GetBudgets_ExcludesSoftDeletedRecords()
+    {
+        var context = CreateDbContext();
+        var currentUser = new TestCurrentUserService();
+        context.Budgets.Add(new Budget { TenantId = currentUser.TenantId, Year = 2024, Category = "Seeds", PlannedAmount = 5000m, IsDeleted = false });
+        context.Budgets.Add(new Budget { TenantId = currentUser.TenantId, Year = 2024, Category = "Fuel", PlannedAmount = 8000m, IsDeleted = true });
+        await context.SaveChangesAsync();
+
+        var handler = new GetBudgetsHandler(context);
+        var result = await handler.Handle(new GetBudgetsQuery(2024), CancellationToken.None);
+
+        result.Should().HaveCount(1);
+        result[0].Category.Should().Be("Seeds");
+    }
+
     // ── ExportBudgetsHandler ─────────────────────────────────────────────────
 
     [Fact]

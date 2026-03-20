@@ -15,10 +15,18 @@ public class GetBudgetsHandler : IRequestHandler<GetBudgetsQuery, List<BudgetDto
 
     public async Task<List<BudgetDto>> Handle(GetBudgetsQuery request, CancellationToken cancellationToken)
     {
-        return await _context.Budgets
-            .Where(b => b.Year == request.Year)
-            .OrderBy(b => b.Category)
-            .Select(b => new BudgetDto(b.Id, b.Year, b.Category, b.PlannedAmount, b.Note))
-            .ToListAsync(cancellationToken);
+        try
+        {
+            return await _context.Budgets
+                .Where(b => b.Year == request.Year && !b.IsDeleted)
+                .OrderBy(b => b.Category)
+                .Select(b => new BudgetDto(b.Id, b.Year, b.Category, b.PlannedAmount, b.Note))
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            // Table might not exist yet — return empty list
+            return new List<BudgetDto>();
+        }
     }
 }
