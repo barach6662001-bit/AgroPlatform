@@ -166,6 +166,7 @@ export default function GrainBatchList() {
         quantityTons: values.quantityTons,
         reason: values.reason,
         pricePerTon: values.pricePerTon,
+        buyerName: values.buyerName,
         movementDate: new Date().toISOString(),
       });
       message.success(t.grain.issueSuccess);
@@ -613,6 +614,9 @@ export default function GrainBatchList() {
           </Form.Item>
           <Form.Item name="pricePerTon" label={t.grain.exportPrice}>
             <InputNumber min={0} precision={2} addonAfter="грн/т" style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="buyerName" label={t.grain.buyer || 'Покупець'}>
+            <Input placeholder="Назва покупця або отримувача" />
           </Form.Item>
         </Form>
       </Modal>

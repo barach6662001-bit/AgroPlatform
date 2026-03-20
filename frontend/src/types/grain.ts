@@ -27,4 +27,5 @@ export interface GrainMovementDto {
   notes?: string;
   pricePerTon?: number;
   totalRevenue?: number;
+  buyerName?: string;
 }

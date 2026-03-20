@@ -872,6 +872,7 @@ const uk = {
     ownershipConsignment: 'Консигнація',
     ownershipStorage: 'Зберігання',
     ownershipOther: 'Інше',
+    buyer: 'Покупець',
   },
   hr: {
     employeesTitle: 'Співробітники',

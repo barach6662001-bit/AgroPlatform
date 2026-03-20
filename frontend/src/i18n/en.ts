@@ -842,6 +842,7 @@ const en: Translations = {
     ownershipConsignment: 'Consignment',
     ownershipStorage: 'Storage',
     ownershipOther: 'Other',
+    buyer: 'Buyer',
   },
   hr: {
     employeesTitle: 'Employees',
