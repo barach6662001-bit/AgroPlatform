@@ -94,3 +94,28 @@ export interface FieldHarvestDto {
   syncedFromGrainStorage: boolean;
   grainBatchId?: string;
 }
+
+export interface VraZoneDto {
+  id: string;
+  zoneIndex: number;
+  zoneName: string;
+  ndviValue?: number;
+  soilOrganicMatter?: number;
+  soilNitrogen?: number;
+  soilPhosphorus?: number;
+  soilPotassium?: number;
+  areaHectares: number;
+  rateKgPerHa: number;
+  color: string;
+}
+
+export interface VraMapDto {
+  id: string;
+  fieldId: string;
+  name: string;
+  fertilizerName: string;
+  year: number;
+  notes?: string;
+  createdAtUtc: string;
+  zones: VraZoneDto[];
+}

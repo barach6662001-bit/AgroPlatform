@@ -36,6 +36,8 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<FieldFertilizer> FieldFertilizers => Set<FieldFertilizer>();
     public DbSet<FieldProtection> FieldProtections => Set<FieldProtection>();
     public DbSet<FieldHarvest> FieldHarvests => Set<FieldHarvest>();
+    public DbSet<VraMap> VraMaps => Set<VraMap>();
+    public DbSet<VraZone> VraZones => Set<VraZone>();
     public DbSet<AgroOperation> AgroOperations => Set<AgroOperation>();
     public DbSet<AgroOperationResource> AgroOperationResources => Set<AgroOperationResource>();
     public DbSet<AgroOperationMachinery> AgroOperationMachineries => Set<AgroOperationMachinery>();
@@ -72,6 +74,8 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<FieldFertilizer>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
         builder.Entity<FieldProtection>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
         builder.Entity<FieldHarvest>().HasQueryFilter(h => !h.IsDeleted && h.TenantId == _tenantId);
+        builder.Entity<VraMap>().HasQueryFilter(m => !m.IsDeleted && m.TenantId == _tenantId);
+        builder.Entity<VraZone>().HasQueryFilter(z => !z.IsDeleted && z.TenantId == _tenantId);
         builder.Entity<AgroOperation>().HasQueryFilter(o => !o.IsDeleted && o.TenantId == _tenantId);
         builder.Entity<AgroOperationResource>().HasQueryFilter(r => !r.IsDeleted && r.TenantId == _tenantId);
         builder.Entity<AgroOperationMachinery>().HasQueryFilter(m => !m.IsDeleted && m.TenantId == _tenantId);

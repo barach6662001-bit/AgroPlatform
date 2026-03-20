@@ -72,3 +72,16 @@ export const createFieldHarvest = (fieldId: string, data: Omit<FieldHarvestDto, 
 export const deleteFieldHarvest = (fieldId: string, id: string) =>
   apiClient.delete(`/api/fields/${fieldId}/harvests/${id}`);
 
+// VRA Maps
+export const getVraMaps = (fieldId: string, year?: number) =>
+  apiClient.get<import('../types/field').VraMapDto[]>(`/api/fields/${fieldId}/vra-maps`, { params: year ? { year } : undefined }).then((r) => r.data);
+
+export const createVraMap = (fieldId: string, data: Omit<import('../types/field').VraMapDto, 'id' | 'createdAtUtc'>) =>
+  apiClient.post<{ id: string }>(`/api/fields/${fieldId}/vra-maps`, { ...data, fieldId }).then((r) => r.data);
+
+export const deleteVraMap = (fieldId: string, id: string) =>
+  apiClient.delete(`/api/fields/${fieldId}/vra-maps/${id}`);
+
+export const exportVraMapCsv = (fieldId: string, id: string) =>
+  apiClient.get(`/api/fields/${fieldId}/vra-maps/${id}/export-csv`, { responseType: 'blob' }).then((r) => r.data as Blob);
+

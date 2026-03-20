@@ -26,6 +26,8 @@ public interface IAppDbContext
     DbSet<FieldFertilizer> FieldFertilizers { get; }
     DbSet<FieldProtection> FieldProtections { get; }
     DbSet<FieldHarvest> FieldHarvests { get; }
+    DbSet<VraMap> VraMaps { get; }
+    DbSet<VraZone> VraZones { get; }
     DbSet<AgroOperation> AgroOperations { get; }
     DbSet<AgroOperationResource> AgroOperationResources { get; }
     DbSet<AgroOperationMachinery> AgroOperationMachineries { get; }
