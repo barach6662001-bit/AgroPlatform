@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <!-- Pin transitive package to fix HIGH vulnerability GHSA-8g4q-xg66-9fp4 -->
+    <PackageReference Include="FirebaseAdmin" Version="3.1.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
