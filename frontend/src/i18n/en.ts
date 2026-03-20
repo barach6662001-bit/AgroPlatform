@@ -174,6 +174,8 @@ const en: Translations = {
     soilSand: 'Sand',
     soilClay: 'Clay',
     soilPeat: 'Peat',
+    soilPodzolic: 'Sod-Podzolic',
+    soilGrayForest: 'Gray Forest',
     currentCrop: 'Current Crop',
     actions: 'Actions',
     details: 'Details',

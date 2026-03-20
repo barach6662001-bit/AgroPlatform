@@ -34,6 +34,17 @@ export default function FieldsList() {
   const cropOptions = (['Wheat', 'Corn', 'Sunflower', 'Soybean', 'Barley', 'Rapeseed', 'SugarBeet', 'Fallow', 'Other'] as const)
     .map(v => ({ value: v, label: t.crops[v] }));
 
+  const soilOptions = [
+    { value: 'Чорнозем', label: t.fields.soilBlackEarth || 'Чорнозем' },
+    { value: 'Суглинок', label: t.fields.soilLoam || 'Суглинок' },
+    { value: 'Супісок', label: t.fields.soilSandyLoam || 'Супісок' },
+    { value: 'Пісок', label: t.fields.soilSand || 'Пісок' },
+    { value: 'Глина', label: t.fields.soilClay || 'Глина' },
+    { value: 'Торф', label: t.fields.soilPeat || 'Торф' },
+    { value: 'Дерново-підзолистий', label: t.fields.soilPodzolic || 'Дерново-підзолистий' },
+    { value: 'Сірий лісовий', label: t.fields.soilGrayForest || 'Сірий лісовий' },
+  ];
+
   // Cadastre auto-fill for create form
   const [cadastreLoading, setCadastreLoading] = useState(false);
   const [cadastreResult, setCadastreResult] = useState<CadastreParcelResult | null>(null);
@@ -314,18 +325,7 @@ export default function FieldsList() {
             <InputNumber min={0} step={0.01} precision={4} style={{ width: '100%' }} addonAfter="га" />
           </Form.Item>
           <Form.Item name="soilType" label={t.fields.soilType}>
-            <Select
-              allowClear
-              placeholder={t.fields.selectSoilType || 'Виберіть тип ґрунту'}
-              options={[
-                { value: 'Чорнозем', label: t.fields.soilBlackEarth || 'Чорнозем' },
-                { value: 'Суглинок', label: t.fields.soilLoam || 'Суглинок' },
-                { value: 'Супісок', label: t.fields.soilSandyLoam || 'Супісок' },
-                { value: 'Пісок', label: t.fields.soilSand || 'Пісок' },
-                { value: 'Глина', label: t.fields.soilClay || 'Глина' },
-                { value: 'Торф', label: t.fields.soilPeat || 'Торф' },
-              ]}
-            />
+            <Select allowClear placeholder={t.fields.selectSoilType || 'Оберіть тип ґрунту'} options={soilOptions} />
           </Form.Item>
           <Form.Item name="ownershipType" label={t.fields.ownershipType} initialValue={0}>
             <Select>
@@ -360,18 +360,7 @@ export default function FieldsList() {
             <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="soilType" label={t.fields.soilType}>
-            <Select
-              allowClear
-              placeholder={t.fields.selectSoilType || 'Виберіть тип ґрунту'}
-              options={[
-                { value: 'Чорнозем', label: t.fields.soilBlackEarth || 'Чорнозем' },
-                { value: 'Суглинок', label: t.fields.soilLoam || 'Суглинок' },
-                { value: 'Супісок', label: t.fields.soilSandyLoam || 'Супісок' },
-                { value: 'Пісок', label: t.fields.soilSand || 'Пісок' },
-                { value: 'Глина', label: t.fields.soilClay || 'Глина' },
-                { value: 'Торф', label: t.fields.soilPeat || 'Торф' },
-              ]}
-            />
+            <Select allowClear placeholder={t.fields.selectSoilType || 'Оберіть тип ґрунту'} options={soilOptions} />
           </Form.Item>
           <Form.Item name="ownershipType" label={t.fields.ownershipType} initialValue={0}>
             <Select>
