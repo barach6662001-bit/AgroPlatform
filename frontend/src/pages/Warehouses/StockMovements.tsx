@@ -71,6 +71,7 @@ export default function StockMovements() {
       dataIndex: 'date',
       key: 'date',
       render: (v: string) => formatDate(v),
+      sorter: (a: StockMoveDto, b: StockMoveDto) =>
         new Date(a.date).getTime() - new Date(b.date).getTime(),
     },
     {
