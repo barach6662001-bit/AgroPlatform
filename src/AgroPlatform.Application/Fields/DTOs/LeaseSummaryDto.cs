@@ -10,4 +10,5 @@ public class LeaseSummaryDto
     public decimal TotalPaid { get; set; }
     public decimal Remaining { get; set; }
     public string Status { get; set; } = "Unpaid";
+    public List<LeasePaymentDto> Payments { get; set; } = new();
 }

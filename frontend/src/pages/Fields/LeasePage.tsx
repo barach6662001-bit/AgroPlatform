@@ -291,6 +291,26 @@ export default function LeasePage() {
         loading={loading}
         pagination={false}
         locale={{ emptyText: t.lease.noLeases }}
+        expandable={{
+          expandedRowRender: (record) => {
+            const payments = record.payments || [];
+            if (!payments.length) return <Text type="secondary">Виплат ще не було</Text>;
+            return (
+              <Table
+                size="small"
+                dataSource={payments}
+                columns={[
+                  { title: 'Дата', dataIndex: 'paymentDate', render: (d: string) => dayjs(d).format('DD.MM.YYYY') },
+                  { title: 'Сума', dataIndex: 'amount', render: (v: number) => `${v.toLocaleString()} ₴` },
+                  { title: 'Спосіб', dataIndex: 'paymentMethod', render: (v: string) => v === 'Grain' ? 'Зерном' : 'Грошима' },
+                  { title: 'Примітка', dataIndex: 'notes', render: (v: string) => v || '—' },
+                ]}
+                rowKey="id"
+                pagination={false}
+              />
+            );
+          },
+        }}
       />
 
       {/* Add Lease Modal */}
