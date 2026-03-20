@@ -8,6 +8,15 @@ export const getWarehouses = (params?: { page?: number; pageSize?: number; type?
 export const getWarehouseItems = (params?: { page?: number; pageSize?: number }) =>
   apiClient.get<PaginatedResult<WarehouseItemDto>>('/api/warehouses/items', { params }).then((r) => r.data);
 
+export const getWarehouseItemsByCategory = (category: string) => {
+  const CATEGORY_PAGE_SIZE = 200;
+  return apiClient
+    .get<PaginatedResult<WarehouseItemDto>>('/api/warehouses/items', {
+      params: { category, pageSize: CATEGORY_PAGE_SIZE },
+    })
+    .then((r) => r.data);
+};
+
 export const getBalances = (params?: { warehouseId?: string; itemId?: string; page?: number; pageSize?: number }) =>
   apiClient.get<PaginatedResult<BalanceDto>>('/api/warehouses/balances', { params }).then((r) => r.data);
 
@@ -25,7 +34,9 @@ export const createReceipt = (data: {
   itemId: string;
   unitCode: string;
   quantity: number;
+  pricePerUnit?: number;
   note?: string;
+  batchCode?: string;
 }) =>
   apiClient.post('/api/warehouses/receipt', data).then((r) => r.data);
 
@@ -34,6 +45,8 @@ export const createIssue = (data: {
   itemId: string;
   unitCode: string;
   quantity: number;
+  fieldId?: string;
+  agroOperationId?: string;
   note?: string;
 }) =>
   apiClient.post('/api/warehouses/issue', data).then((r) => r.data);

@@ -16,5 +16,17 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 
         builder.Property(t => t.Inn)
             .HasMaxLength(50);
+
+        builder.Property(t => t.CompanyName)
+            .HasMaxLength(300);
+
+        builder.Property(t => t.Edrpou)
+            .HasMaxLength(20);
+
+        builder.Property(t => t.Address)
+            .HasMaxLength(500);
+
+        builder.Property(t => t.Phone)
+            .HasMaxLength(50);
     }
 }

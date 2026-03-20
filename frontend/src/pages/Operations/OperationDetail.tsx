@@ -21,6 +21,7 @@ import type { MachineDto } from '../../types/machinery';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { formatDate } from '../../utils/dateFormat';
 
 export default function OperationDetail() {
   const { id } = useParams<{ id: string }>();
@@ -274,10 +275,10 @@ export default function OperationDetail() {
                   : <Tag color="processing">{t.operations.inProgress}</Tag>}
               </Descriptions.Item>
               <Descriptions.Item label={t.operations.plannedDate}>
-                {new Date(op.plannedDate).toLocaleDateString()}
+                {formatDate(op.plannedDate)}
               </Descriptions.Item>
               <Descriptions.Item label={t.operations.completedDate}>
-                {op.completedDate ? new Date(op.completedDate).toLocaleDateString() : '—'}
+                {formatDate(op.completedDate)}
               </Descriptions.Item>
               <Descriptions.Item label={t.operations.area}>
                 {op.areaProcessed ? op.areaProcessed.toFixed(2) : '—'}

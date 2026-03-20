@@ -7,6 +7,7 @@ public record GetFuelTransactionsQuery(
     Guid? TankId,
     DateTime? DateFrom,
     DateTime? DateTo,
+    Guid? MachineId = null,
     int Page = 1,
     int PageSize = 50
 ) : IRequest<List<FuelTransactionDto>>;
