@@ -107,6 +107,12 @@ export default function StockMovements() {
       render: (v: string) => v || '—',
     },
     {
+      title: t.warehouses.field || 'Поле',
+      dataIndex: 'fieldName',
+      key: 'fieldName',
+      render: (v: string) => v || '—',
+    },
+    {
       title: t.warehouses.totalCost,
       dataIndex: 'totalCost',
       key: 'totalCost',

@@ -62,7 +62,11 @@ public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, Pagina
                 BatchCode = m.Batch != null ? m.Batch.Code : null,
                 Note = m.Note,
                 CreatedAtUtc = m.CreatedAtUtc,
-                TotalCost = m.TotalCost
+                TotalCost = m.TotalCost,
+                FieldName = _context.CostRecords
+                    .Where(c => c.AgroOperationId == m.OperationId && c.FieldId.HasValue)
+                    .Select(c => c.Field!.Name)
+                    .FirstOrDefault()
             })
             .ToListAsync(cancellationToken);
 
