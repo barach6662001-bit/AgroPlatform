@@ -349,6 +349,8 @@ const uk = {
     grainStorageTitle: 'Зерносховища',
     grainStorageSubtitle: 'Управління зерносховищами',
     createGrainStorage: 'Додати зерносховище',
+    field: 'Поле',
+    selectField: 'Оберіть поле (опціонально)',
   },
   moveTypes: {
     Receipt: 'Прихід',
