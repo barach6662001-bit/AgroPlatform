@@ -1,6 +1,7 @@
+import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
 import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag } from 'antd';
-import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getMachines, createMachine, updateMachine } from '../../api/machinery';
 import type { MachineDto, MachineryType, MachineryStatus } from '../../types/machinery';

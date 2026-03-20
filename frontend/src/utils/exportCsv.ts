@@ -1,4 +1,5 @@
-export function exportToCsv(filename: string, rows: Record<string, unknown>[], columns: { key: string; title: string }[]) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function exportToCsv(filename: string, rows: any[], columns: { key: string; title: string }[]) {
   const header = columns.map(c => c.title).join(',');
   const csvRows = rows.map(row =>
     columns.map(c => {
