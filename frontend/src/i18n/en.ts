@@ -519,6 +519,9 @@ const en: Translations = {
     selectDriver: 'Select driver',
     noDriver: 'No driver assigned',
     refuelAtStation: 'Refuel at Fuel Station',
+    showQr: 'QR Code',
+    qrCodeTitle: 'Machine QR Code',
+    qrCodeHint: 'Scan this code at the Fuel Station for quick fuel issue.',
   },
   machineryTypes: {
     Tractor: 'Tractor',
@@ -920,6 +923,12 @@ const en: Translations = {
     driverAutoFilled: 'Driver filled automatically',
     field: 'Field',
     selectField: 'Select field',
+    scanQr: 'Scan QR',
+    scanQrTitle: 'Scan Machine QR Code',
+    scanQrHint: 'Point the camera at the machine QR code',
+    qrMachineFound: 'Machine found: {{name}}',
+    qrMachineNotFound: 'Machine not found',
+    qrScanError: 'Scan error',
   },
   setup: {
     title: 'Company Setup',

@@ -1,7 +1,7 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag } from 'antd';
-import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag, QRCode, Typography } from 'antd';
+import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined, DownloadOutlined, QrcodeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getMachines, createMachine, updateMachine } from '../../api/machinery';
 import type { MachineDto, MachineryType, MachineryStatus } from '../../types/machinery';
@@ -38,6 +38,7 @@ export default function MachineryList() {
   const canCreate = hasRole(['Administrator', 'Manager']);
   const canEdit = hasRole(['Administrator', 'Manager']);
 
+  const [qrMachine, setQrMachine] = useState<MachineDto | null>(null);
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
 
   useEffect(() => {
@@ -141,6 +142,12 @@ export default function MachineryList() {
           <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/machinery/${record.id}`)}>
             {t.machinery.details}
           </Button>
+          <Button
+            size="small"
+            icon={<QrcodeOutlined />}
+            title={t.machinery.showQr}
+            onClick={() => setQrMachine(record)}
+          />
           {canEdit && (
             <Button
               size="small"
@@ -355,6 +362,26 @@ export default function MachineryList() {
             <Input />
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* QR Code modal */}
+      <Modal
+        title={t.machinery.qrCodeTitle}
+        open={qrMachine !== null}
+        onCancel={() => setQrMachine(null)}
+        footer={null}
+        width={280}
+        centered
+      >
+        {qrMachine && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '8px 0' }}>
+            <QRCode value={qrMachine.id} size={200} />
+            <Typography.Text strong style={{ fontSize: 14 }}>{qrMachine.name}</Typography.Text>
+            <Typography.Text type="secondary" style={{ fontSize: 12, textAlign: 'center' }}>
+              {t.machinery.qrCodeHint}
+            </Typography.Text>
+          </div>
+        )}
       </Modal>
     </div>
   );

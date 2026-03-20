@@ -517,6 +517,9 @@ const uk = {
     selectDriver: 'Оберіть водія',
     noDriver: 'Водій не призначений',
     refuelAtStation: 'Заправити на Паливній станції',
+    showQr: 'QR-код',
+    qrCodeTitle: 'QR-код машини',
+    qrCodeHint: 'Скануйте цей код на Паливній станції для швидкої видачі пального.',
   },
   machineryTypes: {
     Tractor: 'Трактор',
@@ -821,6 +824,12 @@ const uk = {
     driverAutoFilled: 'Водія підставлено автоматично',
     field: 'Поле',
     selectField: 'Оберіть поле',
+    scanQr: 'Скан QR',
+    scanQrTitle: 'Сканувати QR-код машини',
+    scanQrHint: 'Наведіть камеру на QR-код машини',
+    qrMachineFound: 'Машину знайдено: {{name}}',
+    qrMachineNotFound: 'Машину не знайдено',
+    qrScanError: 'Помилка сканування',
   },
   grain: {
     title: 'Зерносховище',

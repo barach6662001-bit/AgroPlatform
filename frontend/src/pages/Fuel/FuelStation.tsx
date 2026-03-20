@@ -1,10 +1,11 @@
 import EmptyState from '../../components/EmptyState';
+import QrScanModal from '../../components/QrScanModal';
 import { useEffect, useState } from 'react';
 import {
   Button, Card, Col, DatePicker, Form, Input, InputNumber,
   message, Modal, Progress, Row, Select, Space, Table, Tag, Typography,
 } from 'antd';
-import { PlusOutlined, ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
+import { PlusOutlined, ArrowDownOutlined, ArrowUpOutlined, ScanOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import {
   getFuelTanks,
@@ -48,6 +49,7 @@ export default function FuelStation() {
   const [tankModalOpen, setTankModalOpen] = useState(false);
   const [supplyModalOpen, setSupplyModalOpen] = useState(false);
   const [issueModalOpen, setIssueModalOpen] = useState(false);
+  const [qrScanOpen, setQrScanOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selectedTankId, setSelectedTankId] = useState<string | undefined>();
 
@@ -153,6 +155,23 @@ export default function FuelStation() {
     setIssueModalOpen(true);
   };
 
+  const handleQrScan = (scannedValue: string) => {
+    setQrScanOpen(false);
+    const machine = machines.find(m => m.id === scannedValue);
+    if (!machine) {
+      message.error(t.fuel.qrMachineNotFound);
+      return;
+    }
+    message.success(t.fuel.qrMachineFound.replace('{{name}}', machine.name));
+    issueForm.resetFields();
+    issueForm.setFieldValue('transactionDate', dayjs());
+    issueForm.setFieldValue('machineId', machine.id);
+    if (machine.assignedDriverName) {
+      issueForm.setFieldValue('driverName', machine.assignedDriverName);
+    }
+    setIssueModalOpen(true);
+  };
+
   const txColumns = [
     {
       title: t.fuel.transactionDate,
@@ -230,6 +249,9 @@ export default function FuelStation() {
             </Button>
             <Button icon={<ArrowUpOutlined />} danger onClick={() => openIssue()}>
               {t.fuel.issue}
+            </Button>
+            <Button icon={<ScanOutlined />} onClick={() => setQrScanOpen(true)}>
+              {t.fuel.scanQr}
             </Button>
           </Space>
         }
@@ -464,6 +486,15 @@ export default function FuelStation() {
           </Form.Item>
         </Form>
       </Modal>
+
+      <QrScanModal
+        open={qrScanOpen}
+        title={t.fuel.scanQrTitle}
+        hint={t.fuel.scanQrHint}
+        cancelText={t.common.cancel}
+        onScan={handleQrScan}
+        onCancel={() => setQrScanOpen(false)}
+      />
     </div>
   );
 }
