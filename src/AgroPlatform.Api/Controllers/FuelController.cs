@@ -74,11 +74,12 @@ public class FuelController : ControllerBase
         [FromQuery] Guid? tankId,
         [FromQuery] DateTime? dateFrom,
         [FromQuery] DateTime? dateTo,
+        [FromQuery] Guid? machineId = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 50,
         CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetFuelTransactionsQuery(tankId, dateFrom, dateTo, page, pageSize), cancellationToken);
+        var result = await _sender.Send(new GetFuelTransactionsQuery(tankId, dateFrom, dateTo, machineId, page, pageSize), cancellationToken);
         return Ok(result);
     }
 }
