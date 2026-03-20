@@ -105,12 +105,23 @@ export default function FieldPnl() {
       key: 'estimatedRevenue',
       sorter: (a: FieldPnlDto, b: FieldPnlDto) =>
         (a.estimatedRevenue ?? -1) - (b.estimatedRevenue ?? -1),
-      render: (v: number | undefined) =>
-        v != null ? (
-          <span style={{ color: '#3fb950' }}>{v.toLocaleString()} UAH</span>
-        ) : (
-          <span style={{ color: '#8B949E' }}>—</span>
-        ),
+      render: (v: number | undefined) => {
+        if (v == null) return <span style={{ color: '#8B949E' }}>—</span>;
+        if (pricePerTonne) {
+          return (
+            <span>
+              <span style={{ color: '#8B949E', fontSize: 11, marginRight: 4 }}>{t.economics.estimatedRevenueLabel}</span>
+              <span style={{ color: '#8B949E' }}>{v.toLocaleString()} UAH</span>
+            </span>
+          );
+        }
+        return (
+          <span>
+            <span style={{ color: '#3fb950', fontSize: 11, marginRight: 4 }}>{t.economics.actualRevenue}</span>
+            <span style={{ color: '#3fb950' }}>{v.toLocaleString()} UAH</span>
+          </span>
+        );
+      },
     },
     {
       title: t.economics.netProfit,

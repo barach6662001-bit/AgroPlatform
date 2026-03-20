@@ -24,7 +24,7 @@ export interface CostRecordDto {
 }
 
 /** Identifies one of the six material KPI card types. */
-export type MaterialKpiKey = 'Fertilizers' | 'Seeds' | 'Pesticides' | 'Fuel' | 'Harvest' | 'Total';
+export type MaterialKpiKey = 'Fertilizers' | 'Seeds' | 'Pesticides' | 'Fuel' | 'Lease' | 'Harvest' | 'Total';
 
 /** View-model for a single material KPI card. */
 export interface MaterialKpiItem {

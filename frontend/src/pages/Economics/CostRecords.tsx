@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber, Popconfirm, Card, Divider, Empty } from 'antd';
-import { PlusOutlined, DeleteOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined, HomeOutlined } from '@ant-design/icons';
 import { getCostRecords, getCostSummary, createCostRecord, deleteCostRecord } from '../../api/economics';
 import type { CostSummaryDto } from '../../api/economics';
 import { getBudgets } from '../../api/budgets';
@@ -21,10 +21,11 @@ const { RangePicker } = DatePicker;
 const categoryColors: Record<string, string> = {
   Seeds: 'green', Fertilizers: 'blue', Pesticides: 'orange',
   Fuel: 'volcano', Labor: 'purple', Equipment: 'cyan',
+  Lease: 'gold', Salary: 'magenta', Revenue: 'lime',
   Other: 'default',
 };
 
-const CATEGORIES = ['Seeds', 'Fertilizers', 'Pesticides', 'Fuel', 'Labor', 'Equipment', 'Other'];
+const CATEGORIES = ['Seeds', 'Fertilizers', 'Pesticides', 'Fuel', 'Labor', 'Equipment', 'Lease', 'Salary', 'Other'];
 
 export default function CostRecords() {
   const [result, setResult] = useState<PaginatedResult<CostRecordDto> | null>(null);
@@ -144,6 +145,7 @@ export default function CostRecords() {
     { key: 'Seeds', label: t.materialKpi.seeds, amount: sumByCategory('Seeds'), icon: <AppstoreOutlined /> },
     { key: 'Pesticides', label: t.materialKpi.pesticides, amount: sumByCategory('Pesticides'), icon: <MedicineBoxOutlined /> },
     { key: 'Fuel', label: t.materialKpi.fuel, amount: sumByCategory('Fuel'), icon: <ThunderboltOutlined /> },
+    { key: 'Lease', label: t.costCategories.Lease, amount: sumByCategory('Lease'), icon: <HomeOutlined /> },
     { key: 'Harvest', label: t.materialKpi.harvest, amount: 0, icon: <GiftOutlined /> },
     { key: 'Total', label: t.materialKpi.total, amount: summary?.totalAmount ?? 0, icon: <CalculatorOutlined />, isTotal: true },
   ];
