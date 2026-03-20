@@ -38,9 +38,11 @@ import NotificationsPage from './pages/Notifications/NotificationsPage';
 import AccessDenied from './pages/AccessDenied';
 import NotFound from './pages/NotFound';
 import FuelStation from './pages/Fuel/FuelStation';
+import { useOfflineSync } from './hooks/useOfflineSync';
 
 export default function App() {
   const { lang } = useTranslation();
+  useOfflineSync();
 
   useEffect(() => {
     dayjs.locale(lang === 'uk' ? 'uk' : 'en');

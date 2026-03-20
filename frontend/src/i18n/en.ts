@@ -936,6 +936,15 @@ const en: Translations = {
     welcomeTitle: 'Welcome to AgroTech!',
     welcomeSubtitle: 'Let\'s set up the system. It will take 5 minutes.',
   },
+  offline: {
+    offlineTitle: 'Offline mode',
+    offlineDesc: 'No network connection. Changes are saved locally.',
+    onlineTitle: 'Connection restored',
+    onlineDesc: 'Syncing saved actions…',
+    syncDone: 'Sync completed',
+    syncError: 'Some changes could not be synced',
+    pendingBadge: 'Pending sync: {{count}}',
+  },
 };
 
 export default en;
