@@ -53,3 +53,24 @@ export interface DashboardDto {
   costsByCategory: Record<string, number>;
   costTrend: MonthlyCostTrendDto[];
 }
+
+export interface FuelConsumptionPerMachineDto {
+  machineId: string;
+  machineName: string;
+  machineType: string | null;
+  totalFuelLiters: number;
+  totalAreaHectares: number;
+  litersPerHectare: number;
+  totalHoursWorked: number;
+}
+
+export interface MonthlyFuelTrendDto {
+  year: number;
+  month: number;
+  totalLiters: number;
+}
+
+export interface FuelAnalyticsDto {
+  perMachine: FuelConsumptionPerMachineDto[];
+  monthlyTrend: MonthlyFuelTrendDto[];
+}

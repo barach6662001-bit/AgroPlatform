@@ -32,6 +32,12 @@ export default function Sidebar() {
     { key: '/hr/salary', label: t.nav.salary, style: { padding: '4px 8px' } },
   ];
 
+  const analyticsChildren = [
+    { key: '/analytics/efficiency', label: t.analytics.fieldEfficiency, style: { padding: '4px 8px' } },
+    { key: '/analytics/resources', label: t.analytics.resourceConsumption, style: { padding: '4px 8px' } },
+    { key: '/analytics/fuel', label: t.analytics.fuelAnalytics, style: { padding: '4px 8px' } },
+  ];
+
   const allLeafItems = [
     { key: '/' },
     { key: '/fields' },
@@ -40,7 +46,7 @@ export default function Sidebar() {
     { key: '/fleet' },
     { key: '/fuel' },
     { key: '/grain' },
-    { key: '/analytics/efficiency' },
+    ...analyticsChildren,
     ...storageChildren,
     ...financeChildren,
     ...hrChildren,
@@ -79,7 +85,13 @@ export default function Sidebar() {
       children: hrChildren,
     },
     { type: 'divider' as const },
-    { key: '/analytics/efficiency', label: t.nav.analytics, icon: <LineChartOutlined />, style: { padding: '4px 8px' } },
+    {
+      key: 'analytics-group',
+      label: t.nav.analytics,
+      icon: <LineChartOutlined />,
+      style: { padding: '4px 8px' },
+      children: analyticsChildren,
+    },
     { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined />, style: { padding: '4px 8px' } },
     ...(isAdmin
       ? [
@@ -96,7 +108,7 @@ export default function Sidebar() {
       : []),
   ];
 
-  const groupKeys = new Set(['storage-group', 'finance-group', 'hr-group', 'settings-group']);
+  const groupKeys = new Set(['storage-group', 'finance-group', 'hr-group', 'analytics-group', 'settings-group']);
 
   const selectedKey =
     allLeafItems
@@ -108,7 +120,7 @@ export default function Sidebar() {
           (item.key !== '/' && location.pathname.startsWith(item.key))
       )?.key ?? '/';
 
-  const openKeys = ['storage-group', 'finance-group', 'hr-group', ...(isAdmin ? ['settings-group'] : [])];
+  const openKeys = ['storage-group', 'finance-group', 'hr-group', 'analytics-group', ...(isAdmin ? ['settings-group'] : [])];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>

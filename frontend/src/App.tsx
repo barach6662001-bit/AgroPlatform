@@ -29,6 +29,7 @@ import FieldPnl from './pages/Economics/FieldPnl';
 import BudgetPage from './pages/Economics/BudgetPage';
 import ResourceConsumption from './pages/Analytics/ResourceConsumption';
 import FieldEfficiency from './pages/Analytics/FieldEfficiency';
+import FuelAnalytics from './pages/Analytics/FuelAnalytics';
 import EmployeeList from './pages/HR/EmployeeList';
 import WorkLogPage from './pages/HR/WorkLogPage';
 import SalaryPage from './pages/HR/SalaryPage';
@@ -84,6 +85,7 @@ export default function App() {
             <Route path="/economics/budget" element={<BudgetPage />} />
             <Route path="/analytics/resources" element={<ResourceConsumption />} />
             <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
+            <Route path="/analytics/fuel" element={<FuelAnalytics />} />
             <Route path="/hr/employees" element={<EmployeeList />} />
             <Route path="/hr/worklogs" element={<WorkLogPage />} />
             <Route path="/hr/salary" element={<SalaryPage />} />

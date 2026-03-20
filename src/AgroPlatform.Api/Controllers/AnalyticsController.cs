@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Analytics.Queries.GetDashboard;
 using AgroPlatform.Application.Analytics.Queries.GetFieldEfficiency;
+using AgroPlatform.Application.Analytics.Queries.GetFuelAnalytics;
 using AgroPlatform.Application.Analytics.Queries.GetResourceConsumption;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -68,6 +69,19 @@ public class AnalyticsController : ControllerBase
     public async Task<IActionResult> GetFieldEfficiency(CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new GetFieldEfficiencyQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns fuel analytics: consumption per hectare per machine,
+    /// machine comparison and monthly consumption trend (last 12 months).
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("fuel")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFuelAnalytics(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetFuelAnalyticsQuery(), cancellationToken);
         return Ok(result);
     }
 }

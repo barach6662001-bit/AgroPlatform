@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Analytics.Queries.GetDashboard;
 using AgroPlatform.Application.Analytics.Queries.GetFieldEfficiency;
+using AgroPlatform.Application.Analytics.Queries.GetFuelAnalytics;
 using AgroPlatform.Application.Analytics.Queries.GetResourceConsumption;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
@@ -310,5 +311,141 @@ public class AnalyticsHandlerTests
 
         result.Should().HaveCount(1);
         result[0].FieldName.Should().Be("Active");
+    }
+
+    // ── GetFuelAnalytics ─────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task GetFuelAnalytics_EmptyDb_ReturnsEmptyCollections()
+    {
+        var context = CreateDbContext();
+        var handler = new GetFuelAnalyticsHandler(context);
+
+        var result = await handler.Handle(new GetFuelAnalyticsQuery(), CancellationToken.None);
+
+        result.Should().NotBeNull();
+        result.PerMachine.Should().BeEmpty();
+        result.MonthlyTrend.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetFuelAnalytics_WithFuelLogs_AggregatesPerMachine()
+    {
+        var context = CreateDbContext();
+        var machineId = Guid.NewGuid();
+        context.Machines.Add(new Machine
+        {
+            Id = machineId,
+            Name = "Tractor A",
+            Type = MachineryType.Tractor,
+            FuelType = FuelType.Diesel,
+        });
+        context.FuelLogs.Add(new FuelLog { MachineId = machineId, Date = DateTime.UtcNow.AddDays(-10), Quantity = 100m, FuelType = FuelType.Diesel });
+        context.FuelLogs.Add(new FuelLog { MachineId = machineId, Date = DateTime.UtcNow.AddDays(-5), Quantity = 80m, FuelType = FuelType.Diesel });
+        await context.SaveChangesAsync();
+
+        var handler = new GetFuelAnalyticsHandler(context);
+        var result = await handler.Handle(new GetFuelAnalyticsQuery(), CancellationToken.None);
+
+        result.PerMachine.Should().HaveCount(1);
+        result.PerMachine[0].MachineName.Should().Be("Tractor A");
+        result.PerMachine[0].TotalFuelLiters.Should().Be(180m);
+    }
+
+    [Fact]
+    public async Task GetFuelAnalytics_WithAreaAndFuel_CalculatesLitersPerHectare()
+    {
+        var context = CreateDbContext();
+        var machineId = Guid.NewGuid();
+        var fieldId = Guid.NewGuid();
+        var operationId = Guid.NewGuid();
+
+        context.Machines.Add(new Machine
+        {
+            Id = machineId,
+            Name = "Combine",
+            Type = MachineryType.Combine,
+            FuelType = FuelType.Diesel,
+        });
+        context.Fields.Add(new Field { Id = fieldId, Name = "Field1", AreaHectares = 100m });
+        context.AgroOperations.Add(new AgroOperation
+        {
+            Id = operationId,
+            FieldId = fieldId,
+            OperationType = AgroOperationType.Harvesting,
+            PlannedDate = DateTime.UtcNow.AddDays(-20),
+            AreaProcessed = 100m,
+        });
+        context.AgroOperationMachineries.Add(new AgroOperationMachinery
+        {
+            AgroOperationId = operationId,
+            MachineId = machineId,
+            HoursWorked = 10m,
+        });
+        context.FuelLogs.Add(new FuelLog
+        {
+            MachineId = machineId,
+            Date = DateTime.UtcNow.AddDays(-15),
+            Quantity = 250m,
+            FuelType = FuelType.Diesel,
+        });
+        await context.SaveChangesAsync();
+
+        var handler = new GetFuelAnalyticsHandler(context);
+        var result = await handler.Handle(new GetFuelAnalyticsQuery(), CancellationToken.None);
+
+        result.PerMachine.Should().HaveCount(1);
+        result.PerMachine[0].TotalFuelLiters.Should().Be(250m);
+        result.PerMachine[0].TotalAreaHectares.Should().Be(100m);
+        result.PerMachine[0].LitersPerHectare.Should().Be(2.5m); // 250 / 100
+    }
+
+    [Fact]
+    public async Task GetFuelAnalytics_DeletedFuelLogsExcluded()
+    {
+        var context = CreateDbContext();
+        var machineId = Guid.NewGuid();
+        context.Machines.Add(new Machine
+        {
+            Id = machineId,
+            Name = "Tractor B",
+            Type = MachineryType.Tractor,
+            FuelType = FuelType.Diesel,
+        });
+        context.FuelLogs.Add(new FuelLog { MachineId = machineId, Date = DateTime.UtcNow.AddDays(-1), Quantity = 50m, FuelType = FuelType.Diesel });
+        context.FuelLogs.Add(new FuelLog { MachineId = machineId, Date = DateTime.UtcNow.AddDays(-2), Quantity = 200m, FuelType = FuelType.Diesel, IsDeleted = true });
+        await context.SaveChangesAsync();
+
+        var handler = new GetFuelAnalyticsHandler(context);
+        var result = await handler.Handle(new GetFuelAnalyticsQuery(), CancellationToken.None);
+
+        result.PerMachine.Should().HaveCount(1);
+        result.PerMachine[0].TotalFuelLiters.Should().Be(50m);
+    }
+
+    [Fact]
+    public async Task GetFuelAnalytics_MonthlyTrend_GroupsByMonth()
+    {
+        var context = CreateDbContext();
+        var machineId = Guid.NewGuid();
+        context.Machines.Add(new Machine
+        {
+            Id = machineId,
+            Name = "Tractor C",
+            Type = MachineryType.Tractor,
+            FuelType = FuelType.Diesel,
+        });
+        var now = DateTime.UtcNow;
+        context.FuelLogs.Add(new FuelLog { MachineId = machineId, Date = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc), Quantity = 100m, FuelType = FuelType.Diesel });
+        context.FuelLogs.Add(new FuelLog { MachineId = machineId, Date = new DateTime(now.Year, now.Month, 15, 0, 0, 0, DateTimeKind.Utc), Quantity = 150m, FuelType = FuelType.Diesel });
+        await context.SaveChangesAsync();
+
+        var handler = new GetFuelAnalyticsHandler(context);
+        var result = await handler.Handle(new GetFuelAnalyticsQuery(), CancellationToken.None);
+
+        result.MonthlyTrend.Should().HaveCount(1);
+        result.MonthlyTrend[0].TotalLiters.Should().Be(250m);
+        result.MonthlyTrend[0].Year.Should().Be(now.Year);
+        result.MonthlyTrend[0].Month.Should().Be(now.Month);
     }
 }
