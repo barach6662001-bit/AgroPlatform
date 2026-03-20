@@ -9,10 +9,12 @@ import { useAuthStore } from '../../stores/authStore';
 import { useTranslation, languages } from '../../i18n';
 
 const MOBILE_BREAKPOINT = 768;
+const TABLET_BREAKPOINT = 1024;
 
 export default function AppLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth < TABLET_BREAKPOINT);
   const { email, role, logout } = useAuthStore();
   const navigate = useNavigate();
   const { t, lang, setLang } = useTranslation();
@@ -22,6 +24,12 @@ export default function AppLayout() {
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  useEffect(() => {
+    const h = () => setSidebarCollapsed(window.innerWidth < TABLET_BREAKPOINT);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
   }, []);
 
   const handleLogout = () => {
@@ -52,7 +60,7 @@ export default function AppLayout() {
       {/* Sidebar — desktop only */}
       {!isMobile && (
         <aside style={{
-          width: 220,
+          width: sidebarCollapsed ? 64 : 220,
           flexShrink: 0,
           background: 'var(--bg-surface)',
           borderRight: '1px solid var(--border)',
