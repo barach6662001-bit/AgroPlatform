@@ -22,6 +22,7 @@ public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, Pagina
             .Include(m => m.Batch)
             .AsQueryable();
 
+
         if (request.WarehouseId.HasValue)
             query = query.Where(m => m.WarehouseId == request.WarehouseId.Value);
 
@@ -62,7 +63,13 @@ public class GetMoveHistoryHandler : IRequestHandler<GetMoveHistoryQuery, Pagina
                 BatchCode = m.Batch != null ? m.Batch.Code : null,
                 Note = m.Note,
                 CreatedAtUtc = m.CreatedAtUtc,
-                TotalCost = m.TotalCost
+                TotalCost = m.TotalCost,
+                FieldName = m.OperationId != null
+                    ? _context.AgroOperations
+                        .Where(o => o.Id == m.OperationId)
+                        .Select(o => o.Field.Name)
+                        .FirstOrDefault()
+                    : null
             })
             .ToListAsync(cancellationToken);
 
