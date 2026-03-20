@@ -171,7 +171,7 @@ export default function MachineDetail() {
     .filter((tx) => tx.transactionType === 'Issue')
     .sort((a, b) => new Date(a.transactionDate).getTime() - new Date(b.transactionDate).getTime())
     .slice(-15)
-    .map((l: FuelTransactionDto) => ({ date: formatDate(l.date), [t.machinery.liters]: l.quantity }));
+    .map((l: FuelTransactionDto) => ({ date: formatDate(l.transactionDate), [t.machinery.liters]: l.quantityLiters }));
 
   return (
     <div>
