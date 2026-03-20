@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Card, Descriptions, Table, Button, Spin, message, Row, Col,
-  Statistic, Badge, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag,
+  Statistic, Badge, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag, Typography,
 } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined, ToolOutlined, DownloadOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
@@ -263,6 +264,22 @@ export default function MachineDetail() {
                   precision={1}
                   valueStyle={{ color: '#faad14' }}
                 />
+              </Card>
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+            <Col span={8}>
+              <Card size="small" style={{ background: 'var(--agro-bg-card)', border: '1px solid var(--agro-border)' }}>
+                <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
+                  {t.machinery.nextMaintenance || 'Наступне ТО'}
+                </Typography.Text>
+                <div style={{ fontSize: 20, fontWeight: 600, color: machine.nextMaintenanceDate
+                  ? (dayjs(machine.nextMaintenanceDate).diff(dayjs(), 'day') < 7 ? '#f0883e' : 'var(--agro-text-primary)')
+                  : 'var(--agro-text-secondary)' }}>
+                  {machine.nextMaintenanceDate
+                    ? dayjs(machine.nextMaintenanceDate).format('DD.MM.YYYY')
+                    : '—'}
+                </div>
               </Card>
             </Col>
           </Row>

@@ -18,6 +18,7 @@ export interface MachineDto {
   fuelConsumptionPerHour?: number;
   assignedDriverId?: string;
   assignedDriverName?: string;
+  nextMaintenanceDate?: string | null;
 }
 
 export interface WorkLogDto {

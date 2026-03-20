@@ -519,6 +519,10 @@ const en: Translations = {
     selectDriver: 'Select driver',
     noDriver: 'No driver assigned',
     refuelAtStation: 'Refuel at Fuel Station',
+    nextMaintenance: 'Next Maintenance',
+    maintenanceOverdue: 'Overdue',
+    maintenanceIn: 'In',
+    maintenanceDays: 'days',
   },
   machineryTypes: {
     Tractor: 'Tractor',

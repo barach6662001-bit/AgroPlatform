@@ -517,6 +517,10 @@ const uk = {
     selectDriver: 'Оберіть водія',
     noDriver: 'Водій не призначений',
     refuelAtStation: 'Заправити на Паливній станції',
+    nextMaintenance: 'Наступне ТО',
+    maintenanceOverdue: 'Прострочено',
+    maintenanceIn: 'Через',
+    maintenanceDays: 'дн.',
   },
   machineryTypes: {
     Tractor: 'Трактор',
