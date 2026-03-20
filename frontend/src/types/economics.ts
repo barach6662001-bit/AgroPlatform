@@ -23,6 +23,26 @@ export interface CostRecordDto {
   description?: string;
 }
 
+/** Marginality metrics for a single crop */
+export interface MarginalityItemDto {
+  cropName: string;
+  areaHa: number;
+  /** Actual: actual revenue from harvests */
+  actualRevenue: number;
+  /** Actual: actual costs from cost records */
+  actualCosts: number;
+  /** Actual margin = actualRevenue − actualCosts */
+  actualMargin: number;
+  /** Planned: proportional share of total budget */
+  plannedCosts: number;
+  /** Planned margin (negative of planned costs when no planned revenue) */
+  plannedMargin: number;
+  /** Projected revenue based on area × avg yield × price per tonne */
+  projectedRevenue?: number;
+  /** Projected margin = projectedRevenue − plannedCosts */
+  projectedMargin?: number;
+}
+
 /** Identifies one of the six material KPI card types. */
 export type MaterialKpiKey = 'Fertilizers' | 'Seeds' | 'Pesticides' | 'Fuel' | 'Lease' | 'Harvest' | 'Total';
 

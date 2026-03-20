@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { CostRecordDto, FieldPnlDto } from '../types/economics';
+import type { CostRecordDto, FieldPnlDto, MarginalityItemDto } from '../types/economics';
 import type { PaginatedResult } from '../types/common';
 
 export const getCostRecords = (params?: {
@@ -38,3 +38,9 @@ export const getFieldPnl = (params?: {
   fieldId?: string;
 }) =>
   apiClient.get<FieldPnlDto[]>('/api/economics/field-pnl', { params }).then((r) => r.data);
+
+export const getMarginality = (params?: {
+  year?: number;
+  estimatedPricePerTonne?: number;
+}) =>
+  apiClient.get<MarginalityItemDto[]>('/api/economics/marginality', { params }).then((r) => r.data);
