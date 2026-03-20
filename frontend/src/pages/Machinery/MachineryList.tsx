@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Select, Input, message, Badge, Modal, Form, InputNumber, Tag } from 'antd';
+import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag } from 'antd';
 import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getMachines, createMachine, updateMachine } from '../../api/machinery';
@@ -11,10 +11,8 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { useFleetHub } from '../../hooks/useFleetHub';
 import { getEmployees } from '../../api/hr';
+import EmptyState from '../../components/EmptyState';
 
-const statusColors: Record<string, string> = {
-  Active: 'success', UnderRepair: 'warning', Decommissioned: 'error',
-};
 
 export default function MachineryList() {
   const [result, setResult] = useState<PaginatedResult<MachineDto> | null>(null);
@@ -124,7 +122,10 @@ export default function MachineryList() {
     { title: t.machinery.year, dataIndex: 'year', key: 'year', render: (v: number) => v || '—' },
     {
       title: t.machinery.status, dataIndex: 'status', key: 'status',
-      render: (v: MachineryStatus) => <Badge status={statusColors[v] as 'success' | 'warning' | 'error'} text={t.machineryStatuses[v as keyof typeof t.machineryStatuses] || v} />,
+      render: (v: MachineryStatus) => {
+        const color = v === 'Active' ? 'green' : v === 'UnderRepair' ? 'orange' : 'default';
+        return <Tag color={color}>{t.machineryStatuses[v as keyof typeof t.machineryStatuses] || v}</Tag>;
+      },
     },
     {
       title: t.machinery.assignedDriver,
@@ -198,6 +199,13 @@ export default function MachineryList() {
           pageSize,
           total: result?.totalCount ?? 0,
           onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+        }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.machinery.noMachinery || 'Ще немає техніки. Додайте першу'}
+            actionLabel={canCreate ? t.machinery.createMachine : undefined}
+            onAction={canCreate ? () => setModalOpen(true) : undefined}
+          />,
         }}
       />
 

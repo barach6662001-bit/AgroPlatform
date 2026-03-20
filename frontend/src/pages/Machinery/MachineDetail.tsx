@@ -1,3 +1,4 @@
+import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -275,7 +276,7 @@ export default function MachineDetail() {
           columns={workLogColumns}
           rowKey="id"
           pagination={{ pageSize: 10 }}
-          locale={{ emptyText: t.machinery.workLogEmpty }}
+          locale={{ emptyText: <EmptyState message={t.machinery.workLogEmpty || 'Напрацювань немає'} actionLabel={t.machinery.logWork} onAction={() => setWorkLogOpen(true)} /> }}
         />
         {workChartData.length > 1 && (
           <div style={{ marginTop: 16 }}>
@@ -331,7 +332,7 @@ export default function MachineDetail() {
           columns={maintenanceColumns}
           rowKey="id"
           pagination={{ pageSize: 10 }}
-          locale={{ emptyText: t.maintenance.noRecords }}
+          locale={{ emptyText: <EmptyState message={t.maintenance.noRecords || 'Записів ТО немає'} actionLabel={canEdit ? t.maintenance.addRecord : undefined} onAction={canEdit ? () => setMaintenanceOpen(true) : undefined} /> }}
         />
       </Card>
 

@@ -1,3 +1,4 @@
+import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
 import { Table, Select, DatePicker, message, Tag, Space } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
@@ -166,6 +167,11 @@ export default function StockMovements() {
           pageSize,
           total: result?.totalCount ?? 0,
           onChange: (p) => setPage(p),
+        }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.warehouses.noMovements || 'Ще немає рухів товарів'}
+          />,
         }}
       />
     </div>

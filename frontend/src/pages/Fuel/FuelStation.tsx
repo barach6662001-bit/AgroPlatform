@@ -1,3 +1,4 @@
+import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
 import {
   Button, Card, Col, DatePicker, Form, Input, InputNumber,
@@ -321,6 +322,11 @@ export default function FuelStation() {
         loading={loadingTx}
         pagination={{ pageSize: 20, showSizeChanger: false }}
         scroll={{ x: 800 }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.fuel.noTransactions || 'Ще немає заправок'}
+          />,
+        }}
       />
 
       {/* Add tank modal */}
