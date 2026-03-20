@@ -819,6 +819,11 @@ const uk = {
     reasonProcessing: 'Переробка',
     reasonTransfer: 'Переміщення',
     reasonOther: 'Інше',
+    issueQuantity: 'Кількість (т)',
+    ownershipOwn: 'Власне',
+    ownershipConsignment: 'Консигнація',
+    ownershipStorage: 'Зберігання',
+    ownershipOther: 'Інше',
   },
   hr: {
     employeesTitle: 'Співробітники',
