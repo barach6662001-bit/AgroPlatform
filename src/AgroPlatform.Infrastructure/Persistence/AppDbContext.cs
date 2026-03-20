@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Economics;
+
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.Fuel;
 using AgroPlatform.Domain.GrainStorage;
@@ -58,6 +59,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
     public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
+    public DbSet<Sale> Sales => Set<Sale>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -98,5 +100,6 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == _tenantId);
         builder.Entity<WorkLog>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
         builder.Entity<SalaryPayment>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
+        builder.Entity<Sale>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
     }
 }

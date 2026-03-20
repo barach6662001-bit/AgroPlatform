@@ -46,6 +46,7 @@ public interface IAppDbContext
     DbSet<Employee> Employees { get; }
     DbSet<WorkLog> WorkLogs { get; }
     DbSet<SalaryPayment> SalaryPayments { get; }
+    DbSet<Sale> Sales { get; }
     DbSet<FuelTank> FuelTanks { get; }
     DbSet<FuelTransaction> FuelTransactions { get; }
 
