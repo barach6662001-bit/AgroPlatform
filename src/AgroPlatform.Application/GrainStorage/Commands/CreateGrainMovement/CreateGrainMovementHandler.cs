@@ -31,6 +31,7 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
             Reason = request.Reason,
             Notes = request.Notes,
             PricePerTon = request.PricePerTon,
+            BuyerName = request.BuyerName,
         };
 
         if (request.MovementType == "Out" && request.PricePerTon.HasValue)

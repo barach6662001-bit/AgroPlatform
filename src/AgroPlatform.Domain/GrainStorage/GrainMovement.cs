@@ -13,4 +13,5 @@ public class GrainMovement : AuditableEntity
     public string? Notes { get; set; }
     public decimal? PricePerTon { get; set; }
     public decimal? TotalRevenue { get; set; }
+    public string? BuyerName { get; set; }
 }

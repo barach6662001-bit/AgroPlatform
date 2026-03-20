@@ -164,6 +164,7 @@ export default function GrainBatchList() {
       await createGrainMovement(values.grainBatchId, {
         movementType: 'Out',
         quantityTons: values.quantityTons,
+        buyerName: values.buyerName,
         reason: values.reason,
         pricePerTon: values.pricePerTon,
         movementDate: new Date().toISOString(),
@@ -573,6 +574,9 @@ export default function GrainBatchList() {
               addonAfter="т"
               style={{ width: '100%' }}
             />
+          </Form.Item>
+          <Form.Item name="buyerName" label={t.grain.buyer}>
+            <Input placeholder={t.grain.buyerPlaceholder} />
           </Form.Item>
           <Form.Item name="reason" label={t.grain.exportReason}>
             <Select

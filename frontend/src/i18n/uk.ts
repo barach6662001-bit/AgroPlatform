@@ -868,6 +868,8 @@ const uk = {
     reasonTransfer: 'Переміщення',
     reasonOther: 'Інше',
     issueQuantity: 'Кількість (т)',
+    buyer: 'Покупець',
+    buyerPlaceholder: 'Назва покупця',
     ownershipOwn: 'Власне',
     ownershipConsignment: 'Консигнація',
     ownershipStorage: 'Зберігання',

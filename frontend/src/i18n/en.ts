@@ -838,6 +838,8 @@ const en: Translations = {
     reasonTransfer: 'Transfer',
     reasonOther: 'Other',
     issueQuantity: 'Quantity (t)',
+    buyer: 'Buyer',
+    buyerPlaceholder: 'Buyer name',
     ownershipOwn: 'Own',
     ownershipConsignment: 'Consignment',
     ownershipStorage: 'Storage',
