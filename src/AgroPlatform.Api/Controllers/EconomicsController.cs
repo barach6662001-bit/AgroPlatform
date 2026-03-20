@@ -2,6 +2,7 @@ using AgroPlatform.Application.Economics.Commands.CreateCostRecord;
 using AgroPlatform.Application.Economics.Commands.DeleteCostRecord;
 using AgroPlatform.Application.Economics.DTOs;
 using AgroPlatform.Application.Economics.Queries.ExportCostRecords;
+using AgroPlatform.Application.Economics.Queries.GetBreakEven;
 using AgroPlatform.Application.Economics.Queries.GetCostRecords;
 using AgroPlatform.Application.Economics.Queries.GetCostSummary;
 using AgroPlatform.Application.Economics.Queries.GetFieldPnl;
@@ -94,6 +95,20 @@ public class EconomicsController : ControllerBase
     {
         var result = await _sender.Send(
             new GetFieldPnlQuery(year, estimatedPricePerTonne, fieldId),
+            cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns the minimum yield (t/ha) each field needs to break even at the given price.</summary>
+    [HttpGet("break-even")]
+    [ProducesResponseType(typeof(IReadOnlyList<BreakEvenFieldDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetBreakEven(
+        [FromQuery] decimal pricePerTonne,
+        [FromQuery] int? year,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new GetBreakEvenQuery(pricePerTonne, year),
             cancellationToken);
         return Ok(result);
     }

@@ -22,6 +22,7 @@ export default function Sidebar() {
   const financeChildren = [
     { key: '/economics', label: t.nav.costs, style: { padding: '4px 8px' } },
     { key: '/economics/pnl', label: t.nav.pnl, style: { padding: '4px 8px' } },
+    { key: '/economics/break-even', label: t.nav.breakEven, style: { padding: '4px 8px' } },
     { key: '/economics/budget', label: t.nav.budget, style: { padding: '4px 8px' } },
     { key: '/fields/leases', label: t.nav.leases, style: { padding: '4px 8px' } },
   ];

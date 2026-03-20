@@ -12,6 +12,16 @@ export interface FieldPnlDto {
   revenuePerHectare?: number;
 }
 
+export interface BreakEvenFieldDto {
+  fieldId: string;
+  fieldName: string;
+  areaHectares: number;
+  currentCrop?: string;
+  totalCosts: number;
+  /** Minimum yield (t/ha) required to cover all costs. Null when costs are zero or area is zero. */
+  minYieldPerHectare?: number;
+}
+
 export interface CostRecordDto {
   id: string;
   category: string;

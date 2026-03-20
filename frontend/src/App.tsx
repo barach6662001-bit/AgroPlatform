@@ -27,6 +27,7 @@ import FleetMap from './pages/Fleet/FleetMap';
 import CostRecords from './pages/Economics/CostRecords';
 import FieldPnl from './pages/Economics/FieldPnl';
 import BudgetPage from './pages/Economics/BudgetPage';
+import BreakEvenCalculator from './pages/Economics/BreakEvenCalculator';
 import ResourceConsumption from './pages/Analytics/ResourceConsumption';
 import FieldEfficiency from './pages/Analytics/FieldEfficiency';
 import EmployeeList from './pages/HR/EmployeeList';
@@ -82,6 +83,7 @@ export default function App() {
             <Route path="/economics" element={<CostRecords />} />
             <Route path="/economics/pnl" element={<FieldPnl />} />
             <Route path="/economics/budget" element={<BudgetPage />} />
+            <Route path="/economics/break-even" element={<BreakEvenCalculator />} />
             <Route path="/analytics/resources" element={<ResourceConsumption />} />
             <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
             <Route path="/hr/employees" element={<EmployeeList />} />
