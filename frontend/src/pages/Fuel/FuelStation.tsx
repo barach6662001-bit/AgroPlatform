@@ -1,3 +1,4 @@
+import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
 import {
   Button, Card, Col, DatePicker, Form, Input, InputNumber,
@@ -19,6 +20,7 @@ import type { MachineDto } from '../../types/machinery';
 import type { FieldDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { formatDate } from '../../utils/dateFormat';
 
 const { Option } = Select;
 
@@ -156,7 +158,7 @@ export default function FuelStation() {
       title: t.fuel.transactionDate,
       dataIndex: 'transactionDate',
       key: 'transactionDate',
-      render: (v: string) => new Date(v).toLocaleDateString('uk-UA'),
+      render: (v: string) => formatDate(v),
       width: 110,
     },
     {
@@ -320,6 +322,11 @@ export default function FuelStation() {
         loading={loadingTx}
         pagination={{ pageSize: 20, showSizeChanger: false }}
         scroll={{ x: 800 }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.fuel.noTransactions || 'Ще немає заправок'}
+          />,
+        }}
       />
 
       {/* Add tank modal */}

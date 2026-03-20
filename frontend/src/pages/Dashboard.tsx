@@ -1,163 +1,91 @@
 import { useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
-import { Row, Col, Card, Spin, message, Typography, Table, Tag, List, Badge } from 'antd';
+import { Row, Col, Card, Spin, message, Typography, Table, Tag, List, Button, Space } from 'antd';
 import {
-  AimOutlined,
-  CarOutlined,
   ToolOutlined,
   DollarOutlined,
-  InboxOutlined,
-  ClockCircleOutlined,
   WarningOutlined,
   CloseCircleOutlined,
   InfoCircleOutlined,
+  ClockCircleOutlined,
+  BankOutlined,
+  FireOutlined,
 } from '@ant-design/icons';
 import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
   XAxis,
   YAxis,
   CartesianGrid,
   LineChart,
   Line,
   ResponsiveContainer,
+  Tooltip,
 } from 'recharts';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useNavigate } from 'react-router-dom';
 import { getDashboard } from '../api/analytics';
 import { getFields } from '../api/fields';
-import { getMachines } from '../api/machinery';
 import { getNotifications, type NotificationDto } from '../api/notifications';
-import { getGrainSummary, type GrainSummaryItem } from '../api/grain';
 import type { DashboardDto } from '../types/analytics';
 import type { FieldDto } from '../types/field';
-import type { MachineDto } from '../types/machinery';
 import PageHeader from '../components/PageHeader';
 import { useTranslation } from '../i18n';
-import { CHART_COLORS } from '../theme/darkTheme';
 
 dayjs.extend(relativeTime);
 
 const CARD = { background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12 };
 const SECTION_GAP = { marginTop: 24 };
+const ONBOARDING_THRESHOLD_FIELDS = 3;
 
-interface StatCardProps {
-  label: string;
-  value: ReactNode;
-  subtitle?: string;
-  icon?: ReactNode;
-}
-
-function StatCard({ label, value, subtitle, icon }: StatCardProps) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <div
-      style={{
-        background: 'var(--bg-surface)',
-        border: `1px solid ${hovered ? 'var(--border-strong)' : 'var(--border)'}`,
-        borderRadius: 'var(--radius-lg)',
-        padding: '16px 20px',
-        position: 'relative',
-        overflow: 'hidden',
-        transition: 'border-color 0.15s ease',
-        cursor: 'default',
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-        <span style={{ fontSize: 11, color: 'var(--text-tertiary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-          {label}
-        </span>
-        {icon && (
-          <div style={{
-            width: 28,
-            height: 28,
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-md)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-secondary)',
-            fontSize: 13,
-          }}>
-            {icon}
-          </div>
-        )}
-      </div>
-      <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.5px', lineHeight: 1 }}>
-        {value}
-      </div>
-      {subtitle && (
-        <div style={{ marginTop: 6, fontSize: 12, color: 'var(--text-tertiary)' }}>
-          {subtitle}
-        </div>
-      )}
-    </div>
-  );
-}
+const { Text } = Typography;
 
 export default function Dashboard() {
   const [data, setData] = useState<DashboardDto | null>(null);
   const [fields, setFields] = useState<FieldDto[]>([]);
-  const [machines, setMachines] = useState<MachineDto[]>([]);
   const [notifications, setNotifications] = useState<NotificationDto[]>([]);
-  const [grainSummary, setGrainSummary] = useState<GrainSummaryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     Promise.all([
       getDashboard(),
       getFields({ pageSize: 8 }),
-      getMachines({ pageSize: 8 }),
-      getNotifications({ pageSize: 6 }),
+      getNotifications({ pageSize: 8 }),
     ])
-      .then(([dash, fieldsRes, machinesRes, notifs]) => {
+      .then(([dash, fieldsRes, notifs]) => {
         setData(dash);
         setFields(fieldsRes.items);
-        setMachines(machinesRes.items);
         setNotifications(notifs);
       })
       .catch(() => message.error(t.dashboard.loadError))
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    getGrainSummary().then(setGrainSummary).catch(() => {});
-  }, []);
-
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />;
   if (!data) return null;
 
-  // ── Chart data ───────────────────────────────────────────────────────────
-  const operationsData = Object.entries(data.operationsByType).map(([type, count]) => ({
-    name: t.operationTypes[type as keyof typeof t.operationTypes] || type,
-    value: count,
-  }));
-
-  const areaData = Object.entries(data.areaByCrop).map(([crop, area]) => ({
-    name: t.crops[crop as keyof typeof t.crops] || crop,
-    area: Number(area.toFixed(1)),
-  }));
-
+  // ── Chart data ────────────────────────────────────────────────────────────
   const costTrendData = data.costTrend.map((item) => ({
     name: `${item.year}-${String(item.month).padStart(2, '0')}`,
     cost: item.totalAmount,
   }));
 
-  // ── Derived KPI ──────────────────────────────────────────────────────────
-  const cropEntries = Object.entries(data.areaByCrop).sort(([, a], [, b]) => b - a);
-  const topCrop = cropEntries[0];
-  const topCropName = topCrop
-    ? (t.crops[topCrop[0] as keyof typeof t.crops] || topCrop[0])
-    : '—';
-  const cropCount = cropEntries.length;
+  // ── Monthly KPIs ──────────────────────────────────────────────────────────
+  const now = dayjs();
+  const currentMonthTrend = data.costTrend.find(
+    (tr) => tr.year === now.year() && tr.month === now.month() + 1,
+  );
+  const monthlyExpenses = currentMonthTrend?.totalAmount ?? 0;
+  // Revenue model not yet implemented; placeholder until a revenue entity is added.
+  const monthlyRevenue = 0;
+  const monthlyProfit = monthlyRevenue - monthlyExpenses;
+
+  // ── Notification icon ─────────────────────────────────────────────────────
+  const notifIcon = (type: string) => {
+    if (type === 'warning') return <WarningOutlined style={{ color: 'var(--warning)', fontSize: 16 }} />;
+    if (type === 'error') return <CloseCircleOutlined style={{ color: 'var(--error)', fontSize: 16 }} />;
+    return <InfoCircleOutlined style={{ color: 'var(--info)', fontSize: 16 }} />;
+  };
 
   // ── Field status columns ──────────────────────────────────────────────────
   const fieldColumns = [
@@ -166,7 +94,7 @@ export default function Dashboard() {
       dataIndex: 'name',
       key: 'name',
       ellipsis: true,
-      render: (v: string) => <Typography.Text style={{ color: 'var(--text-primary)' }}>{v}</Typography.Text>,
+      render: (v: string) => <Text style={{ color: 'var(--text-primary)' }}>{v}</Text>,
     },
     {
       title: t.fields.currentCrop,
@@ -181,103 +109,91 @@ export default function Dashboard() {
       title: t.fields.area,
       dataIndex: 'areaHectares',
       key: 'areaHectares',
-      render: (v: number) => <Typography.Text style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{v.toFixed(1)} ha</Typography.Text>,
+      render: (v: number) => <Text style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{v.toFixed(1)} ha</Text>,
     },
   ];
-
-  // ── Machinery status columns ──────────────────────────────────────────────
-  const statusColor: Record<string, string> = {
-    Active: 'green',
-    UnderRepair: 'orange',
-    Decommissioned: 'red',
-  };
-
-  const machineryColumns = [
-    {
-      title: t.machinery.name,
-      dataIndex: 'name',
-      key: 'name',
-      ellipsis: true,
-      render: (v: string) => <Typography.Text style={{ color: 'var(--text-primary)' }}>{v}</Typography.Text>,
-    },
-    {
-      title: t.machinery.type,
-      dataIndex: 'type',
-      key: 'type',
-      render: (v: string) => <Typography.Text style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.machineryTypes[v as keyof typeof t.machineryTypes] || v}</Typography.Text>,
-    },
-    {
-      title: t.machinery.status,
-      dataIndex: 'status',
-      key: 'status',
-      render: (s: string) => (
-        <Tag color={statusColor[s] || 'default'} style={{ borderRadius: 4, fontSize: 11 }}>
-          {t.machineryStatuses[s as keyof typeof t.machineryStatuses] || s}
-        </Tag>
-      ),
-    },
-  ];
-
-  // ── Notification icon ─────────────────────────────────────────────────────
-  const notifIcon = (type: string) => {
-    if (type === 'warning') return <WarningOutlined style={{ color: 'var(--warning)', fontSize: 16 }} />;
-    if (type === 'error') return <CloseCircleOutlined style={{ color: 'var(--error)', fontSize: 16 }} />;
-    return <InfoCircleOutlined style={{ color: 'var(--info)', fontSize: 16 }} />;
-  };
-
-  const hasChartData = operationsData.length > 0 || areaData.length > 0 || costTrendData.length > 0;
 
   return (
     <div className="page-enter">
       <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
 
-      {/* KPI Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-        gap: 12,
-        marginBottom: 24,
-      }}>
-        <StatCard
-          label={t.dashboard.fields}
-          value={data.totalFields}
-          subtitle={`${data.totalAreaHectares.toFixed(0)} ha ${t.dashboard.areaLabel}`}
-          icon={<AimOutlined />}
-        />
-        <StatCard
-          label={t.dashboard.activeMachinery}
-          value={<>{data.activeMachines}<span style={{ fontSize: 16, color: 'var(--text-tertiary)', fontWeight: 400 }}>/{data.totalMachines}</span></>}
-          subtitle={`${cropCount} ${t.dashboard.cropTypes}`}
-          icon={<CarOutlined />}
-        />
-        <StatCard
-          label={t.dashboard.warehouses}
-          value={data.totalWarehouseItems}
-          icon={<InboxOutlined />}
-        />
-        <StatCard
-          label={t.dashboard.cropStatus}
-          value={Object.keys(data.areaByCrop).length}
-          subtitle={topCropName !== '—' ? topCropName : t.dashboard.cropTypes}
-          icon={<ToolOutlined />}
-        />
-        <StatCard
-          label={t.dashboard.area}
-          value={<>{data.totalAreaHectares.toFixed(1)}<span style={{ fontSize: 14, color: 'var(--text-tertiary)', marginLeft: 4 }}>ha</span></>}
-        />
-        <StatCard
-          label={t.dashboard.hoursWorked}
-          value={<>{data.totalHoursWorked.toFixed(1)}<span style={{ fontSize: 14, color: 'var(--text-tertiary)', marginLeft: 4 }}>h</span></>}
-          icon={<ClockCircleOutlined />}
-        />
-        <StatCard
-          label={t.dashboard.costs}
-          value={<>{data.totalCosts.toFixed(0)}<span style={{ fontSize: 14, color: 'var(--text-tertiary)', marginLeft: 4 }}>₴</span></>}
-          icon={<DollarOutlined />}
-        />
-      </div>
+      {/* KPI Section — 4 cards */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={CARD}>
+            <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              {t.dashboard.totalArea}
+            </Text>
+            <div style={{ fontSize: 28, fontWeight: 600, color: 'var(--text-primary)', marginTop: 4 }}>
+              {data.totalAreaHectares.toFixed(0)}{' '}
+              <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>га</span>
+            </div>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={CARD}>
+            <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              {t.dashboard.monthlyExpenses}
+            </Text>
+            <div style={{ fontSize: 28, fontWeight: 600, color: 'var(--text-primary)', marginTop: 4 }}>
+              {monthlyExpenses.toFixed(0)}{' '}
+              <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>₴</span>
+            </div>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={CARD}>
+            <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              {t.dashboard.monthlyRevenue}
+            </Text>
+            <div style={{ fontSize: 28, fontWeight: 600, color: 'var(--text-primary)', marginTop: 4 }}>
+              {monthlyRevenue.toFixed(0)}{' '}
+              <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>₴</span>
+            </div>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={CARD}>
+            <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              {t.dashboard.monthlyProfit}
+            </Text>
+            <div style={{
+              fontSize: 28, fontWeight: 600,
+              color: monthlyProfit >= 0 ? 'var(--success)' : 'var(--error)',
+              marginTop: 4,
+            }}>
+              {monthlyProfit.toFixed(0)}{' '}
+              <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>₴</span>
+            </div>
+          </Card>
+        </Col>
+      </Row>
 
-      {/* Alerts section */}
+      {/* Quick Actions */}
+      <Row gutter={12} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} md={6}>
+          <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>
+            {t.dashboard.quickOperation}
+          </Button>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>
+            {t.dashboard.quickFuel}
+          </Button>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>
+            {t.dashboard.quickGrain}
+          </Button>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>
+            {t.dashboard.quickCost}
+          </Button>
+        </Col>
+      </Row>
+
+      {/* Alerts */}
       {(data.underRepairMachines > 0 || data.pendingOperations > 0) && (
         <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
           {data.underRepairMachines > 0 && (
@@ -303,10 +219,70 @@ export default function Dashboard() {
         </Row>
       )}
 
-      {/* Charts */}
-      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
-        {costTrendData.length > 0 && (
-          <Col xs={24} lg={8}>
+      {/* Fields Status + Activity Feed */}
+      <Row gutter={[16, 16]} style={SECTION_GAP}>
+        {/* Left: Fields status */}
+        <Col xs={24} xl={14}>
+          <Card
+            title={
+              <Text strong style={{ color: 'var(--text-primary)' }}>
+                {t.dashboard.fieldsStatus}
+              </Text>
+            }
+            style={CARD}
+            styles={{ body: { padding: 0 } }}
+          >
+            <Table
+              dataSource={fields}
+              columns={fieldColumns}
+              rowKey="id"
+              size="small"
+              pagination={false}
+              locale={{ emptyText: <Text style={{ color: 'var(--text-secondary)' }}>{t.dashboard.noFieldsData}</Text> }}
+              scroll={{ x: true }}
+            />
+          </Card>
+        </Col>
+
+        {/* Right: Activity feed */}
+        <Col xs={24} xl={10}>
+          <Card
+            title={
+              <Text strong style={{ color: 'var(--text-primary)' }}>
+                {t.dashboard.activityFeed}
+              </Text>
+            }
+            style={CARD}
+          >
+            {notifications.length === 0 ? (
+              <Text style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
+                {t.dashboard.noActivity}
+              </Text>
+            ) : (
+              <List
+                dataSource={notifications.slice(0, 8)}
+                split={false}
+                renderItem={(n) => (
+                  <List.Item style={{ padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
+                    <Space>
+                      {notifIcon(n.type)}
+                      <Text type="secondary" style={{ fontSize: 11 }}>
+                        {dayjs(n.createdAtUtc).format('HH:mm')}
+                      </Text>
+                      <Text style={{ fontSize: 13 }}>{n.title}</Text>
+                    </Space>
+                  </List.Item>
+                )}
+              />
+            )}
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Cost Trend Chart — only when data is available */}
+      {costTrendData.length > 0 && (
+        <Row gutter={[16, 16]} style={SECTION_GAP}>
+          <Col xs={24} lg={12}>
             <Card title={t.dashboard.costTrend} style={CARD}>
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={costTrendData} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
@@ -319,233 +295,8 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </Card>
           </Col>
-        )}
-
-        {operationsData.length > 0 && (
-          <Col xs={24} lg={8}>
-            <Card title={t.dashboard.operationsByType}>
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie data={operationsData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                    {operationsData.map((_, index) => (
-                      <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        )}
-
-        {areaData.length > 0 && (
-          <Col xs={24} lg={8}>
-            <Card title={t.dashboard.areaByCrop}>
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie data={areaData} dataKey="area" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                    {areaData.map((_, index) => (
-                      <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        )}
-
-        {!hasChartData && (
-          <Col span={24}>
-            <Card style={CARD}>
-              <Typography.Text type="secondary">{t.dashboard.noChartData}</Typography.Text>
-            </Card>
-          </Col>
-        )}
-      </Row>
-
-      {/* ═══ ZONE 3: OPERATIONS STATUS  +  ZONE 4: ACTIVITY FEED ════════════ */}
-      <Row gutter={[16, 16]} style={SECTION_GAP}>
-        {/* Left: status tables */}
-        <Col xs={24} xl={14}>
-          <Row gutter={[16, 16]}>
-            {/* Fields Status */}
-            <Col span={24}>
-              <Card
-                title={
-                  <Typography.Text strong style={{ color: 'var(--text-primary)' }}>
-                    {t.dashboard.fieldsStatus}
-                  </Typography.Text>
-                }
-                style={CARD}
-                styles={{ body: { padding: 0 } }}
-              >
-                <Table
-                  dataSource={fields}
-                  columns={fieldColumns}
-                  rowKey="id"
-                  size="small"
-                  pagination={false}
-                  locale={{ emptyText: <Typography.Text style={{ color: 'var(--text-secondary)' }}>{t.dashboard.noFieldsData}</Typography.Text> }}
-                  scroll={{ x: true }}
-                />
-              </Card>
-            </Col>
-
-            {/* Machinery Status */}
-            <Col span={24}>
-              <Card
-                title={
-                  <Typography.Text strong style={{ color: 'var(--text-primary)' }}>
-                    {t.dashboard.machineryStatus}
-                  </Typography.Text>
-                }
-                style={CARD}
-                styles={{ body: { padding: 0 } }}
-              >
-                <Table
-                  dataSource={machines}
-                  columns={machineryColumns}
-                  rowKey="id"
-                  size="small"
-                  pagination={false}
-                  locale={{ emptyText: <Typography.Text style={{ color: 'var(--text-secondary)' }}>{t.dashboard.noMachineryData}</Typography.Text> }}
-                  scroll={{ x: true }}
-                />
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-
-        {/* Right: warehouse overview + activity feed */}
-        <Col xs={24} xl={10}>
-          <Row gutter={[16, 16]}>
-            {/* Warehouse Overview */}
-            <Col span={24}>
-              <Card
-                title={
-                  <Typography.Text strong style={{ color: 'var(--text-primary)' }}>
-                    {t.dashboard.warehouseOverview}
-                  </Typography.Text>
-                }
-                style={CARD}
-                styles={{ body: { padding: 0 } }}
-              >
-                <Table
-                  dataSource={data.topStockItems.slice(0, 6)}
-                  rowKey="itemId"
-                  size="small"
-                  pagination={false}
-                  locale={{ emptyText: <Typography.Text style={{ color: 'var(--text-secondary)' }}>—</Typography.Text> }}
-                  columns={[
-                    {
-                      title: t.warehouses.item,
-                      dataIndex: 'itemName',
-                      key: 'itemName',
-                      ellipsis: true,
-                      render: (v: string) => <Typography.Text style={{ color: 'var(--text-primary)', fontSize: 13 }}>{v}</Typography.Text>,
-                    },
-                    {
-                      title: t.warehouses.balance,
-                      key: 'balance',
-                      render: (_: unknown, r: { totalBalance: number; baseUnit: string }) => (
-                        <Typography.Text style={{ color: 'var(--text-secondary)', fontSize: 12 }}>
-                          {r.totalBalance.toFixed(1)} {r.baseUnit}
-                        </Typography.Text>
-                      ),
-                    },
-                  ]}
-                />
-              </Card>
-            </Col>
-
-            {/* Activity Feed */}
-            <Col span={24}>
-              <Card
-                title={
-                  <Typography.Text strong style={{ color: 'var(--text-primary)' }}>
-                    {t.dashboard.activityFeed}
-                  </Typography.Text>
-                }
-                style={CARD}
-              >
-                {notifications.length === 0 ? (
-                  <Typography.Text style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
-                    {t.dashboard.noActivity}
-                  </Typography.Text>
-                ) : (
-                  <List
-                    dataSource={notifications.slice(0, 6)}
-                    split={false}
-                    renderItem={(item) => (
-                      <List.Item
-                        style={{ padding: '8px 0', borderBottom: '1px solid var(--border)', alignItems: 'flex-start' }}
-                        extra={!item.isRead ? <Badge dot color="var(--accent)" style={{ marginTop: 6 }} /> : null}
-                      >
-                        <List.Item.Meta
-                          avatar={notifIcon(item.type)}
-                          title={
-                            <Typography.Text style={{ fontSize: 13, color: item.isRead ? 'var(--text-secondary)' : 'var(--text-primary)' }}>
-                              {item.title}
-                            </Typography.Text>
-                          }
-                          description={
-                            <Typography.Text style={{ color: 'var(--text-secondary)', fontSize: 11 }}>
-                              <ClockCircleOutlined style={{ marginRight: 4 }} />
-                              {dayjs(item.createdAtUtc).fromNow()}
-                            </Typography.Text>
-                          }
-                        />
-                      </List.Item>
-                    )}
-                  />
-                )}
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-
-      {/* Grain Summary */}
-      <Card
-        title={
-          <span>
-            🌾 {t.dashboard.grainSummary}
-            <span style={{ color: 'var(--text-tertiary)', fontSize: 12, marginLeft: 8 }}>
-              {t.dashboard.allStorages}
-            </span>
-          </span>
-        }
-        style={{ marginTop: 16, ...CARD }}
-      >
-        {grainSummary.length === 0 ? (
-          <Typography.Text style={{ color: 'var(--text-secondary)' }}>{t.dashboard.noGrainData}</Typography.Text>
-        ) : (
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            {grainSummary.map(item => (
-              <div key={item.grainType} style={{
-                background: 'var(--bg-elevated)',
-                border: '1px solid var(--border)',
-                borderRadius: 8,
-                padding: '12px 20px',
-                minWidth: 150,
-              }}>
-                <div style={{ color: 'var(--text-tertiary)', fontSize: 12, marginBottom: 4 }}>
-                  {item.grainType}
-                </div>
-                <div style={{ color: 'var(--text-primary)', fontSize: 24, fontWeight: 600 }}>
-                  {item.totalTons.toFixed(1)}
-                  <span style={{ color: 'var(--text-tertiary)', fontSize: 13, marginLeft: 4 }}>т</span>
-                </div>
-                <div style={{ color: 'var(--text-disabled)', fontSize: 11, marginTop: 2 }}>
-                  {item.batchCount} {t.grain.batches}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </Card>
+        </Row>
+      )}
     </div>
   );
 }
