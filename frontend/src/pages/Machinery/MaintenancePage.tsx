@@ -7,6 +7,7 @@ import { ArrowLeftOutlined, PlusOutlined, DownloadOutlined } from '@ant-design/i
 import { getMaintenanceRecords, addMaintenanceRecord, exportMaintenanceRecords, type MaintenanceRecordDto } from '../../api/maintenance';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { formatDate } from '../../utils/dateFormat';
 
 const MAINTENANCE_TYPES = ['Scheduled', 'Repair', 'Inspection'];
 
@@ -88,7 +89,7 @@ export default function MaintenancePage() {
       title: t.maintenance.date,
       dataIndex: 'date',
       key: 'date',
-      render: (v: string) => new Date(v).toLocaleDateString(),
+      render: (v: string) => formatDate(v),
     },
     {
       title: t.maintenance.type,

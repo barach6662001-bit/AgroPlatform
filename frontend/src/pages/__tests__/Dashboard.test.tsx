@@ -32,28 +32,18 @@ vi.mock('../../api/fields', () => ({
   getFields: vi.fn(() => Promise.resolve({ items: [] })),
 }));
 
-vi.mock('../../api/machinery', () => ({
-  getMachines: vi.fn(() => Promise.resolve({ items: [] })),
-}));
-
 vi.mock('../../api/notifications', () => ({
   getNotifications: vi.fn(() => Promise.resolve([])),
 }));
 
 vi.mock('recharts', () => ({
-  PieChart: ({ children }: { children: React.ReactNode }) => <div data-testid="pie-chart">{children}</div>,
-  Pie: () => <div />,
-  Cell: () => <div />,
   Tooltip: () => <div />,
-  BarChart: ({ children }: { children: React.ReactNode }) => <div data-testid="bar-chart">{children}</div>,
-  Bar: () => <div />,
   XAxis: () => <div />,
   YAxis: () => <div />,
   CartesianGrid: () => <div />,
   LineChart: ({ children }: { children: React.ReactNode }) => <div data-testid="line-chart">{children}</div>,
   Line: () => <div />,
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Legend: () => <div />,
 }));
 
 vi.mock('../../i18n', () => ({

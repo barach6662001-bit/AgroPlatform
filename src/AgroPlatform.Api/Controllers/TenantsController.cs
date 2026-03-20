@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Tenants.Commands.RegisterTenant;
+using AgroPlatform.Application.Tenants.Commands.SeedDemoData;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,6 @@ namespace AgroPlatform.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/tenants")]
-[AllowAnonymous]
 [Produces("application/json")]
 public class TenantsController : ControllerBase
 {
@@ -27,6 +27,7 @@ public class TenantsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The created tenant on success.</returns>
     [HttpPost("register")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -36,5 +37,14 @@ public class TenantsController : ControllerBase
     {
         var tenant = await _sender.Send(command, cancellationToken);
         return Created($"/api/tenants/{tenant.Id}", tenant);
+    }
+
+    /// <summary>Seed demo data for the current tenant</summary>
+    [HttpPost("seed-demo")]
+    [Authorize(Roles = "Administrator")]
+    public async Task<IActionResult> SeedDemoData(CancellationToken ct)
+    {
+        await _sender.Send(new SeedDemoDataCommand(), ct);
+        return Ok(new { success = true, message = "Demo data loaded" });
     }
 }

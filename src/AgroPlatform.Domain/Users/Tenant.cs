@@ -8,4 +8,8 @@ public class Tenant : BaseEntity
     public string? Inn { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+    public string? CompanyName { get; set; }
+    public string? Edrpou { get; set; }
+    public string? Address { get; set; }
+    public string? Phone { get; set; }
 }

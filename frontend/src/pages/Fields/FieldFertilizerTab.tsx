@@ -3,15 +3,19 @@ import { Button, Table, Modal, Form, Input, InputNumber, Select, DatePicker, Pop
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getFieldFertilizers, createFieldFertilizer, deleteFieldFertilizer } from '../../api/fields';
+import { getWarehouseItemsByCategory } from '../../api/warehouses';
 import type { FieldFertilizerDto } from '../../types/field';
+import type { WarehouseItemDto } from '../../types/warehouse';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import EmptyState from '../../components/EmptyState';
 
 interface Props {
   fieldId: string;
+  fieldArea?: number;
 }
 
-export default function FieldFertilizerTab({ fieldId }: Props) {
+export default function FieldFertilizerTab({ fieldId, fieldArea }: Props) {
   const { t } = useTranslation();
   const { hasRole } = useRole();
   const canWrite = hasRole(['Administrator', 'Manager', 'Agronomist']);
@@ -21,6 +25,13 @@ export default function FieldFertilizerTab({ fieldId }: Props) {
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
+  const [warehouseItems, setWarehouseItems] = useState<WarehouseItemDto[]>([]);
+
+  useEffect(() => {
+    getWarehouseItemsByCategory('Fertilizers')
+      .then((r) => setWarehouseItems(r.items))
+      .catch(() => {});
+  }, []);
 
   const load = () => {
     setLoading(true);
@@ -93,11 +104,14 @@ export default function FieldFertilizerTab({ fieldId }: Props) {
   return (
     <div>
       <Space style={{ marginBottom: 12 }}>
+        <span style={{ color: 'var(--agro-text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
         <Select
-          style={{ width: 120 }}
+          style={{ width: 90 }}
           value={year}
           onChange={setYear}
           options={yearOptions}
+          allowClear
+          placeholder={t.fields.allYears}
         />
         {canWrite && (
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
@@ -105,7 +119,20 @@ export default function FieldFertilizerTab({ fieldId }: Props) {
           </Button>
         )}
       </Space>
-      <Table dataSource={data} columns={columns} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} locale={{ emptyText: t.common.noData }} />
+      <Table
+        dataSource={data}
+        columns={columns}
+        rowKey="id"
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.fields.noFertilizers || 'Ще немає записів про добрива'}
+            actionLabel={canWrite ? t.fields.addFertilizer : undefined}
+            onAction={canWrite ? () => setModalOpen(true) : undefined}
+          />,
+        }}
+      />
 
       <Modal
         title={t.fields.addFertilizer}
@@ -121,13 +148,49 @@ export default function FieldFertilizerTab({ fieldId }: Props) {
             <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="fertilizerName" label={t.fields.fertilizerName} rules={[{ required: true, message: t.common.required }]}>
-            <Input />
+            <Select
+              showSearch
+              allowClear
+              placeholder={t.fields.selectFertilizer}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={warehouseItems.map((item) => ({
+                value: item.name,
+                label: `${item.name} (${item.purchasePrice != null ? item.purchasePrice + ' UAH/' + item.baseUnit : 'ціна не вказана'})`,
+              }))}
+              onChange={(val) => {
+                const item = warehouseItems.find((i) => i.name === val);
+                if (item?.purchasePrice != null) {
+                  form.setFieldsValue({ costPerKg: item.purchasePrice });
+                  const totalKg = form.getFieldValue('totalKg');
+                  if (totalKg) {
+                    form.setFieldsValue({ totalCost: Math.round(Number(totalKg) * item.purchasePrice * 100) / 100 });
+                  }
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item name="applicationType" label={t.fields.applicationType}>
             <Select options={appTypeOptions} allowClear />
           </Form.Item>
           <Form.Item name="rateKgPerHa" label={t.fields.rateKgPerHa}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber
+              min={0}
+              precision={4}
+              style={{ width: '100%' }}
+              onChange={(val) => {
+                const area = fieldArea ?? 0;
+                if (val != null && area > 0) {
+                  const total = Math.round(Number(val) * area * 100) / 100;
+                  form.setFieldsValue({ totalKg: total });
+                  const price = form.getFieldValue('costPerKg');
+                  if (price) {
+                    form.setFieldsValue({ totalCost: Math.round(total * Number(price) * 100) / 100 });
+                  }
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item name="totalKg" label={t.fields.totalKgLabel}>
             <InputNumber min={0} precision={4} style={{ width: '100%' }} />
@@ -136,7 +199,7 @@ export default function FieldFertilizerTab({ fieldId }: Props) {
             <InputNumber min={0} precision={2} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="totalCost" label={t.fields.totalCostLabel}>
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={2} style={{ width: '100%' }} addonAfter="грн" />
           </Form.Item>
           <Form.Item name="applicationDate" label={t.fields.applicationDate} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker style={{ width: '100%' }} />

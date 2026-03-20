@@ -1,6 +1,8 @@
+import { exportToCsv } from '../../utils/exportCsv';
+import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
 import { Table, Tag, Button, Space, Select, message, Modal, Form, Input, InputNumber, DatePicker } from 'antd';
-import { EyeOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { EyeOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getOperations, createOperation, updateOperation } from '../../api/operations';
 import { getFields } from '../../api/fields';
@@ -13,6 +15,7 @@ import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
+import { formatDate } from '../../utils/dateFormat';
 
 const typeColors: Record<string, string> = {
   Sowing: 'green', Fertilizing: 'blue', PlantProtection: 'orange',
@@ -116,7 +119,7 @@ export default function OperationsList() {
     {
       title: t.operations.performedAt, dataIndex: 'completedDate', key: 'completedDate',
       sorter: (a: AgroOperationDto, b: AgroOperationDto) => new Date(a.completedDate ?? a.plannedDate).getTime() - new Date(b.completedDate ?? b.plannedDate).getTime(),
-      render: (v: string) => v ? new Date(v).toLocaleDateString() : '—',
+      render: (v: string) => formatDate(v),
     },
     {
       title: t.operations.area, dataIndex: 'areaProcessed', key: 'areaProcessed',
@@ -175,6 +178,19 @@ export default function OperationsList() {
             {t.operations.createOperation}
           </Button>
         )}
+        <Button
+          icon={<DownloadOutlined />}
+          onClick={() => exportToCsv('operations', result?.items ?? [], [
+            { key: 'fieldName', title: t.operations.field },
+            { key: 'operationType', title: t.operations.type },
+            { key: 'status', title: t.common.status },
+            { key: 'performedByName', title: t.operations.performedBy },
+            { key: 'areaProcessed', title: t.operations.areaProcessed },
+            { key: 'description', title: t.operations.description },
+          ])}
+        >
+          {t.common.export}
+        </Button>
       </Space>
       <Table
         dataSource={result?.items ?? []}
@@ -187,6 +203,13 @@ export default function OperationsList() {
           total: result?.totalCount ?? 0,
           showTotal: (total) => t.operations.total.replace('{{count}}', String(total)),
           onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+        }}
+        locale={{
+          emptyText: <EmptyState
+            message={t.operations.noOperations || 'Ще немає операцій. Створіть першу'}
+            actionLabel={canCreate ? t.operations.createOperation : undefined}
+            onAction={canCreate ? () => setModalOpen(true) : undefined}
+          />,
         }}
       />
 
@@ -201,7 +224,18 @@ export default function OperationsList() {
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item name="fieldId" label={t.operations.field} rules={[{ required: true, message: t.common.required }]}>
-            <Select options={fieldOptions} placeholder={t.operations.selectField} showSearch optionFilterProp="label" />
+            <Select
+              options={fieldOptions}
+              placeholder={t.operations.selectField}
+              showSearch
+              optionFilterProp="label"
+              onChange={(val) => {
+                const field = fields.find(f => f.id === val);
+                if (field) {
+                  form.setFieldsValue({ areaProcessed: field.areaHectares });
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item name="operationType" label={t.operations.type} rules={[{ required: true, message: t.common.required }]}>
             <Select options={operationTypeOptions} placeholder={t.operations.selectType} />

@@ -7,4 +7,8 @@ public class TenantDto
     public string? Inn { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAtUtc { get; set; }
+    public string? CompanyName { get; set; }
+    public string? Edrpou { get; set; }
+    public string? Address { get; set; }
+    public string? Phone { get; set; }
 }

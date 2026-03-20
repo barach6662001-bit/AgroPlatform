@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
-import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getFields, deleteField, createField, updateField } from '../../api/fields';
 import { getCadastreParcel } from '../../api/cadastre';
@@ -11,6 +11,7 @@ import PageHeader from '../../components/PageHeader';
 import FieldMap from '../../components/Map/FieldMap';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { exportToCsv } from '../../utils/exportCsv';
 
 export default function FieldsList() {
   const [result, setResult] = useState<PaginatedResult<FieldDto> | null>(null);
@@ -154,9 +155,13 @@ export default function FieldsList() {
       dataIndex: 'ownershipType',
       key: 'ownershipType',
       render: (v: number) => {
-        if (v === 1) return <Tag color="blue">{t.fields.ownershipLease}</Tag>;
-        if (v === 2) return <Tag color="purple">{t.fields.ownershipShareLease}</Tag>;
-        return <Tag color="green">{t.fields.ownershipOwnLand}</Tag>;
+        const colors: Record<number, string> = { 0: 'blue', 1: 'orange', 2: 'purple' };
+        const labels: Record<number, string> = {
+          0: t.fields.ownershipOwnLand,
+          1: t.fields.ownershipLease,
+          2: t.fields.ownershipShareLease,
+        };
+        return <Tag color={colors[v] ?? 'default'}>{labels[v] ?? '—'}</Tag>;
       },
       filters: [
         { text: t.fields.ownershipOwnLand, value: 0 },
@@ -207,6 +212,18 @@ export default function FieldsList() {
             {t.fields.addField}
           </Button>
         )}
+        <Button
+          icon={<DownloadOutlined />}
+          onClick={() => exportToCsv('fields', result?.items ?? [], [
+            { key: 'name', title: t.fields.name },
+            { key: 'cadastralNumber', title: t.fields.cadastralNumber },
+            { key: 'areaHectares', title: t.fields.area },
+            { key: 'currentCrop', title: t.fields.currentCrop },
+            { key: 'soilType', title: t.fields.soilType },
+          ])}
+        >
+          {t.common.export}
+        </Button>
         <Segmented
           value={viewMode}
           onChange={(v) => setViewMode(v as 'list' | 'map')}
@@ -297,7 +314,18 @@ export default function FieldsList() {
             <InputNumber min={0} step={0.01} precision={4} style={{ width: '100%' }} addonAfter="га" />
           </Form.Item>
           <Form.Item name="soilType" label={t.fields.soilType}>
-            <Input />
+            <Select
+              allowClear
+              placeholder={t.fields.selectSoilType || 'Виберіть тип ґрунту'}
+              options={[
+                { value: 'Чорнозем', label: t.fields.soilBlackEarth || 'Чорнозем' },
+                { value: 'Суглинок', label: t.fields.soilLoam || 'Суглинок' },
+                { value: 'Супісок', label: t.fields.soilSandyLoam || 'Супісок' },
+                { value: 'Пісок', label: t.fields.soilSand || 'Пісок' },
+                { value: 'Глина', label: t.fields.soilClay || 'Глина' },
+                { value: 'Торф', label: t.fields.soilPeat || 'Торф' },
+              ]}
+            />
           </Form.Item>
           <Form.Item name="ownershipType" label={t.fields.ownershipType} initialValue={0}>
             <Select>
@@ -305,17 +333,6 @@ export default function FieldsList() {
               <Select.Option value={1}>{t.fields.ownershipLease}</Select.Option>
               <Select.Option value={2}>{t.fields.ownershipShareLease}</Select.Option>
             </Select>
-          </Form.Item>
-          <Form.Item name="currentCrop" label={t.fields.currentCrop}>
-            <Select allowClear placeholder={t.fields.notSeeded} options={cropOptions} />
-          </Form.Item>
-          <Form.Item name="currentCropYear" label={t.fields.cropYear} initialValue={new Date().getFullYear()}>
-            <InputNumber
-              min={2000}
-              max={new Date().getFullYear() + 1}
-              style={{ width: '100%' }}
-              placeholder={String(new Date().getFullYear())}
-            />
           </Form.Item>
           <Form.Item name="notes" label={t.fields.notes}>
             <Input.TextArea rows={3} />
@@ -345,13 +362,14 @@ export default function FieldsList() {
           <Form.Item name="soilType" label={t.fields.soilType}>
             <Select
               allowClear
+              placeholder={t.fields.selectSoilType || 'Виберіть тип ґрунту'}
               options={[
-                { value: 'Sandy', label: 'Sandy' },
-                { value: 'Clay', label: 'Clay' },
-                { value: 'Loam', label: 'Loam' },
-                { value: 'Silt', label: 'Silt' },
-                { value: 'Peat', label: 'Peat' },
-                { value: 'Chalk', label: 'Chalk' },
+                { value: 'Чорнозем', label: t.fields.soilBlackEarth || 'Чорнозем' },
+                { value: 'Суглинок', label: t.fields.soilLoam || 'Суглинок' },
+                { value: 'Супісок', label: t.fields.soilSandyLoam || 'Супісок' },
+                { value: 'Пісок', label: t.fields.soilSand || 'Пісок' },
+                { value: 'Глина', label: t.fields.soilClay || 'Глина' },
+                { value: 'Торф', label: t.fields.soilPeat || 'Торф' },
               ]}
             />
           </Form.Item>
