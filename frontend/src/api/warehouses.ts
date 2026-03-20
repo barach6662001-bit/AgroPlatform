@@ -34,7 +34,9 @@ export const createReceipt = (data: {
   itemId: string;
   unitCode: string;
   quantity: number;
+  pricePerUnit?: number;
   note?: string;
+  batchCode?: string;
 }) =>
   apiClient.post('/api/warehouses/receipt', data).then((r) => r.data);
 
@@ -43,6 +45,8 @@ export const createIssue = (data: {
   itemId: string;
   unitCode: string;
   quantity: number;
+  fieldId?: string;
+  agroOperationId?: string;
   note?: string;
 }) =>
   apiClient.post('/api/warehouses/issue', data).then((r) => r.data);

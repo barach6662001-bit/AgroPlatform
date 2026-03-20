@@ -13,6 +13,7 @@ import MaterialKpiCards from '../../components/MaterialKpiCards';
 import type { PLTableRow } from '../../components/PLTable';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { formatDate } from '../../utils/dateFormat';
 import apiClient from '../../api/axios';
 
 const { RangePicker } = DatePicker;
@@ -153,7 +154,7 @@ export default function CostRecords() {
     {
       title: t.economics.date, dataIndex: 'date', key: 'date',
       sorter: (a: CostRecordDto, b: CostRecordDto) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-      render: (v: string) => new Date(v).toLocaleDateString(),
+      render: (v: string) => formatDate(v),
     },
     {
       title: t.economics.category, dataIndex: 'category', key: 'category',

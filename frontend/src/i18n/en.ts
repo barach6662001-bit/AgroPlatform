@@ -349,10 +349,13 @@ const en: Translations = {
     updateItemError: 'Error updating item',
     minimumQuantity: 'Minimum Stock Level',
     purchasePrice: 'Purchase Price',
+    pricePerUnit: 'Price per unit (UAH)',
     totalCost: 'Total Cost',
     grainStorageTitle: 'Grain Storage',
     grainStorageSubtitle: 'Manage grain storage facilities',
     createGrainStorage: 'Add Grain Storage',
+    field: 'Field',
+    selectField: 'Select field (optional)',
   },
   moveTypes: {
     Receipt: 'Receipt',
@@ -483,6 +486,7 @@ const en: Translations = {
     assignedDriver: 'Assigned Driver',
     selectDriver: 'Select driver',
     noDriver: 'No driver assigned',
+    refuelAtStation: 'Refuel at Fuel Station',
   },
   machineryTypes: {
     Tractor: 'Tractor',
@@ -792,6 +796,11 @@ const en: Translations = {
     reasonProcessing: 'Processing',
     reasonTransfer: 'Transfer',
     reasonOther: 'Other',
+    issueQuantity: 'Quantity (t)',
+    ownershipOwn: 'Own',
+    ownershipConsignment: 'Consignment',
+    ownershipStorage: 'Storage',
+    ownershipOther: 'Other',
   },
   hr: {
     employeesTitle: 'Employees',

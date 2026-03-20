@@ -8,6 +8,8 @@ public record IssueStockCommand(
     Guid? BatchId,
     decimal Quantity,
     string UnitCode,
+    Guid? FieldId,
+    Guid? AgroOperationId,
     string? Note,
     string? ClientOperationId
 ) : IRequest<Guid>;

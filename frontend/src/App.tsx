@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import ukUA from 'antd/locale/uk_UA';
 import enUS from 'antd/locale/en_US';
+import dayjs from 'dayjs';
 import { useTranslation } from './i18n';
 import { darkTheme } from './theme/darkTheme';
 import AppLayout from './components/Layout/AppLayout';
@@ -39,6 +41,11 @@ import FuelStation from './pages/Fuel/FuelStation';
 
 export default function App() {
   const { lang } = useTranslation();
+
+  useEffect(() => {
+    dayjs.locale(lang === 'uk' ? 'uk' : 'en');
+  }, [lang]);
+
   return (
     <ConfigProvider
       locale={lang === 'uk' ? ukUA : enUS}

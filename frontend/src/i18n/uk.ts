@@ -347,10 +347,13 @@ const uk = {
     updateItemError: 'Помилка оновлення товару',
     minimumQuantity: 'Мінімальний залишок',
     purchasePrice: 'Ціна закупівлі',
+    pricePerUnit: 'Ціна за одиницю (UAH)',
     totalCost: 'Вартість',
     grainStorageTitle: 'Зерносховища',
     grainStorageSubtitle: 'Управління зерносховищами',
     createGrainStorage: 'Додати зерносховище',
+    field: 'Поле',
+    selectField: 'Оберіть поле (опціонально)',
   },
   moveTypes: {
     Receipt: 'Прихід',
@@ -481,6 +484,7 @@ const uk = {
     assignedDriver: 'Закріплений водій',
     selectDriver: 'Оберіть водія',
     noDriver: 'Водій не призначений',
+    refuelAtStation: 'Заправити на Паливній станції',
   },
   machineryTypes: {
     Tractor: 'Трактор',
@@ -821,6 +825,11 @@ const uk = {
     reasonProcessing: 'Переробка',
     reasonTransfer: 'Переміщення',
     reasonOther: 'Інше',
+    issueQuantity: 'Кількість (т)',
+    ownershipOwn: 'Власне',
+    ownershipConsignment: 'Консигнація',
+    ownershipStorage: 'Зберігання',
+    ownershipOther: 'Інше',
   },
   hr: {
     employeesTitle: 'Співробітники',
