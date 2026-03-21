@@ -312,6 +312,7 @@ const uk = {
     cadastreDataNote: 'Дані з кадастру станом на 2022 р.',
     cadastrePurpose: 'Призначення',
     cadastreOwnership: 'Власність',
+    cadastreLayer: 'Кадастровий шар',
     expenses: 'Витрати',
     revenue: 'Дохід',
     profit: 'Прибуток',
