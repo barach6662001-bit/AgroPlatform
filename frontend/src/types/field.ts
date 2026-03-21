@@ -114,3 +114,25 @@ export interface SoilAnalysisDto {
   humus?: number;
   notes?: string;
 }
+
+export interface PrescriptionZoneDto {
+  zoneId?: string;
+  zoneName: string;
+  rateClass: string;
+  recommendedRateKgPerHa: number;
+  soilNitrogen?: number;
+  soilPhosphorus?: number;
+  soilPotassium?: number;
+  soilPH?: number;
+  soilHumus?: number;
+  sampleDate?: string;
+  nutrient: string;
+}
+
+export interface PrescriptionMapDto {
+  fieldId: string;
+  fieldName: string;
+  nutrient: string;
+  ndviDate?: string;
+  zones: PrescriptionZoneDto[];
+}
