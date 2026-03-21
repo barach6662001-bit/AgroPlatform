@@ -20,5 +20,11 @@ public record FleetPositionUpdate(
     double Fuel,
 
     /// <summary>UTC timestamp of the telemetry reading.</summary>
-    DateTime TimestampUtc
+    DateTime TimestampUtc,
+
+    /// <summary>Human-readable name of the machine (e.g. "Трактор ХТЗ-17221").</summary>
+    string MachineName = "",
+
+    /// <summary>Machinery type string matching <c>MachineryType</c> enum name (e.g. "Tractor", "Combine").</summary>
+    string MachineType = ""
 );

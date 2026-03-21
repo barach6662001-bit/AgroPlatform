@@ -735,6 +735,8 @@ const uk = {
     lastUpdate: 'Останнє оновлення',
     noVehicles: 'Немає даних про техніку',
     liveSignal: 'Сигнал',
+    machineName: 'Назва',
+    machineType: 'Тип',
   },
   notifications: {
     title: 'Сповіщення',
