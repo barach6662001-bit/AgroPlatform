@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { Card, Alert, Spin, Typography } from 'antd';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Card, Alert, Spin, Typography, Slider } from 'antd';
 import { MapContainer, TileLayer, ImageOverlay, useMap } from 'react-leaflet';
 import type { LatLngBoundsExpression } from 'leaflet';
 import { useTranslation } from '../../i18n';
-import { getFieldNdvi, reportNdviProblem } from '../../api/satellite';
+import { getFieldNdvi, getFieldNdviDates, reportNdviProblem } from '../../api/satellite';
 import type { NdviData } from '../../api/satellite';
 
 interface Props {
@@ -81,10 +81,39 @@ export default function FieldNdviTab({ fieldId }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [selectedDateIndex, setSelectedDateIndex] = useState<number>(0);
+
   const [problemDetected, setProblemDetected] = useState(false);
   const [problemPercent, setProblemPercent] = useState(0);
   const [analysisDone, setAnalysisDone] = useState(false);
   const notificationSentRef = useRef(false);
+
+  // Load available dates once on mount
+  useEffect(() => {
+    getFieldNdviDates(fieldId)
+      .then((dates) => {
+        setAvailableDates(dates);
+        // Select the latest date by default (last in the array)
+        setSelectedDateIndex(dates.length > 0 ? dates.length - 1 : 0);
+      })
+      .catch(() => {
+        // Non-critical: fall back to no slider, NDVI still loads with default date
+        setAvailableDates([]);
+      });
+  }, [fieldId]);
+
+  const selectedDate = availableDates.length > 0 ? availableDates[selectedDateIndex] : undefined;
+
+  const sliderMarks = useMemo(() => {
+    return availableDates.reduce<Record<number, string>>((acc, date, idx) => {
+      // Show mark only for first, last, and selected index to keep it readable
+      if (idx === 0 || idx === availableDates.length - 1 || idx === selectedDateIndex) {
+        acc[idx] = date;
+      }
+      return acc;
+    }, {});
+  }, [availableDates, selectedDateIndex]);
 
   useEffect(() => {
     setLoading(true);
@@ -94,14 +123,14 @@ export default function FieldNdviTab({ fieldId }: Props) {
     setAnalysisDone(false);
     notificationSentRef.current = false;
 
-    getFieldNdvi(fieldId)
+    getFieldNdvi(fieldId, selectedDate)
       .then((data) => setNdvi(data))
       .catch((err: unknown) => {
         const msg = err instanceof Error ? err.message : String(err);
         setError(msg);
       })
       .finally(() => setLoading(false));
-  }, [fieldId]);
+  }, [fieldId, selectedDate]);
 
   // Run canvas analysis once the NDVI image URL is known
   useEffect(() => {
@@ -235,6 +264,26 @@ export default function FieldNdviTab({ fieldId }: Props) {
       <Typography.Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 12 }}>
         {ndvi.date}
       </Typography.Text>
+
+      {availableDates.length > 1 && (
+        <div style={{ marginTop: 16, padding: '0 8px' }}>
+          <Typography.Text strong style={{ fontSize: 13 }}>
+            {t.fields.ndviDateSliderLabel}
+          </Typography.Text>
+          <Typography.Text type="secondary" style={{ fontSize: 12, marginLeft: 8 }}>
+            {t.fields.ndviSelectedDate} {availableDates[selectedDateIndex]}
+          </Typography.Text>
+          <Slider
+            min={0}
+            max={availableDates.length - 1}
+            value={selectedDateIndex}
+            onChange={(val) => setSelectedDateIndex(val)}
+            marks={sliderMarks}
+            tooltip={{ formatter: (val) => val !== undefined ? availableDates[val] : '' }}
+            style={{ marginTop: 8 }}
+          />
+        </div>
+      )}
     </div>
   );
 }
