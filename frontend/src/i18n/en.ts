@@ -737,6 +737,8 @@ const en: Translations = {
     lastUpdate: 'Last update',
     noVehicles: 'No vehicle data',
     liveSignal: 'Live',
+    machineName: 'Name',
+    machineType: 'Type',
   },
   notifications: {
     title: 'Notifications',

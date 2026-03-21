@@ -9,6 +9,8 @@ export interface VehiclePosition {
   speed: number;
   fuel: number;
   timestampUtc: string;
+  machineName: string;
+  machineType: string;
 }
 
 export type ConnectionState = 'connected' | 'reconnecting' | 'disconnected';
@@ -38,11 +40,10 @@ export function useFleetHub() {
 
     connection.on(
       'ReceivePositionUpdate',
-      (vehicleId: string, lat: number, lng: number, speed: number, fuel: number, timestampUtc: string) => {
-        const pos: VehiclePosition = { vehicleId, lat, lng, speed, fuel, timestampUtc };
+      (update: VehiclePosition) => {
         setPositions((prev) => {
           const next = new Map(prev);
-          next.set(vehicleId, pos);
+          next.set(update.vehicleId, update);
           return next;
         });
       }
