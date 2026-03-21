@@ -102,3 +102,15 @@ export interface FieldZoneDto {
   soilType?: string;
   notes?: string;
 }
+
+export interface SoilAnalysisDto {
+  id: string;
+  zoneId?: string;
+  sampleDate: string;
+  pH?: number;
+  nitrogen?: number;
+  phosphorus?: number;
+  potassium?: number;
+  humus?: number;
+  notes?: string;
+}
