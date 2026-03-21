@@ -3,6 +3,7 @@ using System;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroPlatform.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260321203239_AddSoilAnalysis")]
+    partial class AddSoilAnalysis
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -808,62 +811,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("FieldSeedings");
                 });
 
-            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldZone", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("GeoJson")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SoilType")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId")
-                        .HasDatabaseName("IX_FieldZones_FieldId");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("IX_FieldZones_TenantId");
-
-                    b.ToTable("FieldZones");
-                });
-
             modelBuilder.Entity("AgroPlatform.Domain.Fields.LandLease", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1328,9 +1275,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("BuyerName")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -1794,10 +1738,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ImeiNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
-
                     b.Property<string>("InventoryNumber")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1845,10 +1785,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ImeiNumber")
-                        .IsUnique()
-                        .HasFilter("\"ImeiNumber\" IS NOT NULL");
 
                     b.HasIndex("InventoryNumber", "TenantId")
                         .IsUnique();
@@ -2682,18 +2618,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Field");
                 });
 
-            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldZone", b =>
-                {
-                    b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
-                        .WithMany("Zones")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_FieldZones_Fields");
-
-                    b.Navigation("Field");
-                });
-
             modelBuilder.Entity("AgroPlatform.Domain.Fields.LandLease", b =>
                 {
                     b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
@@ -2979,8 +2903,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Seedings");
 
                     b.Navigation("SoilAnalyses");
-
-                    b.Navigation("Zones");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Fields.LandLease", b =>

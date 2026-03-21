@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto } from '../types/field';
+import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto, FieldZoneDto, SoilAnalysisDto } from '../types/field';
 import type { PaginatedResult } from '../types/common';
 
 export const getFields = (params?: { page?: number; pageSize?: number; search?: string; ownershipType?: number[] }) =>
@@ -71,4 +71,30 @@ export const createFieldHarvest = (fieldId: string, data: Omit<FieldHarvestDto, 
 
 export const deleteFieldHarvest = (fieldId: string, id: string) =>
   apiClient.delete(`/api/fields/${fieldId}/harvests/${id}`);
+
+// Zones
+export const getFieldZones = (fieldId: string) =>
+  apiClient.get<FieldZoneDto[]>(`/api/fields/${fieldId}/zones`).then((r) => r.data);
+
+export const createFieldZone = (fieldId: string, data: Omit<FieldZoneDto, 'id'>) =>
+  apiClient.post(`/api/fields/${fieldId}/zones`, data).then((r) => r.data);
+
+export const updateFieldZone = (fieldId: string, id: string, data: Omit<FieldZoneDto, 'id'>) =>
+  apiClient.put(`/api/fields/${fieldId}/zones/${id}`, data).then((r) => r.data);
+
+export const deleteFieldZone = (fieldId: string, id: string) =>
+  apiClient.delete(`/api/fields/${fieldId}/zones/${id}`);
+
+// Soil Analyses
+export const getSoilAnalyses = (fieldId: string) =>
+  apiClient.get<SoilAnalysisDto[]>(`/api/fields/${fieldId}/soil-analyses`).then((r) => r.data);
+
+export const createSoilAnalysis = (fieldId: string, data: Omit<SoilAnalysisDto, 'id'>) =>
+  apiClient.post(`/api/fields/${fieldId}/soil-analyses`, data).then((r) => r.data);
+
+export const updateSoilAnalysis = (fieldId: string, id: string, data: Omit<SoilAnalysisDto, 'id'>) =>
+  apiClient.put(`/api/fields/${fieldId}/soil-analyses/${id}`, data).then((r) => r.data);
+
+export const deleteSoilAnalysis = (fieldId: string, id: string) =>
+  apiClient.delete(`/api/fields/${fieldId}/soil-analyses/${id}`);
 

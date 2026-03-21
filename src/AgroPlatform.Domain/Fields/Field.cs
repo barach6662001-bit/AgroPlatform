@@ -32,4 +32,6 @@ public class Field : AuditableEntity
     public ICollection<FieldFertilizer> Fertilizers { get; set; } = new List<FieldFertilizer>();
     public ICollection<FieldProtection> Protections { get; set; } = new List<FieldProtection>();
     public ICollection<FieldHarvest> Harvests { get; set; } = new List<FieldHarvest>();
+    public ICollection<FieldZone> Zones { get; set; } = new List<FieldZone>();
+    public ICollection<SoilAnalysis> SoilAnalyses { get; set; } = new List<SoilAnalysis>();
 }
