@@ -14,12 +14,20 @@ public class SatelliteController : ControllerBase
     private readonly IAppDbContext _db;
     private readonly ILogger<SatelliteController> _logger;
     private readonly string _instanceId;
+    private readonly ICurrentUserService _currentUser;
+    private readonly INotificationService _notificationService;
 
-    public SatelliteController(IAppDbContext db, ILogger<SatelliteController> logger)
+    public SatelliteController(
+        IAppDbContext db,
+        ILogger<SatelliteController> logger,
+        ICurrentUserService currentUser,
+        INotificationService notificationService)
     {
         _db = db;
         _logger = logger;
         _instanceId = Environment.GetEnvironmentVariable("SENTINEL_HUB_INSTANCE_ID") ?? "";
+        _currentUser = currentUser;
+        _notificationService = notificationService;
     }
 
     /// <summary>
@@ -97,6 +105,39 @@ public class SatelliteController : ControllerBase
             bounds,
             configured = !string.IsNullOrEmpty(_instanceId)
         });
+    }
+
+    public sealed record DetectNdviProblemRequest(string Date, double StressedPercent, string Message);
+
+    /// <summary>
+    /// Called by the frontend when canvas analysis detects a stressed NDVI zone.
+    /// Creates a notification for the current tenant.
+    /// </summary>
+    [HttpPost("ndvi/{fieldId:guid}/detect-problem")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DetectProblem(
+        Guid fieldId,
+        [FromBody] DetectNdviProblemRequest request,
+        CancellationToken ct)
+    {
+        var field = await _db.Fields
+            .Where(f => f.Id == fieldId)
+            .Select(f => new { f.Name })
+            .FirstOrDefaultAsync(ct);
+
+        if (field == null)
+            return NotFound(new { error = "Field not found" });
+
+        var body = $"Поле: {field.Name}. {request.Message}";
+        await _notificationService.SendAsync(
+            _currentUser.TenantId,
+            "warning",
+            "Проблемна NDVI-зона",
+            body,
+            ct);
+
+        return NoContent();
     }
 
     /// <summary>Returns a simple SVG placeholder image that resembles an NDVI colour ramp.</summary>
