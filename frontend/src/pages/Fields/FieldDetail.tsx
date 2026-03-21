@@ -18,6 +18,7 @@ import FieldSeedingTab from './FieldSeedingTab';
 import FieldFertilizerTab from './FieldFertilizerTab';
 import FieldProtectionTab from './FieldProtectionTab';
 import FieldHarvestTab from './FieldHarvestTab';
+import FieldNdviTab from './FieldNdviTab';
 
 export default function FieldDetail() {
   const { id } = useParams<{ id: string }>();
@@ -504,6 +505,11 @@ export default function FieldDetail() {
               <FieldDrawMap field={field} onGeometryChange={setCurrentGeoJson} height={500} />
             </Card>
           ),
+        },
+        {
+          key: 'ndvi',
+          label: t.fields.tabNdvi,
+          children: <FieldNdviTab fieldId={id!} />,
         },
       ]} />
 
