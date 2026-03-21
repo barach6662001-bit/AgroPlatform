@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Machinery.Commands.AddFuelLog;
+using AgroPlatform.Application.Machinery.Commands.AddGpsTrack;
 using AgroPlatform.Application.Machinery.Commands.AddMaintenance;
 using AgroPlatform.Application.Machinery.Commands.AddWorkLog;
 using AgroPlatform.Application.Machinery.Commands.CreateMachine;
@@ -117,6 +118,21 @@ public class MachineryController : ControllerBase
 
         var logId = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetMachine), new { id }, new { id = logId });
+    }
+
+    /// <summary>Records a GPS position update for a machine and checks geofence boundaries.</summary>
+    [HttpPost("{id:guid}/gps")]
+    [Authorize(Roles = "Administrator,Manager")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddGpsTrack(Guid id, [FromBody] AddGpsTrackCommand command, CancellationToken cancellationToken)
+    {
+        if (id != command.MachineId)
+            return BadRequest();
+
+        var trackId = await _sender.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetMachine), new { id }, new { id = trackId });
     }
 
     /// <summary>Returns GPS track points for a machine within the specified time range.</summary>

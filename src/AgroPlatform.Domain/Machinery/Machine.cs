@@ -18,6 +18,8 @@ public class Machine : AuditableEntity
     public DateTime? LastMaintenanceDate { get; set; }
     public decimal? MaintenanceIntervalHours { get; set; }
 
+    public string? ImeiNumber { get; set; }
+
     public Guid? AssignedDriverId { get; set; }
     public string? AssignedDriverName { get; set; }
 
