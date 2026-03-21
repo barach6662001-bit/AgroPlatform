@@ -29,6 +29,7 @@ export interface StockMoveDto {
   note?: string;
   createdAt: string;
   totalCost?: number;
+  fieldName?: string;
 }
 
 export interface BalanceDto {

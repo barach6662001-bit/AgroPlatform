@@ -489,3 +489,12 @@ a, button, [role="button"],
     background: var(--bg-surface);
   }
 }
+
+@media (max-width: 1024px) {
+  .ant-table { font-size: 13px; }
+  .ant-card { padding: 12px; }
+  .ant-modal { max-width: 95vw !important; }
+}
+@media (max-width: 768px) {
+  .ant-table-wrapper { overflow-x: auto; }
+}

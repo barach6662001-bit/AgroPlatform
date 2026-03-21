@@ -1,0 +1,79 @@
+import { useEffect, useState } from 'react';
+import { Card, Spin, Typography } from 'antd';
+import { CloudOutlined } from '@ant-design/icons';
+import apiClient from '../api/axios';
+
+const { Text } = Typography;
+
+interface WeatherData {
+  name?: string;
+  main?: { temp: number; humidity: number; feels_like: number };
+  wind?: { speed: number };
+  weather?: { description: string; icon: string }[];
+  error?: string;
+}
+
+const DEFAULT_LAT = 49.0;
+const DEFAULT_LON = 31.5;
+
+export default function WeatherWidget() {
+  const [data, setData] = useState<WeatherData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWeather = (lat: number, lon: number) => {
+      apiClient
+        .get<WeatherData>('/api/weather/current', { params: { lat, lon } })
+        .then((r) => setData(r.data))
+        .catch(() => setData(null))
+        .finally(() => setLoading(false));
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+        () => fetchWeather(DEFAULT_LAT, DEFAULT_LON),
+        { timeout: 5000 }
+      );
+    } else {
+      fetchWeather(DEFAULT_LAT, DEFAULT_LON);
+    }
+  }, []);
+
+  if (loading) return <Spin size="small" />;
+  if (!data || data.error || !data.main) return null;
+
+  const icon = data.weather?.[0]?.icon;
+  const desc = data.weather?.[0]?.description ?? '';
+
+  return (
+    <Card
+      size="small"
+      style={{ background: '#161B22', border: '1px solid #30363D', minWidth: 200 }}
+      bodyStyle={{ padding: '10px 14px' }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {icon ? (
+          <img
+            src={`https://openweathermap.org/img/wn/${icon}.png`}
+            alt={desc}
+            style={{ width: 40, height: 40 }}
+          />
+        ) : (
+          <CloudOutlined style={{ fontSize: 32, color: '#8b949e' }} />
+        )}
+        <div>
+          <div style={{ color: '#e6edf3', fontWeight: 700, fontSize: 22, lineHeight: 1 }}>
+            {Math.round(data.main.temp)}°C
+          </div>
+          <Text style={{ color: '#8b949e', fontSize: 12 }}>{desc}</Text>
+        </div>
+        <div style={{ marginLeft: 12, fontSize: 12, color: '#8b949e', lineHeight: 1.7 }}>
+          <div>💧 {data.main.humidity}%</div>
+          <div>💨 {data.wind?.speed} м/с</div>
+          {data.name && <div>📍 {data.name}</div>}
+        </div>
+      </div>
+    </Card>
+  );
+}

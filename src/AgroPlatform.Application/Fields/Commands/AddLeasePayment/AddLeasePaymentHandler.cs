@@ -11,10 +11,14 @@ namespace AgroPlatform.Application.Fields.Commands.AddLeasePayment;
 public class AddLeasePaymentHandler : IRequestHandler<AddLeasePaymentCommand, Guid>
 {
     private readonly IAppDbContext _context;
+    private readonly INotificationService _notifications;
+    private readonly ICurrentUserService _currentUser;
 
-    public AddLeasePaymentHandler(IAppDbContext context)
+    public AddLeasePaymentHandler(IAppDbContext context, INotificationService notifications, ICurrentUserService currentUser)
     {
         _context = context;
+        _notifications = notifications;
+        _currentUser = currentUser;
     }
 
     public async Task<Guid> Handle(AddLeasePaymentCommand request, CancellationToken cancellationToken)
@@ -89,6 +93,24 @@ public class AddLeasePaymentHandler : IRequestHandler<AddLeasePaymentCommand, Gu
         });
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        var lease = leaseForCheck;
+        if (lease != null)
+        {
+            var totalPaidThisYear = await _context.LeasePayments
+                .Where(p => p.LandLeaseId == request.LandLeaseId && p.Year == request.Year && !p.IsDeleted)
+                .SumAsync(p => p.Amount, cancellationToken);
+
+            if (totalPaidThisYear >= lease.AnnualPayment)
+            {
+                var field = await _context.Fields.FindAsync(new object[] { lease.FieldId }, cancellationToken);
+                await _notifications.SendAsync(
+                    _currentUser.TenantId, "success", "Оренду повністю сплачено",
+                    $"Договір поля '{field?.Name ?? ""}' за {request.Year} рік — сплачено ({totalPaidThisYear:N0} ₴)",
+                    cancellationToken);
+            }
+        }
+
         return payment.Id;
     }
 }

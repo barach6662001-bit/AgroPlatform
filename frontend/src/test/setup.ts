@@ -1,27 +1,30 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
+import { afterEach, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
 
-// JSDOM does not implement getComputedStyle with pseudo-elements; stub it so
-// Ant Design / Recharts do not throw during render.
-Object.defineProperty(window, 'getComputedStyle', {
-  writable: true,
-  value: (elt: Element) => ({
-    getPropertyValue: () => '',
-    display: 'block',
-    appearance: 'none',
-  }),
-});
-
-// Ant Design requires window.matchMedia which is not available in jsdom
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: (query: string) => ({
+  value: vi.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => false,
-  }),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+window.getComputedStyle = window.getComputedStyle || function () {
+  return {
+    getPropertyValue: () => '',
+  };
+};
+
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+  vi.clearAllTimers();
+  vi.useRealTimers();
 });

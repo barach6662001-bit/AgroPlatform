@@ -49,6 +49,16 @@ public class GetLeasesSummaryHandler : IRequestHandler<GetLeasesSummaryQuery, Li
                 TotalPaid = total,
                 Remaining = remaining,
                 Status = status,
+                Payments = l.Payments.Select(p => new LeasePaymentDto
+                {
+                    Id = p.Id,
+                    LandLeaseId = p.LandLeaseId,
+                    Year = p.Year,
+                    Amount = p.Amount,
+                    PaymentType = p.PaymentType,
+                    PaymentDate = p.PaymentDate,
+                    Notes = p.Notes,
+                }).ToList(),
             };
         }).ToList();
     }

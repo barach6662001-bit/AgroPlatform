@@ -1,6 +1,7 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag } from 'antd';
+import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag, Typography } from 'antd';
+import dayjs from 'dayjs';
 import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getMachines, createMachine, updateMachine } from '../../api/machinery';
@@ -14,6 +15,8 @@ import { useFleetHub } from '../../hooks/useFleetHub';
 import { getEmployees } from '../../api/hr';
 import EmptyState from '../../components/EmptyState';
 
+
+const { Text } = Typography;
 
 export default function MachineryList() {
   const [result, setResult] = useState<PaginatedResult<MachineDto> | null>(null);
@@ -133,6 +136,17 @@ export default function MachineryList() {
       dataIndex: 'assignedDriverName',
       key: 'assignedDriverName',
       render: (v?: string) => v || <span style={{ color: '#8b949e' }}>{t.machinery.noDriver}</span>,
+    },
+    {
+      title: 'Наступне ТО',
+      dataIndex: 'nextMaintenanceDate',
+      render: (date: string | null) => {
+        if (!date) return <Text type="secondary">—</Text>;
+        const days = dayjs(date).diff(dayjs(), 'day');
+        if (days < 0) return <Tag color="red">Прострочено {Math.abs(days)} дн.</Tag>;
+        if (days <= 7) return <Tag color="orange">Через {days} дн.</Tag>;
+        return <Text type="secondary">{dayjs(date).format('DD.MM.YYYY')}</Text>;
+      },
     },
     {
       title: t.machinery.actions, key: 'actions',

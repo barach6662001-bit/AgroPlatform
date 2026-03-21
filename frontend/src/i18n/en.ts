@@ -140,6 +140,7 @@ const en: Translations = {
     monthlyExpenses: 'Monthly expenses',
     monthlyRevenue: 'Monthly revenue',
     monthlyProfit: 'Profit',
+    welcome: 'Welcome to AgroTech!',
   },
   operationTypes: {
     Sowing: 'Sowing',
@@ -842,6 +843,7 @@ const en: Translations = {
     ownershipConsignment: 'Consignment',
     ownershipStorage: 'Storage',
     ownershipOther: 'Other',
+    buyer: 'Buyer',
   },
   hr: {
     employeesTitle: 'Employees',

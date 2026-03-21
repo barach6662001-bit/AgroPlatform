@@ -100,6 +100,7 @@ export default function StockMovements() {
       key: 'qty',
       render: (_: unknown, r: StockMoveDto) => `${r.quantity} ${r.unitCode}`,
     },
+    { title: 'Поле', dataIndex: 'fieldName', key: 'fieldName', render: (v: string) => v || '—' },
     {
       title: t.warehouses.moveNote,
       dataIndex: 'note',

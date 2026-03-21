@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Table, Tag, Space, Select, message, Button, Modal, Form, Input,
-  InputNumber, DatePicker, Card, Typography, Radio,
+  InputNumber, DatePicker, Card, Typography, Radio, Progress,
 } from 'antd';
 import { PlusOutlined, DollarOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -209,15 +209,19 @@ export default function LeasePage() {
       render: (v: number) => v > 0 ? <Text type="warning">{v.toLocaleString('uk-UA', { maximumFractionDigits: 2 })}</Text> : '—',
     },
     {
-      title: t.lease.totalPaid,
-      dataIndex: 'totalPaid',
-      key: 'totalPaid',
-      align: 'right',
-      render: (v: number, record: LeaseSummaryDto) => {
-        const pct = record.annualPayment > 0 ? v / record.annualPayment : 0;
-        if (pct >= 1) return <Tag color="green">{t.lease.statusPaid || 'Сплачено'}</Tag>;
-        if (pct > 0) return <Tag color="orange">{`${t.lease.statusPartial || 'Частково'} (${(pct * 100).toFixed(0)}%)`}</Tag>;
-        return <Tag color="red">{t.lease.statusUnpaid || 'Не сплачено'}</Tag>;
+      title: 'Оплата',
+      key: 'progress',
+      width: 200,
+      render: (_: unknown, record: LeaseSummaryDto) => {
+        const paid = record.totalPaid || 0;
+        const total = record.annualPayment || 0;
+        const pct = total > 0 ? Math.min(Math.round((paid / total) * 100), 100) : 0;
+        return (
+          <div>
+            <Progress percent={pct} size="small" strokeColor={pct >= 100 ? '#3fb950' : pct > 0 ? '#f0883e' : '#f85149'} showInfo={false} />
+            <Text type="secondary" style={{ fontSize: 11 }}>{paid.toLocaleString()} / {total.toLocaleString()} ₴</Text>
+          </div>
+        );
       },
     },
     {
@@ -291,6 +295,26 @@ export default function LeasePage() {
         loading={loading}
         pagination={false}
         locale={{ emptyText: t.lease.noLeases }}
+        expandable={{
+          expandedRowRender: (record) => {
+            const payments = record.payments || [];
+            if (!payments.length) return <Text type="secondary">Виплат ще не було</Text>;
+            return (
+              <Table
+                size="small"
+                dataSource={payments}
+                columns={[
+                  { title: 'Дата', dataIndex: 'paymentDate', render: (d: string) => dayjs(d).format('DD.MM.YYYY') },
+                  { title: 'Сума', dataIndex: 'amount', render: (v: number) => `${v.toLocaleString()} ₴` },
+                  { title: 'Спосіб', dataIndex: 'paymentMethod', render: (v: string) => v === 'Grain' ? 'Зерном' : 'Грошима' },
+                  { title: 'Примітка', dataIndex: 'notes', render: (v: string) => v || '—' },
+                ]}
+                rowKey="id"
+                pagination={false}
+              />
+            );
+          },
+        }}
       />
 
       {/* Add Lease Modal */}

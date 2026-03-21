@@ -20,6 +20,7 @@ export interface LeasePaymentDto {
   year: number;
   amount: number;
   paymentType: 'Advance' | 'Payment';
+  paymentMethod?: string;
   paymentDate: string;
   notes?: string;
 }
@@ -33,4 +34,5 @@ export interface LeaseSummaryDto {
   totalPaid: number;
   remaining: number;
   status: 'Paid' | 'Partial' | 'Unpaid' | 'Overpaid';
+  payments?: LeasePaymentDto[];
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Table, Spin, message } from 'antd';
+import { Table, message } from 'antd';
+import TableSkeleton from '../../components/TableSkeleton';
 import {
   BarChart,
   Bar,
@@ -74,7 +75,7 @@ export default function FieldEfficiency() {
     <div>
       <PageHeader title={t.analytics.fieldEfficiency} subtitle={t.analytics.title} />
       {loading ? (
-        <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />
+        <TableSkeleton />
       ) : (
         <>
           <Table

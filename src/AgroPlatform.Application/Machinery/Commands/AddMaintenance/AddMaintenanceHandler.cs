@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Machinery;
 using MediatR;
 
@@ -38,6 +39,19 @@ public class AddMaintenanceHandler : IRequestHandler<AddMaintenanceCommand, Guid
             machine.NextMaintenanceDate = request.NextMaintenanceDate.Value;
 
         _context.MaintenanceRecords.Add(record);
+
+        if (request.Cost.HasValue && request.Cost.Value > 0)
+        {
+            _context.CostRecords.Add(new CostRecord
+            {
+                Category = "Equipment",
+                Amount = request.Cost.Value,
+                Currency = "UAH",
+                Date = request.Date,
+                Description = $"ТО: {machine?.Name ?? "Техніка"} — {request.Type}"
+            });
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
         return record.Id;
     }

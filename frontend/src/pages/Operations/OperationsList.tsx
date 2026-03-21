@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { Table, Tag, Button, Space, Select, message, Modal, Form, Input, InputNumber, DatePicker } from 'antd';
 import { EyeOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getOperations, createOperation, updateOperation } from '../../api/operations';
+import { getOperations, createOperation, updateOperation, addMachinery } from '../../api/operations';
 import { getFields } from '../../api/fields';
 import { getEmployees } from '../../api/hr';
+import { getMachines } from '../../api/machinery';
 import type { AgroOperationDto, AgroOperationType } from '../../types/operation';
 import type { FieldDto } from '../../types/field';
 import type { EmployeeDto } from '../../types/hr';
+import type { MachineDto } from '../../types/machinery';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -37,6 +39,8 @@ export default function OperationsList() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editSaving, setEditSaving] = useState(false);
   const [editForm] = Form.useForm();
+  const [machines, setMachines] = useState<MachineDto[]>([]);
+  const [selectedMachineIds, setSelectedMachineIds] = useState<string[]>([]);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { hasRole } = useRole();
@@ -66,6 +70,12 @@ export default function OperationsList() {
       .catch(() => {/* ignore */});
   }, []);
 
+  useEffect(() => {
+    getMachines({ page: 1, pageSize: 100 })
+      .then((r) => setMachines(r.items))
+      .catch(() => {/* ignore */});
+  }, []);
+
   const handleCreate = async () => {
     try {
       const values = await form.validateFields();
@@ -73,7 +83,11 @@ export default function OperationsList() {
       const performedAt = values.performedAt
         ? (values.performedAt as { toISOString: () => string }).toISOString()
         : new Date().toISOString();
-      await createOperation({ ...values, performedAt });
+      const result = await createOperation({ ...values, performedAt });
+      for (const machineId of selectedMachineIds) {
+        try { await addMachinery(result.id, { machineId }); } catch (_e) { /* ignored */ }
+      }
+      setSelectedMachineIds([]);
       message.success(t.operations.createSuccess);
       form.resetFields();
       setModalOpen(false);
@@ -264,6 +278,17 @@ export default function OperationsList() {
           </Form.Item>
           <Form.Item name="description" label={t.operations.description}>
             <Input.TextArea rows={3} placeholder={t.operations.enterDescription} />
+          </Form.Item>
+          <Form.Item label={t.operations.addMachinery || 'Техніка (опціонально)'}>
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder={t.operations.selectMachine || 'Оберіть техніку'}
+              filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+              options={machines.map(m => ({ value: m.id, label: `${m.name} (${m.inventoryNumber})` }))}
+              onChange={setSelectedMachineIds}
+              value={selectedMachineIds}
+            />
           </Form.Item>
         </Form>
       </Modal>

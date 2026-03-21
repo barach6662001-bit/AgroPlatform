@@ -19,4 +19,5 @@ public class MoveHistoryDto
     public string? Note { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public decimal? TotalCost { get; set; }
+    public string? FieldName { get; set; }
 }

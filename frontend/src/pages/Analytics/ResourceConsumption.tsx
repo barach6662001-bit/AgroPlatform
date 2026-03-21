@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Table, DatePicker, Space, Spin, message } from 'antd';
+import { Table, DatePicker, Space, message } from 'antd';
+import TableSkeleton from '../../components/TableSkeleton';
 import {
   BarChart,
   Bar,
@@ -60,7 +61,7 @@ export default function ResourceConsumption() {
         />
       </Space>
       {loading ? (
-        <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />
+        <TableSkeleton />
       ) : (
         <>
           <Table

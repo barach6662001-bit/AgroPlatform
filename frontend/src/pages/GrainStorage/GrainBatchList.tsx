@@ -1,6 +1,6 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert } from 'antd';
+import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography } from 'antd';
 import { PlusOutlined, ExportOutlined, DownloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes } from '../../api/grain';
@@ -166,6 +166,7 @@ export default function GrainBatchList() {
         quantityTons: values.quantityTons,
         reason: values.reason,
         pricePerTon: values.pricePerTon,
+        buyerName: values.buyerName,
         movementDate: new Date().toISOString(),
       });
       message.success(t.grain.issueSuccess);
@@ -316,9 +317,35 @@ export default function GrainBatchList() {
     },
   ];
 
+  const batches = result?.items ?? [];
+  const totalTons = batches.reduce((s, b) => s + b.quantityTons, 0);
+  const totalValue = batches.reduce((s, b) => s + b.quantityTons * (b.pricePerTon || 0), 0);
+  const cultures = [...new Set(batches.map(b => b.grainType))];
+  const { Text } = Typography;
+
   return (
     <div>
       <PageHeader title={t.grain.title} subtitle={t.grain.subtitle} />
+      <Row gutter={12} style={{ marginBottom: 16 }}>
+        <Col span={8}>
+          <Card size="small" style={{ background: 'var(--agro-bg-card)', border: '1px solid var(--agro-border)' }}>
+            <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>Загальний обсяг</Text>
+            <div style={{ fontSize: 24, fontWeight: 600 }}>{totalTons.toFixed(1)} т</div>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card size="small" style={{ background: 'var(--agro-bg-card)', border: '1px solid var(--agro-border)' }}>
+            <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>Загальна вартість</Text>
+            <div style={{ fontSize: 24, fontWeight: 600 }}>{totalValue.toLocaleString()} ₴</div>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card size="small" style={{ background: 'var(--agro-bg-card)', border: '1px solid var(--agro-border)' }}>
+            <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>Культур</Text>
+            <div style={{ fontSize: 24, fontWeight: 600 }}>{cultures.length}</div>
+          </Card>
+        </Col>
+      </Row>
       <Space style={{ marginBottom: 16 }} wrap>
         {storages.length > 1 && (
           <Select
@@ -587,6 +614,9 @@ export default function GrainBatchList() {
           </Form.Item>
           <Form.Item name="pricePerTon" label={t.grain.exportPrice}>
             <InputNumber min={0} precision={2} addonAfter="грн/т" style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="buyerName" label={t.grain.buyer || 'Покупець'}>
+            <Input placeholder="Назва покупця або отримувача" />
           </Form.Item>
         </Form>
       </Modal>
