@@ -14,11 +14,12 @@ public class TenantMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        // Skip tenant requirement for auth, tenant registration, health, and SignalR hubs
+        // Skip tenant requirement for auth, tenant registration, health, SignalR hubs, and GPS device webhooks
         if (context.Request.Path.StartsWithSegments("/api/auth", StringComparison.OrdinalIgnoreCase)
             || context.Request.Path.StartsWithSegments("/api/tenants/register", StringComparison.OrdinalIgnoreCase)
             || context.Request.Path.StartsWithSegments("/health", StringComparison.OrdinalIgnoreCase)
             || context.Request.Path.StartsWithSegments("/hubs", StringComparison.OrdinalIgnoreCase)
+            || context.Request.Path.StartsWithSegments("/api/gps/webhook/teltonika", StringComparison.OrdinalIgnoreCase)
             || (context.Request.Method == "GET" &&
                 (context.Request.Path.StartsWithSegments("/api/cadastre/parcel", StringComparison.OrdinalIgnoreCase)
                  || context.Request.Path.StartsWithSegments("/api/cadastre/tile", StringComparison.OrdinalIgnoreCase))))

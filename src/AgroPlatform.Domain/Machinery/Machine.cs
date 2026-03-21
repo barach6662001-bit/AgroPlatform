@@ -18,6 +18,9 @@ public class Machine : AuditableEntity
     public DateTime? LastMaintenanceDate { get; set; }
     public decimal? MaintenanceIntervalHours { get; set; }
 
+    /// <summary>15-digit numeric IMEI of the GPS tracker attached to this machine. Null if no tracker is installed.</summary>
+    public string? ImeiNumber { get; set; }
+
     public Guid? AssignedDriverId { get; set; }
     public string? AssignedDriverName { get; set; }
 

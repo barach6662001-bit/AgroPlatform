@@ -21,6 +21,13 @@ public class MachineConfiguration : IEntityTypeConfiguration<Machine>
         builder.HasIndex(m => new { m.InventoryNumber, m.TenantId })
             .IsUnique();
 
+        builder.Property(m => m.ImeiNumber)
+            .HasMaxLength(15);
+
+        builder.HasIndex(m => m.ImeiNumber)
+            .IsUnique()
+            .HasFilter("\"ImeiNumber\" IS NOT NULL");
+
         builder.Property(m => m.Type)
             .HasConversion<string>();
 

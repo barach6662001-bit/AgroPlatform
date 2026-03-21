@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using AgroPlatform.Domain.Machinery;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AgroPlatform.IntegrationTests.Machinery;
@@ -12,7 +13,7 @@ public class GpsTrackControllerTests : IntegrationTestBase
 {
     public GpsTrackControllerTests(CustomWebApplicationFactory<Program> factory) : base(factory) { }
 
-    private async Task<Guid> CreateMachineAsync(string name = "GPS Test Tractor")
+    private async Task<Guid> CreateMachineAsync(string name = "GPS Test Tractor", string? imei = null)
     {
         var response = await PostAsync("/api/machinery", new
         {
@@ -27,7 +28,19 @@ public class GpsTrackControllerTests : IntegrationTestBase
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         var result = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
-        return result.GetProperty("id").GetGuid();
+        var machineId = result.GetProperty("id").GetGuid();
+
+        if (imei != null)
+        {
+            // Directly update IMEI via database to avoid any API restriction
+            using var scope = CreateScope();
+            var db = GetDbContext(scope);
+            var machine = db.Machines.Find(machineId);
+            machine!.ImeiNumber = imei;
+            await db.SaveChangesAsync();
+        }
+
+        return machineId;
     }
 
     private async Task InsertGpsTracksAsync(Guid machineId, IEnumerable<(double lat, double lng, decimal speed, decimal fuelLevel, DateTime timestamp)> tracks)
@@ -133,4 +146,102 @@ public class GpsTrackControllerTests : IntegrationTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    // ── Teltonika webhook tests ──────────────────────────────────────────────
+
+    /// <summary>
+    /// Posting to the Teltonika webhook without an X-Tenant-Id header must NOT be
+    /// blocked by the tenant middleware (TenantMiddleware exempts this path).
+    /// </summary>
+    [Fact]
+    public async Task TeltonikaWebhook_WithoutTenantHeader_IsNotBlocked()
+    {
+        // Create a client that has NO X-Tenant-Id header
+        var anonClient = Factory.CreateClient();
+
+        var payload = new
+        {
+            imei = "123456789012345",   // numeric 15-digit IMEI
+            lat = 50.1,
+            lng = 30.2,
+            speed = 0.0,
+            fuelLevel = 50.0,
+            timestampUtc = DateTime.UtcNow
+        };
+
+        var response = await anonClient.PostAsJsonAsync("/api/gps/webhook/teltonika", payload, JsonOptions);
+
+        // Must not be 400 "Missing Tenant Header"
+        response.StatusCode.Should().NotBe(HttpStatusCode.BadRequest);
+        // Unknown IMEI → 200 OK with Guid.Empty
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        body.GetProperty("id").GetGuid().Should().Be(Guid.Empty);
+    }
+
+    /// <summary>
+    /// When a machine with the matching IMEI exists, the webhook should persist
+    /// a GPS track and return a non-empty Guid.
+    /// </summary>
+    [Fact]
+    public async Task TeltonikaWebhook_KnownImei_PersistsTrackAndReturnsId()
+    {
+        // Use a unique 15-digit numeric IMEI for this test run
+        var imei = "100000000000001";
+        var machineId = await CreateMachineAsync("Webhook Tractor", imei);
+
+        // Post without tenant header — the handler resolves machine via IgnoreQueryFilters
+        var anonClient = Factory.CreateClient();
+
+        var payload = new
+        {
+            imei,
+            lat = 49.5,
+            lng = 31.0,
+            speed = 12.5,
+            fuelLevel = 75.0,
+            timestampUtc = new DateTime(2026, 3, 1, 10, 0, 0, DateTimeKind.Utc)
+        };
+
+        var response = await anonClient.PostAsJsonAsync("/api/gps/webhook/teltonika", payload, JsonOptions);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        var trackId = body.GetProperty("id").GetGuid();
+        trackId.Should().NotBe(Guid.Empty);
+
+        // Verify the track was actually persisted in the DB
+        using var scope = CreateScope();
+        var db = GetDbContext(scope);
+        var track = db.GpsTracks.IgnoreQueryFilters().FirstOrDefault(t => t.Id == trackId);
+        track.Should().NotBeNull();
+        track!.VehicleId.Should().Be(machineId);
+        track.TenantId.Should().Be(TenantId);
+    }
+
+    /// <summary>
+    /// An unknown IMEI must return 200 OK with Guid.Empty and must not persist any track.
+    /// </summary>
+    [Fact]
+    public async Task TeltonikaWebhook_UnknownImei_ReturnsGuidEmptyAndDoesNotPersist()
+    {
+        var anonClient = Factory.CreateClient();
+
+        var payload = new
+        {
+            imei = "999999999999999",   // numeric 15-digit IMEI that is not registered
+            lat = 50.0,
+            lng = 30.0,
+            speed = 5.0,
+            fuelLevel = 40.0,
+            timestampUtc = DateTime.UtcNow
+        };
+
+        var response = await anonClient.PostAsJsonAsync("/api/gps/webhook/teltonika", payload, JsonOptions);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        body.GetProperty("id").GetGuid().Should().Be(Guid.Empty);
+    }
 }
+
