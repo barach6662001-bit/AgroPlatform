@@ -231,7 +231,7 @@ public class SatelliteController : ControllerBase
                 P = null,
                 K = null,
                 Humus = null,
-                Notes = "Немає даних аналізу ґрунту",
+                Notes = "No soil analysis data available",
                 RecommendedNKgPerHa = 80,
                 RecommendedPKgPerHa = 60,
                 RecommendedKKgPerHa = 80,

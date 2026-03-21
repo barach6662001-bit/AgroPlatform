@@ -77,7 +77,7 @@ export const getSoilAnalyses = (fieldId: string) =>
   apiClient.get<SoilAnalysisDto[]>(`/api/fields/${fieldId}/soil-analyses`).then((r) => r.data);
 
 export const createSoilAnalysis = (fieldId: string, data: Omit<SoilAnalysisDto, 'id' | 'fieldId'>) =>
-  apiClient.post(`/api/fields/${fieldId}/soil-analyses`, { ...data, fieldId }).then((r) => r.data);
+  apiClient.post(`/api/fields/${fieldId}/soil-analyses`, data).then((r) => r.data);
 
 export const deleteSoilAnalysis = (fieldId: string, id: string) =>
   apiClient.delete(`/api/fields/${fieldId}/soil-analyses/${id}`);

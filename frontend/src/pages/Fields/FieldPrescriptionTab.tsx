@@ -64,7 +64,7 @@ export default function FieldPrescriptionTab({ fieldId }: Props) {
     <div>
       <Space style={{ marginBottom: 12 }} wrap>
         <Button icon={<ReloadOutlined />} onClick={load}>
-          {'Оновити'}
+          {t.errors.reload}
         </Button>
         <Button
           type="primary"
