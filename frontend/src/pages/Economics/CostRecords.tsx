@@ -170,7 +170,14 @@ export default function CostRecords() {
     {
       title: t.common.actions, key: 'actions',
       render: (_: unknown, record: CostRecordDto) => canDelete ? (
-        <Popconfirm title={t.economics.deleteConfirm} onConfirm={() => handleDelete(record.id)}>
+        <Popconfirm
+          title="Видалити запис?"
+          description="Цю дію неможливо скасувати"
+          okText="Видалити"
+          cancelText="Скасувати"
+          okButtonProps={{ danger: true }}
+          onConfirm={() => handleDelete(record.id)}
+        >
           <Button size="small" danger icon={<DeleteOutlined />} />
         </Popconfirm>
       ) : null,

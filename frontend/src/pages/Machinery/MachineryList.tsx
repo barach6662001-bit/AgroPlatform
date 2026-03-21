@@ -1,10 +1,10 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag, Typography } from 'antd';
+import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag, Typography, Popconfirm } from 'antd';
 import dayjs from 'dayjs';
-import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
+import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined, DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getMachines, createMachine, updateMachine } from '../../api/machinery';
+import { getMachines, createMachine, updateMachine, deleteMachine } from '../../api/machinery';
 import type { MachineDto, MachineryType, MachineryStatus } from '../../types/machinery';
 import type { PaginatedResult } from '../../types/common';
 import type { EmployeeDto } from '../../types/hr';
@@ -40,6 +40,7 @@ export default function MachineryList() {
 
   const canCreate = hasRole(['Administrator', 'Manager']);
   const canEdit = hasRole(['Administrator', 'Manager']);
+  const canDelete = hasRole(['Administrator', 'Manager']);
 
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
 
@@ -92,6 +93,16 @@ export default function MachineryList() {
       if (status) message.error(t.machinery.machineUpdateError);
     } finally {
       setEditSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMachine(id);
+      message.success(t.machinery.deleteSuccess);
+      load();
+    } catch {
+      message.error(t.machinery.deleteError);
     }
   };
 
@@ -161,6 +172,18 @@ export default function MachineryList() {
               icon={<EditOutlined />}
               onClick={() => { setEditRecord(record); editForm.setFieldsValue(record); setEditModalOpen(true); }}
             />
+          )}
+          {canDelete && (
+            <Popconfirm
+              title="Видалити запис?"
+              description="Цю дію неможливо скасувати"
+              okText="Видалити"
+              cancelText="Скасувати"
+              okButtonProps={{ danger: true }}
+              onConfirm={() => handleDelete(record.id)}
+            >
+              <Button size="small" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
           )}
         </Space>
       ),

@@ -79,7 +79,14 @@ export default function FieldSeedingTab({ fieldId, fieldArea }: Props) {
     ...(canWrite ? [{
       title: t.common.actions, key: 'actions',
       render: (_: unknown, record: FieldSeedingDto) => (
-        <Popconfirm title={t.common.confirm} onConfirm={() => handleDelete(record.id)}>
+        <Popconfirm
+          title="Видалити запис?"
+          description="Цю дію неможливо скасувати"
+          okText="Видалити"
+          cancelText="Скасувати"
+          okButtonProps={{ danger: true }}
+          onConfirm={() => handleDelete(record.id)}
+        >
           <Button size="small" danger icon={<DeleteOutlined />} />
         </Popconfirm>
       ),

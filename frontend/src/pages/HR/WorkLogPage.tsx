@@ -155,8 +155,14 @@ export default function WorkLogPage() {
         <Space>
           <Button size="small" icon={<EditOutlined />}
             onClick={() => handleEditWorkLog(record)} />
-          <Popconfirm title={t.hr.deleteWorkLogConfirm}
-            onConfirm={() => handleDeleteWorkLog(record.id)}>
+          <Popconfirm
+            title="Видалити запис?"
+            description="Цю дію неможливо скасувати"
+            okText="Видалити"
+            cancelText="Скасувати"
+            okButtonProps={{ danger: true }}
+            onConfirm={() => handleDeleteWorkLog(record.id)}
+          >
             <Button size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>

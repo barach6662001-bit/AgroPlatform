@@ -518,6 +518,8 @@ const uk = {
     selectDriver: 'Оберіть водія',
     noDriver: 'Водій не призначений',
     refuelAtStation: 'Заправити на Паливній станції',
+    deleteSuccess: 'Техніку видалено',
+    deleteError: 'Помилка при видаленні техніки',
   },
   machineryTypes: {
     Tractor: 'Трактор',
