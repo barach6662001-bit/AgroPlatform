@@ -2,7 +2,7 @@ import { Menu } from 'antd';
 import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
   DollarOutlined, LineChartOutlined, TeamOutlined, SettingOutlined,
-  EnvironmentOutlined, BankOutlined, FireOutlined,
+  EnvironmentOutlined, BankOutlined, FireOutlined, ShoppingOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -44,6 +44,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/fleet' },
     { key: '/fuel' },
     { key: '/grain' },
+    { key: '/sales' },
     { key: '/analytics/efficiency' },
     ...storageChildren,
     ...financeChildren,
@@ -67,6 +68,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     },
     { key: '/grain', label: t.nav.grainStorage, icon: <BankOutlined />, style: { padding: '4px 8px' } },
     { key: '/fuel', label: t.nav.fuelStation, icon: <FireOutlined />, style: { padding: '4px 8px' } },
+    { key: '/sales', label: t.nav.sales, icon: <ShoppingOutlined />, style: { padding: '4px 8px' } },
     { type: 'divider' as const },
     {
       key: 'finance-group',

@@ -6,6 +6,7 @@ using AgroPlatform.Domain.GrainStorage;
 using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
+using AgroPlatform.Domain.Sales;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,7 @@ public interface IAppDbContext
     DbSet<SalaryPayment> SalaryPayments { get; }
     DbSet<FuelTank> FuelTanks { get; }
     DbSet<FuelTransaction> FuelTransactions { get; }
+    DbSet<Sale> Sales { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
