@@ -16,7 +16,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-window.getComputedStyle = window.getComputedStyle || function() {
+window.getComputedStyle = window.getComputedStyle || function () {
   return {
     getPropertyValue: () => '',
   };
@@ -26,4 +26,5 @@ afterEach(() => {
   cleanup();
   vi.clearAllMocks();
   vi.clearAllTimers();
+  vi.useRealTimers();
 });
