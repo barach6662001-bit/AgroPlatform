@@ -42,6 +42,13 @@ public class MachineConfiguration : IEntityTypeConfiguration<Machine>
         builder.Property(m => m.AssignedDriverName)
             .HasMaxLength(200);
 
+        builder.Property(m => m.ImeiNumber)
+            .HasMaxLength(20);
+
+        builder.HasIndex(m => m.ImeiNumber)
+            .IsUnique()
+            .HasFilter("\"ImeiNumber\" IS NOT NULL");
+
         builder.HasMany(m => m.WorkLogs)
             .WithOne(w => w.Machine)
             .HasForeignKey(w => w.MachineId)

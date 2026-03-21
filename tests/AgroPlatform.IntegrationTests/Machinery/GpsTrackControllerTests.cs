@@ -133,4 +133,67 @@ public class GpsTrackControllerTests : IntegrationTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    // ── Teltonika webhook ────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task TeltonikaWebhook_UnknownImei_ReturnsOkWithEmptyId()
+    {
+        var payload = new
+        {
+            imei = "000000000000001",
+            lat = 50.45,
+            lng = 30.52,
+            speed = 42m,
+            timestamp = new DateTime(2026, 3, 21, 12, 0, 0, DateTimeKind.Utc)
+        };
+
+        var response = await Client.PostAsJsonAsync("/api/gps/webhook/teltonika", payload, JsonOptions);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        result.GetProperty("id").GetGuid().Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task TeltonikaWebhook_KnownImei_StoresTrackWithVehicleId()
+    {
+        // Arrange: create a machine and assign an IMEI
+        var machineId = await CreateMachineAsync("Teltonika IMEI Test");
+        var imei = $"35{Guid.NewGuid():N}"[..15];
+
+        using (var scope = CreateScope())
+        {
+            var db = GetDbContext(scope);
+            var machine = await db.Machines.FindAsync(machineId);
+            machine!.ImeiNumber = imei;
+            await db.SaveChangesAsync();
+        }
+
+        var payload = new
+        {
+            imei,
+            lat = 49.0,
+            lng = 31.5,
+            speed = 25m,
+            timestamp = new DateTime(2026, 3, 21, 14, 0, 0, DateTimeKind.Utc)
+        };
+
+        // Act
+        var response = await Client.PostAsJsonAsync("/api/gps/webhook/teltonika", payload, JsonOptions);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        var trackId = result.GetProperty("id").GetGuid();
+        trackId.Should().NotBeEmpty();
+
+        using var verifyScope = CreateScope();
+        var verifyDb = GetDbContext(verifyScope);
+        var track = await verifyDb.GpsTracks.FindAsync(trackId);
+        track.Should().NotBeNull();
+        track!.VehicleId.Should().Be(machineId);
+        track.Lat.Should().BeApproximately(49.0, 0.001);
+        track.Lng.Should().BeApproximately(31.5, 0.001);
+    }
 }

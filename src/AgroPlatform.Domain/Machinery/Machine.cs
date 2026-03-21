@@ -21,6 +21,8 @@ public class Machine : AuditableEntity
     public Guid? AssignedDriverId { get; set; }
     public string? AssignedDriverName { get; set; }
 
+    public string? ImeiNumber { get; set; }
+
     public ICollection<MachineWorkLog> WorkLogs { get; set; } = new List<MachineWorkLog>();
     public ICollection<FuelLog> FuelLogs { get; set; } = new List<FuelLog>();
     public ICollection<MaintenanceRecord> MaintenanceRecords { get; set; } = new List<MaintenanceRecord>();
