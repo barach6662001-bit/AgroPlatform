@@ -222,7 +222,7 @@ export default function FieldPnl() {
       </Row>
 
       {/* Chart */}
-      {data.length > 0 && pricePerTonne && (
+      {data.length > 0 && (
         <Card
           title={<span style={{ color: '#E6EDF3' }}>{t.economics.costsVsRevenue}</span>}
           style={{ background: '#161B22', border: '1px solid #30363D', marginBottom: 24 }}
