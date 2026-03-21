@@ -158,7 +158,7 @@ export default function FieldPrescriptionTab({ fieldId }: Props) {
       {loading ? (
         <Spin />
       ) : !hasData ? (
-        <EmptyState description={t.fields.prescriptionNoData} />
+        <EmptyState message={t.fields.prescriptionNoData} />
       ) : (
         <Table<PrescriptionZoneDto>
           dataSource={data?.zones ?? []}
