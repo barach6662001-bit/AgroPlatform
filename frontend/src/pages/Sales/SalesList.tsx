@@ -104,8 +104,8 @@ export default function SalesList() {
     }
   };
 
-  const totalAmount = result?.items.reduce((sum, s) => sum + s.totalAmount, 0) ?? 0;
   const totalQuantity = result?.items.reduce((sum, s) => sum + s.quantity, 0) ?? 0;
+  const totalCount = result?.totalCount ?? 0;
 
   const columns = [
     {
@@ -224,10 +224,8 @@ export default function SalesList() {
           <Card size="small">
             <Statistic
               title={t.sales.totalSales}
-              value={totalAmount}
-              precision={2}
-              suffix="UAH"
-              prefix={<DollarOutlined />}
+              value={totalCount}
+              prefix={<ShoppingOutlined />}
             />
           </Card>
         </Col>
@@ -237,7 +235,7 @@ export default function SalesList() {
               title={t.sales.totalQuantity}
               value={totalQuantity}
               precision={2}
-              prefix={<ShoppingOutlined />}
+              prefix={<DollarOutlined />}
             />
           </Card>
         </Col>
