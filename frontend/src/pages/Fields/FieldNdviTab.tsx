@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, Alert, Spin, Typography } from 'antd';
 import { MapContainer, TileLayer, ImageOverlay, useMap } from 'react-leaflet';
 import type { LatLngBoundsExpression } from 'leaflet';
 import { useTranslation } from '../../i18n';
-import { getFieldNdvi } from '../../api/satellite';
+import { getFieldNdvi, reportNdviProblem } from '../../api/satellite';
 import type { NdviData } from '../../api/satellite';
 
 interface Props {
@@ -21,15 +21,78 @@ function FitBounds({ bounds }: { bounds: LatLngBoundsExpression | null }) {
   return null;
 }
 
+/** Analyse an NDVI overlay image for stressed (red-dominant) pixels.
+ *  Returns the percentage of visible pixels that appear stressed, or null if analysis failed. */
+function analyseNdviImage(imageUrl: string): Promise<number | null> {
+  return new Promise((resolve) => {
+    try {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || 256;
+          canvas.height = img.naturalHeight || 256;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) { resolve(null); return; }
+          ctx.drawImage(img, 0, 0);
+          const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          let visiblePixels = 0;
+          let stressedPixels = 0;
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const a = data[i + 3];
+            // Skip transparent or near-transparent pixels (no-data)
+            if (a < MIN_VISIBLE_ALPHA) continue;
+            // Skip very dark pixels (no-data / black)
+            if (r < MAX_NO_DATA_RGB && g < MAX_NO_DATA_RGB && b < MAX_NO_DATA_RGB) continue;
+            visiblePixels++;
+            // Stressed pixel: red channel clearly dominant over green
+            if (r > MIN_STRESS_RED_VALUE && r > g * STRESS_RED_TO_GREEN_RATIO) {
+              stressedPixels++;
+            }
+          }
+          if (visiblePixels === 0) { resolve(null); return; }
+          resolve(Math.round((stressedPixels / visiblePixels) * 100));
+        } catch {
+          resolve(null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = imageUrl;
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+// Detection thresholds for canvas pixel analysis
+const MIN_VISIBLE_ALPHA = 30;   // below this alpha value the pixel is considered transparent / no-data
+const MAX_NO_DATA_RGB = 20;     // pixels with all channels below this value are black / no-data
+const MIN_STRESS_RED_VALUE = 150; // minimum red channel value for a "stressed" pixel
+const STRESS_RED_TO_GREEN_RATIO = 1.6; // red must be at least this many times higher than green
+const PROBLEM_THRESHOLD = 10; // percent of stressed pixels to trigger alert
+
 export default function FieldNdviTab({ fieldId }: Props) {
   const { t } = useTranslation();
   const [ndvi, setNdvi] = useState<NdviData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [problemDetected, setProblemDetected] = useState(false);
+  const [problemPercent, setProblemPercent] = useState(0);
+  const [analysisDone, setAnalysisDone] = useState(false);
+  const notificationSentRef = useRef(false);
+
   useEffect(() => {
     setLoading(true);
     setError(null);
+    setProblemDetected(false);
+    setProblemPercent(0);
+    setAnalysisDone(false);
+    notificationSentRef.current = false;
 
     getFieldNdvi(fieldId)
       .then((data) => setNdvi(data))
@@ -39,6 +102,29 @@ export default function FieldNdviTab({ fieldId }: Props) {
       })
       .finally(() => setLoading(false));
   }, [fieldId]);
+
+  // Run canvas analysis once the NDVI image URL is known
+  useEffect(() => {
+    if (!ndvi?.imageUrl || analysisDone) return;
+
+    analyseNdviImage(ndvi.imageUrl).then((percent) => {
+      setAnalysisDone(true);
+      if (percent === null) return; // analysis failed gracefully
+      if (percent >= PROBLEM_THRESHOLD) {
+        setProblemDetected(true);
+        setProblemPercent(percent);
+        // Send backend notification exactly once per load
+        if (!notificationSentRef.current) {
+          notificationSentRef.current = true;
+          reportNdviProblem(fieldId, {
+            date: ndvi.date,
+            stressedPercent: percent,
+            message: t.fields.ndviProblemZoneBody.replace('{{percent}}', String(percent)),
+          }).catch(() => { /* notification failure is non-critical */ });
+        }
+      }
+    });
+  }, [ndvi, analysisDone, fieldId, t]);
 
   if (loading) {
     return (
@@ -72,6 +158,17 @@ export default function FieldNdviTab({ fieldId }: Props) {
           type="warning"
           showIcon
           message={t.fields.ndviPlaceholderNote}
+          style={{ margin: '0 0 12px 0' }}
+          closable
+        />
+      )}
+
+      {problemDetected && (
+        <Alert
+          type="error"
+          showIcon
+          message={t.fields.ndviProblemZoneDetected}
+          description={t.fields.ndviProblemZoneBody.replace('{{percent}}', String(problemPercent))}
           style={{ margin: '0 0 12px 0' }}
           closable
         />
