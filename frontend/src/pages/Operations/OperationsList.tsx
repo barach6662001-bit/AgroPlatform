@@ -85,7 +85,7 @@ export default function OperationsList() {
         : new Date().toISOString();
       const result = await createOperation({ ...values, performedAt });
       for (const machineId of selectedMachineIds) {
-        try { await addMachinery(result.id, { machineId, plannedHours: 0 }); } catch {}
+        try { await addMachinery(result.id, { machineId, plannedHours: 0 }); } catch (_e) { /* ignored */ }
       }
       setSelectedMachineIds([]);
       message.success(t.operations.createSuccess);
