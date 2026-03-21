@@ -9,6 +9,7 @@ import type { MachineDto, MachineryType, MachineryStatus } from '../../types/mac
 import type { PaginatedResult } from '../../types/common';
 import type { EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { useFleetHub } from '../../hooks/useFleetHub';
@@ -242,25 +243,29 @@ export default function MachineryList() {
           {t.common.export}
         </Button>
       </Space>
-      <Table
-        dataSource={result?.items ?? []}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total: result?.totalCount ?? 0,
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-        }}
-        locale={{
-          emptyText: <EmptyState
-            message={t.machinery.noMachinery || 'Ще немає техніки. Додайте першу'}
-            actionLabel={canCreate ? t.machinery.createMachine : undefined}
-            onAction={canCreate ? () => setModalOpen(true) : undefined}
-          />,
-        }}
-      />
+      {result === null ? (
+        <TableSkeleton rows={5} />
+      ) : (
+        <Table
+          dataSource={result.items}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            current: page,
+            pageSize,
+            total: result.totalCount,
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+          }}
+          locale={{
+            emptyText: <EmptyState
+              message={t.machinery.noMachinery || 'Ще немає техніки. Додайте першу'}
+              actionLabel={canCreate ? t.machinery.createMachine : undefined}
+              onAction={canCreate ? () => setModalOpen(true) : undefined}
+            />,
+          }}
+        />
+      )}
 
       <Modal
         title={t.machinery.createMachine}

@@ -10,6 +10,7 @@ import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../../types/war
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
@@ -313,26 +314,30 @@ export default function WarehouseItems() {
           {t.warehouses_export.exportBalances}
         </Button>
       </Space>
-      <Table
-        dataSource={result?.items ?? []}
-        columns={columns}
-        rowKey={(r) => `${r.warehouseId}-${r.itemId}-${r.batchId ?? ''}`}
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total: result?.totalCount ?? 0,
-          showTotal: (total) => t.warehouses.totalItems.replace('{{count}}', String(total)),
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-        }}
-        locale={{
-          emptyText: <EmptyState
-            message={t.warehouses.noBalances || 'Складські залишки відсутні. Створіть товар і запишіть прихід'}
-            actionLabel={canManageItems ? t.warehouses.receipt : undefined}
-            onAction={canManageItems ? () => setReceiptOpen(true) : undefined}
-          />,
-        }}
-      />
+      {result === null ? (
+        <TableSkeleton rows={6} />
+      ) : (
+        <Table
+          dataSource={result.items}
+          columns={columns}
+          rowKey={(r) => `${r.warehouseId}-${r.itemId}-${r.batchId ?? ''}`}
+          loading={loading}
+          pagination={{
+            current: page,
+            pageSize,
+            total: result.totalCount,
+            showTotal: (total) => t.warehouses.totalItems.replace('{{count}}', String(total)),
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+          }}
+          locale={{
+            emptyText: <EmptyState
+              message={t.warehouses.noBalances || 'Складські залишки відсутні. Створіть товар і запишіть прихід'}
+              actionLabel={canManageItems ? t.warehouses.receipt : undefined}
+              onAction={canManageItems ? () => setReceiptOpen(true) : undefined}
+            />,
+          }}
+        />
+      )}
 
       {/* Receipt Modal */}
       <Modal

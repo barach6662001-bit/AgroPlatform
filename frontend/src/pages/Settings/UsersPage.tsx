@@ -5,6 +5,7 @@ import { getUsers, updateUserRole } from '../../api/users';
 import { getCurrentTenant, updateCurrentTenant } from '../../api/tenants';
 import type { UserDto } from '../../types/users';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useTranslation, languages } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 
@@ -176,13 +177,17 @@ export default function UsersPage() {
         </Radio.Group>
       </Card>
 
-      <Table
-        dataSource={users}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={false}
-      />
+      {loading && users.length === 0 ? (
+        <TableSkeleton rows={5} />
+      ) : (
+        <Table
+          dataSource={users}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={false}
+        />
+      )}
     </div>
   );
 }

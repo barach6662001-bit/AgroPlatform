@@ -6,6 +6,7 @@ import { getStockMovements, getWarehouses, getWarehouseItems } from '../../api/w
 import type { StockMoveDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useTranslation } from '../../i18n';
 import { formatDate } from '../../utils/dateFormat';
 
@@ -158,23 +159,27 @@ export default function StockMovements() {
         <RangePicker onChange={handleDateChange} />
       </Space>
 
-      <Table
-        dataSource={moves}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total: result?.totalCount ?? 0,
-          onChange: (p) => setPage(p),
-        }}
-        locale={{
-          emptyText: <EmptyState
-            message={t.warehouses.noMovements || 'Ще немає рухів товарів'}
-          />,
-        }}
-      />
+      {result === null ? (
+        <TableSkeleton rows={5} />
+      ) : (
+        <Table
+          dataSource={moves}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            current: page,
+            pageSize,
+            total: result.totalCount,
+            onChange: (p) => setPage(p),
+          }}
+          locale={{
+            emptyText: <EmptyState
+              message={t.warehouses.noMovements || 'Ще немає рухів товарів'}
+            />,
+          }}
+        />
+      )}
     </div>
   );
 }

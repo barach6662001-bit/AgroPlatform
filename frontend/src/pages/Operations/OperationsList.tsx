@@ -14,6 +14,7 @@ import type { EmployeeDto } from '../../types/hr';
 import type { MachineDto } from '../../types/machinery';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
@@ -206,26 +207,30 @@ export default function OperationsList() {
           {t.common.export}
         </Button>
       </Space>
-      <Table
-        dataSource={result?.items ?? []}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total: result?.totalCount ?? 0,
-          showTotal: (total) => t.operations.total.replace('{{count}}', String(total)),
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-        }}
-        locale={{
-          emptyText: <EmptyState
-            message={t.operations.noOperations || 'Ще немає операцій. Створіть першу'}
-            actionLabel={canCreate ? t.operations.createOperation : undefined}
-            onAction={canCreate ? () => setModalOpen(true) : undefined}
-          />,
-        }}
-      />
+      {result === null ? (
+        <TableSkeleton rows={5} />
+      ) : (
+        <Table
+          dataSource={result.items}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            current: page,
+            pageSize,
+            total: result.totalCount,
+            showTotal: (total) => t.operations.total.replace('{{count}}', String(total)),
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+          }}
+          locale={{
+            emptyText: <EmptyState
+              message={t.operations.noOperations || 'Ще немає операцій. Створіть першу'}
+              actionLabel={canCreate ? t.operations.createOperation : undefined}
+              onAction={canCreate ? () => setModalOpen(true) : undefined}
+            />,
+          }}
+        />
+      )}
 
       <Modal
         title={t.operations.createOperation}

@@ -6,6 +6,7 @@ import { getWarehouses, createWarehouse } from '../../api/warehouses';
 import type { WarehouseDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 
@@ -82,20 +83,24 @@ export default function WarehousesList() {
           </Button>
         )}
       </Space>
-      <Table
-        dataSource={result?.items ?? []}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total: result?.totalCount ?? 0,
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-        }}
-        onRow={(record) => ({ onClick: () => navigate(`/warehouses/items?warehouse=${record.id}`) })}
-        rowClassName={() => 'clickable-row'}
-      />
+      {result === null ? (
+        <TableSkeleton rows={5} />
+      ) : (
+        <Table
+          dataSource={result.items}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            current: page,
+            pageSize,
+            total: result.totalCount,
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+          }}
+          onRow={(record) => ({ onClick: () => navigate(`/warehouses/items?warehouse=${record.id}`) })}
+          rowClassName={() => 'clickable-row'}
+        />
+      )}
 
       <Modal
         title={t.warehouses.createWarehouse}

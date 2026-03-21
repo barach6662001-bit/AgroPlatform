@@ -11,6 +11,7 @@ import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import TableSkeleton from '../../components/TableSkeleton';
 
 export default function EmployeeList() {
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
@@ -188,21 +189,25 @@ export default function EmployeeList() {
           </Space>
         }
       />
-      <Table
-        columns={columns}
-        dataSource={employees}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 20 }}
-        style={{ background: 'transparent' }}
-        locale={{
-          emptyText: <EmptyState
-            message={t.hr.noEmployees || 'Ще немає співробітників'}
-            actionLabel={canWrite ? t.hr.addEmployee : undefined}
-            onAction={canWrite ? () => setModalOpen(true) : undefined}
-          />,
-        }}
-      />
+      {loading && employees.length === 0 ? (
+        <TableSkeleton rows={5} />
+      ) : (
+        <Table
+          columns={columns}
+          dataSource={employees}
+          rowKey="id"
+          loading={loading}
+          pagination={{ pageSize: 20 }}
+          style={{ background: 'transparent' }}
+          locale={{
+            emptyText: <EmptyState
+              message={t.hr.noEmployees || 'Ще немає співробітників'}
+              actionLabel={canWrite ? t.hr.addEmployee : undefined}
+              onAction={canWrite ? () => setModalOpen(true) : undefined}
+            />,
+          }}
+        />
+      )}
 
       <Modal
         title={editingEmployee ? t.hr.editEmployee : t.hr.addEmployee}

@@ -9,6 +9,7 @@ import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import FieldMap from '../../components/Map/FieldMap';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { exportToCsv } from '../../utils/exportCsv';
@@ -243,16 +244,18 @@ export default function FieldsList() {
 
       {viewMode === 'map' ? (
         <FieldMap fields={result?.items ?? []} height={500} />
+      ) : result === null ? (
+        <TableSkeleton rows={5} />
       ) : (
         <Table
-          dataSource={result?.items ?? []}
+          dataSource={result.items}
           columns={columns}
           rowKey="id"
           loading={loading}
           pagination={{
             current: page,
             pageSize,
-            total: result?.totalCount ?? 0,
+            total: result.totalCount,
             showTotal: (total) => t.fields.total.replace('{{count}}', String(total)),
             onChange: (p, ps) => { setPage(p); setPageSize(ps); },
           }}

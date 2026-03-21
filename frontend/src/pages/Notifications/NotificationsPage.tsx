@@ -9,6 +9,7 @@ import {
   type NotificationDto,
 } from '../../api/notifications';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useTranslation } from '../../i18n';
 
 const typeIcon = (type: string) => {
@@ -117,14 +118,18 @@ export default function NotificationsPage() {
           Тільки непрочитані
         </Checkbox>
       </Space>
-      <Table
-        dataSource={notifications}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        locale={{ emptyText: t.notifications.noNotifications }}
-        pagination={{ pageSize: 20 }}
-      />
+      {loading && notifications.length === 0 ? (
+        <TableSkeleton rows={5} />
+      ) : (
+        <Table
+          dataSource={notifications}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          locale={{ emptyText: t.notifications.noNotifications }}
+          pagination={{ pageSize: 20 }}
+        />
+      )}
     </div>
   );
 }
