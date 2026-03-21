@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto } from '../types/field';
+import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto, FieldZoneDto } from '../types/field';
 import type { PaginatedResult } from '../types/common';
 
 export const getFields = (params?: { page?: number; pageSize?: number; search?: string; ownershipType?: number[] }) =>
@@ -71,4 +71,17 @@ export const createFieldHarvest = (fieldId: string, data: Omit<FieldHarvestDto, 
 
 export const deleteFieldHarvest = (fieldId: string, id: string) =>
   apiClient.delete(`/api/fields/${fieldId}/harvests/${id}`);
+
+// Zones
+export const getFieldZones = (fieldId: string) =>
+  apiClient.get<FieldZoneDto[]>(`/api/fields/${fieldId}/zones`).then((r) => r.data);
+
+export const createFieldZone = (fieldId: string, data: Omit<FieldZoneDto, 'id'>) =>
+  apiClient.post(`/api/fields/${fieldId}/zones`, data).then((r) => r.data);
+
+export const updateFieldZone = (fieldId: string, id: string, data: Omit<FieldZoneDto, 'id'>) =>
+  apiClient.put(`/api/fields/${fieldId}/zones/${id}`, data).then((r) => r.data);
+
+export const deleteFieldZone = (fieldId: string, id: string) =>
+  apiClient.delete(`/api/fields/${fieldId}/zones/${id}`);
 
