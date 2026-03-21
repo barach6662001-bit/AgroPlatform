@@ -315,6 +315,7 @@ const en: Translations = {
     cadastreDataNote: 'Cadastre data as of 2022.',
     cadastrePurpose: 'Purpose',
     cadastreOwnership: 'Ownership',
+    cadastreLayer: 'Cadastral layer',
     expenses: 'Expenses',
     revenue: 'Revenue',
     profit: 'Profit',
