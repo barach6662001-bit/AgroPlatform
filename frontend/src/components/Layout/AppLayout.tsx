@@ -1,5 +1,5 @@
 import { Button, Dropdown } from 'antd';
-import { LogoutOutlined, MenuOutlined } from '@ant-design/icons';
+import { LogoutOutlined, MenuOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
@@ -57,7 +57,7 @@ export default function AppLayout() {
       background: 'var(--bg-app)',
       overflow: 'hidden',
     }}>
-      {/* Sidebar — desktop only */}
+      {/* Sidebar — desktop and tablet */}
       {!isMobile && (
         <aside style={{
           width: sidebarCollapsed ? 64 : 220,
@@ -67,15 +67,17 @@ export default function AppLayout() {
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
+          transition: 'width 0.2s ease',
         }}>
           {/* Logo */}
           <div style={{
-            padding: '16px 20px',
+            padding: sidebarCollapsed ? '16px 0' : '16px 20px',
             borderBottom: '1px solid #21262d',
             display: 'flex',
             alignItems: 'center',
             gap: 10,
             flexShrink: 0,
+            justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
           }}>
             <div style={{
               width: 32,
@@ -90,39 +92,42 @@ export default function AppLayout() {
             }}>
               <span style={{ fontSize: 16 }}>🌿</span>
             </div>
-            <div>
-              <div style={{
-                color: '#e6edf3',
-                fontWeight: 700,
-                fontSize: 16,
-                letterSpacing: '-0.3px',
-                lineHeight: 1.1,
-              }}>
-                Agro<span style={{ color: '#2ea043' }}>Tech</span>
+            {!sidebarCollapsed && (
+              <div>
+                <div style={{
+                  color: '#e6edf3',
+                  fontWeight: 700,
+                  fontSize: 16,
+                  letterSpacing: '-0.3px',
+                  lineHeight: 1.1,
+                }}>
+                  Agro<span style={{ color: '#2ea043' }}>Tech</span>
+                </div>
+                <div style={{
+                  color: '#484f58',
+                  fontSize: 10,
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase',
+                }}>
+                  Farm Management
+                </div>
               </div>
-              <div style={{
-                color: '#484f58',
-                fontSize: 10,
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-              }}>
-                Farm Management
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Navigation */}
           <div style={{ flex: 1, overflow: 'auto', padding: '8px 0' }}>
-            <Sidebar />
+            <Sidebar collapsed={sidebarCollapsed} />
           </div>
 
           {/* User info at bottom */}
           <div style={{
-            padding: '12px 16px',
+            padding: sidebarCollapsed ? '12px 0' : '12px 16px',
             borderTop: '1px solid var(--border)',
             display: 'flex',
             alignItems: 'center',
             gap: 8,
+            justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
           }}>
             <div style={{
               width: 28,
@@ -140,12 +145,14 @@ export default function AppLayout() {
             }}>
               {userInitial}
             </div>
-            <div style={{ overflow: 'hidden', flex: 1 }}>
-              <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {email}
+            {!sidebarCollapsed && (
+              <div style={{ overflow: 'hidden', flex: 1 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {email}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{role}</div>
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{role}</div>
-            </div>
+            )}
           </div>
         </aside>
       )}
@@ -172,7 +179,15 @@ export default function AppLayout() {
               style={{ padding: '4px 8px', height: 'auto' }}
             />
           ) : (
-            <div />
+            <Button
+              type="text"
+              icon={sidebarCollapsed
+                ? <MenuUnfoldOutlined style={{ fontSize: 16, color: 'var(--text-secondary)' }} />
+                : <MenuFoldOutlined style={{ fontSize: 16, color: 'var(--text-secondary)' }} />
+              }
+              onClick={() => setSidebarCollapsed(prev => !prev)}
+              style={{ padding: '4px 8px', height: 'auto' }}
+            />
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
