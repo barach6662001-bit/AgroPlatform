@@ -8,7 +8,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 
-export default function Sidebar() {
+interface SidebarProps {
+  collapsed?: boolean;
+}
+
+export default function Sidebar({ collapsed = false }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -115,6 +119,7 @@ export default function Sidebar() {
       <Menu
         theme="dark"
         mode="inline"
+        inlineCollapsed={collapsed}
         selectedKeys={[selectedKey]}
         defaultOpenKeys={openKeys}
         items={menuItems}
@@ -123,14 +128,16 @@ export default function Sidebar() {
         }}
         style={{ borderRight: 0, flex: 1, overflowY: 'auto', background: 'transparent' }}
       />
-      <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)' }}>
-        <span style={{ fontSize: 11, color: 'var(--text-disabled)', display: 'block' }}>
-          v1.0.0 · Agrotech Platform
-        </span>
-        <span style={{ fontSize: 10, color: 'var(--text-disabled)' }}>
-          {import.meta.env.MODE}
-        </span>
-      </div>
+      {!collapsed && (
+        <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 11, color: 'var(--text-disabled)', display: 'block' }}>
+            v1.0.0 · Agrotech Platform
+          </span>
+          <span style={{ fontSize: 10, color: 'var(--text-disabled)' }}>
+            {import.meta.env.MODE}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
