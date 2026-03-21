@@ -354,6 +354,16 @@ public class SatelliteController : ControllerBase
         };
     }
 
+    /// <summary>
+    /// Calculates the recommended fertiliser application rate based on measured soil nutrient level.
+    /// </summary>
+    /// <param name="value">Measured soil nutrient concentration (mg/kg). Null triggers the medium rate.</param>
+    /// <param name="lowThreshold">Below this value the soil is considered deficient → <paramref name="lowRate"/> applies.</param>
+    /// <param name="highThreshold">Above this value the soil is considered sufficient → <paramref name="highRate"/> applies.</param>
+    /// <param name="lowRate">Rate (kg/ha) for deficient soils.</param>
+    /// <param name="medRate">Rate (kg/ha) for moderate soils.</param>
+    /// <param name="highRate">Rate (kg/ha) for well-supplied soils.</param>
+    /// <returns>Recommended application rate in kg/ha.</returns>
     private static decimal CalcNutrientRate(
         decimal? value,
         decimal lowThreshold, decimal highThreshold,

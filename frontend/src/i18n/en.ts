@@ -343,6 +343,7 @@ const en: Translations = {
     prescriptionNdviNote: 'NDVI: Sentinel Hub configured',
     prescriptionNdviNotConfigured: 'NDVI: Sentinel Hub not configured (placeholder used)',
     prescriptionNoData: 'No data to calculate. Add soil analysis records.',
+    kgHaUnit: 'kg/ha',
   },
   warehouses: {
     title: 'Warehouses',

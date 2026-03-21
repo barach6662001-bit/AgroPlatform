@@ -41,9 +41,9 @@ export default function FieldPrescriptionTab({ fieldId }: Props) {
     { title: t.fields.soilN, dataIndex: 'n', key: 'n', render: (v?: number) => v ?? '—' },
     { title: t.fields.soilP, dataIndex: 'p', key: 'p', render: (v?: number) => v ?? '—' },
     { title: t.fields.soilK, dataIndex: 'k', key: 'k', render: (v?: number) => v ?? '—' },
-    { title: t.fields.prescriptionNRate, dataIndex: 'recommendedNKgPerHa', key: 'n_rate', render: (v: number) => `${v} кг/га` },
-    { title: t.fields.prescriptionPRate, dataIndex: 'recommendedPKgPerHa', key: 'p_rate', render: (v: number) => `${v} кг/га` },
-    { title: t.fields.prescriptionKRate, dataIndex: 'recommendedKKgPerHa', key: 'k_rate', render: (v: number) => `${v} кг/га` },
+    { title: t.fields.prescriptionNRate, dataIndex: 'recommendedNKgPerHa', key: 'n_rate', render: (v: number) => `${v} ${t.fields.kgHaUnit}` },
+    { title: t.fields.prescriptionPRate, dataIndex: 'recommendedPKgPerHa', key: 'p_rate', render: (v: number) => `${v} ${t.fields.kgHaUnit}` },
+    { title: t.fields.prescriptionKRate, dataIndex: 'recommendedKKgPerHa', key: 'k_rate', render: (v: number) => `${v} ${t.fields.kgHaUnit}` },
     {
       title: t.fields.prescriptionAppZone,
       dataIndex: 'applicationZone',

@@ -341,6 +341,7 @@ const uk = {
     prescriptionNdviNote: 'NDVI: Sentinel Hub налаштовано',
     prescriptionNdviNotConfigured: 'NDVI: Sentinel Hub не налаштовано (використано placeholder)',
     prescriptionNoData: 'Немає даних для розрахунку. Додайте аналізи ґрунту.',
+    kgHaUnit: 'кг/га',
   },
   warehouses: {
     title: 'Склади',
