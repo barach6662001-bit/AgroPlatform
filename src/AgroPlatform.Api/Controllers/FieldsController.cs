@@ -4,12 +4,14 @@ using AgroPlatform.Application.Fields.Commands.CreateFieldFertilizer;
 using AgroPlatform.Application.Fields.Commands.CreateFieldHarvest;
 using AgroPlatform.Application.Fields.Commands.CreateFieldProtection;
 using AgroPlatform.Application.Fields.Commands.CreateFieldSeeding;
+using AgroPlatform.Application.Fields.Commands.CreateSoilAnalysis;
 using AgroPlatform.Application.Fields.Commands.DeleteField;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldFertilizer;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldHarvest;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldProtection;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldSeeding;
 using AgroPlatform.Application.Fields.Commands.DeleteRotationPlan;
+using AgroPlatform.Application.Fields.Commands.DeleteSoilAnalysis;
 using AgroPlatform.Application.Fields.Commands.PlanRotation;
 using AgroPlatform.Application.Fields.Commands.UpdateField;
 using AgroPlatform.Application.Fields.Commands.UpdateFieldGeometry;
@@ -20,6 +22,7 @@ using AgroPlatform.Application.Fields.Queries.GetFieldHarvests;
 using AgroPlatform.Application.Fields.Queries.GetFieldProtections;
 using AgroPlatform.Application.Fields.Queries.GetFieldSeedings;
 using AgroPlatform.Application.Fields.Queries.GetFields;
+using AgroPlatform.Application.Fields.Queries.GetSoilAnalyses;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -328,6 +331,41 @@ public class FieldsController : ControllerBase
         await _sender.Send(new DeleteFieldHarvestCommand(id), cancellationToken);
         return NoContent();
     }
+
+    // ─── Soil Analyses ──────────────────────────────────────────────────────────
+
+    /// <summary>Returns soil analysis records for a field.</summary>
+    [HttpGet("{fieldId:guid}/soil-analyses")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetSoilAnalyses(Guid fieldId, [FromQuery] int? year, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetSoilAnalysesQuery(fieldId, year), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates a soil analysis record for a field.</summary>
+    [HttpPost("{fieldId:guid}/soil-analyses")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateSoilAnalysis(Guid fieldId, [FromBody] CreateSoilAnalysisRequest request, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(new CreateSoilAnalysisCommand(
+            fieldId, request.Year, request.SampleDate, request.Ph,
+            request.OrganicMatter, request.Nitrogen, request.Phosphorus,
+            request.Potassium, request.SampleDepthCm, request.LabName, request.Notes), cancellationToken);
+        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+    }
+
+    /// <summary>Deletes a soil analysis record.</summary>
+    [HttpDelete("{fieldId:guid}/soil-analyses/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteSoilAnalysis(Guid fieldId, Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteSoilAnalysisCommand(id), cancellationToken);
+        return NoContent();
+    }
 }
 
 /// <summary>Request body for updating a field's GeoJSON geometry.</summary>
@@ -375,4 +413,17 @@ public record CreateFieldHarvestRequest(
     decimal? MoisturePercent,
     decimal? PricePerTon,
     DateTime HarvestDate,
+    string? Notes);
+
+/// <summary>Request body for creating a soil analysis record.</summary>
+public record CreateSoilAnalysisRequest(
+    int Year,
+    DateTime? SampleDate,
+    decimal? Ph,
+    decimal? OrganicMatter,
+    decimal? Nitrogen,
+    decimal? Phosphorus,
+    decimal? Potassium,
+    int? SampleDepthCm,
+    string? LabName,
     string? Notes);

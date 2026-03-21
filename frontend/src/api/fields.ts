@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto } from '../types/field';
+import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto, SoilAnalysisDto } from '../types/field';
 import type { PaginatedResult } from '../types/common';
 
 export const getFields = (params?: { page?: number; pageSize?: number; search?: string; ownershipType?: number[] }) =>
@@ -71,4 +71,14 @@ export const createFieldHarvest = (fieldId: string, data: Omit<FieldHarvestDto, 
 
 export const deleteFieldHarvest = (fieldId: string, id: string) =>
   apiClient.delete(`/api/fields/${fieldId}/harvests/${id}`);
+
+// Soil Analyses
+export const getSoilAnalyses = (fieldId: string, year?: number) =>
+  apiClient.get<SoilAnalysisDto[]>(`/api/fields/${fieldId}/soil-analyses`, { params: year ? { year } : undefined }).then((r) => r.data);
+
+export const createSoilAnalysis = (fieldId: string, data: Omit<SoilAnalysisDto, 'id'>) =>
+  apiClient.post(`/api/fields/${fieldId}/soil-analyses`, data).then((r) => r.data);
+
+export const deleteSoilAnalysis = (fieldId: string, id: string) =>
+  apiClient.delete(`/api/fields/${fieldId}/soil-analyses/${id}`);
 
