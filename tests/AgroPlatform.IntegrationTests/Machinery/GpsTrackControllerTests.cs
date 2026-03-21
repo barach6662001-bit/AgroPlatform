@@ -156,7 +156,9 @@ public class GpsTrackControllerTests : IntegrationTestBase
     [Fact]
     public async Task TeltonikaWebhook_KnownImei_PersistsTrackAndReturnsId()
     {
-        var imei = $"8{Guid.NewGuid():N}"[..15];
+        // Generate a valid 15-digit IMEI using only decimal digits
+        var random = new Random();
+        var imei = string.Concat(Enumerable.Range(0, 15).Select(_ => random.Next(0, 10).ToString()));
         var machineId = await InsertMachineWithImeiAsync(imei);
 
         var payload = new
