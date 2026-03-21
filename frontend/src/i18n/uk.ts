@@ -247,6 +247,8 @@ const uk = {
     ndviLegendModerate: 'Помірно',
     ndviLegendHealthy: 'Здорово',
     ndviPlaceholderNote: 'Відображено тестове зображення (Sentinel Hub не налаштовано)',
+    ndviProblemZoneDetected: 'Виявлено проблемну NDVI-зону',
+    ndviProblemZoneBody: 'Стрес виявлено на {{percent}}% пікселів зображення',
     cropName: 'Культура',
     variety: 'Сорт',
     seedingRate: 'Норма (кг/га)',

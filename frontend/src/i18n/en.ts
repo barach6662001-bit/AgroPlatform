@@ -249,6 +249,8 @@ const en: Translations = {
     ndviLegendModerate: 'Moderate',
     ndviLegendHealthy: 'Healthy',
     ndviPlaceholderNote: 'Showing placeholder image (Sentinel Hub not configured)',
+    ndviProblemZoneDetected: 'Problem NDVI zone detected',
+    ndviProblemZoneBody: 'Stress detected in {{percent}}% of image pixels',
     cropName: 'Crop',
     variety: 'Variety',
     seedingRate: 'Rate (kg/ha)',
