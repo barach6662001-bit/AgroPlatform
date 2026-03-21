@@ -1,3 +1,4 @@
+import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Badge, Tag, Empty } from 'antd';
 import PageHeader from '../../components/PageHeader';
@@ -21,6 +22,28 @@ const connectionTagProps: Record<ConnectionState, { color: string; statusType: '
   reconnecting: { color: '#d29922', statusType: 'warning' },
   disconnected: { color: '#f85149', statusType: 'error' },
 };
+
+/** Color per machinery type for map marker dots. */
+const TYPE_COLORS: Record<string, string> = {
+  Tractor:    '#52c41a',
+  Combine:    '#fa8c16',
+  Sprayer:    '#1677ff',
+  Seeder:     '#fadb14',
+  Cultivator: '#722ed1',
+  Truck:      '#f5222d',
+  Other:      '#8c8c8c',
+};
+
+function getMarkerIcon(machineType: string): L.DivIcon {
+  const color = TYPE_COLORS[machineType] ?? TYPE_COLORS['Other'];
+  return L.divIcon({
+    html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.6)"></div>`,
+    className: '',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    popupAnchor: [0, -10],
+  });
+}
 
 export default function FleetMap() {
   const { t } = useTranslation();
@@ -58,13 +81,14 @@ export default function FleetMap() {
           <Marker
             key={pos.vehicleId}
             position={[pos.lat, pos.lng]}
+            icon={getMarkerIcon(pos.machineType)}
           >
             <Popup>
-              <strong>{pos.vehicleId}</strong>
+              <strong>{pos.machineName || pos.vehicleId}</strong>
+              <br />
+              {t.fleet.machineType}: {t.machineryTypes[pos.machineType as keyof typeof t.machineryTypes] ?? pos.machineType}
               <br />
               {t.fleet.speed}: {pos.speed} km/h
-              <br />
-              {t.fleet.fuel}: {pos.fuel}%
               <br />
               {t.fleet.lastUpdate}: {formatRelativeTime(pos.timestampUtc)}
             </Popup>
