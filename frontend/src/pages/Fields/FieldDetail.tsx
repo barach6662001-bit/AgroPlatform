@@ -19,6 +19,8 @@ import FieldFertilizerTab from './FieldFertilizerTab';
 import FieldProtectionTab from './FieldProtectionTab';
 import FieldHarvestTab from './FieldHarvestTab';
 import FieldNdviTab from './FieldNdviTab';
+import FieldSoilAnalysisTab from './FieldSoilAnalysisTab';
+import FieldPrescriptionTab from './FieldPrescriptionTab';
 
 export default function FieldDetail() {
   const { id } = useParams<{ id: string }>();
@@ -510,6 +512,16 @@ export default function FieldDetail() {
           key: 'ndvi',
           label: t.fields.tabNdvi,
           children: <FieldNdviTab fieldId={id!} />,
+        },
+        {
+          key: 'soil',
+          label: t.fields.tabSoilAnalysis,
+          children: <FieldSoilAnalysisTab fieldId={id!} />,
+        },
+        {
+          key: 'prescription',
+          label: t.fields.tabPrescription,
+          children: <FieldPrescriptionTab fieldId={id!} />,
         },
       ]} />
 

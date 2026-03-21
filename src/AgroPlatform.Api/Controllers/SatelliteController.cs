@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Fields;
 
 namespace AgroPlatform.Api.Controllers;
 
@@ -193,6 +194,177 @@ public class SatelliteController : ControllerBase
         return Content(svg, "image/svg+xml");
     }
 
+    /// <summary>
+    /// Generates a prescription map by combining NDVI data and soil analysis records.
+    /// Returns application rate recommendations per zone.
+    /// </summary>
+    [HttpGet("prescription/{fieldId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPrescription(Guid fieldId, CancellationToken ct)
+    {
+        var field = await _db.Fields
+            .Where(f => f.Id == fieldId)
+            .Select(f => new { f.Id, f.Name, f.AreaHectares })
+            .FirstOrDefaultAsync(ct);
+
+        if (field == null)
+            return NotFound(new { error = "Field not found" });
+
+        var analyses = await _db.SoilAnalyses
+            .Where(s => s.FieldId == fieldId)
+            .OrderByDescending(s => s.SampleDate)
+            .ToListAsync(ct);
+
+        var ndviConfigured = !string.IsNullOrEmpty(_instanceId);
+
+        var zones = analyses.Select(a => BuildPrescriptionZone(a)).ToList();
+
+        if (zones.Count == 0)
+        {
+            zones.Add(new PrescriptionZoneDto
+            {
+                ZoneId = "Z1",
+                SampleDate = null,
+                Ph = null,
+                N = null,
+                P = null,
+                K = null,
+                Humus = null,
+                Notes = "Немає даних аналізу ґрунту",
+                RecommendedNKgPerHa = 80,
+                RecommendedPKgPerHa = 60,
+                RecommendedKKgPerHa = 80,
+                ApplicationZone = "Medium",
+            });
+        }
+
+        return Ok(new
+        {
+            fieldId,
+            fieldName = field.Name,
+            areaHectares = field.AreaHectares,
+            ndviConfigured,
+            generatedAt = DateTime.UtcNow,
+            zones,
+        });
+    }
+
+    /// <summary>
+    /// Exports the prescription map as CSV for use in precision agriculture equipment.
+    /// </summary>
+    [HttpGet("prescription/{fieldId:guid}/csv")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ExportPrescriptionCsv(Guid fieldId, CancellationToken ct)
+    {
+        var field = await _db.Fields
+            .Where(f => f.Id == fieldId)
+            .Select(f => new { f.Id, f.Name, f.AreaHectares })
+            .FirstOrDefaultAsync(ct);
+
+        if (field == null)
+            return NotFound(new { error = "Field not found" });
+
+        var analyses = await _db.SoilAnalyses
+            .Where(s => s.FieldId == fieldId)
+            .OrderByDescending(s => s.SampleDate)
+            .ToListAsync(ct);
+
+        var zones = analyses.Count > 0
+            ? analyses.Select(a => BuildPrescriptionZone(a)).ToList()
+            : new List<PrescriptionZoneDto>
+            {
+                new PrescriptionZoneDto
+                {
+                    ZoneId = "Z1",
+                    SampleDate = null,
+                    Ph = null,
+                    N = null,
+                    P = null,
+                    K = null,
+                    Humus = null,
+                    Notes = "No soil analysis data",
+                    RecommendedNKgPerHa = 80,
+                    RecommendedPKgPerHa = 60,
+                    RecommendedKKgPerHa = 80,
+                    ApplicationZone = "Medium",
+                }
+            };
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("ZoneId,SampleDate,pH,N_mg_kg,P_mg_kg,K_mg_kg,Humus_%,N_Rate_kg_ha,P_Rate_kg_ha,K_Rate_kg_ha,Zone,Notes");
+        foreach (var z in zones)
+        {
+            sb.AppendLine(
+                $"{Escape(z.ZoneId)}," +
+                $"{(z.SampleDate.HasValue ? z.SampleDate.Value.ToString("yyyy-MM-dd") : "")}," +
+                $"{FormatDecimal(z.Ph)}," +
+                $"{FormatDecimal(z.N)}," +
+                $"{FormatDecimal(z.P)}," +
+                $"{FormatDecimal(z.K)}," +
+                $"{FormatDecimal(z.Humus)}," +
+                $"{z.RecommendedNKgPerHa}," +
+                $"{z.RecommendedPKgPerHa}," +
+                $"{z.RecommendedKKgPerHa}," +
+                $"{Escape(z.ApplicationZone)}," +
+                $"{Escape(z.Notes ?? "")}"
+            );
+        }
+
+        var fileName = $"prescription_{field.Name.Replace(" ", "_")}_{DateTime.UtcNow:yyyyMMdd}.csv";
+        var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+        return File(bytes, "text/csv", fileName);
+    }
+
+    private static string Escape(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return "";
+        if (value.Contains(',') || value.Contains('"') || value.Contains('\n'))
+            return $"\"{value.Replace("\"", "\"\"")}\"";
+        return value;
+    }
+
+    private static string FormatDecimal(decimal? value)
+        => value.HasValue ? value.Value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) : "";
+
+    private static PrescriptionZoneDto BuildPrescriptionZone(SoilAnalysis a)
+    {
+        var nRate = CalcNutrientRate(a.N, lowThreshold: 30, highThreshold: 80, lowRate: 100, medRate: 60, highRate: 30);
+        var pRate = CalcNutrientRate(a.P, lowThreshold: 20, highThreshold: 60, lowRate: 80, medRate: 50, highRate: 20);
+        var kRate = CalcNutrientRate(a.K, lowThreshold: 80, highThreshold: 160, lowRate: 100, medRate: 60, highRate: 30);
+
+        var avgRate = (nRate + pRate + kRate) / 3.0m;
+        var zone = avgRate >= 80 ? "High" : avgRate >= 50 ? "Medium" : "Low";
+
+        return new PrescriptionZoneDto
+        {
+            ZoneId = a.ZoneId ?? a.Id.ToString()[..8],
+            SampleDate = a.SampleDate,
+            Ph = a.Ph,
+            N = a.N,
+            P = a.P,
+            K = a.K,
+            Humus = a.Humus,
+            Notes = a.Notes,
+            RecommendedNKgPerHa = nRate,
+            RecommendedPKgPerHa = pRate,
+            RecommendedKKgPerHa = kRate,
+            ApplicationZone = zone,
+        };
+    }
+
+    private static decimal CalcNutrientRate(
+        decimal? value,
+        decimal lowThreshold, decimal highThreshold,
+        decimal lowRate, decimal medRate, decimal highRate)
+    {
+        if (!value.HasValue) return medRate;
+        if (value < lowThreshold) return lowRate;
+        if (value <= highThreshold) return medRate;
+        return highRate;
+    }
+
     // ---------------------------------------------------------------------------
     // Helper: extract [minLon, minLat, maxLon, maxLat] from a GeoJSON string
     // ---------------------------------------------------------------------------
@@ -246,4 +418,20 @@ public class SatelliteController : ControllerBase
                 break;
         }
     }
+}
+
+public sealed class PrescriptionZoneDto
+{
+    public string ZoneId { get; set; } = string.Empty;
+    public DateTime? SampleDate { get; set; }
+    public decimal? Ph { get; set; }
+    public decimal? N { get; set; }
+    public decimal? P { get; set; }
+    public decimal? K { get; set; }
+    public decimal? Humus { get; set; }
+    public string? Notes { get; set; }
+    public decimal RecommendedNKgPerHa { get; set; }
+    public decimal RecommendedPKgPerHa { get; set; }
+    public decimal RecommendedKKgPerHa { get; set; }
+    public string ApplicationZone { get; set; } = "Medium";
 }

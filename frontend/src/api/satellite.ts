@@ -1,4 +1,5 @@
 import apiClient from './axios';
+import type { PrescriptionMapDto } from '../types/prescription';
 
 export interface NdviData {
   fieldId: string;
@@ -26,3 +27,9 @@ export interface NdviDetectProblemRequest {
 
 export const reportNdviProblem = (fieldId: string, body: NdviDetectProblemRequest) =>
   apiClient.post(`/api/satellite/ndvi/${fieldId}/detect-problem`, body);
+
+export const getPrescriptionMap = (fieldId: string) =>
+  apiClient.get<PrescriptionMapDto>(`/api/satellite/prescription/${fieldId}`).then((r) => r.data);
+
+export const getPrescriptionCsvUrl = (fieldId: string) =>
+  `/api/satellite/prescription/${fieldId}/csv`;
