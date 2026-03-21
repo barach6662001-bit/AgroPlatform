@@ -251,6 +251,8 @@ const en: Translations = {
     ndviPlaceholderNote: 'Showing placeholder image (Sentinel Hub not configured)',
     ndviProblemZoneDetected: 'Problem NDVI zone detected',
     ndviProblemZoneBody: 'Stress detected in {{percent}}% of image pixels',
+    ndviDateSliderLabel: 'Snapshot date',
+    ndviSelectedDate: 'Selected date:',
     cropName: 'Crop',
     variety: 'Variety',
     seedingRate: 'Rate (kg/ha)',

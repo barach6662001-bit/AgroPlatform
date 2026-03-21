@@ -13,6 +13,11 @@ export const getFieldNdvi = (fieldId: string, date?: string) =>
     .get<NdviData>(`/api/satellite/ndvi/${fieldId}`, { params: date ? { date } : undefined })
     .then((r) => r.data);
 
+export const getFieldNdviDates = (fieldId: string) =>
+  apiClient
+    .get<string[]>(`/api/satellite/dates/${fieldId}`)
+    .then((r) => r.data);
+
 export interface NdviDetectProblemRequest {
   date: string;
   stressedPercent: number;

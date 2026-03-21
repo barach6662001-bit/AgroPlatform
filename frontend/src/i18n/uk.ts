@@ -249,6 +249,8 @@ const uk = {
     ndviPlaceholderNote: 'Відображено тестове зображення (Sentinel Hub не налаштовано)',
     ndviProblemZoneDetected: 'Виявлено проблемну NDVI-зону',
     ndviProblemZoneBody: 'Стрес виявлено на {{percent}}% пікселів зображення',
+    ndviDateSliderLabel: 'Дата знімку',
+    ndviSelectedDate: 'Обрана дата:',
     cropName: 'Культура',
     variety: 'Сорт',
     seedingRate: 'Норма (кг/га)',
