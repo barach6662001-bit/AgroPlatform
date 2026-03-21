@@ -226,7 +226,14 @@ export default function FieldDetail() {
     {
       title: t.common.actions, key: 'actions',
       render: (_: unknown, record: CropRotationPlanDto) => (
-        <Popconfirm title={t.common.confirm} onConfirm={() => handleDeletePlan(record.id)}>
+        <Popconfirm
+          title="Видалити запис?"
+          description="Цю дію неможливо скасувати"
+          okText="Видалити"
+          cancelText="Скасувати"
+          okButtonProps={{ danger: true }}
+          onConfirm={() => handleDeletePlan(record.id)}
+        >
           <Button size="small" danger icon={<DeleteOutlined />} />
         </Popconfirm>
       ),

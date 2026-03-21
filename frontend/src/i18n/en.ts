@@ -520,6 +520,8 @@ const en: Translations = {
     selectDriver: 'Select driver',
     noDriver: 'No driver assigned',
     refuelAtStation: 'Refuel at Fuel Station',
+    deleteSuccess: 'Machine deleted',
+    deleteError: 'Error deleting machine',
   },
   machineryTypes: {
     Tractor: 'Tractor',

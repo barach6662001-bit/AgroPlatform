@@ -212,7 +212,14 @@ export default function OperationDetail() {
             <Button size="small" icon={<EditOutlined />} onClick={() => openActualModal(r)}>
               {t.operations.updateActual}
             </Button>
-            <Popconfirm title={`${t.common.delete}?`} onConfirm={() => handleRemoveResource(r.id)}>
+            <Popconfirm
+              title="Видалити запис?"
+              description="Цю дію неможливо скасувати"
+              okText="Видалити"
+              cancelText="Скасувати"
+              okButtonProps={{ danger: true }}
+              onConfirm={() => handleRemoveResource(r.id)}
+            >
               <Button size="small" danger icon={<DeleteOutlined />} />
             </Popconfirm>
           </Space>
@@ -233,7 +240,14 @@ export default function OperationDetail() {
       key: 'actions',
       render: (_: unknown, r: AgroOperationMachineryDto) =>
         canEdit ? (
-          <Popconfirm title={`${t.common.delete}?`} onConfirm={() => handleRemoveMachinery(r.id)}>
+          <Popconfirm
+            title="Видалити запис?"
+            description="Цю дію неможливо скасувати"
+            okText="Видалити"
+            cancelText="Скасувати"
+            okButtonProps={{ danger: true }}
+            onConfirm={() => handleRemoveMachinery(r.id)}
+          >
             <Button size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         ) : null,

@@ -137,10 +137,12 @@ export default function EmployeeList() {
             onClick={(e) => { e.stopPropagation(); handleEdit(record); }}
           />
           <Popconfirm
-            title={t.hr.deleteConfirm}
+            title="Видалити запис?"
+            description="Цю дію неможливо скасувати"
+            okText="Видалити"
+            cancelText="Скасувати"
+            okButtonProps={{ danger: true }}
             onConfirm={() => handleDelete(record.id)}
-            okText={t.common.yes}
-            cancelText={t.common.no}
           >
             <Button
               size="small"
