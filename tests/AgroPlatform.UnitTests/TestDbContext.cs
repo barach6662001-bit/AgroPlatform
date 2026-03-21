@@ -7,6 +7,7 @@ using AgroPlatform.Domain.GrainStorage;
 using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
+using AgroPlatform.Domain.Sales;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,8 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<FieldFertilizer> FieldFertilizers => Set<FieldFertilizer>();
     public DbSet<FieldProtection> FieldProtections => Set<FieldProtection>();
     public DbSet<FieldHarvest> FieldHarvests => Set<FieldHarvest>();
+    public DbSet<FieldZone> FieldZones => Set<FieldZone>();
+    public DbSet<SoilAnalysis> SoilAnalyses => Set<SoilAnalysis>();
     public DbSet<AgroOperation> AgroOperations => Set<AgroOperation>();
     public DbSet<AgroOperationResource> AgroOperationResources => Set<AgroOperationResource>();
     public DbSet<AgroOperationMachinery> AgroOperationMachineries => Set<AgroOperationMachinery>();
@@ -51,4 +54,5 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
     public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
+    public DbSet<Sale> Sales => Set<Sale>();
 }

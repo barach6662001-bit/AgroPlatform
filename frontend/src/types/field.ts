@@ -94,3 +94,23 @@ export interface FieldHarvestDto {
   syncedFromGrainStorage: boolean;
   grainBatchId?: string;
 }
+
+export interface FieldZoneDto {
+  id: string;
+  name: string;
+  geoJson?: string;
+  soilType?: string;
+  notes?: string;
+}
+
+export interface SoilAnalysisDto {
+  id: string;
+  zoneId?: string;
+  sampleDate: string;
+  pH?: number;
+  nitrogen?: number;
+  phosphorus?: number;
+  potassium?: number;
+  humus?: number;
+  notes?: string;
+}

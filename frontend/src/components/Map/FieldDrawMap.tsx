@@ -1,11 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useMap } from 'react-leaflet';
+import { Switch } from 'antd';
 import L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import type { FieldDetailDto } from '../../types/field';
 import { getCropColor } from '../../utils/cropColors';
+import { useTranslation } from '../../i18n';
+import CadastreLayer from './CadastreLayer';
 
 interface DrawControlProps {
   field: FieldDetailDto;
@@ -113,17 +116,34 @@ interface FieldDrawMapProps {
 }
 
 export default function FieldDrawMap({ field, onGeometryChange, height = 400 }: FieldDrawMapProps) {
+  const { t } = useTranslation();
+  const [showCadastre, setShowCadastre] = useState(false);
+
   return (
-    <MapContainer
-      style={{ height, width: '100%' }}
-      center={[48.5, 35.0]}
-      zoom={10}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      />
-      <DrawControl field={field} onGeometryChange={onGeometryChange} />
-    </MapContainer>
+    <div>
+      <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Switch
+          size="small"
+          checked={showCadastre}
+          onChange={setShowCadastre}
+          id="cadastre-layer-toggle"
+        />
+        <label htmlFor="cadastre-layer-toggle" style={{ cursor: 'pointer', userSelect: 'none' }}>
+          {t.fields.cadastreLayer}
+        </label>
+      </div>
+      <MapContainer
+        style={{ height, width: '100%' }}
+        center={[48.5, 35.0]}
+        zoom={10}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        />
+        <CadastreLayer enabled={showCadastre} />
+        <DrawControl field={field} onGeometryChange={onGeometryChange} />
+      </MapContainer>
+    </div>
   );
 }

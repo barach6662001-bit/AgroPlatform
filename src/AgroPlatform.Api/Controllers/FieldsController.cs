@@ -4,22 +4,30 @@ using AgroPlatform.Application.Fields.Commands.CreateFieldFertilizer;
 using AgroPlatform.Application.Fields.Commands.CreateFieldHarvest;
 using AgroPlatform.Application.Fields.Commands.CreateFieldProtection;
 using AgroPlatform.Application.Fields.Commands.CreateFieldSeeding;
+using AgroPlatform.Application.Fields.Commands.CreateFieldZone;
+using AgroPlatform.Application.Fields.Commands.CreateSoilAnalysis;
 using AgroPlatform.Application.Fields.Commands.DeleteField;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldFertilizer;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldHarvest;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldProtection;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldSeeding;
+using AgroPlatform.Application.Fields.Commands.DeleteFieldZone;
 using AgroPlatform.Application.Fields.Commands.DeleteRotationPlan;
+using AgroPlatform.Application.Fields.Commands.DeleteSoilAnalysis;
 using AgroPlatform.Application.Fields.Commands.PlanRotation;
 using AgroPlatform.Application.Fields.Commands.UpdateField;
 using AgroPlatform.Application.Fields.Commands.UpdateFieldGeometry;
+using AgroPlatform.Application.Fields.Commands.UpdateFieldZone;
+using AgroPlatform.Application.Fields.Commands.UpdateSoilAnalysis;
 using AgroPlatform.Application.Fields.Commands.UpdateYield;
 using AgroPlatform.Application.Fields.Queries.GetFieldById;
 using AgroPlatform.Application.Fields.Queries.GetFieldFertilizers;
 using AgroPlatform.Application.Fields.Queries.GetFieldHarvests;
 using AgroPlatform.Application.Fields.Queries.GetFieldProtections;
 using AgroPlatform.Application.Fields.Queries.GetFieldSeedings;
+using AgroPlatform.Application.Fields.Queries.GetFieldZones;
 using AgroPlatform.Application.Fields.Queries.GetFields;
+using AgroPlatform.Application.Fields.Queries.GetSoilAnalyses;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -328,6 +336,99 @@ public class FieldsController : ControllerBase
         await _sender.Send(new DeleteFieldHarvestCommand(id), cancellationToken);
         return NoContent();
     }
+
+    // ─── Zones ──────────────────────────────────────────────────────────────────
+
+    /// <summary>Returns management zones for a field.</summary>
+    [HttpGet("{fieldId:guid}/zones")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetZones(Guid fieldId, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetFieldZonesQuery(fieldId), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates a management zone for a field.</summary>
+    [HttpPost("{fieldId:guid}/zones")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateZone(Guid fieldId, [FromBody] CreateFieldZoneRequest request, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(new CreateFieldZoneCommand(
+            fieldId, request.Name, request.GeoJson, request.SoilType, request.Notes), cancellationToken);
+        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+    }
+
+    /// <summary>Updates a management zone.</summary>
+    [HttpPut("{fieldId:guid}/zones/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateZone(Guid fieldId, Guid id, [FromBody] CreateFieldZoneRequest request, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new UpdateFieldZoneCommand(id, request.Name, request.GeoJson, request.SoilType, request.Notes), cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>Deletes a management zone.</summary>
+    [HttpDelete("{fieldId:guid}/zones/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteZone(Guid fieldId, Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteFieldZoneCommand(id), cancellationToken);
+        return NoContent();
+    }
+
+    // ─── Soil Analyses ──────────────────────────────────────────────────────────
+
+    /// <summary>Returns soil analysis records for a field.</summary>
+    [HttpGet("{fieldId:guid}/soil-analyses")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetSoilAnalyses(Guid fieldId, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetSoilAnalysesQuery(fieldId), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates a soil analysis record for a field.</summary>
+    [HttpPost("{fieldId:guid}/soil-analyses")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateSoilAnalysis(Guid fieldId, [FromBody] CreateSoilAnalysisRequest request, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(new CreateSoilAnalysisCommand(
+            fieldId, request.ZoneId, request.SampleDate, request.pH,
+            request.Nitrogen, request.Phosphorus, request.Potassium,
+            request.Humus, request.Notes), cancellationToken);
+        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+    }
+
+    /// <summary>Updates a soil analysis record.</summary>
+    [HttpPut("{fieldId:guid}/soil-analyses/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateSoilAnalysis(Guid fieldId, Guid id, [FromBody] UpdateSoilAnalysisRequest request, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new UpdateSoilAnalysisCommand(
+            id, request.ZoneId, request.SampleDate, request.pH,
+            request.Nitrogen, request.Phosphorus, request.Potassium,
+            request.Humus, request.Notes), cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>Deletes a soil analysis record.</summary>
+    [HttpDelete("{fieldId:guid}/soil-analyses/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteSoilAnalysis(Guid fieldId, Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteSoilAnalysisCommand(id), cancellationToken);
+        return NoContent();
+    }
 }
 
 /// <summary>Request body for updating a field's GeoJSON geometry.</summary>
@@ -375,4 +476,33 @@ public record CreateFieldHarvestRequest(
     decimal? MoisturePercent,
     decimal? PricePerTon,
     DateTime HarvestDate,
+    string? Notes);
+
+/// <summary>Request body for creating or updating a management zone.</summary>
+public record CreateFieldZoneRequest(
+    string Name,
+    string? GeoJson,
+    string? SoilType,
+    string? Notes);
+
+/// <summary>Request body for creating a soil analysis record.</summary>
+public record CreateSoilAnalysisRequest(
+    Guid? ZoneId,
+    DateTime SampleDate,
+    decimal? pH,
+    decimal? Nitrogen,
+    decimal? Phosphorus,
+    decimal? Potassium,
+    decimal? Humus,
+    string? Notes);
+
+/// <summary>Request body for updating a soil analysis record.</summary>
+public record UpdateSoilAnalysisRequest(
+    Guid? ZoneId,
+    DateTime SampleDate,
+    decimal? pH,
+    decimal? Nitrogen,
+    decimal? Phosphorus,
+    decimal? Potassium,
+    decimal? Humus,
     string? Notes);

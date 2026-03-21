@@ -17,6 +17,7 @@ vi.mock('leaflet', () => ({
 }));
 
 vi.mock('leaflet-draw', () => ({}));
+vi.mock('leaflet.vectorgrid', () => ({}));
 
 // Mock all API modules to avoid network calls
 vi.mock('../api/analytics', () => ({ getDashboard: vi.fn(() => Promise.reject(new Error('no network'))) }));

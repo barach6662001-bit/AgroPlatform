@@ -39,6 +39,13 @@ public class MachineConfiguration : IEntityTypeConfiguration<Machine>
         builder.Property(m => m.FuelConsumptionPerHour)
             .HasPrecision(10, 2);
 
+        builder.Property(m => m.ImeiNumber)
+            .HasMaxLength(15);
+
+        builder.HasIndex(m => m.ImeiNumber)
+            .IsUnique()
+            .HasFilter("\"ImeiNumber\" IS NOT NULL");
+
         builder.Property(m => m.AssignedDriverName)
             .HasMaxLength(200);
 
