@@ -269,7 +269,7 @@ export default function MachineDetail() {
             <Col span={24}>
               <Card>
                 <Statistic
-                  title={t.machinery.nextMaintenance || 'Наступне ТО'}
+                  title={'Наступне ТО'}
                   value={machine.nextMaintenanceDate
                     ? (() => {
                         const days = Math.ceil((new Date(machine.nextMaintenanceDate).getTime() - Date.now()) / 86400000);

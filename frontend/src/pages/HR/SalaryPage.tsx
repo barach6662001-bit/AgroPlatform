@@ -99,7 +99,7 @@ export default function SalaryPage() {
       <Space style={{ marginBottom: 20 }}>
         <Select options={monthOptions} value={month} onChange={setMonth} style={{ width: 130 }} />
         <Select options={yearOptions} value={year} onChange={setYear} style={{ width: 90 }} />
-        <Button icon={<PrinterOutlined />} onClick={() => printReport(t.hr.salaryTitle || 'Зарплата', `<table><thead><tr><th>Прізвище</th><th>Нарахована</th><th>Виплачена</th><th>Залишок</th></tr></thead><tbody>${summary.map(s => `<tr><td>${s.employeeFullName}</td><td>${s.totalAccrued}</td><td>${s.totalPaid}</td><td>${s.balance}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
+        <Button icon={<PrinterOutlined />} onClick={() => printReport(t.hr.salaryTitle || 'Зарплата', `<table><thead><tr><th>Прізвище</th><th>Нарахована</th><th>Виплачена</th><th>Залишок</th></tr></thead><tbody>${summary.map(s => `<tr><td>${s.employeeFullName}</td><td>${s.totalAccrued}</td><td>${s.totalPaid}</td><td>${s.totalAccrued - s.totalPaid}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
       </Space>
 
       {loading ? (

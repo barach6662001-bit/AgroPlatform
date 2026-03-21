@@ -138,7 +138,7 @@ export default function MachineryList() {
       render: (v?: string) => v || <span style={{ color: '#8b949e' }}>{t.machinery.noDriver}</span>,
     },
     {
-      title: t.machinery.nextMaintenance || 'Наступне ТО',
+      title: 'Наступне ТО',
       dataIndex: 'nextMaintenanceDate',
       render: (date: string | null) => {
         if (!date) return <Text type="secondary">—</Text>;

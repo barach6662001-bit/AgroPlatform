@@ -209,7 +209,7 @@ export default function LeasePage() {
       render: (v: number) => v > 0 ? <Text type="warning">{v.toLocaleString('uk-UA', { maximumFractionDigits: 2 })}</Text> : '—',
     },
     {
-      title: t.lease.paymentProgress || 'Оплата',
+      title: 'Оплата',
       key: 'progress',
       width: 200,
       render: (_: unknown, record: LeaseSummaryDto) => {
