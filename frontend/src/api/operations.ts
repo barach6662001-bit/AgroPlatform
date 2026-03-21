@@ -51,6 +51,7 @@ export const removeResource = (resourceId: string) =>
 export const addMachinery = (operationId: string, data: {
   machineId: string;
   hoursWorked?: number;
+  plannedHours?: number;
 }) =>
   apiClient.post(`/api/agro-operations/${operationId}/machinery`, { agroOperationId: operationId, ...data }).then((r) => r.data);
 

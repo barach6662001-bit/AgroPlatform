@@ -8,6 +8,7 @@ import { getOperations, createOperation, updateOperation, addMachinery } from '.
 import { getFields } from '../../api/fields';
 import { getEmployees } from '../../api/hr';
 import { getMachines } from '../../api/machinery';
+import { getWarehouseItems } from '../../api/warehouses';
 import type { AgroOperationDto, AgroOperationType } from '../../types/operation';
 import type { FieldDto } from '../../types/field';
 import type { EmployeeDto } from '../../types/hr';
@@ -41,6 +42,7 @@ export default function OperationsList() {
   const [editForm] = Form.useForm();
   const [machines, setMachines] = useState<MachineDto[]>([]);
   const [selectedMachineIds, setSelectedMachineIds] = useState<string[]>([]);
+  const [, setWarehouseItems] = useState<unknown[]>([]);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { hasRole } = useRole();
@@ -76,6 +78,12 @@ export default function OperationsList() {
       .catch(() => {/* ignore */});
   }, []);
 
+  useEffect(() => {
+    getWarehouseItems({ page: 1, pageSize: 100 })
+      .then((r) => setWarehouseItems(r.items))
+      .catch(() => {/* ignore */});
+  }, []);
+
   const handleCreate = async () => {
     try {
       const values = await form.validateFields();
@@ -85,7 +93,7 @@ export default function OperationsList() {
         : new Date().toISOString();
       const result = await createOperation({ ...values, performedAt });
       for (const machineId of selectedMachineIds) {
-        try { await addMachinery(result.id, { machineId }); } catch (_e) { /* ignored */ }
+        try { await addMachinery(result.id, { machineId, plannedHours: 0 }); } catch (_e) { /* ignored */ }
       }
       setSelectedMachineIds([]);
       message.success(t.operations.createSuccess);
