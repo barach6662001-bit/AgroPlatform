@@ -27,7 +27,9 @@ using AgroPlatform.Application.Fields.Queries.GetFieldProtections;
 using AgroPlatform.Application.Fields.Queries.GetFieldSeedings;
 using AgroPlatform.Application.Fields.Queries.GetFieldZones;
 using AgroPlatform.Application.Fields.Queries.GetFields;
+using AgroPlatform.Application.Fields.Queries.GetPrescriptionMap;
 using AgroPlatform.Application.Fields.Queries.GetSoilAnalyses;
+using AgroPlatform.Application.Fields.Queries.ExportPrescriptionMap;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -428,6 +430,34 @@ public class FieldsController : ControllerBase
     {
         await _sender.Send(new DeleteSoilAnalysisCommand(id), cancellationToken);
         return NoContent();
+    }
+
+    // ─── Prescription Map ────────────────────────────────────────────────────
+
+    /// <summary>Returns a variable-rate prescription map combining soil analysis and NDVI date for a field.</summary>
+    [HttpGet("{fieldId:guid}/prescription-map")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPrescriptionMap(
+        Guid fieldId,
+        [FromQuery] string nutrient = "Nitrogen",
+        [FromQuery] string? ndviDate = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetPrescriptionMapQuery(fieldId, nutrient, ndviDate), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Exports a variable-rate prescription map as CSV for use with on-board precision agriculture computers.</summary>
+    [HttpGet("{fieldId:guid}/prescription-map/export")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExportPrescriptionMap(
+        Guid fieldId,
+        [FromQuery] string nutrient = "Nitrogen",
+        [FromQuery] string? ndviDate = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new ExportPrescriptionMapQuery(fieldId, nutrient, ndviDate), cancellationToken);
+        return File(result.Content, result.ContentType, result.FileName);
     }
 }
 

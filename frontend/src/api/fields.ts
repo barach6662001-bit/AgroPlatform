@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto, FieldZoneDto, SoilAnalysisDto } from '../types/field';
+import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto, FieldZoneDto, SoilAnalysisDto, PrescriptionMapDto } from '../types/field';
 import type { PaginatedResult } from '../types/common';
 
 export const getFields = (params?: { page?: number; pageSize?: number; search?: string; ownershipType?: number[] }) =>
@@ -98,3 +98,25 @@ export const updateSoilAnalysis = (fieldId: string, id: string, data: Omit<SoilA
 export const deleteSoilAnalysis = (fieldId: string, id: string) =>
   apiClient.delete(`/api/fields/${fieldId}/soil-analyses/${id}`);
 
+
+// Prescription Map
+export const getPrescriptionMap = (fieldId: string, nutrient = 'Nitrogen', ndviDate?: string) => {
+  const params: Record<string, string> = { nutrient };
+  if (ndviDate) params.ndviDate = ndviDate;
+  return apiClient.get<PrescriptionMapDto>(`/api/fields/${fieldId}/prescription-map`, { params }).then((r) => r.data);
+};
+
+export const exportPrescriptionMap = async (fieldId: string, nutrient = 'Nitrogen', ndviDate?: string) => {
+  const params: Record<string, string> = { nutrient };
+  if (ndviDate) params.ndviDate = ndviDate;
+  const response = await apiClient.get(`/api/fields/${fieldId}/prescription-map/export`, {
+    params,
+    responseType: 'blob',
+  });
+  const url = URL.createObjectURL(response.data as Blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `prescription-map-${nutrient.toLowerCase()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
