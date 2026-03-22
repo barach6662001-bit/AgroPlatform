@@ -60,11 +60,8 @@ public class GetMarginalityHandler : IRequestHandler<GetMarginalityQuery, IReadO
                 .GroupBy(s => string.IsNullOrWhiteSpace(s.Product) ? "—" : s.Product)
                 .ToDictionary(g => g.Key, g => g.Sum(s => s.TotalAmount));
 
-            // Costs cannot be reliably tied to a product (no product field on CostRecord),
-            // so aggregate all costs as a shared row for total.
+            // Distribute costs proportionally to each product's revenue share
             var totalCosts = costRecords.Sum(c => c.Amount);
-
-            // We distribute costs proportionally to each product's revenue share
             var totalRevenue = revenueByProduct.Values.Sum();
 
             foreach (var kvp in revenueByProduct.OrderByDescending(kv => kv.Value))
@@ -88,13 +85,12 @@ public class GetMarginalityHandler : IRequestHandler<GetMarginalityQuery, IReadO
         else
         {
             // Default: group by field
-            // Collect all field IDs that appear in sales or costs
             var allFieldIds = sales.Where(s => s.FieldId.HasValue).Select(s => s.FieldId!.Value)
                 .Union(costRecords.Where(c => c.FieldId.HasValue).Select(c => c.FieldId!.Value))
                 .Distinct()
                 .ToList();
 
-            // Handle records without a field association as a special "Other" group
+            // Handle records without a field association as a separate row
             var salesWithoutField = sales.Where(s => !s.FieldId.HasValue).Sum(s => s.TotalAmount);
             var costsWithoutField = costRecords.Where(c => !c.FieldId.HasValue).Sum(c => c.Amount);
 

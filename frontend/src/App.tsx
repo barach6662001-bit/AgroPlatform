@@ -40,6 +40,7 @@ import AccessDenied from './pages/AccessDenied';
 import NotFound from './pages/NotFound';
 import FuelStation from './pages/Fuel/FuelStation';
 import SalesList from './pages/Sales/SalesList';
+import MarginalityDashboard from './pages/Economics/MarginalityDashboard';
 
 export default function App() {
   const { lang } = useTranslation();

@@ -1038,6 +1038,23 @@ const en: Translations = {
     welcomeTitle: 'Welcome to AgroTech!',
     welcomeSubtitle: 'Let\'s set up the system. It will take 5 minutes.',
   },
+  marginality: {
+    title: 'Marginality',
+    subtitle: 'Revenue, cost and margin analysis by field and product',
+    year: 'Year',
+    totalRevenue: 'Total Revenue',
+    totalCosts: 'Total Costs',
+    margin: 'Margin',
+    marginPercent: 'Margin %',
+    byProduct: 'By Product',
+    byField: 'By Field',
+    product: 'Product',
+    field: 'Field',
+    revenue: 'Revenue',
+    costs: 'Costs',
+    noData: 'No sales or cost data available for this year',
+    loadError: 'Error loading marginality data',
+  },
 };
 
 export default en;
