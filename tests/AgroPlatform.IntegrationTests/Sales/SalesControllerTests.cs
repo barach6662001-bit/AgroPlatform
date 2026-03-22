@@ -59,6 +59,37 @@ public class SalesControllerTests : IntegrationTestBase
     }
 
     [Fact]
+    public async Task GetSaleById_ReturnsOk()
+    {
+        var saleId = await CreateSaleAsync("Rapeseed");
+
+        var result = await GetAsync<JsonElement>($"/api/sales/{saleId}");
+
+        result.ValueKind.Should().NotBe(JsonValueKind.Null);
+        result.GetProperty("id").GetGuid().Should().Be(saleId);
+    }
+
+    [Fact]
+    public async Task UpdateSale_ReturnsNoContent()
+    {
+        var saleId = await CreateSaleAsync("Soybean");
+
+        var response = await PutAsync($"/api/sales/{saleId}", new
+        {
+            id = saleId,
+            date = DateTime.UtcNow.Date.ToString("o"),
+            buyerName = "Updated Buyer",
+            product = "Soybean",
+            quantity = 15.0,
+            unit = "т",
+            pricePerUnit = 6000.0,
+            currency = "UAH"
+        });
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
     public async Task DeleteSale_ReturnsNoContent()
     {
         var saleId = await CreateSaleAsync("Sunflower");
