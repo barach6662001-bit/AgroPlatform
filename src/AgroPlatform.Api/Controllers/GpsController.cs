@@ -1,4 +1,6 @@
+using AgroPlatform.Application.Machinery.Commands.IngestGpsWebhook;
 using AgroPlatform.Application.Machinery.Commands.IngestTeltonikaWebhook;
+using AgroPlatform.Application.Machinery.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +17,33 @@ public class GpsController : ControllerBase
     public GpsController(ISender sender)
     {
         _sender = sender;
+    }
+
+    /// <summary>
+    /// Receives a generic GPS telemetry payload from any GPS tracker device.
+    /// The device is identified by <c>deviceId</c>, which is matched against
+    /// <c>Machine.ImeiNumber</c>. No authentication or tenant header is required.
+    /// Returns the ID of the created GpsTrack, or <c>Guid.Empty</c> if the device is unknown.
+    /// </summary>
+    [HttpPost("webhook")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(object), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Webhook(
+        [FromBody] GpsWebhookDto dto,
+        CancellationToken cancellationToken)
+    {
+        var command = new IngestGpsWebhookCommand(
+            DeviceId: dto.DeviceId,
+            Lat: dto.Lat,
+            Lon: dto.Lon,
+            Speed: dto.Speed,
+            Timestamp: dto.Timestamp,
+            Fuel: dto.Fuel,
+            Heading: dto.Heading);
+
+        var trackId = await _sender.Send(command, cancellationToken);
+        return Accepted(new { id = trackId });
     }
 
     /// <summary>
