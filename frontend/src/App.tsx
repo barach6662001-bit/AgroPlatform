@@ -39,6 +39,7 @@ import AccessDenied from './pages/AccessDenied';
 import NotFound from './pages/NotFound';
 import FuelStation from './pages/Fuel/FuelStation';
 import SalesList from './pages/Sales/SalesList';
+import MarginalityDashboard from './pages/Economics/MarginalityDashboard';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -84,6 +85,7 @@ export default function App() {
             <Route path="/economics" element={<CostRecords />} />
             <Route path="/economics/pnl" element={<FieldPnl />} />
             <Route path="/economics/budget" element={<BudgetPage />} />
+            <Route path="/economics/marginality" element={<MarginalityDashboard />} />
             <Route path="/analytics/resources" element={<ResourceConsumption />} />
             <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
             <Route path="/hr/employees" element={<EmployeeList />} />

@@ -34,6 +34,7 @@ const uk = {
     movements: 'Рухи',
     finance: 'Фінанси',
     sales: 'Продажі',
+    marginality: 'Маржинальність',
   },
   common: {
     cancel: 'Скасувати',
@@ -1023,6 +1024,23 @@ const uk = {
     region: 'Регіон',
     welcomeTitle: 'Ласкаво просимо до АгроТех!',
     welcomeSubtitle: 'Давайте налаштуємо систему. Це займе 5 хвилин.',
+  },
+  marginality: {
+    title: 'Маржинальність',
+    subtitle: 'Аналіз доходів, витрат та маржі по полях і продуктах',
+    year: 'Рік',
+    totalRevenue: 'Загальний дохід',
+    totalCosts: 'Загальні витрати',
+    margin: 'Маржа',
+    marginPercent: 'Маржа, %',
+    byProduct: 'По продуктах',
+    byField: 'По полях',
+    product: 'Продукт',
+    field: 'Поле',
+    revenue: 'Дохід',
+    costs: 'Витрати',
+    noData: 'Немає даних про продажі чи витрати за цей рік',
+    loadError: 'Помилка завантаження даних маржинальності',
   },
 } as const;
 

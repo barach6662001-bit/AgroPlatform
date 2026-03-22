@@ -23,6 +23,23 @@ export interface CostRecordDto {
   description?: string;
 }
 
+export interface MarginalityRowDto {
+  label: string;
+  revenue: number;
+  costs: number;
+  margin: number;
+  marginPercent?: number;
+}
+
+export interface MarginalitySummaryDto {
+  totalRevenue: number;
+  totalCosts: number;
+  margin: number;
+  marginPercent?: number;
+  byProduct: MarginalityRowDto[];
+  byField: MarginalityRowDto[];
+}
+
 /** Identifies one of the six material KPI card types. */
 export type MaterialKpiKey = 'Fertilizers' | 'Seeds' | 'Pesticides' | 'Fuel' | 'Lease' | 'Harvest' | 'Total';
 
