@@ -21,7 +21,7 @@ export const getBalances = (params?: { warehouseId?: string; itemId?: string; pa
   apiClient.get<PaginatedResult<BalanceDto>>('/api/warehouses/balances', { params }).then((r) => r.data);
 
 export const createWarehouse = (data: { name: string; location?: string; type?: number }) =>
-  apiClient.post<WarehouseDto>('/api/warehouses', data).then((r) => r.data);
+  apiClient.post<{ id: string }>('/api/warehouses', data).then((r) => r.data);
 
 export const createWarehouseItem = (data: { name: string; code: string; category: string; baseUnit: string; description?: string; minimumQuantity?: number; purchasePrice?: number }) =>
   apiClient.post<WarehouseItemDto>('/api/warehouses/items', data).then((r) => r.data);
