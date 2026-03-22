@@ -34,9 +34,15 @@ export default function WarehousesList() {
   useEffect(() => { load(); }, [page, pageSize]);
 
   const handleCreate = async () => {
+    let values: { name: string; location?: string; type?: number };
     try {
-      const values = await form.validateFields();
-      setSaving(true);
+      values = await form.validateFields();
+    } catch {
+      return; // form validation failed - inline errors are shown on the fields
+    }
+
+    setSaving(true);
+    try {
       await createWarehouse(values);
       message.success(t.warehouses.createSuccess);
       form.resetFields();
@@ -45,7 +51,8 @@ export default function WarehousesList() {
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       if (status === 409) return; // axios interceptor already showed the conflict notification
-      if (status) message.error(t.warehouses.createError);
+      if (status && status >= 500) return; // axios interceptor already showed the global error notification
+      message.error(t.warehouses.createError);
     } finally {
       setSaving(false);
     }
