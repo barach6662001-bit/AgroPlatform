@@ -30,6 +30,7 @@ import BudgetPage from './pages/Economics/BudgetPage';
 import MarginalityDashboard from './pages/Economics/MarginalityDashboard';
 import ResourceConsumption from './pages/Analytics/ResourceConsumption';
 import FieldEfficiency from './pages/Analytics/FieldEfficiency';
+import AnalyticsMarginalityDashboard from './pages/Analytics/MarginalityDashboard';
 import EmployeeList from './pages/HR/EmployeeList';
 import WorkLogPage from './pages/HR/WorkLogPage';
 import SalaryPage from './pages/HR/SalaryPage';
@@ -88,6 +89,7 @@ export default function App() {
             <Route path="/economics/marginality" element={<MarginalityDashboard />} />
             <Route path="/analytics/resources" element={<ResourceConsumption />} />
             <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
+            <Route path="/analytics/marginality" element={<AnalyticsMarginalityDashboard />} />
             <Route path="/hr/employees" element={<EmployeeList />} />
             <Route path="/hr/worklogs" element={<WorkLogPage />} />
             <Route path="/hr/salary" element={<SalaryPage />} />

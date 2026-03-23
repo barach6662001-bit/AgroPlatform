@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Analytics.Queries.GetDashboard;
 using AgroPlatform.Application.Analytics.Queries.GetFieldEfficiency;
 using AgroPlatform.Application.Analytics.Queries.GetResourceConsumption;
+using AgroPlatform.Application.Economics.Queries.GetMarginality;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -68,6 +69,22 @@ public class AnalyticsController : ControllerBase
     public async Task<IActionResult> GetFieldEfficiency(CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new GetFieldEfficiencyQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns marginality summary: total revenue, costs, margin and margin %,
+    /// grouped by product/crop and by field for the given year.
+    /// </summary>
+    /// <param name="year">Year to aggregate (defaults to current year).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("marginality")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMarginality(
+        [FromQuery] int? year,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetMarginalityQuery(year), cancellationToken);
         return Ok(result);
     }
 }

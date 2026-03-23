@@ -37,6 +37,12 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/hr/salary', label: t.nav.salary, style: { padding: '4px 8px' } },
   ];
 
+  const analyticsChildren = [
+    { key: '/analytics/efficiency', label: t.nav.efficiency, style: { padding: '4px 8px' } },
+    { key: '/analytics/resources', label: t.nav.resources, style: { padding: '4px 8px' } },
+    { key: '/analytics/marginality', label: t.nav.marginality, style: { padding: '4px 8px' } },
+  ];
+
   const allLeafItems = [
     { key: '/' },
     { key: '/fields' },
@@ -46,7 +52,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/fuel' },
     { key: '/grain' },
     { key: '/sales' },
-    { key: '/analytics/efficiency' },
+    ...analyticsChildren,
     ...storageChildren,
     ...financeChildren,
     ...hrChildren,
@@ -86,7 +92,13 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       children: hrChildren,
     },
     { type: 'divider' as const },
-    { key: '/analytics/efficiency', label: t.nav.analytics, icon: <LineChartOutlined />, style: { padding: '4px 8px' } },
+    {
+      key: 'analytics-group',
+      label: t.nav.analytics,
+      icon: <LineChartOutlined />,
+      style: { padding: '4px 8px' },
+      children: analyticsChildren,
+    },
     { key: '/fleet', label: t.nav.fleet, icon: <EnvironmentOutlined />, style: { padding: '4px 8px' } },
     ...(isAdmin
       ? [
@@ -103,7 +115,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       : []),
   ];
 
-  const groupKeys = new Set(['storage-group', 'finance-group', 'hr-group', 'settings-group']);
+  const groupKeys = new Set(['storage-group', 'finance-group', 'hr-group', 'analytics-group', 'settings-group']);
 
   const selectedKey =
     allLeafItems
@@ -115,7 +127,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
           (item.key !== '/' && location.pathname.startsWith(item.key))
       )?.key ?? '/';
 
-  const openKeys = ['storage-group', 'finance-group', 'hr-group', ...(isAdmin ? ['settings-group'] : [])];
+  const openKeys = ['storage-group', 'finance-group', 'hr-group', 'analytics-group', ...(isAdmin ? ['settings-group'] : [])];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>

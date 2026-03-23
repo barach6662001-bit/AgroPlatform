@@ -37,6 +37,8 @@ const en: Translations = {
     finance: 'Finance',
     sales: 'Sales',
     marginality: 'Marginality',
+    efficiency: 'Field Efficiency',
+    resources: 'Resource Consumption',
   },
   common: {
     cancel: 'Cancel',
