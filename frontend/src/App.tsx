@@ -42,6 +42,7 @@ import AccessDenied from './pages/AccessDenied';
 import NotFound from './pages/NotFound';
 import FuelStation from './pages/Fuel/FuelStation';
 import SalesList from './pages/Sales/SalesList';
+import RevenueAnalytics from './pages/Sales/RevenueAnalytics';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -84,6 +85,7 @@ export default function App() {
             <Route path="/fleet" element={<FleetMap />} />
             <Route path="/fuel" element={<FuelStation />} />
             <Route path="/sales" element={<SalesList />} />
+            <Route path="/sales/analytics" element={<RevenueAnalytics />} />
             <Route path="/economics" element={<CostRecords />} />
             <Route path="/economics/analytics" element={<CostAnalytics />} />
             <Route path="/economics/pnl" element={<FieldPnl />} />

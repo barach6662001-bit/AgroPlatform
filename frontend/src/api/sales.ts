@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { SaleDto } from '../types/sales';
+import type { SaleDto, SalesAnalyticsDto } from '../types/sales';
 import type { PaginatedResult } from '../types/common';
 
 export const getSales = (params?: {
@@ -43,3 +43,6 @@ export const updateSale = (id: string, data: {
 
 export const deleteSale = (id: string) =>
   apiClient.delete(`/api/sales/${id}`);
+
+export const getSalesAnalytics = (params?: { year?: number }) =>
+  apiClient.get<SalesAnalyticsDto>('/api/sales/analytics', { params }).then((r) => r.data);
