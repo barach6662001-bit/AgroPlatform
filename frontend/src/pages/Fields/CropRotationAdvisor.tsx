@@ -28,18 +28,13 @@ export default function CropRotationAdvisor() {
   const [loading, setLoading] = useState(false);
   const [years, setYears] = useState(3);
 
-  const load = async (y: number) => {
-    setLoading(true);
-    try {
-      const result = await getRotationAdvice(y);
-      setData(result);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    load(years);
+    let active = true;
+    setLoading(true);
+    getRotationAdvice(years)
+      .then((result) => { if (active) setData(result); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
   }, [years]);
 
   const riskLabel = (level: string) => {

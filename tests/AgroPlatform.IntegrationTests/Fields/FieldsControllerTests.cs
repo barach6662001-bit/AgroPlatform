@@ -122,7 +122,7 @@ public class FieldsControllerTests : IntegrationTestBase
     [Fact]
     public async Task GetRotationAdvice_ReturnsOk()
     {
-        var fieldId = await CreateFieldAsync("Rotation Advice Field");
+        var fieldId = await CreateFieldAsync("WheatMonocultureField");
         await PostAsync("/api/fields/assign-crop", new
         {
             fieldId,
