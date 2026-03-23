@@ -5,6 +5,7 @@ using AgroPlatform.Application.Economics.Queries.ExportCostRecords;
 using AgroPlatform.Application.Economics.Queries.GetCostRecords;
 using AgroPlatform.Application.Economics.Queries.GetCostSummary;
 using AgroPlatform.Application.Economics.Queries.GetFieldPnl;
+using AgroPlatform.Application.Economics.Queries.GetCostAnalytics;
 using AgroPlatform.Application.Economics.Queries.GetMarginality;
 using AgroPlatform.Application.Economics.Queries.GetSeasonComparison;
 using MediatR;
@@ -111,21 +112,14 @@ public class EconomicsController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Returns year-over-year season comparison metrics for the requested years.</summary>
-    [HttpGet("season-comparison")]
-    [ProducesResponseType(typeof(IReadOnlyList<SeasonComparisonDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetSeasonComparison(
-        [FromQuery] string? years,
+    /// <summary>Returns cost analytics aggregations (by category, by month) for the given year.</summary>
+    [HttpGet("cost-analytics")]
+    [ProducesResponseType(typeof(CostAnalyticsDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCostAnalytics(
+        [FromQuery] int? year,
         CancellationToken cancellationToken)
     {
-        var parsedYears = (years ?? string.Empty)
-            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => int.TryParse(s.Trim(), out var y) ? (int?)y : null)
-            .Where(y => y.HasValue)
-            .Select(y => y!.Value)
-            .ToList();
-
-        var result = await _sender.Send(new GetSeasonComparisonQuery(parsedYears), cancellationToken);
+        var result = await _sender.Send(new GetCostAnalyticsQuery(year), cancellationToken);
         return Ok(result);
     }
 }

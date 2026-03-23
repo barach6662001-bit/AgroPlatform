@@ -3,6 +3,7 @@ using AgroPlatform.Application.Sales.Commands.DeleteSale;
 using AgroPlatform.Application.Sales.Commands.UpdateSale;
 using AgroPlatform.Application.Sales.Queries.GetSaleById;
 using AgroPlatform.Application.Sales.Queries.GetSales;
+using AgroPlatform.Application.Sales.Queries.GetSalesAnalytics;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,16 @@ public class SalesController : ControllerBase
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetSaleById), new { id }, new { id });
+    }
+
+    [HttpGet("analytics")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetSalesAnalytics(
+        [FromQuery] int? year,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetSalesAnalyticsQuery(year), cancellationToken);
+        return Ok(result);
     }
 
     [HttpGet]

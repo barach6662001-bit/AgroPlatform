@@ -11,3 +11,30 @@ export interface SaleDto {
   fieldId?: string;
   notes?: string;
 }
+
+export interface ProductRevenueDto {
+  product: string;
+  totalAmount: number;
+  totalQuantity: number;
+}
+
+export interface BuyerRevenueDto {
+  buyerName: string;
+  totalAmount: number;
+  salesCount: number;
+}
+
+export interface MonthlyRevenueDto {
+  year: number;
+  month: number;
+  totalAmount: number;
+  salesCount: number;
+}
+
+export interface SalesAnalyticsDto {
+  totalRevenue: number;
+  totalSalesCount: number;
+  byProduct: ProductRevenueDto[];
+  byBuyer: BuyerRevenueDto[];
+  byMonth: MonthlyRevenueDto[];
+}
