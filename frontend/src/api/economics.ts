@@ -41,3 +41,16 @@ export const getFieldPnl = (params?: {
 
 export const getMarginality = (params?: { year?: number }) =>
   apiClient.get<MarginalitySummaryDto>('/api/economics/marginality', { params }).then((r) => r.data);
+
+export interface AnalyticsCategoryDto { category: string; amount: number; count: number; }
+export interface AnalyticsMonthDto { month: number; costs: number; revenue: number; }
+export interface CostAnalyticsDto {
+  year: number;
+  totalCosts: number;
+  totalRevenue: number;
+  byCategory: AnalyticsCategoryDto[];
+  byMonth: AnalyticsMonthDto[];
+}
+
+export const getCostAnalytics = (params?: { year?: number }) =>
+  apiClient.get<CostAnalyticsDto>('/api/economics/cost-analytics', { params }).then((r) => r.data);

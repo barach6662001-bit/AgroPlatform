@@ -25,6 +25,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
 
   const financeChildren = [
     { key: '/economics', label: t.nav.costs, style: { padding: '4px 8px' } },
+    { key: '/economics/analytics', label: t.nav.costAnalytics, style: { padding: '4px 8px' } },
     { key: '/economics/pnl', label: t.nav.pnl, style: { padding: '4px 8px' } },
     { key: '/economics/budget', label: t.nav.budget, style: { padding: '4px 8px' } },
     { key: '/economics/marginality', label: t.nav.marginality, style: { padding: '4px 8px' } },
