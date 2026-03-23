@@ -25,6 +25,7 @@ import MachineDetail from './pages/Machinery/MachineDetail';
 import MaintenancePage from './pages/Machinery/MaintenancePage';
 import FleetMap from './pages/Fleet/FleetMap';
 import CostRecords from './pages/Economics/CostRecords';
+import CostAnalytics from './pages/Economics/CostAnalytics';
 import FieldPnl from './pages/Economics/FieldPnl';
 import BudgetPage from './pages/Economics/BudgetPage';
 import MarginalityDashboard from './pages/Economics/MarginalityDashboard';
@@ -86,6 +87,7 @@ export default function App() {
             <Route path="/sales" element={<SalesList />} />
             <Route path="/sales/analytics" element={<RevenueAnalytics />} />
             <Route path="/economics" element={<CostRecords />} />
+            <Route path="/economics/analytics" element={<CostAnalytics />} />
             <Route path="/economics/pnl" element={<FieldPnl />} />
             <Route path="/economics/budget" element={<BudgetPage />} />
             <Route path="/economics/marginality" element={<MarginalityDashboard />} />
