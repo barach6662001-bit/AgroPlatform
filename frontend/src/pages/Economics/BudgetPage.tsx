@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Table, InputNumber, Button, Select, message, Space, Tag } from 'antd';
 import { SaveOutlined, DownloadOutlined } from '@ant-design/icons';
-import { getBudgets, upsertBudget, exportBudgets, type BudgetDto } from '../../api/budgets';
-import { getCostSummary, type CostSummaryDto } from '../../api/economics';
+import { getBudgets, upsertBudget, exportBudgets, getBudgetPlanVsFact, type BudgetDto, type BudgetPlanVsFactDto } from '../../api/budgets';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
@@ -18,7 +17,7 @@ const YEAR_OPTIONS = Array.from({ length: 6 }, (_, i) => {
 export default function BudgetPage() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [budgets, setBudgets] = useState<BudgetDto[]>([]);
-  const [summary, setSummary] = useState<CostSummaryDto | null>(null);
+  const [planVsFact, setPlanVsFact] = useState<BudgetPlanVsFactDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [exporting, setExporting] = useState(false);
@@ -31,11 +30,11 @@ export default function BudgetPage() {
     setLoading(true);
     Promise.all([
       getBudgets(year),
-      getCostSummary({ dateFrom: `${year}-01-01`, dateTo: `${year}-12-31` }),
+      getBudgetPlanVsFact(year),
     ])
-      .then(([b, s]) => {
+      .then(([b, pvf]) => {
         setBudgets(b);
-        setSummary(s);
+        setPlanVsFact(pvf);
         const amounts: Record<string, number | null> = {};
         b.forEach((bd) => { amounts[bd.category] = bd.plannedAmount; });
         setPendingAmounts(amounts);
@@ -107,8 +106,8 @@ export default function BudgetPage() {
       title: t.economics.plColFact,
       key: 'fact',
       render: (_: unknown, row: { category: string }) => {
-        const factEntry = summary?.byCategory.find((c) => c.category === row.category);
-        const fact = factEntry?.amount ?? 0;
+        const factEntry = planVsFact.find((c) => c.category === row.category);
+        const fact = factEntry?.factAmount ?? 0;
         return <span style={{ color: fact > 0 ? '#E6EDF3' : '#8B949E' }}>{fact.toLocaleString()} UAH</span>;
       },
     },
@@ -117,8 +116,8 @@ export default function BudgetPage() {
       key: 'execution',
       render: (_: unknown, row: { category: string }) => {
         const plan = pendingAmounts[row.category];
-        const factEntry = summary?.byCategory.find((c) => c.category === row.category);
-        const fact = factEntry?.amount ?? 0;
+        const factEntry = planVsFact.find((c) => c.category === row.category);
+        const fact = factEntry?.factAmount ?? 0;
         if (!plan || plan === 0) return <span style={{ color: '#8B949E' }}>—</span>;
         const pct = (fact / plan) * 100;
         return <Tag color={pct > 100 ? 'error' : pct > 80 ? 'warning' : 'success'}>{pct.toFixed(1)}%</Tag>;
