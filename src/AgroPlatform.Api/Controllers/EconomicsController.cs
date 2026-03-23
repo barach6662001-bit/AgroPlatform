@@ -7,6 +7,7 @@ using AgroPlatform.Application.Economics.Queries.GetCostSummary;
 using AgroPlatform.Application.Economics.Queries.GetFieldPnl;
 using AgroPlatform.Application.Economics.Queries.GetCostAnalytics;
 using AgroPlatform.Application.Economics.Queries.GetMarginality;
+using AgroPlatform.Application.Economics.Queries.GetSeasonComparison;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -119,6 +120,24 @@ public class EconomicsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new GetCostAnalyticsQuery(year), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns aggregated metrics for each requested season year (revenue, costs, margin, per-ha KPIs).</summary>
+    [HttpGet("season-comparison")]
+    [ProducesResponseType(typeof(IReadOnlyList<SeasonComparisonDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetSeasonComparison(
+        [FromQuery] string? years,
+        CancellationToken cancellationToken)
+    {
+        var yearList = (years ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(y => int.TryParse(y.Trim(), out var v) ? (int?)v : null)
+            .Where(y => y.HasValue)
+            .Select(y => y!.Value)
+            .ToArray();
+
+        var result = await _sender.Send(new GetSeasonComparisonQuery(yearList), cancellationToken);
         return Ok(result);
     }
 }

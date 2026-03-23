@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { CostRecordDto, FieldPnlDto, MarginalitySummaryDto } from '../types/economics';
+import type { CostRecordDto, FieldPnlDto, MarginalitySummaryDto, SeasonComparisonDto } from '../types/economics';
 import type { PaginatedResult } from '../types/common';
 
 export const getCostRecords = (params?: {
@@ -54,3 +54,8 @@ export interface CostAnalyticsDto {
 
 export const getCostAnalytics = (params?: { year?: number }) =>
   apiClient.get<CostAnalyticsDto>('/api/economics/cost-analytics', { params }).then((r) => r.data);
+
+export const getSeasonComparison = (years: number[]) =>
+  apiClient
+    .get<SeasonComparisonDto[]>('/api/economics/season-comparison', { params: { years: years.join(',') } })
+    .then((r) => r.data);
