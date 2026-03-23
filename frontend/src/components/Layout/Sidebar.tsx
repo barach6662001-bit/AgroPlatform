@@ -41,6 +41,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/analytics/efficiency', label: t.nav.efficiency, style: { padding: '4px 8px' } },
     { key: '/analytics/resources', label: t.nav.resources, style: { padding: '4px 8px' } },
     { key: '/analytics/marginality', label: t.nav.marginality, style: { padding: '4px 8px' } },
+    { key: '/sales/analytics', label: t.nav.revenueAnalytics, style: { padding: '4px 8px' } },
   ];
 
   const allLeafItems = [
@@ -52,6 +53,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/fuel' },
     { key: '/grain' },
     { key: '/sales' },
+    { key: '/sales/analytics' },
     ...analyticsChildren,
     ...storageChildren,
     ...financeChildren,
