@@ -37,16 +37,17 @@ public class GetMarginalityHandler : IRequestHandler<GetMarginalityQuery, IReadO
         if (groupBy == "field")
         {
             var fields = await _context.Fields
-                .Where(f => !f.IsDeleted)
-                .Select(f => new { f.Id, f.Name })
-                .ToListAsync(cancellationToken);
-            fieldNames = fields.ToDictionary(f => f.Id, f => f.Name);
-        }
+        const string baseCurrency = "UAH";
 
-        // ── Costs ─────────────────────────────────────────────────────────
-        // Only positive amounts are actual costs (negative = revenue already captured via Sales)
+        // Load sales for the year
+        var sales = await _context.Sales
+            .Where(s => !s.IsDeleted && s.Date >= yearStart && s.Date <= yearEnd && s.Currency == baseCurrency)
+            .Select(s => new { s.Product, s.TotalAmount, s.FieldId, s.Currency })
+            .ToListAsync(cancellationToken);
+
+        // Load cost records for the year (positive amounts = expenses)
         var costRecords = await _context.CostRecords
-            .Where(c => !c.IsDeleted && c.Date >= yearStart && c.Date <= yearEnd && c.Amount > 0)
+            .Where(c => !c.IsDeleted && c.Date >= yearStart && c.Date <= yearEnd && c.Amount > 0 && c.Currency == baseCurrency)
             .Select(c => new { c.FieldId, c.Amount })
             .ToListAsync(cancellationToken);
 
