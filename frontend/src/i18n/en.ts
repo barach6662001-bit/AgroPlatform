@@ -42,6 +42,7 @@ const en: Translations = {
     resources: 'Resource Consumption',
     revenueAnalytics: 'Revenue Analytics',
     seasonComparison: 'Season Comparison',
+    breakEven: 'Break-Even',
   },
   common: {
     cancel: 'Cancel',
@@ -680,6 +681,15 @@ const en: Translations = {
     seasonBestYear: 'Best Year',
     seasonEmpty: 'No data for selected years',
     seasonChartTitle: 'Season Dynamics',
+    breakEvenTitle: 'Break-Even Calculator',
+    breakEvenSubtitle: 'Minimum yield required to cover total costs per field',
+    breakEvenYield: 'Break-Even Yield (t/ha)',
+    breakEvenPrice: 'Sale Price (UAH/t)',
+    breakEvenLoadError: 'Error loading break-even data',
+    breakEvenEnterPrice: 'Enter sale price to calculate break-even yield per field',
+    breakEvenTotalFields: 'Fields Analysed',
+    breakEvenAvgThreshold: 'Avg Threshold (t/ha)',
+    breakEvenMaxThreshold: 'Max Threshold (t/ha)',
   },
   costCategories: {
     Seeds: 'Seeds',

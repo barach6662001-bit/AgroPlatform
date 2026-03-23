@@ -40,6 +40,7 @@ const uk = {
     resources: 'Розхід ресурсів',
     revenueAnalytics: 'Аналітика продажів',
     seasonComparison: 'Порівняння сезонів',
+    breakEven: 'Беззбитковість',
   },
   common: {
     cancel: 'Скасувати',
@@ -678,6 +679,15 @@ const uk = {
     seasonBestYear: 'Найкращий рік',
     seasonEmpty: 'Немає даних за обрані роки',
     seasonChartTitle: 'Динаміка по сезонах',
+    breakEvenTitle: 'Калькулятор беззбитковості',
+    breakEvenSubtitle: 'Розрахунок мінімальної врожайності для покриття витрат по полях',
+    breakEvenYield: 'Поріг беззбитковості (т/га)',
+    breakEvenPrice: 'Ціна реалізації (UAH/т)',
+    breakEvenLoadError: 'Помилка завантаження даних беззбитковості',
+    breakEvenEnterPrice: 'Введіть ціну реалізації для розрахунку порогу беззбитковості',
+    breakEvenTotalFields: 'Полів проаналізовано',
+    breakEvenAvgThreshold: 'Середній поріг (т/га)',
+    breakEvenMaxThreshold: 'Найвищий поріг (т/га)',
   },
   costCategories: {
     Seeds: 'Насіння',
