@@ -1,0 +1,213 @@
+import { useEffect, useState } from 'react';
+import { Table, InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space } from 'antd';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { CalculatorOutlined, RiseOutlined, WarningOutlined } from '@ant-design/icons';
+import { getBreakEven } from '../../api/economics';
+import type { BreakEvenDto } from '../../types/economics';
+import PageHeader from '../../components/PageHeader';
+import { useTranslation } from '../../i18n';
+
+const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
+  const y = 2020 + i;
+  return { value: y, label: String(y) };
+});
+
+export default function BreakEvenCalculator() {
+  const [data, setData] = useState<BreakEvenDto[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [pricePerTonne, setPricePerTonne] = useState<number | null>(null);
+  const { t } = useTranslation();
+
+  const load = () => {
+    if (!pricePerTonne || pricePerTonne <= 0) {
+      setData([]);
+      return;
+    }
+    setLoading(true);
+    getBreakEven({ year, pricePerTonne })
+      .then(setData)
+      .catch(() => message.error(t.economics.breakEvenLoadError))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    load();
+  }, [year, pricePerTonne]);
+
+  const fieldsWithYield = data.filter((d) => d.breakEvenYield != null);
+  const avgThreshold =
+    fieldsWithYield.length === 0
+      ? null
+      : fieldsWithYield.reduce((s, d) => s + (d.breakEvenYield ?? 0), 0) / fieldsWithYield.length;
+  const maxThreshold =
+    fieldsWithYield.length === 0
+      ? null
+      : Math.max(...fieldsWithYield.map((d) => d.breakEvenYield ?? 0));
+
+  const chartData = fieldsWithYield.map((d) => ({
+    name: d.fieldName,
+    [t.economics.breakEvenYield]: d.breakEvenYield ?? 0,
+  }));
+
+  const columns = [
+    {
+      title: t.analytics.fieldName,
+      dataIndex: 'fieldName',
+      key: 'fieldName',
+      sorter: (a: BreakEvenDto, b: BreakEvenDto) => a.fieldName.localeCompare(b.fieldName),
+    },
+    {
+      title: t.analytics.areaHa,
+      dataIndex: 'areaHectares',
+      key: 'areaHectares',
+      sorter: (a: BreakEvenDto, b: BreakEvenDto) => a.areaHectares - b.areaHectares,
+      render: (v: number) => v.toFixed(1),
+    },
+    {
+      title: t.fields.crop,
+      dataIndex: 'currentCrop',
+      key: 'currentCrop',
+      render: (v: string) =>
+        v ? (
+          <Tag color="green">{t.crops[v as keyof typeof t.crops] ?? v}</Tag>
+        ) : (
+          '—'
+        ),
+    },
+    {
+      title: t.economics.total,
+      dataIndex: 'totalCosts',
+      key: 'totalCosts',
+      sorter: (a: BreakEvenDto, b: BreakEvenDto) => a.totalCosts - b.totalCosts,
+      render: (v: number) => <span style={{ color: '#f85149' }}>{v.toLocaleString()} UAH</span>,
+    },
+    {
+      title: t.economics.breakEvenPrice,
+      dataIndex: 'pricePerTonne',
+      key: 'pricePerTonne',
+      render: (v: number) => `${v.toLocaleString()} UAH/т`,
+    },
+    {
+      title: t.economics.breakEvenYield,
+      dataIndex: 'breakEvenYield',
+      key: 'breakEvenYield',
+      sorter: (a: BreakEvenDto, b: BreakEvenDto) =>
+        (a.breakEvenYield ?? -1) - (b.breakEvenYield ?? -1),
+      render: (v: number | undefined) => {
+        if (v == null) return <span style={{ color: '#8B949E' }}>—</span>;
+        const color = v <= 3 ? '#3fb950' : v <= 6 ? '#d29922' : '#f85149';
+        return <strong style={{ color }}>{v.toFixed(3)} т/га</strong>;
+      },
+    },
+  ];
+
+  return (
+    <div>
+      <PageHeader title={t.economics.breakEvenTitle} subtitle={t.economics.breakEvenSubtitle} />
+
+      {/* Filters */}
+      <Space style={{ marginBottom: 24 }} wrap>
+        <span style={{ color: '#8B949E' }}>{t.economics.year}:</span>
+        <Select
+          value={year}
+          onChange={setYear}
+          options={YEAR_OPTIONS}
+          style={{ width: 100 }}
+        />
+        <span style={{ color: '#8B949E' }}>{t.economics.breakEvenPrice}:</span>
+        <InputNumber
+          min={1}
+          step={100}
+          value={pricePerTonne}
+          onChange={(v) => setPricePerTonne(v)}
+          placeholder="UAH/т"
+          style={{ width: 160 }}
+        />
+      </Space>
+
+      {(!pricePerTonne || pricePerTonne <= 0) && (
+        <div style={{ marginBottom: 16, color: '#8B949E', fontSize: 13 }}>
+          ℹ️ {t.economics.breakEvenEnterPrice}
+        </div>
+      )}
+
+      {/* KPI cards */}
+      {pricePerTonne && pricePerTonne > 0 && (
+        <Row gutter={16} style={{ marginBottom: 24 }}>
+          <Col xs={24} sm={8}>
+            <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+              <Statistic
+                title={<span style={{ color: '#8B949E' }}>{t.economics.breakEvenTotalFields}</span>}
+                value={data.length}
+                valueStyle={{ color: '#58A6FF' }}
+                prefix={<CalculatorOutlined />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+              <Statistic
+                title={<span style={{ color: '#8B949E' }}>{t.economics.breakEvenAvgThreshold}</span>}
+                value={avgThreshold != null ? avgThreshold.toFixed(3) : '—'}
+                suffix={avgThreshold != null ? ' т/га' : ''}
+                valueStyle={{ color: '#d29922' }}
+                prefix={<RiseOutlined />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+              <Statistic
+                title={<span style={{ color: '#8B949E' }}>{t.economics.breakEvenMaxThreshold}</span>}
+                value={maxThreshold != null ? maxThreshold.toFixed(3) : '—'}
+                suffix={maxThreshold != null ? ' т/га' : ''}
+                valueStyle={{ color: '#f85149' }}
+                prefix={<WarningOutlined />}
+              />
+            </Card>
+          </Col>
+        </Row>
+      )}
+
+      {/* Chart */}
+      {chartData.length > 0 && (
+        <Card
+          title={<span style={{ color: '#E6EDF3' }}>{t.economics.breakEvenYield}</span>}
+          style={{ background: '#161B22', border: '1px solid #30363D', marginBottom: 24 }}
+        >
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 60 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
+              <XAxis
+                dataKey="name"
+                tick={{ fill: '#8B949E', fontSize: 11 }}
+                angle={-35}
+                textAnchor="end"
+                interval={0}
+              />
+              <YAxis tick={{ fill: '#8B949E', fontSize: 11 }} unit=" т/га" />
+              <Tooltip
+                contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }}
+              />
+              <Bar dataKey={t.economics.breakEvenYield} fill="#d29922" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+      )}
+
+      {/* Table */}
+      {pricePerTonne && pricePerTonne > 0 && data.length === 0 && !loading ? (
+        <Empty description={<span style={{ color: '#8B949E' }}>{t.common.noData}</span>} />
+      ) : (
+        <Table
+          dataSource={data}
+          columns={columns}
+          rowKey="fieldId"
+          loading={loading}
+          pagination={false}
+        />
+      )}
+    </div>
+  );
+}

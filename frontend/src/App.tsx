@@ -30,6 +30,7 @@ import FieldPnl from './pages/Economics/FieldPnl';
 import BudgetPage from './pages/Economics/BudgetPage';
 import MarginalityDashboard from './pages/Economics/MarginalityDashboard';
 import SeasonComparison from './pages/Economics/SeasonComparison';
+import BreakEvenCalculator from './pages/Economics/BreakEvenCalculator';
 import ResourceConsumption from './pages/Analytics/ResourceConsumption';
 import FieldEfficiency from './pages/Analytics/FieldEfficiency';
 import AnalyticsMarginalityDashboard from './pages/Analytics/MarginalityDashboard';
@@ -93,6 +94,7 @@ export default function App() {
             <Route path="/economics/budget" element={<BudgetPage />} />
             <Route path="/economics/marginality" element={<MarginalityDashboard />} />
             <Route path="/economics/season-comparison" element={<SeasonComparison />} />
+            <Route path="/economics/break-even" element={<BreakEvenCalculator />} />
             <Route path="/analytics/resources" element={<ResourceConsumption />} />
             <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
             <Route path="/analytics/marginality" element={<AnalyticsMarginalityDashboard />} />

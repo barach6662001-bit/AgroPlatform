@@ -2,6 +2,7 @@ using AgroPlatform.Application.Economics.Commands.CreateCostRecord;
 using AgroPlatform.Application.Economics.Commands.DeleteCostRecord;
 using AgroPlatform.Application.Economics.DTOs;
 using AgroPlatform.Application.Economics.Queries.ExportCostRecords;
+using AgroPlatform.Application.Economics.Queries.GetBreakEven;
 using AgroPlatform.Application.Economics.Queries.GetCostRecords;
 using AgroPlatform.Application.Economics.Queries.GetCostSummary;
 using AgroPlatform.Application.Economics.Queries.GetFieldPnl;
@@ -138,6 +139,21 @@ public class EconomicsController : ControllerBase
             .ToArray();
 
         var result = await _sender.Send(new GetSeasonComparisonQuery(yearList), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns break-even yield (t/ha) per field for the given year and assumed sale price.
+    /// Formula: breakEvenYield = totalCosts / (pricePerTonne * areaHectares)
+    /// </summary>
+    [HttpGet("break-even")]
+    [ProducesResponseType(typeof(IReadOnlyList<BreakEvenDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetBreakEven(
+        [FromQuery] int? year,
+        [FromQuery] decimal pricePerTonne = 0,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetBreakEvenQuery(year, pricePerTonne), cancellationToken);
         return Ok(result);
     }
 }
