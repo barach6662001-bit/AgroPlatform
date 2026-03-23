@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Analytics.Queries.GetDashboard;
 using AgroPlatform.Application.Analytics.Queries.GetFieldEfficiency;
 using AgroPlatform.Application.Analytics.Queries.GetResourceConsumption;
+using AgroPlatform.Application.Analytics.Queries.GetResourceEfficiency;
 using AgroPlatform.Application.Economics.Queries.GetMarginality;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -85,6 +86,23 @@ public class AnalyticsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new GetMarginalityQuery(year), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns salary and fuel analytics for the given year:
+    /// totals by employee / machine / month, plus efficiency ratios
+    /// (liters/hectare and hectares/labor-hour) where data is available.
+    /// </summary>
+    /// <param name="year">Year to aggregate (defaults to current year).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("resource-efficiency")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetResourceEfficiency(
+        [FromQuery] int? year,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetResourceEfficiencyQuery(year), cancellationToken);
         return Ok(result);
     }
 }

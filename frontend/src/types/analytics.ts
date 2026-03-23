@@ -53,3 +53,38 @@ export interface DashboardDto {
   costsByCategory: Record<string, number>;
   costTrend: MonthlyCostTrendDto[];
 }
+
+export interface SalaryByEmployeeDto {
+  employeeId: string;
+  employeeName: string;
+  totalPaid: number;
+  totalAccrued: number;
+  totalHours: number;
+}
+
+export interface FuelByMachineDto {
+  machineId: string;
+  machineName: string;
+  totalLiters: number;
+  totalHoursWorked: number;
+  litersPerHour: number | null;
+}
+
+export interface MonthlyValueDto {
+  year: number;
+  month: number;
+  value: number;
+}
+
+export interface ResourceEfficiencyDto {
+  totalSalaryPayments: number;
+  totalAccruedWages: number;
+  totalFuelLiters: number;
+  totalLaborHours: number;
+  litersPerHectare: number | null;
+  hectaresPerLaborHour: number | null;
+  salaryByEmployee: SalaryByEmployeeDto[];
+  salaryByMonth: MonthlyValueDto[];
+  fuelByMachine: FuelByMachineDto[];
+  fuelByMonth: MonthlyValueDto[];
+}
