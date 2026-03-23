@@ -5,6 +5,7 @@ using AgroPlatform.Application.Economics.Queries.ExportCostRecords;
 using AgroPlatform.Application.Economics.Queries.GetCostRecords;
 using AgroPlatform.Application.Economics.Queries.GetCostSummary;
 using AgroPlatform.Application.Economics.Queries.GetFieldPnl;
+using AgroPlatform.Application.Economics.Queries.GetCostAnalytics;
 using AgroPlatform.Application.Economics.Queries.GetMarginality;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -107,6 +108,17 @@ public class EconomicsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new GetMarginalityQuery(year), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns cost analytics aggregations (by category, by month) for the given year.</summary>
+    [HttpGet("cost-analytics")]
+    [ProducesResponseType(typeof(CostAnalyticsDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCostAnalytics(
+        [FromQuery] int? year,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetCostAnalyticsQuery(year), cancellationToken);
         return Ok(result);
     }
 }

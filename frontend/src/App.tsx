@@ -25,6 +25,7 @@ import MachineDetail from './pages/Machinery/MachineDetail';
 import MaintenancePage from './pages/Machinery/MaintenancePage';
 import FleetMap from './pages/Fleet/FleetMap';
 import CostRecords from './pages/Economics/CostRecords';
+import CostAnalytics from './pages/Economics/CostAnalytics';
 import FieldPnl from './pages/Economics/FieldPnl';
 import BudgetPage from './pages/Economics/BudgetPage';
 import MarginalityDashboard from './pages/Economics/MarginalityDashboard';
@@ -41,6 +42,7 @@ import AccessDenied from './pages/AccessDenied';
 import NotFound from './pages/NotFound';
 import FuelStation from './pages/Fuel/FuelStation';
 import SalesList from './pages/Sales/SalesList';
+import RevenueAnalytics from './pages/Sales/RevenueAnalytics';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -83,7 +85,9 @@ export default function App() {
             <Route path="/fleet" element={<FleetMap />} />
             <Route path="/fuel" element={<FuelStation />} />
             <Route path="/sales" element={<SalesList />} />
+            <Route path="/sales/analytics" element={<RevenueAnalytics />} />
             <Route path="/economics" element={<CostRecords />} />
+            <Route path="/economics/analytics" element={<CostAnalytics />} />
             <Route path="/economics/pnl" element={<FieldPnl />} />
             <Route path="/economics/budget" element={<BudgetPage />} />
             <Route path="/economics/marginality" element={<MarginalityDashboard />} />
