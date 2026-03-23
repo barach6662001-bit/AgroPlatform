@@ -659,6 +659,11 @@ const en: Translations = {
     analyticsByCategory: 'By Category',
     analyticsByMonth: 'By Month',
     count: 'Count',
+    plTotalPlanned: 'Total Planned',
+    plTotalActual: 'Total Actual',
+    plVariance: 'Variance',
+    plExecution: 'Execution (%)',
+    plChartTitle: 'Plan vs Fact by Category',
   },
   costCategories: {
     Seeds: 'Seeds',

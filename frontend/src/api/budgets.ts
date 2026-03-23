@@ -12,6 +12,8 @@ export interface BudgetPlanVsFactDto {
   category: string;
   plannedAmount: number;
   factAmount: number;
+  variance: number;
+  executionPercent: number;
 }
 
 export const getBudgets = (year: number) =>

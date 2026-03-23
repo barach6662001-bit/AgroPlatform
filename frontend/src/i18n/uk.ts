@@ -657,6 +657,11 @@ const uk = {
     analyticsByCategory: 'По категоріях',
     analyticsByMonth: 'По місяцях',
     count: 'Кількість',
+    plTotalPlanned: 'Заплановано (всього)',
+    plTotalActual: 'Фактично (всього)',
+    plVariance: 'Відхилення',
+    plExecution: 'Виконання (%)',
+    plChartTitle: 'План vs Факт по категоріях',
   },
   costCategories: {
     Seeds: 'Насіння',

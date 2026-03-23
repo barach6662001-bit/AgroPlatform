@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Table, InputNumber, Button, Select, message, Space, Tag } from 'antd';
-import { SaveOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Table, InputNumber, Button, Select, message, Space, Tag, Row, Col, Card, Statistic } from 'antd';
+import { SaveOutlined, DownloadOutlined, DollarOutlined, RiseOutlined, FallOutlined, PercentageOutlined } from '@ant-design/icons';
+import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts';
 import { getBudgets, upsertBudget, exportBudgets, getBudgetPlanVsFact, type BudgetDto, type BudgetPlanVsFactDto } from '../../api/budgets';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -147,6 +148,17 @@ export default function BudgetPage() {
 
   const tableData = CATEGORIES.map((cat) => ({ category: cat, key: cat }));
 
+  const totalPlanned = budgets.reduce((s, b) => s + b.plannedAmount, 0);
+  const totalActual = planVsFact.reduce((s, p) => s + p.factAmount, 0);
+  const totalVariance = totalPlanned - totalActual;
+  const totalExecution = totalPlanned > 0 ? (totalActual / totalPlanned) * 100 : 0;
+
+  const chartData = CATEGORIES.map((cat) => ({
+    name: cat,
+    planned: pendingAmounts[cat] ?? 0,
+    actual: planVsFact.find((p) => p.category === cat)?.factAmount ?? 0,
+  }));
+
   return (
     <div>
       <PageHeader title={t.budget.title} subtitle={t.budget.subtitle} />
@@ -157,13 +169,75 @@ export default function BudgetPage() {
           {t.warehouses_export.exportCosts}
         </Button>
       </Space>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title={t.economics.plTotalPlanned}
+              value={totalPlanned}
+              precision={0}
+              prefix={<DollarOutlined />}
+              suffix="UAH"
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title={t.economics.plTotalActual}
+              value={totalActual}
+              precision={0}
+              prefix={<RiseOutlined />}
+              suffix="UAH"
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title={t.economics.plVariance}
+              value={totalVariance}
+              precision={0}
+              prefix={<FallOutlined />}
+              suffix="UAH"
+              valueStyle={{ color: totalVariance >= 0 ? '#3f8600' : '#cf1322' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title={t.economics.plExecution}
+              value={totalExecution}
+              precision={1}
+              prefix={<PercentageOutlined />}
+              suffix="%"
+              valueStyle={{ color: totalExecution > 100 ? '#cf1322' : totalExecution > 80 ? '#d4b106' : '#3f8600' }}
+            />
+          </Card>
+        </Col>
+      </Row>
       <Table
         dataSource={tableData}
         columns={columns}
         rowKey="category"
         loading={loading}
         pagination={false}
+        style={{ marginBottom: 24 }}
       />
+      <Card title={t.economics.plChartTitle} style={{ marginBottom: 24 }}>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="planned" name={t.economics.plColPlan} fill="#1890ff" />
+            <Bar dataKey="actual" name={t.economics.plColFact} fill="#52c41a" />
+          </BarChart>
+        </ResponsiveContainer>
+      </Card>
     </div>
   );
 }
