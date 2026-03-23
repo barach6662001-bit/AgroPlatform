@@ -18,6 +18,8 @@ const DANGER_COLOR = '#F85149';
 const WARNING_COLOR = '#d4a574';
 const PLAN_COLOR = '#1F6FEB';
 const FACT_COLOR = '#3FB950';
+const EXECUTION_WARNING_THRESHOLD = 80;
+const EXECUTION_DANGER_THRESHOLD = 100;
 
 const currentYear = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: 6 }, (_, i) => {
@@ -26,6 +28,12 @@ const YEAR_OPTIONS = Array.from({ length: 6 }, (_, i) => {
 });
 
 const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+
+const getExecutionColor = (pct: number) =>
+  pct > EXECUTION_DANGER_THRESHOLD ? DANGER_COLOR : pct > EXECUTION_WARNING_THRESHOLD ? WARNING_COLOR : SUCCESS_COLOR;
+
+const getExecutionTagColor = (pct: number) =>
+  pct > EXECUTION_DANGER_THRESHOLD ? 'error' : pct > EXECUTION_WARNING_THRESHOLD ? 'warning' : 'success';
 
 export default function BudgetPage() {
   const [year, setYear] = useState(new Date().getFullYear());
@@ -38,6 +46,8 @@ export default function BudgetPage() {
   const { t } = useTranslation();
   const { hasRole } = useRole();
   const canEdit = hasRole(['Administrator', 'Manager', 'Director']);
+  const translateCategory = (cat: string) =>
+    t.costCategories[cat as keyof typeof t.costCategories] ?? cat;
 
   const load = () => {
     setLoading(true);
@@ -88,12 +98,12 @@ export default function BudgetPage() {
   };
 
   const execPct = pvf?.overallExecutionPercent ?? 0;
-  const execColor = execPct > 100 ? DANGER_COLOR : execPct > 80 ? WARNING_COLOR : SUCCESS_COLOR;
+  const execColor = getExecutionColor(execPct);
 
   const chartData = (pvf?.rows ?? [])
     .filter((r) => r.planned > 0 || r.actual > 0)
     .map((r) => ({
-      name: t.costCategories[r.category as keyof typeof t.costCategories] ?? r.category,
+      name: translateCategory(r.category),
       [t.budget.chartPlan]: r.planned,
       [t.budget.chartFact]: r.actual,
     }));
@@ -104,7 +114,7 @@ export default function BudgetPage() {
       dataIndex: 'category',
       key: 'category',
       render: (cat: string) => (
-        <Tag color="blue">{t.costCategories[cat as keyof typeof t.costCategories] ?? cat}</Tag>
+        <Tag color="blue">{translateCategory(cat)}</Tag>
       ),
     },
     {
@@ -150,7 +160,7 @@ export default function BudgetPage() {
         if (!r || r.planned === 0) return <span style={{ color: SECONDARY_TEXT }}>—</span>;
         const pct = r.executionPercent;
         return (
-          <Tag color={pct > 100 ? 'error' : pct > 80 ? 'warning' : 'success'}>
+          <Tag color={getExecutionTagColor(pct)}>
             {pct.toFixed(1)}%
           </Tag>
         );
