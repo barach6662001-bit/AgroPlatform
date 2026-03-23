@@ -28,6 +28,7 @@ using AgroPlatform.Application.Fields.Queries.GetFieldSeedings;
 using AgroPlatform.Application.Fields.Queries.GetFieldZones;
 using AgroPlatform.Application.Fields.Queries.GetFields;
 using AgroPlatform.Application.Fields.Queries.GetPrescriptionMap;
+using AgroPlatform.Application.Fields.Queries.GetRotationAdvice;
 using AgroPlatform.Application.Fields.Queries.GetSoilAnalyses;
 using AgroPlatform.Application.Fields.Queries.ExportPrescriptionMap;
 using AgroPlatform.Domain.Enums;
@@ -80,6 +81,17 @@ public class FieldsController : ControllerBase
     {
         LandOwnershipType[]? ownershipTypes = ownershipType?.Select(v => (LandOwnershipType)v).ToArray();
         var result = await _sender.Send(new GetFieldsQuery(currentCrop, searchTerm, page, pageSize, ownershipTypes), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns crop rotation advice for all fields based on recent crop history.</summary>
+    /// <param name="years">Number of past years to analyse (default 3).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("rotation-advice")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRotationAdvice([FromQuery] int years = 3, CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetRotationAdviceQuery(years), cancellationToken);
         return Ok(result);
     }
 

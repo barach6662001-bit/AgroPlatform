@@ -40,6 +40,7 @@ const uk = {
     resources: 'Розхід ресурсів',
     revenueAnalytics: 'Аналітика продажів',
     seasonComparison: 'Порівняння сезонів',
+    cropRotationAdvisor: 'Порадник сівозміни',
   },
   common: {
     cancel: 'Скасувати',
@@ -1074,6 +1075,23 @@ const uk = {
     region: 'Регіон',
     welcomeTitle: 'Ласкаво просимо до АгроТех!',
     welcomeSubtitle: 'Давайте налаштуємо систему. Це займе 5 хвилин.',
+  },
+  cropRotationAdvisor: {
+    title: 'Порадник сівозміни',
+    subtitle: 'Аналіз культур за останні роки та рекомендації щодо ротації',
+    yearsLabel: 'Аналізувати за роки',
+    fieldName: 'Поле',
+    area: 'Площа (га)',
+    cropHistory: 'Історія культур',
+    riskLevel: 'Ризик',
+    recommendation: 'Рекомендація',
+    suggestedCrop: 'Рекомендована культура',
+    noHistory: 'Немає даних',
+    riskNone: 'Відсутній',
+    riskMedium: 'Середній',
+    riskHigh: 'Високий',
+    monocultureWarning: 'Монокультура',
+    noData: 'Немає полів з даними про культури',
   },
 } as const;
 

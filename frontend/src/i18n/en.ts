@@ -42,6 +42,7 @@ const en: Translations = {
     resources: 'Resource Consumption',
     revenueAnalytics: 'Revenue Analytics',
     seasonComparison: 'Season Comparison',
+    cropRotationAdvisor: 'Crop Rotation Advisor',
   },
   common: {
     cancel: 'Cancel',
@@ -1076,6 +1077,23 @@ const en: Translations = {
     region: 'Region',
     welcomeTitle: 'Welcome to AgroTech!',
     welcomeSubtitle: 'Let\'s set up the system. It will take 5 minutes.',
+  },
+  cropRotationAdvisor: {
+    title: 'Crop Rotation Advisor',
+    subtitle: 'Analyse crop history and get rotation recommendations',
+    yearsLabel: 'Analyse years',
+    fieldName: 'Field',
+    area: 'Area (ha)',
+    cropHistory: 'Crop History',
+    riskLevel: 'Risk',
+    recommendation: 'Recommendation',
+    suggestedCrop: 'Suggested Crop',
+    noHistory: 'No data',
+    riskNone: 'None',
+    riskMedium: 'Medium',
+    riskHigh: 'High',
+    monocultureWarning: 'Monoculture',
+    noData: 'No fields with crop data',
   },
 };
 

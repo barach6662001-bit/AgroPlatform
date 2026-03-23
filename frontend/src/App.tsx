@@ -44,6 +44,7 @@ import NotFound from './pages/NotFound';
 import FuelStation from './pages/Fuel/FuelStation';
 import SalesList from './pages/Sales/SalesList';
 import RevenueAnalytics from './pages/Sales/RevenueAnalytics';
+import CropRotationAdvisor from './pages/Fields/CropRotationAdvisor';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -72,6 +73,7 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/fields" element={<FieldsList />} />
             <Route path="/fields/leases" element={<LeasePage />} />
+            <Route path="/fields/rotation-advisor" element={<CropRotationAdvisor />} />
             <Route path="/fields/:id" element={<FieldDetail />} />
             <Route path="/warehouses" element={<WarehousesList />} />
             <Route path="/warehouses/items" element={<WarehouseItems />} />

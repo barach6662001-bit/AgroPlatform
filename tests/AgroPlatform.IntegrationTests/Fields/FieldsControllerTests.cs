@@ -118,4 +118,34 @@ public class FieldsControllerTests : IntegrationTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
+
+    [Fact]
+    public async Task GetRotationAdvice_ReturnsOk()
+    {
+        var fieldId = await CreateFieldAsync("Rotation Advice Field");
+        await PostAsync("/api/fields/assign-crop", new
+        {
+            fieldId,
+            crop = "Wheat",
+            year = 2023,
+            yieldPerHectare = 5.0
+        });
+        await PostAsync("/api/fields/assign-crop", new
+        {
+            fieldId,
+            crop = "Wheat",
+            year = 2024,
+            yieldPerHectare = 4.8
+        });
+
+        var result = await GetAsync<JsonElement>("/api/fields/rotation-advice?years=3");
+
+        result.ValueKind.Should().NotBe(JsonValueKind.Null);
+        var items = result.EnumerateArray().ToList();
+        items.Should().NotBeEmpty();
+        var fieldAdvice = items.FirstOrDefault(i => i.GetProperty("fieldId").GetGuid() == fieldId);
+        fieldAdvice.ValueKind.Should().NotBe(JsonValueKind.Undefined);
+        fieldAdvice.GetProperty("hasMonocultureRisk").GetBoolean().Should().BeTrue();
+        fieldAdvice.GetProperty("riskLevel").GetString().Should().Be("Medium");
+    }
 }

@@ -136,3 +136,19 @@ export interface PrescriptionMapDto {
   ndviDate?: string;
   zones: PrescriptionZoneDto[];
 }
+
+export interface CropYearEntry {
+  year: number;
+  crop: string;
+}
+
+export interface CropRotationAdviceDto {
+  fieldId: string;
+  fieldName: string;
+  areaHectares: number;
+  recentCropHistory: CropYearEntry[];
+  hasMonocultureRisk: boolean;
+  riskLevel: 'None' | 'Medium' | 'High';
+  recommendation: string;
+  suggestedCrop?: string;
+}
