@@ -61,7 +61,9 @@ public class GetMarginalityHandler : IRequestHandler<GetMarginalityQuery, Margin
                 {
                     Label   = s.Product,
                     Revenue = s.Revenue,
-                    // Attribute all costs proportionally to product by revenue share
+                    // CostRecords are not tagged by product, so costs are distributed across products
+                    // using revenue-weighted allocation: each product bears a share of total costs
+                    // proportional to its revenue share (product_revenue / total_revenue).
                     Costs   = totalRevenue > 0
                         ? Math.Round(totalCosts * (s.Revenue / totalRevenue), 2)
                         : 0,
