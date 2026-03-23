@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Table, InputNumber, Button, Select, message, Space, Tag, Card, Row, Col, Statistic } from 'antd';
-import { SaveOutlined, DownloadOutlined, RiseOutlined, FallOutlined, PercentageOutlined, DollarOutlined } from '@ant-design/icons';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { getBudgets, getBudgetPlanVsFact, upsertBudget, exportBudgets, type BudgetDto, type BudgetPlanVsFactDto } from '../../api/budgets';
+import { Table, InputNumber, Button, Select, message, Space, Tag } from 'antd';
+import { SaveOutlined, DownloadOutlined } from '@ant-design/icons';
+import { getBudgets, upsertBudget, exportBudgets, getBudgetPlanVsFact, type BudgetDto, type BudgetPlanVsFactDto } from '../../api/budgets';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
@@ -38,7 +37,7 @@ const getExecutionTagColor = (pct: number) =>
 export default function BudgetPage() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [budgets, setBudgets] = useState<BudgetDto[]>([]);
-  const [pvf, setPvf] = useState<BudgetPlanVsFactDto | null>(null);
+  const [planVsFact, setPlanVsFact] = useState<BudgetPlanVsFactDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [exporting, setExporting] = useState(false);
@@ -51,10 +50,13 @@ export default function BudgetPage() {
 
   const load = () => {
     setLoading(true);
-    Promise.all([getBudgets(year), getBudgetPlanVsFact(year)])
-      .then(([b, p]) => {
+    Promise.all([
+      getBudgets(year),
+      getBudgetPlanVsFact(year),
+    ])
+      .then(([b, pvf]) => {
         setBudgets(b);
-        setPvf(p);
+        setPlanVsFact(pvf);
         const amounts: Record<string, number | null> = {};
         b.forEach((bd) => { amounts[bd.category] = bd.plannedAmount; });
         setPendingAmounts(amounts);
@@ -137,9 +139,9 @@ export default function BudgetPage() {
       title: t.budget.colFact,
       key: 'actual',
       render: (_: unknown, row: { category: string }) => {
-        const r = pvf?.rows.find((x) => x.category === row.category);
-        const val = r?.actual ?? 0;
-        return <span style={{ color: val > 0 ? CARD_TEXT : SECONDARY_TEXT }}>{fmt(val)} UAH</span>;
+        const factEntry = planVsFact.find((c) => c.category === row.category);
+        const fact = factEntry?.factAmount ?? 0;
+        return <span style={{ color: fact > 0 ? '#E6EDF3' : '#8B949E' }}>{fact.toLocaleString()} UAH</span>;
       },
     },
     {
@@ -156,14 +158,12 @@ export default function BudgetPage() {
       title: t.budget.colExecution,
       key: 'execution',
       render: (_: unknown, row: { category: string }) => {
-        const r = pvf?.rows.find((x) => x.category === row.category);
-        if (!r || r.planned === 0) return <span style={{ color: SECONDARY_TEXT }}>—</span>;
-        const pct = r.executionPercent;
-        return (
-          <Tag color={getExecutionTagColor(pct)}>
-            {pct.toFixed(1)}%
-          </Tag>
-        );
+        const plan = pendingAmounts[row.category];
+        const factEntry = planVsFact.find((c) => c.category === row.category);
+        const fact = factEntry?.factAmount ?? 0;
+        if (!plan || plan === 0) return <span style={{ color: '#8B949E' }}>—</span>;
+        const pct = (fact / plan) * 100;
+        return <Tag color={pct > 100 ? 'error' : pct > 80 ? 'warning' : 'success'}>{pct.toFixed(1)}%</Tag>;
       },
     },
     {
