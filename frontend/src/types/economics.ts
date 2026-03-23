@@ -39,3 +39,21 @@ export interface MaterialKpiItem {
   /** When true, renders the "total" blue-highlight variant. */
   isTotal?: boolean;
 }
+
+export interface MarginalityRowDto {
+  label: string;
+  revenue: number;
+  costs: number;
+  margin: number;
+  marginPercent?: number;
+}
+
+export interface MarginalitySummaryDto {
+  totalRevenue: number;
+  totalCosts: number;
+  margin: number;
+  marginPercent?: number;
+  byProduct: MarginalityRowDto[];
+  byField: MarginalityRowDto[];
+}
+

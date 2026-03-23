@@ -36,6 +36,7 @@ const en: Translations = {
     movements: 'Movements',
     finance: 'Finance',
     sales: 'Sales',
+    marginality: 'Marginality',
   },
   common: {
     cancel: 'Cancel',
@@ -641,6 +642,13 @@ const en: Translations = {
     totalCostsSum: 'Total Costs',
     bestField: 'Best Field',
     avgMargin: 'Avg. Margin',
+    margTitle: 'Marginality Dashboard',
+    margSubtitle: 'Profit, costs and margin analysis by crop and field',
+    margLoadError: 'Error loading marginality dashboard',
+    margEmpty: 'No sales or cost data for the selected year',
+    margByProduct: 'Marginality by Crop',
+    margByField: 'Marginality by Field',
+    margProduct: 'Crop / Product',
   },
   costCategories: {
     Seeds: 'Seeds',
