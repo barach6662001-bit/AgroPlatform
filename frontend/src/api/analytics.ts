@@ -1,5 +1,6 @@
 import apiClient from './axios';
 import type { DashboardDto, ResourceConsumptionDto, FieldEfficiencyDto } from '../types/analytics';
+import type { MarginalitySummaryDto } from '../types/economics';
 
 export const getDashboard = () =>
   apiClient.get<DashboardDto>('/api/analytics/dashboard').then((r) => r.data);
@@ -9,3 +10,6 @@ export const getResourceConsumption = (params?: { from?: string; to?: string }) 
 
 export const getFieldEfficiency = () =>
   apiClient.get<FieldEfficiencyDto[]>('/api/analytics/field-efficiency').then((r) => r.data);
+
+export const getAnalyticsMarginality = (params?: { year?: number }) =>
+  apiClient.get<MarginalitySummaryDto>('/api/analytics/marginality', { params }).then((r) => r.data);

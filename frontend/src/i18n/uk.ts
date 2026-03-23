@@ -35,6 +35,8 @@ const uk = {
     finance: 'Фінанси',
     sales: 'Продажі',
     marginality: 'Маржинальність',
+    efficiency: 'Ефективність полів',
+    resources: 'Розхід ресурсів',
   },
   common: {
     cancel: 'Скасувати',
