@@ -5,6 +5,7 @@ import BudgetPage from '../Economics/BudgetPage';
 
 vi.mock('../../api/budgets', () => ({
   getBudgets: vi.fn(() => Promise.resolve([])),
+  getBudgetPlanVsFact: vi.fn(() => Promise.resolve([])),
   upsertBudget: vi.fn(),
 }));
 
