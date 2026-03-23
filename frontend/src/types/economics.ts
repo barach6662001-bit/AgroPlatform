@@ -57,3 +57,14 @@ export interface MarginalitySummaryDto {
   byField: MarginalityRowDto[];
 }
 
+export interface SeasonComparisonDto {
+  year: number;
+  totalRevenue: number;
+  totalCosts: number;
+  margin: number;
+  marginPercent?: number;
+  areaHa?: number;
+  costPerHa?: number;
+  revenuePerHa?: number;
+}
+
