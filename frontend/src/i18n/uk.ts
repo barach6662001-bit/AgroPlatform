@@ -34,6 +34,7 @@ const uk = {
     movements: 'Рухи',
     finance: 'Фінанси',
     sales: 'Продажі',
+    marginality: 'Маржинальність',
   },
   common: {
     cancel: 'Скасувати',
@@ -639,6 +640,13 @@ const uk = {
     totalCostsSum: 'Загальні витрати',
     bestField: 'Найкраще поле',
     avgMargin: 'Середня маржа',
+    margTitle: 'Дашборд маржинальності',
+    margSubtitle: 'Аналіз прибутку, витрат та маржі по культурах і полях',
+    margLoadError: 'Помилка завантаження дашборду маржинальності',
+    margEmpty: 'Немає даних продажів або витрат за обраний рік',
+    margByProduct: 'Маржинальність по культурах',
+    margByField: 'Маржинальність по полях',
+    margProduct: 'Культура / Продукт',
   },
   costCategories: {
     Seeds: 'Насіння',

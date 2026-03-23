@@ -5,6 +5,7 @@ using AgroPlatform.Application.Economics.Queries.ExportCostRecords;
 using AgroPlatform.Application.Economics.Queries.GetCostRecords;
 using AgroPlatform.Application.Economics.Queries.GetCostSummary;
 using AgroPlatform.Application.Economics.Queries.GetFieldPnl;
+using AgroPlatform.Application.Economics.Queries.GetMarginality;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -95,6 +96,17 @@ public class EconomicsController : ControllerBase
         var result = await _sender.Send(
             new GetFieldPnlQuery(year, estimatedPricePerTonne, fieldId),
             cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns marginality summary (revenue vs costs by product and by field) for the given year.</summary>
+    [HttpGet("marginality")]
+    [ProducesResponseType(typeof(MarginalitySummaryDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMarginality(
+        [FromQuery] int? year,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetMarginalityQuery(year), cancellationToken);
         return Ok(result);
     }
 }
