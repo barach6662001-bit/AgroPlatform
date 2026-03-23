@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Economics.Commands.UpsertBudget;
 using AgroPlatform.Application.Economics.Queries.ExportBudgets;
+using AgroPlatform.Application.Economics.Queries.GetBudgetPlanVsFact;
 using AgroPlatform.Application.Economics.Queries.GetBudgets;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -26,6 +27,15 @@ public class BudgetsController : ControllerBase
     {
         if (year == 0) year = DateTime.UtcNow.Year;
         var result = await _sender.Send(new GetBudgetsQuery(year), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns plan-vs-fact comparison for the specified year.</summary>
+    [HttpGet("plan-vs-fact")]
+    public async Task<IActionResult> GetBudgetPlanVsFact([FromQuery] int year, CancellationToken cancellationToken)
+    {
+        if (year == 0) year = DateTime.UtcNow.Year;
+        var result = await _sender.Send(new GetBudgetPlanVsFactQuery(year), cancellationToken);
         return Ok(result);
     }
 

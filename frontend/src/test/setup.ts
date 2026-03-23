@@ -22,6 +22,14 @@ window.getComputedStyle = window.getComputedStyle || function () {
   };
 };
 
+if (typeof window.ResizeObserver === 'undefined') {
+  window.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
