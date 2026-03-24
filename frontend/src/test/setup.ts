@@ -24,7 +24,7 @@ window.getComputedStyle = ((elt: Element, pseudoElt?: string | null) => {
   } catch {
     return {
       getPropertyValue: () => '',
-    } as CSSStyleDeclaration;
+    } as unknown as CSSStyleDeclaration;
   }
 }) as typeof window.getComputedStyle;
 
