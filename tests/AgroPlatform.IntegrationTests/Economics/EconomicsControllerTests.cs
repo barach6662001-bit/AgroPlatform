@@ -62,4 +62,29 @@ public class EconomicsControllerTests : IntegrationTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
+
+    [Fact]
+    public async Task GetBreakEven_ReturnsOk()
+    {
+        var response = await Client.GetAsync("/api/economics/break-even?year=2025&pricePerTonne=5000");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        result.ValueKind.Should().Be(JsonValueKind.Array);
+    }
+
+    [Fact]
+    public async Task GetBreakEven_WithZeroPrice_ReturnsNullBreakEvenYield()
+    {
+        var response = await Client.GetAsync("/api/economics/break-even?year=2025&pricePerTonne=0");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<JsonElement>(JsonOptions);
+        result.ValueKind.Should().Be(JsonValueKind.Array);
+        // With pricePerTonne=0, all breakEvenYield values must be null
+        foreach (var item in result.EnumerateArray())
+        {
+            item.GetProperty("breakEvenYield").ValueKind.Should().Be(JsonValueKind.Null);
+        }
+    }
 }

@@ -14,6 +14,7 @@ import Dashboard from './pages/Dashboard';
 import FieldsList from './pages/Fields/FieldsList';
 import FieldDetail from './pages/Fields/FieldDetail';
 import LeasePage from './pages/Fields/LeasePage';
+import CropRotationAdvisor from './pages/Fields/CropRotationAdvisor';
 import WarehousesList from './pages/Warehouses/WarehousesList';
 import WarehouseItems from './pages/Warehouses/WarehouseItems';
 import StockMovements from './pages/Warehouses/StockMovements';
@@ -30,6 +31,7 @@ import FieldPnl from './pages/Economics/FieldPnl';
 import BudgetPage from './pages/Economics/BudgetPage';
 import MarginalityDashboard from './pages/Economics/MarginalityDashboard';
 import SeasonComparison from './pages/Economics/SeasonComparison';
+import BreakEvenCalculator from './pages/Economics/BreakEvenCalculator';
 import ResourceConsumption from './pages/Analytics/ResourceConsumption';
 import FieldEfficiency from './pages/Analytics/FieldEfficiency';
 import AnalyticsMarginalityDashboard from './pages/Analytics/MarginalityDashboard';
@@ -73,6 +75,7 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/fields" element={<FieldsList />} />
             <Route path="/fields/leases" element={<LeasePage />} />
+            <Route path="/fields/rotation-advisor" element={<CropRotationAdvisor />} />
             <Route path="/fields/:id" element={<FieldDetail />} />
             <Route path="/warehouses" element={<WarehousesList />} />
             <Route path="/warehouses/items" element={<WarehouseItems />} />
@@ -94,6 +97,7 @@ export default function App() {
             <Route path="/economics/budget" element={<BudgetPage />} />
             <Route path="/economics/marginality" element={<MarginalityDashboard />} />
             <Route path="/economics/season-comparison" element={<SeasonComparison />} />
+            <Route path="/economics/break-even" element={<BreakEvenCalculator />} />
             <Route path="/analytics/resources" element={<ResourceConsumption />} />
             <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
             <Route path="/analytics/marginality" element={<AnalyticsMarginalityDashboard />} />
