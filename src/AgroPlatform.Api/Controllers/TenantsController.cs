@@ -1,5 +1,8 @@
 using AgroPlatform.Application.Tenants.Commands.RegisterTenant;
 using AgroPlatform.Application.Tenants.Commands.SeedDemoData;
+using AgroPlatform.Application.Tenants.Commands.UpdateTenant;
+using AgroPlatform.Application.Tenants.Queries.GetCurrentTenant;
+using AgroPlatform.Application.Tenants.Queries.GetTenants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +40,45 @@ public class TenantsController : ControllerBase
     {
         var tenant = await _sender.Send(command, cancellationToken);
         return Created($"/api/tenants/{tenant.Id}", tenant);
+    }
+
+    /// <summary>Returns the list of tenants accessible to the current user.</summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>List of tenant DTOs.</returns>
+    [HttpGet]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetTenants(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetTenantsQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns the current tenant details.</summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("current")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetCurrentTenant(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetCurrentTenantQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Updates company details for the current tenant.</summary>
+    /// <param name="command">Updated company data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPut("current")]
+    [Authorize(Roles = "Administrator")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateCurrentTenant(
+        [FromBody] UpdateTenantCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(command, cancellationToken);
+        return Ok(result);
     }
 
     /// <summary>Seed demo data for the current tenant</summary>

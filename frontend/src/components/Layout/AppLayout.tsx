@@ -5,6 +5,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileDrawer from './MobileDrawer';
 import NotificationBell from './NotificationBell';
+import FarmSwitcher from './FarmSwitcher';
 import { useAuthStore } from '../../stores/authStore';
 import { useTranslation, languages } from '../../i18n';
 
@@ -191,6 +192,7 @@ export default function AppLayout() {
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FarmSwitcher />
             <Dropdown
               menu={{
                 items: langMenuItems,
