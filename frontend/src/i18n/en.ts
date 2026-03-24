@@ -1133,6 +1133,16 @@ const en: Translations = {
     welcomeTitle: 'Welcome to AgroTech!',
     welcomeSubtitle: 'Let\'s set up the system. It will take 5 minutes.',
   },
+  offline: {
+    offline: 'Offline',
+    online: 'Online',
+    queued: 'Saved offline — will sync automatically',
+    syncing: 'Syncing...',
+    syncNow: 'Sync now',
+    pendingCount: '{n} pending',
+    syncSuccess: 'Synced successfully',
+    syncFailed: 'Sync failed',
+  },
 };
 
 export default en;

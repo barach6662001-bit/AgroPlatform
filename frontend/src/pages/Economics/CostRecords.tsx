@@ -14,8 +14,10 @@ import MaterialKpiCards from '../../components/MaterialKpiCards';
 import type { PLTableRow } from '../../components/PLTable';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { formatDate } from '../../utils/dateFormat';
 import apiClient from '../../api/axios';
+import { enqueueOperation } from '../../utils/offlineQueue';
 
 const { RangePicker } = DatePicker;
 
@@ -43,6 +45,7 @@ export default function CostRecords() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const { hasRole } = useRole();
+  const isOnline = useOnlineStatus();
 
   const canCreate = hasRole(['Administrator', 'Manager']);
   const canDelete = hasRole(['Administrator', 'Manager']);
@@ -79,11 +82,20 @@ export default function CostRecords() {
       const values = await form.validateFields();
       setSaving(true);
       const date = values.date ? (values.date as { toISOString: () => string }).toISOString() : new Date().toISOString();
-      await createCostRecord({ ...values, date });
-      message.success(t.economics.createSuccess);
-      form.resetFields();
-      setModalOpen(false);
-      load();
+      const payload = { ...values, date };
+
+      if (!isOnline) {
+        await enqueueOperation({ method: 'POST', url: '/api/economics/cost-records', data: payload });
+        message.info(t.offline.queued);
+        form.resetFields();
+        setModalOpen(false);
+      } else {
+        await createCostRecord(payload);
+        message.success(t.economics.createSuccess);
+        form.resetFields();
+        setModalOpen(false);
+        load();
+      }
     } catch {
       message.error(t.economics.createError);
     } finally {
