@@ -45,6 +45,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/analytics/resources', label: t.nav.resources, style: { padding: '4px 8px' } },
     { key: '/analytics/marginality', label: t.nav.marginality, style: { padding: '4px 8px' } },
     { key: '/sales/analytics', label: t.nav.revenueAnalytics, style: { padding: '4px 8px' } },
+    { key: '/analytics/salary-fuel', label: t.nav.salaryFuelAnalytics, style: { padding: '4px 8px' } },
   ];
 
   const allLeafItems = [
