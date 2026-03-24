@@ -12,7 +12,7 @@ public class ApiKey : AuditableEntity
     public required string KeyHash { get; set; }
 
     /// <summary>Tenant this API key belongs to.</summary>
-    public Guid TenantId { get; set; }
+    public new Guid TenantId { get; set; }
 
     /// <summary>Human-readable name for this key.</summary>
     public required string Name { get; set; }

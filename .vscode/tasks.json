@@ -1,18 +1,57 @@
 {
   "version": "2.0.0",
   "tasks": [
-    {
-      "type": "shell",
-      "label": "git-commit-push-pr",
-      "command": "git add -A && git commit -m 'feat(layer1+2): Foundation tasks 044/045/047/046 + stability refactor task-017' && git push origin copilot/feattask-046-multi-farm-clean && gh pr create --title 'feat(layer1+2): Foundation + Stability Layer' --body 'Layer 1: Tasks 044, 045, 046, 047 + Layer 2: Task 017 (DeleteConfirmButton + TableSkeleton)' --base main --head copilot/feattask-046-multi-farm-clean",
-      "options": {
-        "cwd": "/workspaces/AgroPlatform"
+      {
+            "type": "shell",
+            "label": "git-pull-push",
+            "command": "git add -A && git commit --amend --no-edit && git pull --rebase origin copilot/feattask-046-multi-farm-clean && git push origin copilot/feattask-046-multi-farm-clean",
+            "options": {
+              "cwd": "/workspaces/AgroPlatform"
+            },
+            "group": "none",
+            "presentation": {
+              "reveal": "always",
+              "panel": "new"
+            }
+          },
+          {
+          "type": "shell",
+          "label": "check-main-iappdbcontext",
+          "command": "git fetch origin main && git show origin/main:src/AgroPlatform.Application/Common/Interfaces/IAppDbContext.cs | head -15",
+          "options": {
+            "cwd": "/workspaces/AgroPlatform"
+          },
+          "group": "none",
+          "presentation": {
+            "reveal": "always",
+            "panel": "new"
+          }
+        },
+        {
+        "type": "shell",
+        "label": "git-status-diff",
+        "command": "git status && echo '---DIFF---' && git diff HEAD --stat",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
       },
-      "group": "none",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
+      {
+        "type": "shell",
+        "label": "git-fixup-push",
+        "command": "git add -A && git commit -m 'fix: CI errors - remove bad DTOs using, fix any types, ApiKey TenantId new keyword, AuditEntry string UserId, EF Core usings' && git push origin copilot/feattask-046-multi-farm-clean",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
       }
-    }
   ]
 }

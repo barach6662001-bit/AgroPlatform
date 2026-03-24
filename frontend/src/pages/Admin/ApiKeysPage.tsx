@@ -1,4 +1,13 @@
 import React, { useEffect, useState } from 'react';
+interface CreateApiKeyFormValues {
+  name: string;
+  scopes: string[];
+  expiresAtUtc?: { toISOString: () => string } | null;
+  rateLimitPerHour?: number;
+  webhookUrl?: string;
+  webhookEventTypes?: string[];
+}
+
 import {
   Table,
   Button,
@@ -43,7 +52,7 @@ export const ApiKeysPage: React.FC = () => {
     fetchKeys();
   }, []);
 
-  const handleCreate = async (values: any) => {
+  const handleCreate = async (values: CreateApiKeyFormValues) => {
     try {
       const result: CreateApiKeyResponse = await createApiKey({
         name: values.name,
@@ -127,7 +136,7 @@ export const ApiKeysPage: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_: any, record: ApiKeyDto) => (
+      render: (_: unknown, record: ApiKeyDto) => (
         <Space>
           <DeleteConfirmButton
             title="Revoke API Key"

@@ -14,7 +14,7 @@ public record GetAuditLogQuery(
 public record AuditEntryDto(
     Guid Id,
     Guid TenantId,
-    Guid UserId,
+    string UserId,
     string UserEmail,
     DateTime CreatedAtUtc,
     string EntityType,

@@ -1,6 +1,6 @@
 using AgroPlatform.Domain.AgroOperations;
-using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Common;
+using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.Fuel;
 using AgroPlatform.Domain.GrainStorage;

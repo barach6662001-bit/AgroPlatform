@@ -25,7 +25,7 @@ public class GetAuditLogHandler : IRequestHandler<GetAuditLogQuery, AuditLogResu
             query = query.Where(a => a.EntityType == request.EntityType);
 
         if (request.UserId.HasValue && request.UserId != Guid.Empty)
-            query = query.Where(a => a.UserId == request.UserId);
+            query = query.Where(a => a.UserId == request.UserId.Value.ToString());
 
         if (request.FromDate.HasValue)
             query = query.Where(a => a.CreatedAtUtc >= request.FromDate.Value);

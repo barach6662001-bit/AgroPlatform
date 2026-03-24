@@ -1,5 +1,4 @@
 using MediatR;
-using AgroPlatform.Application.Common.DTOs;
 
 namespace AgroPlatform.Application.Users.Queries.GetApiKeys;
 

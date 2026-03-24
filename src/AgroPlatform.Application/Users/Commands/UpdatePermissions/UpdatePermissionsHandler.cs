@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Application.Users.Commands.UpdatePermissions;
 
