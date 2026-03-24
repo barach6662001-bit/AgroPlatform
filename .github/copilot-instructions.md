@@ -17,3 +17,13 @@ If automatic PR creation is not possible, clearly return:
 - branch name
 - commit SHA
 - exact reason PR was not opened
+
+## Frontend lockfile sync (MANDATORY)
+
+Whenever `frontend/package.json` is modified (dependencies added, removed, or updated):
+1. Run `npm install` inside the `frontend/` directory.
+2. Commit the updated `frontend/package-lock.json` in the same commit/PR.
+3. Never open a PR where `frontend/package.json` changed but `frontend/package-lock.json` did not.
+4. Do NOT replace `npm ci` with `npm install` in CI workflows — CI must always use `npm ci`.
+
+Failure to keep the lockfile in sync will cause the `check-lockfile-sync` CI check to fail and block merging.
