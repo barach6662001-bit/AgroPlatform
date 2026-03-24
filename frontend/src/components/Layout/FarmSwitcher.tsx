@@ -16,23 +16,27 @@ export default function FarmSwitcher() {
       });
   }, []);
 
+  useEffect(() => {
+    if (tenants.length === 0) return;
+
+    const selectedExists = tenantId ? tenants.some((t) => t.id === tenantId) : false;
+    if (!selectedExists) {
+      setTenantId(tenants[0].id);
+    }
+  }, [tenants, tenantId, setTenantId]);
+
   if (tenants.length <= 1) return null;
 
   return (
     <Select
-      value={tenantId ?? undefined}
+      value={tenantId && tenants.some((t) => t.id === tenantId) ? tenantId : undefined}
       onChange={(value) => setTenantId(value)}
       style={{ minWidth: 160, maxWidth: 220 }}
       size="small"
       variant="filled"
       suffixIcon={<BankOutlined style={{ color: 'var(--text-secondary)' }} />}
       popupMatchSelectWidth={false}
-    >
-      {tenants.map((t) => (
-        <Select.Option key={t.id} value={t.id}>
-          {t.name}
-        </Select.Option>
-      ))}
-    </Select>
+      options={tenants.map((t) => ({ label: t.name, value: t.id }))}
+    />
   );
 }

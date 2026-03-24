@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Table, Tag, Tooltip, Select, Space, message, Popconfirm } from 'antd';
-import { DeleteOutlined, SyncOutlined } from '@ant-design/icons';
+import { Alert, Button, Table, Tag, Tooltip, Select, Space, message } from 'antd';
+import { SyncOutlined } from '@ant-design/icons';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import dayjs from 'dayjs';
 import { getFieldHarvests, deleteFieldHarvest } from '../../api/fields';
 import type { FieldHarvestDto } from '../../types/field';
@@ -74,17 +75,11 @@ export default function FieldHarvestTab({ fieldId }: Props) {
             <Tag color="green">{t.fields.fromGrainStorage}</Tag>
           </Tooltip>
         ) : (
-          <Popconfirm
-            title="Видалити запис?"
-            description="Цю дію неможливо скасувати"
-            okText="Видалити"
-            cancelText="Скасувати"
-            okButtonProps={{ danger: true }}
+          <DeleteConfirmButton
+            title={t.fields.deleteField}
+            description={t.fields.deleteCannotBeUndone}
             onConfirm={() => handleDelete(record.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />}
-              aria-label={t.fields.deleteHarvestLabel} />
-          </Popconfirm>
+          />
         ),
     }] : []),
   ];

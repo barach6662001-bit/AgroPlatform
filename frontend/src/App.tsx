@@ -39,6 +39,9 @@ import EmployeeList from './pages/HR/EmployeeList';
 import WorkLogPage from './pages/HR/WorkLogPage';
 import SalaryPage from './pages/HR/SalaryPage';
 import UsersPage from './pages/Settings/UsersPage';
+import PermissionsPage from './pages/Admin/PermissionsPage';
+import AuditLogPage from './pages/Admin/AuditLogPage';
+import ApiKeysPage from './pages/Admin/ApiKeysPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
 import AccessDenied from './pages/AccessDenied';
@@ -106,6 +109,9 @@ export default function App() {
             <Route path="/hr/worklogs" element={<WorkLogPage />} />
             <Route path="/hr/salary" element={<SalaryPage />} />
             <Route path="/settings/users" element={<UsersPage />} />
+            <Route path="/admin/permissions" element={<PermissionsPage />} />
+            <Route path="/admin/audit" element={<AuditLogPage />} />
+            <Route path="/admin/api-keys" element={<ApiKeysPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />

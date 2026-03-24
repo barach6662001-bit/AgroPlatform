@@ -1,14 +1,16 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag, Typography, Popconfirm } from 'antd';
+import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
-import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined, DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getMachines, createMachine, updateMachine, deleteMachine } from '../../api/machinery';
 import type { MachineDto, MachineryType, MachineryStatus } from '../../types/machinery';
 import type { PaginatedResult } from '../../types/common';
 import type { EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { useFleetHub } from '../../hooks/useFleetHub';
@@ -174,16 +176,10 @@ export default function MachineryList() {
             />
           )}
           {canDelete && (
-            <Popconfirm
-              title="Видалити запис?"
-              description="Цю дію неможливо скасувати"
-              okText="Видалити"
-              cancelText="Скасувати"
-              okButtonProps={{ danger: true }}
+            <DeleteConfirmButton
+              title={t.common.confirm}
               onConfirm={() => handleDelete(record.id)}
-            >
-              <Button size="small" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
+            />
           )}
         </Space>
       ),
@@ -242,25 +238,29 @@ export default function MachineryList() {
           {t.common.export}
         </Button>
       </Space>
-      <Table
-        dataSource={result?.items ?? []}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total: result?.totalCount ?? 0,
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-        }}
-        locale={{
-          emptyText: <EmptyState
-            message={t.machinery.noMachinery || 'Ще немає техніки. Додайте першу'}
-            actionLabel={canCreate ? t.machinery.createMachine : undefined}
-            onAction={canCreate ? () => setModalOpen(true) : undefined}
-          />,
-        }}
-      />
+      {loading && !result ? (
+        <TableSkeleton rows={8} />
+      ) : (
+        <Table
+          dataSource={result?.items ?? []}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            current: page,
+            pageSize,
+            total: result?.totalCount ?? 0,
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+          }}
+          locale={{
+            emptyText: <EmptyState
+              message={t.machinery.noMachinery || 'Ще немає техніки. Додайте першу'}
+              actionLabel={canCreate ? t.machinery.createMachine : undefined}
+              onAction={canCreate ? () => setModalOpen(true) : undefined}
+            />,
+          }}
+        />
+      )}
 
       <Modal
         title={t.machinery.createMachine}

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Modal, Form, Input, InputNumber, DatePicker, Popconfirm, Space, message } from 'antd';
-import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, Table, Modal, Form, Input, InputNumber, DatePicker, Space, message } from 'antd';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getSoilAnalyses, createSoilAnalysis, updateSoilAnalysis, deleteSoilAnalysis } from '../../api/fields';
 import type { SoilAnalysisDto } from '../../types/field';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
@@ -134,9 +135,10 @@ export default function FieldSoilAnalysisTab({ fieldId }: Props) {
             render: (_: unknown, record: SoilAnalysisDto) => (
               <Space>
                 <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(record)} />
-                <Popconfirm title={t.common.confirm} onConfirm={() => handleDelete(record.id)}>
-                  <Button size="small" danger icon={<DeleteOutlined />} />
-                </Popconfirm>
+                <DeleteConfirmButton
+                  title={t.common.confirm}
+                  onConfirm={() => handleDelete(record.id)}
+                />
               </Space>
             ),
           },

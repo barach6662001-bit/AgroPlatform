@@ -1,0 +1,18 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "git-commit-push-pr",
+      "command": "git add -A && git commit -m 'feat(layer1+2): Foundation tasks 044/045/047/046 + stability refactor task-017' && git push origin copilot/feattask-046-multi-farm-clean && gh pr create --title 'feat(layer1+2): Foundation + Stability Layer' --body 'Layer 1: Tasks 044, 045, 046, 047 + Layer 2: Task 017 (DeleteConfirmButton + TableSkeleton)' --base main --head copilot/feattask-046-multi-farm-clean",
+      "options": {
+        "cwd": "/workspaces/AgroPlatform"
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    }
+  ]
+}

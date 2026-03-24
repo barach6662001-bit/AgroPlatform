@@ -1,13 +1,15 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
 import {
-  Table, Button, Modal, Form, Input, InputNumber, Select, Space, Tag, message, Popconfirm,
+  Table, Button, Modal, Form, Input, InputNumber, Select, Space, Tag, message,
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from '../../api/hr';
 import type { EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
@@ -136,21 +138,10 @@ export default function EmployeeList() {
             icon={<EditOutlined />}
             onClick={(e) => { e.stopPropagation(); handleEdit(record); }}
           />
-          <Popconfirm
-            title="Видалити запис?"
-            description="Цю дію неможливо скасувати"
-            okText="Видалити"
-            cancelText="Скасувати"
-            okButtonProps={{ danger: true }}
+          <DeleteConfirmButton
+            title={t.common.confirm}
             onConfirm={() => handleDelete(record.id)}
-          >
-            <Button
-              size="small"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={(e) => e.stopPropagation()}
-            />
-          </Popconfirm>
+          />
         </Space>
       ),
     }] as ColumnsType<EmployeeDto> : []),
@@ -188,21 +179,25 @@ export default function EmployeeList() {
           </Space>
         }
       />
-      <Table
-        columns={columns}
-        dataSource={employees}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 20 }}
-        style={{ background: 'transparent' }}
-        locale={{
-          emptyText: <EmptyState
-            message={t.hr.noEmployees || 'Ще немає співробітників'}
-            actionLabel={canWrite ? t.hr.addEmployee : undefined}
-            onAction={canWrite ? () => setModalOpen(true) : undefined}
-          />,
-        }}
-      />
+      {loading && employees.length === 0 ? (
+        <TableSkeleton rows={8} />
+      ) : (
+        <Table
+          columns={columns}
+          dataSource={employees}
+          rowKey="id"
+          loading={loading}
+          pagination={{ pageSize: 20 }}
+          style={{ background: 'transparent' }}
+          locale={{
+            emptyText: <EmptyState
+              message={t.hr.noEmployees || 'Ще немає співробітників'}
+              actionLabel={canWrite ? t.hr.addEmployee : undefined}
+              onAction={canWrite ? () => setModalOpen(true) : undefined}
+            />,
+          }}
+        />
+      )}
 
       <Modal
         title={editingEmployee ? t.hr.editEmployee : t.hr.addEmployee}

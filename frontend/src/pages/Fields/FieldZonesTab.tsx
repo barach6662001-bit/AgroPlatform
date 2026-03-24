@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, Table, Modal, Form, Input, Select, Popconfirm, Space, message, Typography } from 'antd';
-import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, Table, Modal, Form, Input, Select, Space, message, Typography } from 'antd';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -232,15 +233,10 @@ export default function FieldZonesTab({ fieldId, field }: Props) {
       render: (_: unknown, record: FieldZoneDto) => (
         <Space>
           <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
-          <Popconfirm
+          <DeleteConfirmButton
             title={t.fields.deleteField}
-            okText={t.common.delete ?? 'Delete'}
-            cancelText={t.common.cancel}
-            okButtonProps={{ danger: true }}
             onConfirm={() => handleDelete(record.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
+          />
         </Space>
       ),
     }] : []),

@@ -3,12 +3,13 @@ import TableSkeleton from '../../components/TableSkeleton';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Card, Descriptions, Table, Tag, Button, message, Row, Col,
-  Space, Modal, Form, DatePicker, InputNumber, Select, Popconfirm,
+  Space, Modal, Form, DatePicker, InputNumber, Select,
 } from 'antd';
 import {
   ArrowLeftOutlined, CheckCircleOutlined, PlusOutlined,
-  DeleteOutlined, EditOutlined,
+  EditOutlined,
 } from '@ant-design/icons';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import {
   getOperationById, completeOperation,
   addResource, removeResource, updateResourceActual,
@@ -212,16 +213,10 @@ export default function OperationDetail() {
             <Button size="small" icon={<EditOutlined />} onClick={() => openActualModal(r)}>
               {t.operations.updateActual}
             </Button>
-            <Popconfirm
-              title="Видалити запис?"
-              description="Цю дію неможливо скасувати"
-              okText="Видалити"
-              cancelText="Скасувати"
-              okButtonProps={{ danger: true }}
+            <DeleteConfirmButton
+              title={t.common.confirm}
               onConfirm={() => handleRemoveResource(r.id)}
-            >
-              <Button size="small" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
+            />
           </Space>
         ) : null,
     },
@@ -240,16 +235,10 @@ export default function OperationDetail() {
       key: 'actions',
       render: (_: unknown, r: AgroOperationMachineryDto) =>
         canEdit ? (
-          <Popconfirm
-            title="Видалити запис?"
-            description="Цю дію неможливо скасувати"
-            okText="Видалити"
-            cancelText="Скасувати"
-            okButtonProps={{ danger: true }}
+          <DeleteConfirmButton
+            title={t.common.confirm}
             onConfirm={() => handleRemoveMachinery(r.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
+          />
         ) : null,
     },
   ];

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Table, Space, DatePicker, message, Button, Modal, Form, Input, InputNumber, Popconfirm, Select, Card, Statistic, Row, Col } from 'antd';
-import { PlusOutlined, DeleteOutlined, EditOutlined, ShoppingOutlined, DollarOutlined } from '@ant-design/icons';
+import { Table, Space, DatePicker, message, Button, Modal, Form, Input, InputNumber, Select, Card, Statistic, Row, Col } from 'antd';
+import { PlusOutlined, EditOutlined, ShoppingOutlined, DollarOutlined } from '@ant-design/icons';
 import { getSales, createSale, updateSale, deleteSale } from '../../api/sales';
 import { getFields } from '../../api/fields';
 import type { SaleDto } from '../../types/sales';
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
@@ -163,15 +165,10 @@ export default function SalesList() {
             />
           )}
           {canWrite && (
-            <Popconfirm
+            <DeleteConfirmButton
               title={t.sales.deleteConfirm}
-              okText={t.common.delete}
-              cancelText={t.common.cancel}
-              okButtonProps={{ danger: true }}
               onConfirm={() => handleDelete(record.id)}
-            >
-              <Button size="small" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
+            />
           )}
         </Space>
       ),
@@ -262,20 +259,24 @@ export default function SalesList() {
         )}
       </Space>
 
-      <Table
-        dataSource={result?.items ?? []}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        locale={{ emptyText: t.sales.noData }}
-        pagination={{
-          current: page,
-          pageSize,
-          total: result?.totalCount ?? 0,
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-          showSizeChanger: true,
-        }}
-      />
+      {loading && !result ? (
+        <TableSkeleton rows={8} />
+      ) : (
+        <Table
+          dataSource={result?.items ?? []}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          locale={{ emptyText: t.sales.noData }}
+          pagination={{
+            current: page,
+            pageSize,
+            total: result?.totalCount ?? 0,
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+            showSizeChanger: true,
+          }}
+        />
+      )}
 
       <Modal
         title={t.sales.createSale}

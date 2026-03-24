@@ -1,14 +1,16 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState, useMemo } from 'react';
 import {
-  Table, Select, Button, Modal, Form, DatePicker, InputNumber, Input, message, Space, Popconfirm,
+  Table, Select, Button, Modal, Form, DatePicker, InputNumber, Input, message, Space,
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { getWorkLogs, createWorkLog, updateWorkLog, deleteWorkLog, getEmployees } from '../../api/hr';
 import type { WorkLogDto, EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
+import TableSkeleton from '../../components/TableSkeleton';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
@@ -155,16 +157,10 @@ export default function WorkLogPage() {
         <Space>
           <Button size="small" icon={<EditOutlined />}
             onClick={() => handleEditWorkLog(record)} />
-          <Popconfirm
-            title="Видалити запис?"
-            description="Цю дію неможливо скасувати"
-            okText="Видалити"
-            cancelText="Скасувати"
-            okButtonProps={{ danger: true }}
+          <DeleteConfirmButton
+            title={t.common.confirm}
             onConfirm={() => handleDeleteWorkLog(record.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
+          />
         </Space>
       ),
     }] : []),
@@ -226,32 +222,36 @@ export default function WorkLogPage() {
         />
       </Space>
 
-      <Table
-        columns={columns}
-        dataSource={workLogs}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 50 }}
-        locale={{
-          emptyText: <EmptyState
-            message={t.hr.noWorkLogs || 'Ще немає записів у табелі'}
-            actionLabel={canWrite ? t.hr.addWorkLog : undefined}
-            onAction={canWrite ? () => setModalOpen(true) : undefined}
-          />,
-        }}
-        summary={() => (
-          <Table.Summary.Row>
-            <Table.Summary.Cell index={0} colSpan={4}>
-              <strong>{t.hr.totalAccruedLabel}:</strong>
-            </Table.Summary.Cell>
-            <Table.Summary.Cell index={4}>
-              <strong style={{ color: '#3fb950' }}>{totalAccrued.toFixed(2)} ₴</strong>
-            </Table.Summary.Cell>
-            <Table.Summary.Cell index={5} />
-            <Table.Summary.Cell index={6} />
-          </Table.Summary.Row>
-        )}
-      />
+      {loading && workLogs.length === 0 ? (
+        <TableSkeleton rows={8} />
+      ) : (
+        <Table
+          columns={columns}
+          dataSource={workLogs}
+          rowKey="id"
+          loading={loading}
+          pagination={{ pageSize: 50 }}
+          locale={{
+            emptyText: <EmptyState
+              message={t.hr.noWorkLogs || 'Ще немає записів у табелі'}
+              actionLabel={canWrite ? t.hr.addWorkLog : undefined}
+              onAction={canWrite ? () => setModalOpen(true) : undefined}
+            />,
+          }}
+          summary={() => (
+            <Table.Summary.Row>
+              <Table.Summary.Cell index={0} colSpan={4}>
+                <strong>{t.hr.totalAccruedLabel}:</strong>
+              </Table.Summary.Cell>
+              <Table.Summary.Cell index={4}>
+                <strong style={{ color: '#3fb950' }}>{totalAccrued.toFixed(2)} ₴</strong>
+              </Table.Summary.Cell>
+              <Table.Summary.Cell index={5} />
+              <Table.Summary.Cell index={6} />
+            </Table.Summary.Row>
+          )}
+        />
+      )}
 
       <Modal
         title={editingLog ? t.hr.editWorkLog : t.hr.addWorkLogTitle}

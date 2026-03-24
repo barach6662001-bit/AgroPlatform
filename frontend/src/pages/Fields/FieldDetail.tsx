@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Table, Tag, Button, message, Row, Col, Modal, Form, Select, Input, InputNumber, Popconfirm, Space, DatePicker, Tabs, Typography } from 'antd';
+import { Card, Descriptions, Table, Tag, Button, message, Row, Col, Modal, Form, Select, Input, InputNumber, Space, DatePicker, Tabs, Typography } from 'antd';
 import TableSkeleton from '../../components/TableSkeleton';
-import { ArrowLeftOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, DownloadOutlined, DollarOutlined, ExportOutlined, ReloadOutlined } from '@ant-design/icons';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
+import { ArrowLeftOutlined, PlusOutlined, SaveOutlined, DownloadOutlined, DollarOutlined, ExportOutlined, ReloadOutlined } from '@ant-design/icons';
 import { getFieldById, assignCrop, createRotationPlan, deleteRotationPlan, updateFieldGeometry } from '../../api/fields';
 import { getCadastreParcel, cacheCadastreData } from '../../api/cadastre';
 import { getLeases, createLease, addLeasePayment } from '../../api/leases';
@@ -230,16 +231,11 @@ export default function FieldDetail() {
     {
       title: t.common.actions, key: 'actions',
       render: (_: unknown, record: CropRotationPlanDto) => (
-        <Popconfirm
-          title="Видалити запис?"
-          description="Цю дію неможливо скасувати"
-          okText="Видалити"
-          cancelText="Скасувати"
-          okButtonProps={{ danger: true }}
+        <DeleteConfirmButton
+          title={t.fields.deleteField}
+          description={t.fields.deleteCannotBeUndone}
           onConfirm={() => handleDeletePlan(record.id)}
-        >
-          <Button size="small" danger icon={<DeleteOutlined />} />
-        </Popconfirm>
+        />
       ),
     },
   ];
