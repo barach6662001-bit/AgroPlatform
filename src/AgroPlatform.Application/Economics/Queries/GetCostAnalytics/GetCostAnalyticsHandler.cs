@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Economics.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,7 @@ public class GetCostAnalyticsHandler : IRequestHandler<GetCostAnalyticsQuery, Co
 
         var byCategory = records
             .GroupBy(r => r.Category)
-            .Select(g => new AnalyticsCategoryDto(g.Key, g.Sum(r => r.Amount), g.Count()))
+            .Select(g => new EconomicsByCategoryDto(g.Key, g.Sum(r => r.Amount), g.Count()))
             .OrderByDescending(c => Math.Abs(c.Amount))
             .ToList();
 

@@ -126,7 +126,7 @@ public class EconomicsController : ControllerBase
 
     /// <summary>Returns aggregated metrics for each requested season year (revenue, costs, margin, per-ha KPIs).</summary>
     [HttpGet("season-comparison")]
-    [ProducesResponseType(typeof(IReadOnlyList<SeasonComparisonDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IReadOnlyList<EconomicsByYearDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSeasonComparison(
         [FromQuery] string? years,
         CancellationToken cancellationToken)

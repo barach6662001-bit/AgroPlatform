@@ -78,3 +78,55 @@ export interface SeasonComparisonDto {
   revenuePerHa?: number;
 }
 
+// ---------------------------------------------------------------------------
+// Unified economics types shared across analytics modules (032–035)
+// ---------------------------------------------------------------------------
+
+/** Unified breakdown of a single category (costs or revenue). */
+export interface EconomicsByCategoryDto {
+  category: string;
+  amount: number;
+  count: number;
+}
+
+/** Unified monthly breakdown used in cost/revenue trend charts. */
+export interface EconomicsMonthlyDto {
+  month: number;
+  costs: number;
+  revenue: number;
+}
+
+/** Unified high-level economics summary for a period. */
+export interface EconomicsSummaryDto {
+  totalRevenue: number;
+  totalCosts: number;
+  margin: number;
+  marginPercent?: number;
+}
+
+/** Unified per-year economics summary used in season comparison. */
+export type EconomicsByYearDto = SeasonComparisonDto;
+
+/** Cost analytics response combining summary, category breakdown, and monthly trend. */
+export interface CostAnalyticsDto {
+  year: number;
+  totalCosts: number;
+  totalRevenue: number;
+  byCategory: EconomicsByCategoryDto[];
+  byMonth: EconomicsMonthlyDto[];
+}
+
+/** Cost summary response (filtered aggregation by category). */
+export interface CostSummaryDto {
+  totalAmount: number;
+  byCategory: EconomicsByCategoryDto[];
+}
+
+/** Budget plan-vs-fact comparison row. */
+export interface BudgetPlanVsFactDto {
+  category: string;
+  plannedAmount: number;
+  factAmount: number;
+  variance: number;
+  executionPercent: number;
+}
