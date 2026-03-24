@@ -2,6 +2,7 @@ using AgroPlatform.Application.Fields.Commands.AssignCrop;
 using AgroPlatform.Application.Fields.Commands.CreateField;
 using AgroPlatform.Application.Fields.Commands.CreateFieldFertilizer;
 using AgroPlatform.Application.Fields.Commands.CreateFieldHarvest;
+using AgroPlatform.Application.Fields.Commands.CreateFieldInspection;
 using AgroPlatform.Application.Fields.Commands.CreateFieldProtection;
 using AgroPlatform.Application.Fields.Commands.CreateFieldSeeding;
 using AgroPlatform.Application.Fields.Commands.CreateFieldZone;
@@ -9,6 +10,7 @@ using AgroPlatform.Application.Fields.Commands.CreateSoilAnalysis;
 using AgroPlatform.Application.Fields.Commands.DeleteField;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldFertilizer;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldHarvest;
+using AgroPlatform.Application.Fields.Commands.DeleteFieldInspection;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldProtection;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldSeeding;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldZone;
@@ -23,6 +25,7 @@ using AgroPlatform.Application.Fields.Commands.UpdateYield;
 using AgroPlatform.Application.Fields.Queries.GetFieldById;
 using AgroPlatform.Application.Fields.Queries.GetFieldFertilizers;
 using AgroPlatform.Application.Fields.Queries.GetFieldHarvests;
+using AgroPlatform.Application.Fields.Queries.GetFieldInspections;
 using AgroPlatform.Application.Fields.Queries.GetFieldProtections;
 using AgroPlatform.Application.Fields.Queries.GetFieldSeedings;
 using AgroPlatform.Application.Fields.Queries.GetFieldZones;
@@ -434,6 +437,40 @@ public class FieldsController : ControllerBase
         return NoContent();
     }
 
+    // ─── Inspections ─────────────────────────────────────────────────────────────
+
+    /// <summary>Returns inspection records for a field.</summary>
+    [HttpGet("{fieldId:guid}/inspections")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetInspections(Guid fieldId, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetFieldInspectionsQuery(fieldId), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates an inspection record for a field.</summary>
+    [HttpPost("{fieldId:guid}/inspections")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateInspection(Guid fieldId, [FromBody] CreateFieldInspectionRequest request, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(new CreateFieldInspectionCommand(
+            fieldId, request.Date, request.InspectorName, request.Notes,
+            request.Severity, request.Latitude, request.Longitude, request.PhotoUrl), cancellationToken);
+        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+    }
+
+    /// <summary>Deletes an inspection record.</summary>
+    [HttpDelete("{fieldId:guid}/inspections/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteInspection(Guid fieldId, Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteFieldInspectionCommand(id), cancellationToken);
+        return NoContent();
+    }
+
     // ─── Prescription Map ────────────────────────────────────────────────────
 
     /// <summary>Returns a variable-rate prescription map combining soil analysis and NDVI date for a field.</summary>
@@ -549,3 +586,13 @@ public record UpdateSoilAnalysisRequest(
     decimal? Potassium,
     decimal? Humus,
     string? Notes);
+
+/// <summary>Request body for creating a field inspection record.</summary>
+public record CreateFieldInspectionRequest(
+    DateTime Date,
+    string InspectorName,
+    string? Notes,
+    string? Severity,
+    double? Latitude,
+    double? Longitude,
+    string? PhotoUrl);

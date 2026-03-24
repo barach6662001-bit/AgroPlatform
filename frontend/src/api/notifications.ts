@@ -20,3 +20,13 @@ export const markAllNotificationsRead = () =>
 
 export const clearReadNotifications = () =>
   apiClient.delete('/api/notifications');
+
+export interface PushSubscriptionPayload {
+  endpoint: string;
+  p256dhKey?: string | null;
+  authKey?: string | null;
+  userAgent?: string | null;
+}
+
+export const registerPushSubscription = (payload: PushSubscriptionPayload) =>
+  apiClient.post<{ id: string }>('/api/notifications/push-subscriptions', payload);

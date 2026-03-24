@@ -29,6 +29,7 @@ public interface IAppDbContext
     DbSet<FieldHarvest> FieldHarvests { get; }
     DbSet<FieldZone> FieldZones { get; }
     DbSet<SoilAnalysis> SoilAnalyses { get; }
+    DbSet<FieldInspection> FieldInspections { get; }
     DbSet<AgroOperation> AgroOperations { get; }
     DbSet<AgroOperationResource> AgroOperationResources { get; }
     DbSet<AgroOperationMachinery> AgroOperationMachineries { get; }
@@ -40,6 +41,7 @@ public interface IAppDbContext
     DbSet<Budget> Budgets { get; }
     DbSet<GpsTrack> GpsTracks { get; }
     DbSet<Notification> Notifications { get; }
+    DbSet<PushSubscription> PushSubscriptions { get; }
     DbSet<Tenant> Tenants { get; }
     DbSet<LandLease> LandLeases { get; }
     DbSet<LeasePayment> LeasePayments { get; }
