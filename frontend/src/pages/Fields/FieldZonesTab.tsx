@@ -127,8 +127,8 @@ interface Props {
 
 export default function FieldZonesTab({ fieldId, field }: Props) {
   const { t } = useTranslation();
-  const { hasRole } = useRole();
-  const canWrite = hasRole(['Administrator', 'Manager', 'Agronomist']);
+  const { hasPermission } = useRole();
+  const canWrite = hasPermission('fields', 'manage');
   const [zones, setZones] = useState<FieldZoneDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);

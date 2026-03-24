@@ -63,7 +63,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     ...storageChildren,
     ...financeChildren,
     ...hrChildren,
-    ...(isAdmin ? [{ key: '/settings/users' }] : []),
+    ...(isAdmin ? [{ key: '/settings/users' }, { key: '/settings/audit' }] : []),
   ];
 
   const menuItems = [
@@ -117,6 +117,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
             style: { padding: '4px 8px' },
             children: [
               { key: '/settings/users', label: t.nav.users, style: { padding: '4px 8px' } },
+              { key: '/settings/audit', label: t.nav.auditLog, style: { padding: '4px 8px' } },
             ],
           },
         ]

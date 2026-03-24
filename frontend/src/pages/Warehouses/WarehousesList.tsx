@@ -19,9 +19,9 @@ export default function WarehousesList() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { hasRole } = useRole();
+  const { hasPermission } = useRole();
 
-  const canCreate = hasRole(['Administrator', 'Manager', 'Storekeeper']);
+  const canCreate = hasPermission('warehouses', 'manage');
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);

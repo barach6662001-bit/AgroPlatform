@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<AuditableEntityInterceptor>();
         services.AddScoped<SoftDeleteInterceptor>();
         services.AddScoped<TenantInterceptor>();
+        services.AddScoped<AuditInterceptor>();
 
         services.AddDbContext<AppDbContext>((sp, options) =>
         {
@@ -34,7 +35,8 @@ public static class DependencyInjection
             options.AddInterceptors(
                 sp.GetRequiredService<AuditableEntityInterceptor>(),
                 sp.GetRequiredService<SoftDeleteInterceptor>(),
-                sp.GetRequiredService<TenantInterceptor>()
+                sp.GetRequiredService<TenantInterceptor>(),
+                sp.GetRequiredService<AuditInterceptor>()
             );
         });
 

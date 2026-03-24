@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.Fuel;
@@ -27,6 +28,7 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<FieldCropHistory> FieldCropHistories => Set<FieldCropHistory>();
     public DbSet<CropRotationPlan> CropRotationPlans => Set<CropRotationPlan>();
     public DbSet<FieldSeeding> FieldSeedings => Set<FieldSeeding>();
+    public DbSet<FieldInspection> FieldInspections => Set<FieldInspection>();
     public DbSet<FieldFertilizer> FieldFertilizers => Set<FieldFertilizer>();
     public DbSet<FieldProtection> FieldProtections => Set<FieldProtection>();
     public DbSet<FieldHarvest> FieldHarvests => Set<FieldHarvest>();
@@ -43,6 +45,7 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<Budget> Budgets => Set<Budget>();
     public DbSet<GpsTrack> GpsTracks => Set<GpsTrack>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<LandLease> LandLeases => Set<LandLease>();
     public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
@@ -55,4 +58,5 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
     public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
     public DbSet<Sale> Sales => Set<Sale>();
+    public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
 }
