@@ -76,3 +76,4 @@ export async function getPendingCount(): Promise<number> {
     req.onerror = () => reject(req.error);
   });
 }
+
