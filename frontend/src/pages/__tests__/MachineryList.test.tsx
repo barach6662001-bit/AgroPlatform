@@ -31,7 +31,11 @@ vi.mock('../../i18n', () => ({
 }));
 
 vi.mock('../../hooks/useRole', () => ({
-  useRole: () => ({ isAdmin: true, hasRole: () => true }),
+  useRole: () => ({
+    isAdmin: true,
+    hasRole: () => true,
+    hasPermission: () => true,
+  }),
 }));
 
 function renderMachineryList() {

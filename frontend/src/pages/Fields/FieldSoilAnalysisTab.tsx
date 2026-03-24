@@ -14,8 +14,8 @@ interface Props {
 
 export default function FieldSoilAnalysisTab({ fieldId }: Props) {
   const { t } = useTranslation();
-  const { hasRole } = useRole();
-  const canWrite = hasRole(['Administrator', 'Manager', 'Agronomist']);
+  const { hasPermission } = useRole();
+  const canWrite = hasPermission('fields', 'manage');
   const [data, setData] = useState<SoilAnalysisDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
