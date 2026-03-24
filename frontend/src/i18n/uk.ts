@@ -207,6 +207,7 @@ const uk = {
     actions: 'Дії',
     details: 'Деталі',
     deleteField: 'Видалити поле?',
+    deleteCannotBeUndone: 'Цю дію неможливо скасувати.',
     addField: 'Додати поле',
     createField: 'Створити поле',
     createSuccess: 'Поле створено',

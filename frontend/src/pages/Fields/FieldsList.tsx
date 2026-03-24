@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Table, Button, Space, Tag, Input, message, Popconfirm, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
-import { PlusOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Tag, Input, message, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
+import { PlusOutlined, SearchOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getFields, deleteField, createField, updateField } from '../../api/fields';
 import { getCadastreParcel } from '../../api/cadastre';
@@ -9,6 +9,8 @@ import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import FieldMap from '../../components/Map/FieldMap';
+import TableSkeleton from '../../components/TableSkeleton';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { exportToCsv } from '../../utils/exportCsv';
@@ -183,16 +185,11 @@ export default function FieldsList() {
             />
           )}
           {canDelete && (
-            <Popconfirm
-              title="Видалити запис?"
-              description="Цю дію неможливо скасувати"
-              okText="Видалити"
-              cancelText="Скасувати"
-              okButtonProps={{ danger: true }}
+            <DeleteConfirmButton
+              title={t.fields.deleteField}
+              description={t.fields.deleteCannotBeUndone}
               onConfirm={() => handleDelete(record.id)}
-            >
-              <Button size="small" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
+            />
           )}
         </Space>
       ),
@@ -243,6 +240,8 @@ export default function FieldsList() {
 
       {viewMode === 'map' ? (
         <FieldMap fields={result?.items ?? []} height={500} />
+      ) : loading && !result ? (
+        <TableSkeleton rows={8} />
       ) : (
         <Table
           dataSource={result?.items ?? []}

@@ -63,7 +63,15 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     ...storageChildren,
     ...financeChildren,
     ...hrChildren,
-    ...(isAdmin ? [{ key: '/settings/users' }, { key: '/settings/audit' }] : []),
+    ...(isAdmin
+      ? [
+          { key: '/settings/users' },
+          { key: '/settings/audit' },
+          { key: '/admin/permissions' },
+          { key: '/admin/audit' },
+          { key: '/admin/api-keys' },
+        ]
+      : []),
   ];
 
   const menuItems = [
@@ -118,6 +126,9 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
             children: [
               { key: '/settings/users', label: t.nav.users, style: { padding: '4px 8px' } },
               { key: '/settings/audit', label: t.nav.auditLog, style: { padding: '4px 8px' } },
+              { key: '/admin/permissions', label: 'Permissions', style: { padding: '4px 8px' } },
+              { key: '/admin/audit', label: 'Audit Log', style: { padding: '4px 8px' } },
+              { key: '/admin/api-keys', label: 'API Keys', style: { padding: '4px 8px' } },
             ],
           },
         ]

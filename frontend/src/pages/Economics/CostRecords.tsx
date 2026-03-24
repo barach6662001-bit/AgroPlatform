@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber, Popconfirm, Card, Divider, Empty } from 'antd';
-import { PlusOutlined, DeleteOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined, HomeOutlined, PrinterOutlined } from '@ant-design/icons';
+import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber, Card, Divider, Empty } from 'antd';
+import { PlusOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined, HomeOutlined, PrinterOutlined } from '@ant-design/icons';
 import { printReport } from '../../utils/printReport';
 import { getCostRecords, getCostSummary, createCostRecord, deleteCostRecord } from '../../api/economics';
 import { getBudgets } from '../../api/budgets';
@@ -10,6 +10,8 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import PLTable from '../../components/PLTable';
 import MaterialKpiCards from '../../components/MaterialKpiCards';
+import TableSkeleton from '../../components/TableSkeleton';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import type { PLTableRow } from '../../components/PLTable';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
@@ -181,16 +183,11 @@ export default function CostRecords() {
     {
       title: t.common.actions, key: 'actions',
       render: (_: unknown, record: CostRecordDto) => canDelete ? (
-        <Popconfirm
-          title="Видалити запис?"
-          description="Цю дію неможливо скасувати"
-          okText="Видалити"
-          cancelText="Скасувати"
-          okButtonProps={{ danger: true }}
+        <DeleteConfirmButton
+          title={t.fields.deleteField}
+          description={t.fields.deleteCannotBeUndone}
           onConfirm={() => handleDelete(record.id)}
-        >
-          <Button size="small" danger icon={<DeleteOutlined />} />
-        </Popconfirm>
+        />
       ) : null,
     },
   ];
@@ -253,28 +250,32 @@ export default function CostRecords() {
         <Button icon={<PrinterOutlined />} onClick={() => printReport(t.economics.title || 'Витрати', `<table><thead><tr><th>Дата</th><th>Категорія</th><th>Сума</th><th>Опис</th></tr></thead><tbody>${records.map(r => `<tr><td>${r.date}</td><td>${r.category}</td><td>${r.amount}</td><td>${r.description || ''}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
       </Space>
 
-      <Table
-        dataSource={records}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total: result?.totalCount ?? 0,
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-        }}
-        summary={() => (
-          <Table.Summary.Row>
-            <Table.Summary.Cell index={0} colSpan={2}><strong>{t.economics.total}</strong></Table.Summary.Cell>
-            <Table.Summary.Cell index={1}>
-              <strong style={{ color: '#f5222d' }}>{totalAmount.toFixed(2)} UAH</strong>
-            </Table.Summary.Cell>
-            <Table.Summary.Cell index={2} />
-            <Table.Summary.Cell index={3} />
-          </Table.Summary.Row>
-        )}
-      />
+      {loading && !result ? (
+        <TableSkeleton rows={10} />
+      ) : (
+        <Table
+          dataSource={records}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            current: page,
+            pageSize,
+            total: result?.totalCount ?? 0,
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+          }}
+          summary={() => (
+            <Table.Summary.Row>
+              <Table.Summary.Cell index={0} colSpan={2}><strong>{t.economics.total}</strong></Table.Summary.Cell>
+              <Table.Summary.Cell index={1}>
+                <strong style={{ color: '#f5222d' }}>{totalAmount.toFixed(2)} UAH</strong>
+              </Table.Summary.Cell>
+              <Table.Summary.Cell index={2} />
+              <Table.Summary.Cell index={3} />
+            </Table.Summary.Row>
+          )}
+        />
+      )}
 
       <Modal
         title={t.economics.createRecord}

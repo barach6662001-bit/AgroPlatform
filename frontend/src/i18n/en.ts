@@ -209,6 +209,7 @@ const en: Translations = {
     actions: 'Actions',
     details: 'Details',
     deleteField: 'Delete field?',
+    deleteCannotBeUndone: 'This action cannot be undone.',
     addField: 'Add Field',
     createField: 'Create Field',
     createSuccess: 'Field created',

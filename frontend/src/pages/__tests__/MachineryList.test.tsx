@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import MachineryList from '../Machinery/MachineryList';
 
@@ -60,9 +60,11 @@ describe('MachineryList page', () => {
     expect(document.querySelector('.ant-table')).toBeTruthy();
   });
 
-  it('navigates to machine detail on row click', () => {
+  it('navigates to machine detail on row click', async () => {
     const { container } = renderMachineryList();
-    // With empty items array, there are no rows to click — just verify render
-    expect(container.querySelector('.ant-table-wrapper')).toBeTruthy();
+    // With empty items array, there are no rows to click — just verify table eventually renders
+    await waitFor(() => {
+      expect(container.querySelector('.ant-table')).toBeTruthy();
+    });
   });
 });

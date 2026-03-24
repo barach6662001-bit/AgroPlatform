@@ -36,6 +36,13 @@ public class TenantMiddleware
 
         if (!context.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValue))
         {
+            // API key auth can resolve tenant later from the key itself.
+            if (HasApiKey(context.Request))
+            {
+                await _next(context);
+                return;
+            }
+
             await WriteProblemAsync(context, StatusCodes.Status400BadRequest,
                 "https://tools.ietf.org/html/rfc7231#section-6.5.1",
                 "Missing Tenant Header",
@@ -54,6 +61,19 @@ public class TenantMiddleware
 
         context.Items["TenantId"] = tenantId;
         await _next(context);
+    }
+
+    private static bool HasApiKey(HttpRequest request)
+    {
+        if (request.Headers.ContainsKey("X-Api-Key"))
+            return true;
+
+        if (request.Headers.TryGetValue("Authorization", out var authHeader))
+        {
+            return authHeader.ToString().StartsWith("ApiKey ", StringComparison.OrdinalIgnoreCase);
+        }
+
+        return false;
     }
 
     private static async Task WriteProblemAsync(HttpContext context, int statusCode, string type, string title, string detail)

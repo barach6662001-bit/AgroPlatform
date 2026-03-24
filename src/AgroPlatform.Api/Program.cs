@@ -244,6 +244,7 @@ try
     app.UseRateLimiter();
     app.UseMiddleware<TenantMiddleware>();
     app.UseAuthentication();
+    app.UseMiddleware<ApiKeyAuthMiddleware>();
     app.UseAuthorization();
     app.MapControllers();
     app.MapHub<FleetHub>("/hubs/fleet");

@@ -19,19 +19,25 @@ public class AuditEntryConfiguration : IEntityTypeConfiguration<AuditEntry>
             .HasMaxLength(200);
 
         builder.Property(a => a.EntityId)
-            .IsRequired()
-            .HasMaxLength(100);
+            .IsRequired();
 
         builder.Property(a => a.UserId)
+            .IsRequired()
             .HasMaxLength(450);
 
-        builder.Property(a => a.Metadata)
+        builder.Property(a => a.OldValues)
+            .HasColumnType("text");
+
+        builder.Property(a => a.NewValues)
+            .HasColumnType("text");
+
+        builder.Property(a => a.Notes)
             .HasColumnType("text");
 
         builder.HasIndex(a => a.TenantId)
             .HasDatabaseName("IX_AuditEntries_TenantId");
 
-        builder.HasIndex(a => new { a.TenantId, a.Timestamp })
-            .HasDatabaseName("IX_AuditEntries_TenantId_Timestamp");
+        builder.HasIndex(a => new { a.TenantId, a.CreatedAtUtc })
+            .HasDatabaseName("IX_AuditEntries_TenantId_CreatedAtUtc");
     }
 }

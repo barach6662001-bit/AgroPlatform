@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Modal, Form, Input, InputNumber, Select, DatePicker, Popconfirm, Space, message } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Table, Modal, Form, Input, InputNumber, Select, DatePicker, Space, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getFieldSeedings, createFieldSeeding, deleteFieldSeeding } from '../../api/fields';
 import type { FieldSeedingDto } from '../../types/field';
+import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
@@ -79,16 +80,10 @@ export default function FieldSeedingTab({ fieldId, fieldArea }: Props) {
     ...(canWrite ? [{
       title: t.common.actions, key: 'actions',
       render: (_: unknown, record: FieldSeedingDto) => (
-        <Popconfirm
-          title="Видалити запис?"
-          description="Цю дію неможливо скасувати"
-          okText="Видалити"
-          cancelText="Скасувати"
-          okButtonProps={{ danger: true }}
+        <DeleteConfirmButton
+          title={t.common.confirm}
           onConfirm={() => handleDelete(record.id)}
-        >
-          <Button size="small" danger icon={<DeleteOutlined />} />
-        </Popconfirm>
+        />
       ),
     }] : []),
   ];

@@ -19,13 +19,13 @@ public class GetAuditLogsHandler : IRequestHandler<GetAuditLogsQuery, PaginatedR
         var query = _context.AuditEntries.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.UserId))
-            query = query.Where(a => a.UserId != null && a.UserId.Contains(request.UserId));
+            query = query.Where(a => a.UserId.Contains(request.UserId));
 
         if (request.DateFrom.HasValue)
-            query = query.Where(a => a.Timestamp >= request.DateFrom.Value);
+            query = query.Where(a => a.CreatedAtUtc >= request.DateFrom.Value);
 
         if (request.DateTo.HasValue)
-            query = query.Where(a => a.Timestamp <= request.DateTo.Value);
+            query = query.Where(a => a.CreatedAtUtc <= request.DateTo.Value);
 
         if (!string.IsNullOrWhiteSpace(request.EntityType))
             query = query.Where(a => a.EntityType == request.EntityType);
@@ -39,7 +39,7 @@ public class GetAuditLogsHandler : IRequestHandler<GetAuditLogsQuery, PaginatedR
         var totalCount = await query.CountAsync(cancellationToken);
 
         var items = await query
-            .OrderByDescending(a => a.Timestamp)
+            .OrderByDescending(a => a.CreatedAtUtc)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(a => new AuditLogDto
@@ -48,9 +48,9 @@ public class GetAuditLogsHandler : IRequestHandler<GetAuditLogsQuery, PaginatedR
                 UserId = a.UserId,
                 Action = a.Action,
                 EntityType = a.EntityType,
-                EntityId = a.EntityId,
-                Timestamp = a.Timestamp,
-                Metadata = a.Metadata,
+                EntityId = a.EntityId.ToString(),
+                Timestamp = a.CreatedAtUtc,
+                Metadata = a.NewValues ?? a.OldValues ?? a.Notes,
             })
             .ToListAsync(cancellationToken);
 
