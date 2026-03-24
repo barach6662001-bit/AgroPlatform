@@ -1167,6 +1167,10 @@ const uk = {
     syncSuccess: 'Синхронізовано успішно',
     syncFailed: 'Помилка синхронізації',
   },
+  farmSwitcher: {
+    loadError: 'Не вдалося завантажити список ферм',
+    placeholder: 'Оберіть ферму',
+  },
 } as const;
 
 export default uk;

@@ -57,4 +57,18 @@ describe('axios interceptor', () => {
     const result = handler!(config);
     expect(result.headers['X-Tenant-Id']).toBeUndefined();
   });
+
+  it('sends updated X-Tenant-Id after tenant switch via setTenantId', () => {
+    useAuthStore.setState({ token: 'tok', isAuthenticated: true, email: null, role: null, tenantId: 'farm-1' });
+
+    const handler = getRequestInterceptor();
+    const config1 = { headers: {} as Record<string, string> };
+    expect(handler!(config1).headers['X-Tenant-Id']).toBe('farm-1');
+
+    // Simulate farm switch
+    useAuthStore.getState().setTenantId('farm-2');
+
+    const config2 = { headers: {} as Record<string, string> };
+    expect(handler!(config2).headers['X-Tenant-Id']).toBe('farm-2');
+  });
 });

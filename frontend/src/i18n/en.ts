@@ -1169,6 +1169,10 @@ const en: Translations = {
     syncSuccess: 'Synced successfully',
     syncFailed: 'Sync failed',
   },
+  farmSwitcher: {
+    loadError: 'Failed to load farms',
+    placeholder: 'Select farm',
+  },
 };
 
 export default en;
