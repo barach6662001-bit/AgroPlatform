@@ -41,6 +41,7 @@ const uk = {
     revenueAnalytics: 'Аналітика продажів',
     seasonComparison: 'Порівняння сезонів',
     breakEven: 'Беззбитковість',
+    cropRotationAdvisor: 'Поради по сівозміні',
   },
   common: {
     cancel: 'Скасувати',

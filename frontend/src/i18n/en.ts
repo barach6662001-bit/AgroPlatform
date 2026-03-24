@@ -43,6 +43,7 @@ const en: Translations = {
     revenueAnalytics: 'Revenue Analytics',
     seasonComparison: 'Season Comparison',
     breakEven: 'Break-Even',
+    cropRotationAdvisor: 'Crop Rotation Advisor',
   },
   common: {
     cancel: 'Cancel',
