@@ -3,10 +3,9 @@ import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, In
 import { PlusOutlined, DeleteOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined, HomeOutlined, PrinterOutlined } from '@ant-design/icons';
 import { printReport } from '../../utils/printReport';
 import { getCostRecords, getCostSummary, createCostRecord, deleteCostRecord } from '../../api/economics';
-import type { CostSummaryDto } from '../../api/economics';
 import { getBudgets } from '../../api/budgets';
 import type { BudgetDto } from '../../api/budgets';
-import type { CostRecordDto, MaterialKpiItem } from '../../types/economics';
+import type { CostRecordDto, CostSummaryDto, MaterialKpiItem } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import PLTable from '../../components/PLTable';

@@ -1,3 +1,4 @@
+using AgroPlatform.Application.Economics.DTOs;
 using MediatR;
 
 namespace AgroPlatform.Application.Economics.Queries.GetCostAnalytics;
@@ -8,10 +9,8 @@ public record CostAnalyticsDto(
     int Year,
     decimal TotalCosts,
     decimal TotalRevenue,
-    IReadOnlyList<AnalyticsCategoryDto> ByCategory,
+    IReadOnlyList<EconomicsByCategoryDto> ByCategory,
     IReadOnlyList<AnalyticsMonthDto> ByMonth
 );
-
-public record AnalyticsCategoryDto(string Category, decimal Amount, int Count);
 
 public record AnalyticsMonthDto(int Month, decimal Costs, decimal Revenue);
