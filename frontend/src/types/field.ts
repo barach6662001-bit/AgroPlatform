@@ -144,3 +144,14 @@ export interface RotationAdviceDto {
   riskLevel: 'low' | 'medium' | 'high';
   recommendation: string;
 }
+
+export interface FieldInspectionDto {
+  id: string;
+  date: string;
+  inspectorName: string;
+  notes?: string;
+  severity?: string;
+  latitude?: number;
+  longitude?: number;
+  photoUrl?: string;
+}

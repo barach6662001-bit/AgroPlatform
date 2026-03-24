@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto, FieldZoneDto, SoilAnalysisDto, PrescriptionMapDto, RotationAdviceDto } from '../types/field';
+import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto, FieldZoneDto, SoilAnalysisDto, PrescriptionMapDto, RotationAdviceDto, FieldInspectionDto } from '../types/field';
 import type { PaginatedResult } from '../types/common';
 
 export const getFields = (params?: { page?: number; pageSize?: number; search?: string; ownershipType?: number[] }) =>
@@ -125,3 +125,13 @@ export const exportPrescriptionMap = async (fieldId: string, nutrient = 'Nitroge
 // Rotation Advice
 export const getRotationAdvice = (years = 3) =>
   apiClient.get<RotationAdviceDto[]>('/api/fields/rotation-advice', { params: { years } }).then((r) => r.data);
+
+// Inspections
+export const getFieldInspections = (fieldId: string) =>
+  apiClient.get<FieldInspectionDto[]>(`/api/fields/${fieldId}/inspections`).then((r) => r.data);
+
+export const createFieldInspection = (fieldId: string, data: Omit<FieldInspectionDto, 'id'>) =>
+  apiClient.post(`/api/fields/${fieldId}/inspections`, data).then((r) => r.data);
+
+export const deleteFieldInspection = (fieldId: string, id: string) =>
+  apiClient.delete(`/api/fields/${fieldId}/inspections/${id}`);
