@@ -58,5 +58,8 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
     public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
     public DbSet<Sale> Sales => Set<Sale>();
+    public DbSet<AppUser> Users => Set<AppUser>();
+    public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
+    public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
 }
