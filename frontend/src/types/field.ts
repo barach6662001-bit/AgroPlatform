@@ -136,3 +136,11 @@ export interface PrescriptionMapDto {
   ndviDate?: string;
   zones: PrescriptionZoneDto[];
 }
+
+export interface RotationAdviceDto {
+  fieldId: string;
+  fieldName: string;
+  cropHistory: string[];
+  riskLevel: 'low' | 'medium' | 'high';
+  recommendation: string;
+}

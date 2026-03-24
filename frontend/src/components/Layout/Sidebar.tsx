@@ -50,6 +50,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const allLeafItems = [
     { key: '/' },
     { key: '/fields' },
+    { key: '/fields/rotation-advisor' },
     { key: '/operations' },
     { key: '/machinery' },
     { key: '/fleet' },
@@ -68,6 +69,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined />, style: { padding: '4px 8px' } },
     { type: 'divider' as const },
     { key: '/fields', label: t.nav.fields, icon: <AimOutlined />, style: { padding: '4px 8px' } },
+    { key: '/fields/rotation-advisor', label: t.nav.cropRotationAdvisor, icon: <AimOutlined />, style: { padding: '4px 8px' } },
     { key: '/operations', label: t.nav.operations, icon: <ToolOutlined />, style: { padding: '4px 8px' } },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined />, style: { padding: '4px 8px' } },
     { type: 'divider' as const },

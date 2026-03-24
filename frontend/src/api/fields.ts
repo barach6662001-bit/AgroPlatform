@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto, FieldZoneDto, SoilAnalysisDto, PrescriptionMapDto } from '../types/field';
+import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto, FieldZoneDto, SoilAnalysisDto, PrescriptionMapDto, RotationAdviceDto } from '../types/field';
 import type { PaginatedResult } from '../types/common';
 
 export const getFields = (params?: { page?: number; pageSize?: number; search?: string; ownershipType?: number[] }) =>
@@ -120,3 +120,8 @@ export const exportPrescriptionMap = async (fieldId: string, nutrient = 'Nitroge
   a.click();
   URL.revokeObjectURL(url);
 };
+
+
+// Rotation Advice
+export const getRotationAdvice = (years = 3) =>
+  apiClient.get<RotationAdviceDto[]>('/api/fields/rotation-advice', { params: { years } }).then((r) => r.data);

@@ -30,6 +30,7 @@ using AgroPlatform.Application.Fields.Queries.GetFields;
 using AgroPlatform.Application.Fields.Queries.GetPrescriptionMap;
 using AgroPlatform.Application.Fields.Queries.GetSoilAnalyses;
 using AgroPlatform.Application.Fields.Queries.ExportPrescriptionMap;
+using AgroPlatform.Application.Fields.Queries.GetRotationAdvice;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -458,6 +459,17 @@ public class FieldsController : ControllerBase
     {
         var result = await _sender.Send(new ExportPrescriptionMapQuery(fieldId, nutrient, ndviDate), cancellationToken);
         return File(result.Content, result.ContentType, result.FileName);
+    }
+
+    /// <summary>Returns rule-based crop rotation advice for all fields based on seeding history.</summary>
+    /// <param name="years">Number of past years of seeding history to analyse (default 3).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet("rotation-advice")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRotationAdvice([FromQuery] int years = 3, CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetRotationAdviceQuery(years), cancellationToken);
+        return Ok(result);
     }
 }
 
