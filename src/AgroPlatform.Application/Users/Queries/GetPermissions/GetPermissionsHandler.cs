@@ -1,7 +1,6 @@
 using AgroPlatform.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Application.Users.Queries.GetPermissions;
 

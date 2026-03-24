@@ -66,10 +66,14 @@ public class AuditInterceptor : SaveChangesInterceptor
             if (!_trackedEntities.Contains(entityType))
                 continue;
 
-            var entityId = entry.Properties
+            var entityIdRaw = entry.Properties
                 .FirstOrDefault(p => p.Metadata.IsPrimaryKey())
                 ?.CurrentValue
                 ?.ToString() ?? string.Empty;
+
+            var entityId = Guid.TryParse(entityIdRaw, out var parsedEntityId)
+                ? parsedEntityId
+                : Guid.Empty;
 
             var action = entry.State switch
             {
@@ -89,18 +93,20 @@ public class AuditInterceptor : SaveChangesInterceptor
                 }
             }
 
-            var metadata = BuildMetadata(entry, action);
+            var (oldValues, newValues, notes) = BuildAuditPayload(entry, action);
 
             auditEntries.Add(new AuditEntry
             {
                 Id = Guid.NewGuid(),
                 TenantId = tenantId,
-                UserId = userId,
+                UserId = userId ?? string.Empty,
                 Action = action,
                 EntityType = entityType,
                 EntityId = entityId,
-                Timestamp = now,
-                Metadata = metadata,
+                CreatedAtUtc = now,
+                OldValues = oldValues,
+                NewValues = newValues,
+                Notes = notes,
             });
         }
 
@@ -110,50 +116,56 @@ public class AuditInterceptor : SaveChangesInterceptor
         }
     }
 
-    private static string? BuildMetadata(Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry, string action)
+    private static (string? OldValues, string? NewValues, string? Notes) BuildAuditPayload(
+        Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry,
+        string action)
     {
         try
         {
-            Dictionary<string, object?> data;
-
             if (action == "Created")
             {
-                data = entry.Properties
+                var newData = entry.Properties
                     .Where(p => !p.Metadata.IsPrimaryKey())
                     .ToDictionary(
                         p => p.Metadata.Name,
                         p => (object?)p.CurrentValue);
+
+                return (null, JsonSerializer.Serialize(newData), null);
             }
-            else if (action == "Deleted")
+
+            if (action == "Deleted")
             {
-                data = entry.Properties
+                var oldData = entry.Properties
                     .Where(p => !p.Metadata.IsPrimaryKey())
                     .ToDictionary(
                         p => p.Metadata.Name,
                         p => (object?)p.OriginalValue);
-            }
-            else
-            {
-                var changed = entry.Properties
-                    .Where(p => p.IsModified && !p.Metadata.IsPrimaryKey())
-                    .ToList();
 
-                if (changed.Count == 0) return null;
-
-                data = changed.ToDictionary(
-                    p => p.Metadata.Name,
-                    p => (object?)new { Old = p.OriginalValue, New = p.CurrentValue });
+                return (JsonSerializer.Serialize(oldData), null, null);
             }
 
-            return JsonSerializer.Serialize(data, new JsonSerializerOptions
+            var changed = entry.Properties
+                .Where(p => p.IsModified && !p.Metadata.IsPrimaryKey())
+                .ToList();
+
+            if (changed.Count == 0)
             {
-                WriteIndented = false,
-                MaxDepth = 3,
-            });
+                return (null, null, "No modified fields captured");
+            }
+
+            var oldValues = changed.ToDictionary(
+                p => p.Metadata.Name,
+                p => (object?)p.OriginalValue);
+
+            var newValues = changed.ToDictionary(
+                p => p.Metadata.Name,
+                p => (object?)p.CurrentValue);
+
+            return (JsonSerializer.Serialize(oldValues), JsonSerializer.Serialize(newValues), null);
         }
         catch
         {
-            return null;
+            return (null, null, "Failed to serialize audit payload");
         }
     }
 }
