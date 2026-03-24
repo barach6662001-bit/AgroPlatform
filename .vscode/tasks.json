@@ -1,19 +1,19 @@
 {
   "version": "2.0.0",
   "tasks": [
-      {
-            "type": "shell",
-            "label": "git-pull-push",
-            "command": "git add -A && git commit --amend --no-edit && git pull --rebase origin copilot/feattask-046-multi-farm-clean && git push origin copilot/feattask-046-multi-farm-clean",
-            "options": {
-              "cwd": "/workspaces/AgroPlatform"
-            },
-            "group": "none",
-            "presentation": {
-              "reveal": "always",
-              "panel": "new"
-            }
-          },
+    {
+      "type": "shell",
+      "label": "git-force-push",
+      "command": "git add -A && git commit -m 'chore: update tasks.json' && git push --force-with-lease origin copilot/feattask-046-multi-farm-clean",
+      "options": {
+        "cwd": "/workspaces/AgroPlatform"
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
           {
           "type": "shell",
           "label": "check-main-iappdbcontext",
