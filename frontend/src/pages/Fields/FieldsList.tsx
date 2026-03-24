@@ -29,7 +29,7 @@ export default function FieldsList() {
   const [editForm] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { hasRole } = useRole();
+  const { hasPermission } = useRole();
 
   const cropOptions = (['Wheat', 'Corn', 'Sunflower', 'Soybean', 'Barley', 'Rapeseed', 'SugarBeet', 'Fallow', 'Other'] as const)
     .map(v => ({ value: v, label: t.crops[v] }));
@@ -70,9 +70,9 @@ export default function FieldsList() {
     }, 800);
   }, [form, t]);
 
-  const canCreate = hasRole(['Administrator', 'Manager']);
-  const canDelete = hasRole(['Administrator', 'Manager']);
-  const canEdit = hasRole(['Administrator', 'Manager']);
+  const canCreate = hasPermission('fields', 'manage');
+  const canDelete = hasPermission('fields', 'manage');
+  const canEdit = hasPermission('fields', 'manage');
 
   const load = (p = page, ps = pageSize, s = search) => {
     setLoading(true);

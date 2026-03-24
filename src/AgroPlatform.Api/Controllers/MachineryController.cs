@@ -11,6 +11,7 @@ using AgroPlatform.Application.Machinery.Queries.GetMachineById;
 using AgroPlatform.Application.Machinery.Queries.GetMachines;
 using AgroPlatform.Application.Machinery.Queries.GetMachineSummary;
 using AgroPlatform.Application.Machinery.Queries.GetMaintenanceRecords;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +33,7 @@ public class MachineryController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.Machinery.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateMachine([FromBody] CreateMachineCommand command, CancellationToken cancellationToken)
     {
@@ -74,7 +75,7 @@ public class MachineryController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.Machinery.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateMachine(Guid id, [FromBody] UpdateMachineCommand command, CancellationToken cancellationToken)
@@ -87,7 +88,7 @@ public class MachineryController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.Machinery.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteMachine(Guid id, CancellationToken cancellationToken)
@@ -97,7 +98,7 @@ public class MachineryController : ControllerBase
     }
 
     [HttpPost("{id:guid}/work-logs")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.Machinery.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> AddWorkLog(Guid id, [FromBody] AddWorkLogCommand command, CancellationToken cancellationToken)
     {
@@ -109,7 +110,7 @@ public class MachineryController : ControllerBase
     }
 
     [HttpPost("{id:guid}/fuel-logs")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.Machinery.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> AddFuelLog(Guid id, [FromBody] AddFuelLogCommand command, CancellationToken cancellationToken)
     {
@@ -122,7 +123,7 @@ public class MachineryController : ControllerBase
 
     /// <summary>Records a GPS position update for a machine and checks geofence boundaries.</summary>
     [HttpPost("{id:guid}/gps")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.Machinery.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -180,7 +181,7 @@ public class MachineryController : ControllerBase
 
     /// <summary>Records a maintenance event for a machine.</summary>
     [HttpPost("{id:guid}/maintenance")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.Machinery.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> AddMaintenance(Guid id, [FromBody] AddMaintenanceCommand command, CancellationToken cancellationToken)
     {

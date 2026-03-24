@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Tag, Checkbox, message } from 'antd';
-import { InfoCircleOutlined, WarningOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Tag, Checkbox, Alert, message } from 'antd';
+import { InfoCircleOutlined, WarningOutlined, CloseCircleOutlined, BellOutlined } from '@ant-design/icons';
 import {
   getNotifications,
   markNotificationRead,
@@ -10,6 +10,7 @@ import {
 } from '../../api/notifications';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { usePushNotifications } from '../../hooks/usePushNotifications';
 
 const typeIcon = (type: string) => {
   if (type === 'warning') return <WarningOutlined style={{ color: '#faad14' }} />;
@@ -22,6 +23,7 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [unreadOnly, setUnreadOnly] = useState(false);
   const { t } = useTranslation();
+  const { permissionState, isRegistering, requestPermission } = usePushNotifications();
 
   const load = (unread = unreadOnly) => {
     setLoading(true);
@@ -107,6 +109,36 @@ export default function NotificationsPage() {
   return (
     <div>
       <PageHeader title={t.notifications.title} />
+      {permissionState === 'default' && (
+        <Alert
+          style={{ marginBottom: 16 }}
+          type="info"
+          icon={<BellOutlined />}
+          showIcon
+          message={t.notifications.pushEnable}
+          action={
+            <Button size="small" loading={isRegistering} onClick={requestPermission}>
+              {isRegistering ? t.notifications.pushRegistering : t.notifications.pushEnable}
+            </Button>
+          }
+        />
+      )}
+      {permissionState === 'granted' && (
+        <Alert
+          style={{ marginBottom: 16 }}
+          type="success"
+          showIcon
+          message={t.notifications.pushEnabled}
+        />
+      )}
+      {permissionState === 'denied' && (
+        <Alert
+          style={{ marginBottom: 16 }}
+          type="warning"
+          showIcon
+          message={t.notifications.pushDenied}
+        />
+      )}
       <Space style={{ marginBottom: 16 }}>
         <Button onClick={handleMarkAllRead}>{t.notifications.markAllRead}</Button>
         <Button onClick={handleClearRead}>{t.notifications.clearAll}</Button>

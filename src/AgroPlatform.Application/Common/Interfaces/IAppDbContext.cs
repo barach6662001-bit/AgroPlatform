@@ -42,6 +42,7 @@ public interface IAppDbContext
     DbSet<Budget> Budgets { get; }
     DbSet<GpsTrack> GpsTracks { get; }
     DbSet<Notification> Notifications { get; }
+    DbSet<PushSubscription> PushSubscriptions { get; }
     DbSet<Tenant> Tenants { get; }
     DbSet<LandLease> LandLeases { get; }
     DbSet<LeasePayment> LeasePayments { get; }
