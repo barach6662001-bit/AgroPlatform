@@ -46,6 +46,7 @@ import NotFound from './pages/NotFound';
 import FuelStation from './pages/Fuel/FuelStation';
 import SalesList from './pages/Sales/SalesList';
 import RevenueAnalytics from './pages/Sales/RevenueAnalytics';
+import SalaryFuelAnalytics from './pages/Analytics/SalaryFuelAnalytics';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -100,6 +101,7 @@ export default function App() {
             <Route path="/analytics/resources" element={<ResourceConsumption />} />
             <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
             <Route path="/analytics/marginality" element={<AnalyticsMarginalityDashboard />} />
+            <Route path="/analytics/salary-fuel" element={<SalaryFuelAnalytics />} />
             <Route path="/hr/employees" element={<EmployeeList />} />
             <Route path="/hr/worklogs" element={<WorkLogPage />} />
             <Route path="/hr/salary" element={<SalaryPage />} />
