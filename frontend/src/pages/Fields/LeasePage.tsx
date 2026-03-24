@@ -46,9 +46,9 @@ export default function LeasePage() {
   const [editForm] = Form.useForm();
   const [payForm] = Form.useForm();
   const { t } = useTranslation();
-  const { hasRole } = useRole();
+  const { hasPermission } = useRole();
 
-  const canWrite = hasRole(['Administrator', 'Manager']);
+  const canWrite = hasPermission('fields', 'manage');
 
   const yearOptions = Array.from({ length: 10 }, (_, i) => {
     const y = new Date().getFullYear() - 2 + i;

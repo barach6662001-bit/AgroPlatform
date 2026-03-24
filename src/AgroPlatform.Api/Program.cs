@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Threading.RateLimiting;
+using AgroPlatform.Api.Authorization;
 using AgroPlatform.Api.Hubs;
 using AgroPlatform.Api.Middleware;
 using AgroPlatform.Api.OpenApi;
@@ -109,6 +110,7 @@ try
     builder.Services.AddHttpClient();
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddPermissionPolicies();
 
     // SignalR — real-time fleet hub
     builder.Services.AddSignalR();

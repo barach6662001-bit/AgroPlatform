@@ -41,9 +41,9 @@ export default function WarehouseItems() {
   const [editItemSaving, setEditItemSaving] = useState(false);
   const [editItemForm] = Form.useForm();
   const { t } = useTranslation();
-  const { hasRole } = useRole();
+  const { hasPermission } = useRole();
 
-  const canManageItems = hasRole(['Administrator', 'Manager', 'Storekeeper']);
+  const canManageItems = hasPermission('inventory', 'manage');
 
   const loadBalances = (warehouseId?: string, p = page, ps = pageSize) => {
     setLoading(true);

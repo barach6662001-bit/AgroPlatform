@@ -101,6 +101,9 @@ const en: Translations = {
     Agronomist: 'Agronomist',
     Storekeeper: 'Storekeeper',
     Director: 'Director',
+    Admin: 'Admin',
+    Operator: 'Operator',
+    Viewer: 'Viewer',
   },
   dashboard: {
     title: 'Dashboard',

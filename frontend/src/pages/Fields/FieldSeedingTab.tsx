@@ -15,8 +15,8 @@ interface Props {
 
 export default function FieldSeedingTab({ fieldId, fieldArea }: Props) {
   const { t } = useTranslation();
-  const { hasRole } = useRole();
-  const canWrite = hasRole(['Administrator', 'Manager', 'Agronomist']);
+  const { hasPermission } = useRole();
+  const canWrite = hasPermission('fields', 'manage');
   const [data, setData] = useState<FieldSeedingDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [year, setYear] = useState<number | undefined>(undefined);
