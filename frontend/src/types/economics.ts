@@ -12,6 +12,16 @@ export interface FieldPnlDto {
   revenuePerHectare?: number;
 }
 
+export interface BreakEvenDto {
+  fieldId: string;
+  fieldName: string;
+  areaHectares: number;
+  currentCrop?: string;
+  totalCosts: number;
+  pricePerTonne: number;
+  breakEvenYield?: number;
+}
+
 export interface CostRecordDto {
   id: string;
   category: string;
