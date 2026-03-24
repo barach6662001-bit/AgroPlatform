@@ -19,6 +19,9 @@ export interface UpdateTenantRequest {
   phone?: string;
 }
 
+export const getTenants = () =>
+  apiClient.get<TenantDto[]>('/api/tenants').then((r) => r.data);
+
 export const getCurrentTenant = () =>
   apiClient.get<TenantDto>('/api/tenants/current').then((r) => r.data);
 

@@ -20,6 +20,7 @@ public class TenantMiddleware
             || context.Request.Path.StartsWithSegments("/health", StringComparison.OrdinalIgnoreCase)
             || context.Request.Path.StartsWithSegments("/hubs", StringComparison.OrdinalIgnoreCase)
             || context.Request.Path.StartsWithSegments("/api/gps/webhook", StringComparison.OrdinalIgnoreCase)
+            || (context.Request.Method == "GET" && context.Request.Path.Equals("/api/tenants", StringComparison.OrdinalIgnoreCase))
             || (context.Request.Method == "GET" &&
                 (context.Request.Path.StartsWithSegments("/api/cadastre/parcel", StringComparison.OrdinalIgnoreCase)
                  || context.Request.Path.StartsWithSegments("/api/cadastre/tile", StringComparison.OrdinalIgnoreCase))))
