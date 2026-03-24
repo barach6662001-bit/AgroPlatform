@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.Fuel;
@@ -57,4 +58,5 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
     public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
     public DbSet<Sale> Sales => Set<Sale>();
+    public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
 }

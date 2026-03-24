@@ -1,4 +1,5 @@
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.Fuel;
@@ -54,6 +55,7 @@ public interface IAppDbContext
     DbSet<FuelTank> FuelTanks { get; }
     DbSet<FuelTransaction> FuelTransactions { get; }
     DbSet<Sale> Sales { get; }
+    DbSet<AuditEntry> AuditEntries { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
