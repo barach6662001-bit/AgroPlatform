@@ -3,6 +3,7 @@ import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
   DollarOutlined, LineChartOutlined, TeamOutlined, SettingOutlined,
   EnvironmentOutlined, BankOutlined, FireOutlined, ShoppingOutlined,
+  AuditOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -64,6 +65,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     ...financeChildren,
     ...hrChildren,
     ...(isAdmin ? [{ key: '/settings/users' }] : []),
+    ...(isAdmin ? [{ key: '/audit' }] : []),
   ];
 
   const menuItems = [
@@ -117,6 +119,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
             style: { padding: '4px 8px' },
             children: [
               { key: '/settings/users', label: t.nav.users, style: { padding: '4px 8px' } },
+              { key: '/audit', label: t.nav.auditLog, icon: <AuditOutlined />, style: { padding: '4px 8px' } },
             ],
           },
         ]

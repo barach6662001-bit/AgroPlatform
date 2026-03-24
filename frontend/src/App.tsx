@@ -47,6 +47,7 @@ import FuelStation from './pages/Fuel/FuelStation';
 import SalesList from './pages/Sales/SalesList';
 import RevenueAnalytics from './pages/Sales/RevenueAnalytics';
 import SalaryFuelAnalytics from './pages/Analytics/SalaryFuelAnalytics';
+import AuditPage from './pages/Audit/AuditPage';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -108,6 +109,7 @@ export default function App() {
             <Route path="/settings/users" element={<UsersPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/audit" element={<AuditPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
           <Route path="*" element={<NotFound />} />

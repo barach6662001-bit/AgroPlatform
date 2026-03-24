@@ -43,6 +43,7 @@ const uk = {
     breakEven: 'Беззбитковість',
     cropRotationAdvisor: 'Поради по сівозміні',
     salaryFuelAnalytics: 'Зарплата та паливо',
+    auditLog: 'Журнал аудиту',
   },
   common: {
     cancel: 'Скасувати',
@@ -1114,6 +1115,20 @@ const uk = {
     region: 'Регіон',
     welcomeTitle: 'Ласкаво просимо до АгроТех!',
     welcomeSubtitle: 'Давайте налаштуємо систему. Це займе 5 хвилин.',
+  },
+  audit: {
+    title: 'Журнал аудиту',
+    subtitle: 'Перегляд подій системи',
+    timestamp: 'Час',
+    action: 'Дія',
+    entityType: 'Тип об\'єкта',
+    entityId: 'ID об\'єкта',
+    userId: 'Користувач',
+    metadata: 'Деталі',
+    filterUser: 'Фільтр по користувачу',
+    filterEntity: 'Тип об\'єкта',
+    filterAction: 'Дія',
+    loadError: 'Помилка завантаження журналу',
   },
 } as const;
 

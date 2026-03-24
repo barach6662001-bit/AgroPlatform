@@ -45,6 +45,7 @@ const en: Translations = {
     breakEven: 'Break-Even',
     cropRotationAdvisor: 'Crop Rotation Advisor',
     salaryFuelAnalytics: 'Salary & Fuel',
+    auditLog: 'Audit Log',
   },
   common: {
     cancel: 'Cancel',
@@ -1116,6 +1117,20 @@ const en: Translations = {
     region: 'Region',
     welcomeTitle: 'Welcome to AgroTech!',
     welcomeSubtitle: 'Let\'s set up the system. It will take 5 minutes.',
+  },
+  audit: {
+    title: 'Audit Log',
+    subtitle: 'System activity history',
+    timestamp: 'Timestamp',
+    action: 'Action',
+    entityType: 'Entity Type',
+    entityId: 'Entity ID',
+    userId: 'User',
+    metadata: 'Details',
+    filterUser: 'Filter by user',
+    filterEntity: 'Entity type',
+    filterAction: 'Action',
+    loadError: 'Failed to load audit log',
   },
 };
 

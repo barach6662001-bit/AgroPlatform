@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Audit;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.Fuel;
@@ -26,6 +27,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     }
 
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<WarehouseItem> WarehouseItems => Set<WarehouseItem>();
     public DbSet<StockMove> StockMoves => Set<StockMove>();
     public DbSet<StockBalance> StockBalances => Set<StockBalance>();
@@ -105,5 +107,6 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<WorkLog>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
         builder.Entity<SalaryPayment>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
         builder.Entity<Sale>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
+        builder.Entity<AuditLog>().HasQueryFilter(a => a.TenantId == _tenantId);
     }
 }

@@ -1,4 +1,5 @@
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Audit;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.Fuel;
@@ -15,6 +16,7 @@ namespace AgroPlatform.Application.Common.Interfaces;
 
 public interface IAppDbContext
 {
+    DbSet<AuditLog> AuditLogs { get; }
     DbSet<Warehouse> Warehouses { get; }
     DbSet<WarehouseItem> WarehouseItems { get; }
     DbSet<StockMove> StockMoves { get; }
