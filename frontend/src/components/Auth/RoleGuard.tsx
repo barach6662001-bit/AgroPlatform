@@ -1,21 +1,46 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useRole } from '../../hooks/useRole';
-import type { AppRole } from '../../hooks/useRole';
+import type { AppRole, AppModule, AppAction } from '../../hooks/useRole';
 import type { ReactNode } from 'react';
 
 interface RoleGuardProps {
-  allowedRoles: AppRole[];
+  allowedRoles?: AppRole[];
+  module?: AppModule;
+  action?: AppAction;
   children: ReactNode;
   fallback?: ReactNode;
 }
 
-export const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles, children, fallback }) => {
-  const { hasRole } = useRole();
+/**
+ * Guards a section of the UI by role or by module permission.
+ *
+ * Usage — role-based (legacy):
+ *   <RoleGuard allowedRoles={['Administrator', 'Admin']}>...</RoleGuard>
+ *
+ * Usage — permission-based:
+ *   <RoleGuard module="fields" action="manage">...</RoleGuard>
+ */
+export const RoleGuard: React.FC<RoleGuardProps> = ({
+  allowedRoles,
+  module,
+  action,
+  children,
+  fallback,
+}) => {
+  const { hasRole, hasPermission } = useRole();
 
-  if (!hasRole(allowedRoles)) {
+  const allowed =
+    module && action
+      ? hasPermission(module, action)
+      : allowedRoles
+      ? hasRole(allowedRoles)
+      : true;
+
+  if (!allowed) {
     return fallback ? <>{fallback}</> : <Navigate to="/access-denied" replace />;
   }
 
   return <>{children}</>;
 };
+

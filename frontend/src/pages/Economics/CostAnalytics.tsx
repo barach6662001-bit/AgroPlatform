@@ -15,7 +15,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { getCostAnalytics } from '../../api/economics';
-import type { CostAnalyticsDto, AnalyticsCategoryDto } from '../../api/economics';
+import type { CostAnalyticsDto, EconomicsByCategoryDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 
@@ -67,7 +67,7 @@ export default function CostAnalytics() {
       dataIndex: 'amount',
       key: 'amount',
       render: (v: number) => `${fmt(Math.abs(v))} UAH`,
-      sorter: (a: AnalyticsCategoryDto, b: AnalyticsCategoryDto) => Math.abs(b.amount) - Math.abs(a.amount),
+      sorter: (a: EconomicsByCategoryDto, b: EconomicsByCategoryDto) => Math.abs(b.amount) - Math.abs(a.amount),
     },
     { title: t.economics.count, dataIndex: 'count', key: 'count' },
   ];
@@ -183,7 +183,7 @@ export default function CostAnalytics() {
 
           {(data?.byCategory ?? []).length > 0 && (
             <Card title={t.economics.analyticsByCategory}>
-              <Table<AnalyticsCategoryDto>
+              <Table<EconomicsByCategoryDto>
                 dataSource={data?.byCategory}
                 columns={tableColumns}
                 rowKey="category"

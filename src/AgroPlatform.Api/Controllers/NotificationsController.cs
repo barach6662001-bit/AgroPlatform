@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Notifications.Commands.ClearNotifications;
 using AgroPlatform.Application.Notifications.Commands.MarkNotificationRead;
+using AgroPlatform.Application.Notifications.Commands.RegisterPushSubscription;
 using AgroPlatform.Application.Notifications.Queries.GetNotifications;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -55,4 +56,26 @@ public class NotificationsController : ControllerBase
         await _sender.Send(new ClearNotificationsCommand(), cancellationToken);
         return NoContent();
     }
+
+    /// <summary>Registers a push subscription endpoint for the current tenant.</summary>
+    [HttpPost("push-subscriptions")]
+    public async Task<IActionResult> RegisterPushSubscription(
+        [FromBody] RegisterPushSubscriptionRequest request,
+        CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(
+            new RegisterPushSubscriptionCommand(
+                request.Endpoint,
+                request.P256dhKey,
+                request.AuthKey,
+                request.UserAgent),
+            cancellationToken);
+        return CreatedAtAction(nameof(RegisterPushSubscription), new { id }, new { id });
+    }
 }
+
+public record RegisterPushSubscriptionRequest(
+    string Endpoint,
+    string? P256dhKey,
+    string? AuthKey,
+    string? UserAgent);

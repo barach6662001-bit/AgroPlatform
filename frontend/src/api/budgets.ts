@@ -1,4 +1,5 @@
 import apiClient from './axios';
+import type { BudgetPlanVsFactDto } from '../types/economics';
 
 export interface BudgetDto {
   id: string;
@@ -8,13 +9,7 @@ export interface BudgetDto {
   note?: string;
 }
 
-export interface BudgetPlanVsFactDto {
-  category: string;
-  plannedAmount: number;
-  factAmount: number;
-  variance: number;
-  executionPercent: number;
-}
+export type { BudgetPlanVsFactDto };
 
 export const getBudgets = (year: number) =>
   apiClient.get<BudgetDto[]>('/api/economics/budgets', { params: { year } }).then((r) => r.data);

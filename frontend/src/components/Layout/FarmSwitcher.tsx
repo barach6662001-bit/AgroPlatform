@@ -24,7 +24,6 @@ export default function FarmSwitcher() {
       setTenantId(tenants[0].id);
     }
   }, [tenants, tenantId, setTenantId]);
-
   if (tenants.length <= 1) return null;
 
   return (

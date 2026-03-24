@@ -6,5 +6,10 @@ public enum UserRole
     Manager,
     Agronomist,
     Storekeeper,
-    Director
+    Director,
+
+    // Simplified role set (task-044)
+    Admin,
+    Operator,
+    Viewer
 }

@@ -3,6 +3,7 @@ using AgroPlatform.Application.Analytics.Queries.GetFieldEfficiency;
 using AgroPlatform.Application.Analytics.Queries.GetResourceConsumption;
 using AgroPlatform.Application.Analytics.Queries.GetSalaryFuelAnalytics;
 using AgroPlatform.Application.Economics.Queries.GetMarginality;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace AgroPlatform.Api.Controllers;
 /// by period / field, and field efficiency metrics.
 /// </summary>
 [ApiController]
-[Authorize]
+[Authorize(Policy = Permissions.Analytics.View)]
 [Route("api/analytics")]
 [Produces("application/json")]
 public class AnalyticsController : ControllerBase

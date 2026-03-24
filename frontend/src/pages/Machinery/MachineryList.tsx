@@ -37,12 +37,12 @@ export default function MachineryList() {
   const [editForm] = Form.useForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { hasRole } = useRole();
+  const { hasPermission } = useRole();
   const { activeVehicleIds } = useFleetHub();
 
-  const canCreate = hasRole(['Administrator', 'Manager']);
-  const canEdit = hasRole(['Administrator', 'Manager']);
-  const canDelete = hasRole(['Administrator', 'Manager']);
+  const canCreate = hasPermission('machinery', 'manage');
+  const canEdit = hasPermission('machinery', 'manage');
+  const canDelete = hasPermission('machinery', 'manage');
 
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
 

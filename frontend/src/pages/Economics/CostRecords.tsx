@@ -3,10 +3,9 @@ import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, In
 import { PlusOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined, HomeOutlined, PrinterOutlined } from '@ant-design/icons';
 import { printReport } from '../../utils/printReport';
 import { getCostRecords, getCostSummary, createCostRecord, deleteCostRecord } from '../../api/economics';
-import type { CostSummaryDto } from '../../api/economics';
 import { getBudgets } from '../../api/budgets';
 import type { BudgetDto } from '../../api/budgets';
-import type { CostRecordDto, MaterialKpiItem } from '../../types/economics';
+import type { CostRecordDto, CostSummaryDto, MaterialKpiItem } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import PLTable from '../../components/PLTable';
@@ -16,8 +15,10 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import type { PLTableRow } from '../../components/PLTable';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { formatDate } from '../../utils/dateFormat';
 import apiClient from '../../api/axios';
+import { enqueueOperation } from '../../utils/offlineQueue';
 
 const { RangePicker } = DatePicker;
 
@@ -45,6 +46,7 @@ export default function CostRecords() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const { hasRole } = useRole();
+  const isOnline = useOnlineStatus();
 
   const canCreate = hasRole(['Administrator', 'Manager']);
   const canDelete = hasRole(['Administrator', 'Manager']);
@@ -81,11 +83,20 @@ export default function CostRecords() {
       const values = await form.validateFields();
       setSaving(true);
       const date = values.date ? (values.date as { toISOString: () => string }).toISOString() : new Date().toISOString();
-      await createCostRecord({ ...values, date });
-      message.success(t.economics.createSuccess);
-      form.resetFields();
-      setModalOpen(false);
-      load();
+      const payload = { ...values, date };
+
+      if (!isOnline) {
+        await enqueueOperation({ method: 'POST', url: '/api/economics/cost-records', data: payload });
+        message.info(t.offline.queued);
+        form.resetFields();
+        setModalOpen(false);
+      } else {
+        await createCostRecord(payload);
+        message.success(t.economics.createSuccess);
+        form.resetFields();
+        setModalOpen(false);
+        load();
+      }
     } catch {
       message.error(t.economics.createError);
     } finally {

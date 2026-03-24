@@ -2,6 +2,7 @@ using AgroPlatform.Application.Fields.Commands.AssignCrop;
 using AgroPlatform.Application.Fields.Commands.CreateField;
 using AgroPlatform.Application.Fields.Commands.CreateFieldFertilizer;
 using AgroPlatform.Application.Fields.Commands.CreateFieldHarvest;
+using AgroPlatform.Application.Fields.Commands.CreateFieldInspection;
 using AgroPlatform.Application.Fields.Commands.CreateFieldProtection;
 using AgroPlatform.Application.Fields.Commands.CreateFieldSeeding;
 using AgroPlatform.Application.Fields.Commands.CreateFieldZone;
@@ -9,6 +10,7 @@ using AgroPlatform.Application.Fields.Commands.CreateSoilAnalysis;
 using AgroPlatform.Application.Fields.Commands.DeleteField;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldFertilizer;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldHarvest;
+using AgroPlatform.Application.Fields.Commands.DeleteFieldInspection;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldProtection;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldSeeding;
 using AgroPlatform.Application.Fields.Commands.DeleteFieldZone;
@@ -23,6 +25,7 @@ using AgroPlatform.Application.Fields.Commands.UpdateYield;
 using AgroPlatform.Application.Fields.Queries.GetFieldById;
 using AgroPlatform.Application.Fields.Queries.GetFieldFertilizers;
 using AgroPlatform.Application.Fields.Queries.GetFieldHarvests;
+using AgroPlatform.Application.Fields.Queries.GetFieldInspections;
 using AgroPlatform.Application.Fields.Queries.GetFieldProtections;
 using AgroPlatform.Application.Fields.Queries.GetFieldSeedings;
 using AgroPlatform.Application.Fields.Queries.GetFieldZones;
@@ -31,6 +34,7 @@ using AgroPlatform.Application.Fields.Queries.GetPrescriptionMap;
 using AgroPlatform.Application.Fields.Queries.GetSoilAnalyses;
 using AgroPlatform.Application.Fields.Queries.ExportPrescriptionMap;
 using AgroPlatform.Application.Fields.Queries.GetRotationAdvice;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -61,7 +65,7 @@ public class FieldsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created field.</returns>
     [HttpPost]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateField([FromBody] CreateFieldCommand command, CancellationToken cancellationToken)
     {
@@ -103,7 +107,7 @@ public class FieldsController : ControllerBase
     /// <param name="command">Updated field data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateField(Guid id, [FromBody] UpdateFieldCommand command, CancellationToken cancellationToken)
@@ -119,7 +123,7 @@ public class FieldsController : ControllerBase
     /// <param name="id">Field ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteField(Guid id, CancellationToken cancellationToken)
@@ -133,7 +137,7 @@ public class FieldsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created crop history entry.</returns>
     [HttpPost("assign-crop")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> AssignCrop([FromBody] AssignCropCommand command, CancellationToken cancellationToken)
     {
@@ -146,7 +150,7 @@ public class FieldsController : ControllerBase
     /// <param name="command">Yield data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("crop-history/{cropHistoryId:guid}/yield")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateYield(Guid cropHistoryId, [FromBody] UpdateYieldCommand command, CancellationToken cancellationToken)
@@ -163,7 +167,7 @@ public class FieldsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created rotation plan.</returns>
     [HttpPost("rotation-plans")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> PlanRotation([FromBody] PlanRotationCommand command, CancellationToken cancellationToken)
     {
@@ -175,7 +179,7 @@ public class FieldsController : ControllerBase
     /// <param name="planId">Rotation plan ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("rotation-plans/{planId:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteRotationPlan(Guid planId, CancellationToken cancellationToken)
@@ -189,7 +193,7 @@ public class FieldsController : ControllerBase
     /// <param name="request">GeoJSON body.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("{id:guid}/geometry")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -215,7 +219,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Creates a seeding record for a field.</summary>
     [HttpPost("{fieldId:guid}/seedings")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateSeeding(Guid fieldId, [FromBody] CreateFieldSeedingRequest request, CancellationToken cancellationToken)
     {
@@ -227,7 +231,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Deletes a seeding record.</summary>
     [HttpDelete("{fieldId:guid}/seedings/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSeeding(Guid fieldId, Guid id, CancellationToken cancellationToken)
@@ -249,7 +253,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Creates a fertilizer record for a field.</summary>
     [HttpPost("{fieldId:guid}/fertilizers")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateFertilizer(Guid fieldId, [FromBody] CreateFieldFertilizerRequest request, CancellationToken cancellationToken)
     {
@@ -262,7 +266,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Deletes a fertilizer record.</summary>
     [HttpDelete("{fieldId:guid}/fertilizers/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteFertilizer(Guid fieldId, Guid id, CancellationToken cancellationToken)
@@ -284,7 +288,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Creates a plant protection record for a field.</summary>
     [HttpPost("{fieldId:guid}/protections")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateProtection(Guid fieldId, [FromBody] CreateFieldProtectionRequest request, CancellationToken cancellationToken)
     {
@@ -297,7 +301,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Deletes a plant protection record.</summary>
     [HttpDelete("{fieldId:guid}/protections/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteProtection(Guid fieldId, Guid id, CancellationToken cancellationToken)
@@ -319,7 +323,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Creates a harvest record for a field. Yield t/ha and total revenue are calculated automatically.</summary>
     [HttpPost("{fieldId:guid}/harvests")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateHarvest(Guid fieldId, [FromBody] CreateFieldHarvestRequest request, CancellationToken cancellationToken)
     {
@@ -331,7 +335,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Deletes a harvest record.</summary>
     [HttpDelete("{fieldId:guid}/harvests/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteHarvest(Guid fieldId, Guid id, CancellationToken cancellationToken)
@@ -353,7 +357,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Creates a management zone for a field.</summary>
     [HttpPost("{fieldId:guid}/zones")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateZone(Guid fieldId, [FromBody] CreateFieldZoneRequest request, CancellationToken cancellationToken)
     {
@@ -364,7 +368,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Updates a management zone.</summary>
     [HttpPut("{fieldId:guid}/zones/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateZone(Guid fieldId, Guid id, [FromBody] CreateFieldZoneRequest request, CancellationToken cancellationToken)
@@ -375,7 +379,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Deletes a management zone.</summary>
     [HttpDelete("{fieldId:guid}/zones/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteZone(Guid fieldId, Guid id, CancellationToken cancellationToken)
@@ -397,7 +401,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Creates a soil analysis record for a field.</summary>
     [HttpPost("{fieldId:guid}/soil-analyses")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateSoilAnalysis(Guid fieldId, [FromBody] CreateSoilAnalysisRequest request, CancellationToken cancellationToken)
     {
@@ -410,7 +414,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Updates a soil analysis record.</summary>
     [HttpPut("{fieldId:guid}/soil-analyses/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateSoilAnalysis(Guid fieldId, Guid id, [FromBody] UpdateSoilAnalysisRequest request, CancellationToken cancellationToken)
@@ -424,12 +428,46 @@ public class FieldsController : ControllerBase
 
     /// <summary>Deletes a soil analysis record.</summary>
     [HttpDelete("{fieldId:guid}/soil-analyses/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSoilAnalysis(Guid fieldId, Guid id, CancellationToken cancellationToken)
     {
         await _sender.Send(new DeleteSoilAnalysisCommand(id), cancellationToken);
+        return NoContent();
+    }
+
+    // ─── Inspections ─────────────────────────────────────────────────────────────
+
+    /// <summary>Returns inspection records for a field.</summary>
+    [HttpGet("{fieldId:guid}/inspections")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetInspections(Guid fieldId, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetFieldInspectionsQuery(fieldId), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates an inspection record for a field.</summary>
+    [HttpPost("{fieldId:guid}/inspections")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateInspection(Guid fieldId, [FromBody] CreateFieldInspectionRequest request, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(new CreateFieldInspectionCommand(
+            fieldId, request.Date, request.InspectorName, request.Notes,
+            request.Severity, request.Latitude, request.Longitude, request.PhotoUrl), cancellationToken);
+        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+    }
+
+    /// <summary>Deletes an inspection record.</summary>
+    [HttpDelete("{fieldId:guid}/inspections/{id:guid}")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteInspection(Guid fieldId, Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteFieldInspectionCommand(id), cancellationToken);
         return NoContent();
     }
 
@@ -548,3 +586,13 @@ public record UpdateSoilAnalysisRequest(
     decimal? Potassium,
     decimal? Humus,
     string? Notes);
+
+/// <summary>Request body for creating a field inspection record.</summary>
+public record CreateFieldInspectionRequest(
+    DateTime Date,
+    string InspectorName,
+    string? Notes,
+    string? Severity,
+    double? Latitude,
+    double? Longitude,
+    string? PhotoUrl);

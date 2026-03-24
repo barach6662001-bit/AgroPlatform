@@ -40,6 +40,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<FieldHarvest> FieldHarvests => Set<FieldHarvest>();
     public DbSet<FieldZone> FieldZones => Set<FieldZone>();
     public DbSet<SoilAnalysis> SoilAnalyses => Set<SoilAnalysis>();
+    public DbSet<FieldInspection> FieldInspections => Set<FieldInspection>();
     public DbSet<AgroOperation> AgroOperations => Set<AgroOperation>();
     public DbSet<AgroOperationResource> AgroOperationResources => Set<AgroOperationResource>();
     public DbSet<AgroOperationMachinery> AgroOperationMachineries => Set<AgroOperationMachinery>();
@@ -51,6 +52,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<Budget> Budgets => Set<Budget>();
     public DbSet<GpsTrack> GpsTracks => Set<GpsTrack>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<LandLease> LandLeases => Set<LandLease>();
     public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
@@ -98,6 +100,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<StockBalance>().HasQueryFilter(sb => !sb.IsDeleted && sb.TenantId == _tenantId);
         builder.Entity<Batch>().HasQueryFilter(b => !b.IsDeleted && b.TenantId == _tenantId);
         builder.Entity<Notification>().HasQueryFilter(n => n.TenantId == _tenantId);
+        builder.Entity<PushSubscription>().HasQueryFilter(p => p.TenantId == _tenantId);
         builder.Entity<LandLease>().HasQueryFilter(l => !l.IsDeleted && l.TenantId == _tenantId);
         builder.Entity<LeasePayment>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
         builder.Entity<FuelTank>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
@@ -110,6 +113,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<SalaryPayment>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
         builder.Entity<Sale>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
         builder.Entity<Permission>().HasQueryFilter(p => !p.IsDeleted);
+        builder.Entity<FieldInspection>().HasQueryFilter(i => !i.IsDeleted && i.TenantId == _tenantId);
         builder.Entity<AuditEntry>().HasQueryFilter(a => a.TenantId == _tenantId);
         builder.Entity<ApiKey>().HasQueryFilter(k => !k.IsDeleted && k.TenantId == _tenantId);
     }

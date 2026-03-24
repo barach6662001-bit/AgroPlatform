@@ -42,6 +42,32 @@
       },
       {
         "type": "shell",
+        "label": "git-merge-main",
+        "command": "git fetch origin main && git merge --no-edit origin/main || true && git status --short",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "git-commit-merge-push",
+        "command": "git add -A && git commit -m 'merge: resolve conflicts with main for PR #395' && git push origin copilot/feattask-046-multi-farm-clean",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
         "label": "git-fixup-push",
         "command": "git add -A && git commit -m 'fix: CI errors - remove bad DTOs using, fix any types, ApiKey TenantId new keyword, AuditEntry string UserId, EF Core usings' && git push origin copilot/feattask-046-multi-farm-clean",
         "options": {

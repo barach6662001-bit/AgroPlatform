@@ -23,6 +23,7 @@ import FieldNdviTab from './FieldNdviTab';
 import FieldZonesTab from './FieldZonesTab';
 import FieldSoilAnalysisTab from './FieldSoilAnalysisTab';
 import FieldPrescriptionTab from './FieldPrescriptionTab';
+import FieldInspectionTab from './FieldInspectionTab';
 
 export default function FieldDetail() {
   const { id } = useParams<{ id: string }>();
@@ -47,8 +48,8 @@ export default function FieldDetail() {
   const [payForm] = Form.useForm();
   const [pnl, setPnl] = useState<FieldPnlDto | null>(null);
   const { t } = useTranslation();
-  const { hasRole } = useRole();
-  const canWrite = hasRole(['Administrator', 'Manager']);
+  const { hasPermission } = useRole();
+  const canWrite = hasPermission('fields', 'manage');
 
   const load = () => {
     if (!id) return;
@@ -524,6 +525,11 @@ export default function FieldDetail() {
           key: 'prescription',
           label: t.fields.tabPrescription,
           children: <FieldPrescriptionTab fieldId={id!} />,
+        },
+        {
+          key: 'inspection',
+          label: t.fields.tabInspection,
+          children: <FieldInspectionTab fieldId={id!} />,
         },
       ]} />
 

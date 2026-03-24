@@ -1,10 +1,11 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Economics.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Application.Economics.Queries.GetSeasonComparison;
 
-public class GetSeasonComparisonHandler : IRequestHandler<GetSeasonComparisonQuery, IReadOnlyList<SeasonComparisonDto>>
+public class GetSeasonComparisonHandler : IRequestHandler<GetSeasonComparisonQuery, IReadOnlyList<EconomicsByYearDto>>
 {
     private readonly IAppDbContext _context;
 
@@ -13,7 +14,7 @@ public class GetSeasonComparisonHandler : IRequestHandler<GetSeasonComparisonQue
         _context = context;
     }
 
-    public async Task<IReadOnlyList<SeasonComparisonDto>> Handle(GetSeasonComparisonQuery request, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<EconomicsByYearDto>> Handle(GetSeasonComparisonQuery request, CancellationToken cancellationToken)
     {
         var years = request.Years.Length > 0 ? request.Years : new[] { DateTime.UtcNow.Year };
 
@@ -21,7 +22,7 @@ public class GetSeasonComparisonHandler : IRequestHandler<GetSeasonComparisonQue
         var totalAreaHa = await _context.Fields
             .SumAsync(f => (decimal?)f.AreaHectares, cancellationToken) ?? 0m;
 
-        var result = new List<SeasonComparisonDto>();
+        var result = new List<EconomicsByYearDto>();
 
         foreach (var year in years.Distinct().OrderBy(y => y))
         {
@@ -41,7 +42,7 @@ public class GetSeasonComparisonHandler : IRequestHandler<GetSeasonComparisonQue
                 ? Math.Round(margin / totalRevenue * 100, 2)
                 : (decimal?)null;
 
-            var dto = new SeasonComparisonDto
+            var dto = new EconomicsByYearDto
             {
                 Year          = year,
                 TotalRevenue  = totalRevenue,

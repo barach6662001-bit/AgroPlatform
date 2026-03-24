@@ -16,11 +16,17 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-window.getComputedStyle = window.getComputedStyle || function () {
-  return {
-    getPropertyValue: () => '',
-  };
-};
+const originalGetComputedStyle = window.getComputedStyle.bind(window);
+
+window.getComputedStyle = ((elt: Element, pseudoElt?: string | null) => {
+  try {
+    return originalGetComputedStyle(elt);
+  } catch {
+    return {
+      getPropertyValue: () => '',
+    } as unknown as CSSStyleDeclaration;
+  }
+}) as typeof window.getComputedStyle;
 
 if (typeof window.ResizeObserver === 'undefined') {
   window.ResizeObserver = class ResizeObserver {

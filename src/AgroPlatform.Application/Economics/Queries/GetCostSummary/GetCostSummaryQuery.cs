@@ -1,3 +1,4 @@
+using AgroPlatform.Application.Economics.DTOs;
 using MediatR;
 
 namespace AgroPlatform.Application.Economics.Queries.GetCostSummary;
@@ -10,7 +11,5 @@ public record GetCostSummaryQuery(
 
 public record CostSummaryDto(
     decimal TotalAmount,
-    IReadOnlyList<CategorySummaryDto> ByCategory
+    IReadOnlyList<EconomicsByCategoryDto> ByCategory
 );
-
-public record CategorySummaryDto(string Category, decimal Amount, int Count);

@@ -1,4 +1,6 @@
 import axios from './axios';
+import type { AuditLogDto } from '../types/audit';
+import type { PaginatedResult } from '../types/common';
 
 export interface AuditEntryDto {
   id: string;
@@ -39,5 +41,38 @@ export async function getAuditLog(
   params.append('pageSize', pageSize.toString());
 
   const response = await axios.get(`/api/audit?${params.toString()}`);
-  return response.data;
+  const data = response.data as PaginatedResult<AuditLogDto>;
+
+  // Backward-compatible shape for Admin/AuditLogPage
+  return {
+    entries: (data.items ?? []).map((item) => ({
+      id: item.id,
+      tenantId: '',
+      userId: item.userId ?? '',
+      userEmail: item.userId ?? 'unknown',
+      createdAtUtc: item.timestamp,
+      entityType: item.entityType,
+      entityId: item.entityId,
+      action: item.action,
+      oldValues: item.metadata,
+      newValues: undefined,
+      ipAddress: undefined,
+      notes: undefined,
+    })),
+    total: data.totalCount ?? 0,
+    pageNumber: data.page ?? pageNumber,
+    pageSize: data.pageSize ?? pageSize,
+  } as AuditLogResultDto;
 }
+export const getAuditLogs = (params?: {
+  userId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  entityType?: string;
+  action?: string;
+  page?: number;
+  pageSize?: number;
+}) =>
+  axios
+    .get<PaginatedResult<AuditLogDto>>('/api/audit', { params })
+    .then((r) => r.data);

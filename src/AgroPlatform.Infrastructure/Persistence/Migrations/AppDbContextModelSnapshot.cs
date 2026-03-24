@@ -204,6 +204,51 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("AgroOperationResources");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Common.AuditEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("EntityId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_AuditEntries_TenantId");
+
+                    b.HasIndex("TenantId", "Timestamp")
+                        .HasDatabaseName("IX_AuditEntries_TenantId_Timestamp");
+
+                    b.ToTable("AuditEntries");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Economics.Budget", b =>
                 {
                     b.Property<Guid>("Id")
@@ -664,6 +709,72 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("IX_FieldHarvests_TenantId");
 
                     b.ToTable("FieldHarvests");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldInspection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("InspectorName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Severity")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId")
+                        .HasDatabaseName("IX_FieldInspections_FieldId");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_FieldInspections_TenantId");
+
+                    b.ToTable("FieldInspections");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldProtection", b =>
@@ -1999,6 +2110,43 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Notifications.PushSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AuthKey")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.Property<string>("P256dhKey")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Endpoint")
+                        .IsUnique();
+
+                    b.ToTable("PushSubscriptions");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Sales.Sale", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2736,6 +2884,18 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Field");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldInspection", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
+                        .WithMany("Inspections")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_FieldInspections_Fields");
+
+                    b.Navigation("Field");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldProtection", b =>
                 {
                     b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
@@ -3055,6 +3215,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Fertilizers");
 
                     b.Navigation("Harvests");
+
+                    b.Navigation("Inspections");
 
                     b.Navigation("LandLeases");
 

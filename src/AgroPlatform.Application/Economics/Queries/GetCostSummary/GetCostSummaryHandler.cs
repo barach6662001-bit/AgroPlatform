@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Economics.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,7 +29,7 @@ public class GetCostSummaryHandler : IRequestHandler<GetCostSummaryQuery, CostSu
 
         var byCategory = await query
             .GroupBy(c => c.Category)
-            .Select(g => new CategorySummaryDto(g.Key, g.Sum(c => c.Amount), g.Count()))
+            .Select(g => new EconomicsByCategoryDto(g.Key, g.Sum(c => c.Amount), g.Count()))
             .ToListAsync(cancellationToken);
 
         var totalAmount = byCategory.Sum(c => c.Amount);
