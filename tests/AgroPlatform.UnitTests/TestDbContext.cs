@@ -27,6 +27,7 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<FieldCropHistory> FieldCropHistories => Set<FieldCropHistory>();
     public DbSet<CropRotationPlan> CropRotationPlans => Set<CropRotationPlan>();
     public DbSet<FieldSeeding> FieldSeedings => Set<FieldSeeding>();
+    public DbSet<FieldInspection> FieldInspections => Set<FieldInspection>();
     public DbSet<FieldFertilizer> FieldFertilizers => Set<FieldFertilizer>();
     public DbSet<FieldProtection> FieldProtections => Set<FieldProtection>();
     public DbSet<FieldHarvest> FieldHarvests => Set<FieldHarvest>();

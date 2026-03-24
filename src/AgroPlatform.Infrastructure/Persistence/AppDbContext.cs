@@ -39,6 +39,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<FieldHarvest> FieldHarvests => Set<FieldHarvest>();
     public DbSet<FieldZone> FieldZones => Set<FieldZone>();
     public DbSet<SoilAnalysis> SoilAnalyses => Set<SoilAnalysis>();
+    public DbSet<FieldInspection> FieldInspections => Set<FieldInspection>();
     public DbSet<AgroOperation> AgroOperations => Set<AgroOperation>();
     public DbSet<AgroOperationResource> AgroOperationResources => Set<AgroOperationResource>();
     public DbSet<AgroOperationMachinery> AgroOperationMachineries => Set<AgroOperationMachinery>();
@@ -107,5 +108,6 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<WorkLog>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
         builder.Entity<SalaryPayment>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
         builder.Entity<Sale>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
+        builder.Entity<FieldInspection>().HasQueryFilter(i => !i.IsDeleted && i.TenantId == _tenantId);
     }
 }

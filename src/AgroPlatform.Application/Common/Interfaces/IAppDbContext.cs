@@ -29,6 +29,7 @@ public interface IAppDbContext
     DbSet<FieldHarvest> FieldHarvests { get; }
     DbSet<FieldZone> FieldZones { get; }
     DbSet<SoilAnalysis> SoilAnalyses { get; }
+    DbSet<FieldInspection> FieldInspections { get; }
     DbSet<AgroOperation> AgroOperations { get; }
     DbSet<AgroOperationResource> AgroOperationResources { get; }
     DbSet<AgroOperationMachinery> AgroOperationMachineries { get; }
