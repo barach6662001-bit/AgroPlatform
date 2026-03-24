@@ -897,6 +897,11 @@ const en: Translations = {
     statusRead: 'Read',
     statusNew: 'New',
     markAsRead: 'Mark as read',
+    pushEnable: 'Enable push notifications',
+    pushEnabled: 'Push notifications enabled',
+    pushDenied: 'Push notifications blocked',
+    pushUnsupported: 'Push notifications not supported',
+    pushRegistering: 'Enabling…',
   },
   lease: {
     title: 'Lease Payments',

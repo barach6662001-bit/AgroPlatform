@@ -895,6 +895,11 @@ const uk = {
     statusRead: 'Прочитано',
     statusNew: 'Нове',
     markAsRead: 'Позначити прочитаним',
+    pushEnable: 'Увімкнути push-сповіщення',
+    pushEnabled: 'Push-сповіщення увімкнено',
+    pushDenied: 'Push-сповіщення заблоковано',
+    pushUnsupported: 'Push-сповіщення не підтримуються',
+    pushRegistering: 'Активація…',
   },
   lease: {
     title: 'Орендні платежі',
