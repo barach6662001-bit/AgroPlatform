@@ -46,8 +46,8 @@ export default function FieldDetail() {
   const [payForm] = Form.useForm();
   const [pnl, setPnl] = useState<FieldPnlDto | null>(null);
   const { t } = useTranslation();
-  const { hasRole } = useRole();
-  const canWrite = hasRole(['Administrator', 'Manager']);
+  const { hasPermission } = useRole();
+  const canWrite = hasPermission('fields', 'manage');
 
   const load = () => {
     if (!id) return;

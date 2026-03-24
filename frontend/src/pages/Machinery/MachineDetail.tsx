@@ -41,8 +41,8 @@ export default function MachineDetail() {
   const [workForm] = Form.useForm();
   const [maintenanceForm] = Form.useForm();
   const { t } = useTranslation();
-  const { hasRole } = useRole();
-  const canEdit = hasRole(['Administrator', 'Manager']);
+  const { hasPermission } = useRole();
+  const canEdit = hasPermission('machinery', 'manage');
 
   const load = () => {
     if (!id) return;

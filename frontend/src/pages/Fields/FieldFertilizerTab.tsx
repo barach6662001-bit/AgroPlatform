@@ -17,8 +17,8 @@ interface Props {
 
 export default function FieldFertilizerTab({ fieldId, fieldArea }: Props) {
   const { t } = useTranslation();
-  const { hasRole } = useRole();
-  const canWrite = hasRole(['Administrator', 'Manager', 'Agronomist']);
+  const { hasPermission } = useRole();
+  const canWrite = hasPermission('fields', 'manage');
   const [data, setData] = useState<FieldFertilizerDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [year, setYear] = useState<number | undefined>(undefined);

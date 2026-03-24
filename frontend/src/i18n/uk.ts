@@ -99,6 +99,9 @@ const uk = {
     Agronomist: 'Агроном',
     Storekeeper: 'Комірник',
     Director: 'Директор',
+    Admin: 'Адмін',
+    Operator: 'Оператор',
+    Viewer: 'Спостерігач',
   },
   dashboard: {
     title: 'Головна панель',

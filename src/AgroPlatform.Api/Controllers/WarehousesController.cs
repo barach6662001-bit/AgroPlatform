@@ -10,6 +10,7 @@ using AgroPlatform.Application.Warehouses.Queries.GetMoveHistory;
 using AgroPlatform.Application.Warehouses.Queries.GetWarehouses;
 using AgroPlatform.Application.Warehouses.Queries.GetWarehouseItems;
 using AgroPlatform.Application.Warehouses.Queries.ExportBalances;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -40,7 +41,7 @@ public class WarehousesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created warehouse.</returns>
     [HttpPost]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.Warehouses.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateWarehouse([FromBody] CreateWarehouseCommand command, CancellationToken cancellationToken)
     {
@@ -70,7 +71,7 @@ public class WarehousesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created item.</returns>
     [HttpPost("items")]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.Warehouses.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateWarehouseItem([FromBody] CreateWarehouseItemCommand command, CancellationToken cancellationToken)
     {
@@ -96,7 +97,7 @@ public class WarehousesController : ControllerBase
     /// <param name="command">Updated item data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("items/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.Warehouses.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateWarehouseItem(Guid id, [FromBody] UpdateWarehouseItemCommand command, CancellationToken cancellationToken)
@@ -110,7 +111,7 @@ public class WarehousesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created stock movement record.</returns>
     [HttpPost("receipt")]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.Inventory.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> ReceiptStock([FromBody] ReceiptStockCommand command, CancellationToken cancellationToken)
     {
@@ -123,7 +124,7 @@ public class WarehousesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created stock movement record.</returns>
     [HttpPost("issue")]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.Inventory.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> IssueStock([FromBody] IssueStockCommand command, CancellationToken cancellationToken)
     {
@@ -136,7 +137,7 @@ public class WarehousesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The operation ID of the transfer.</returns>
     [HttpPost("transfer")]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.Inventory.Manage)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> TransferStock([FromBody] TransferStockCommand command, CancellationToken cancellationToken)
     {
@@ -148,7 +149,7 @@ public class WarehousesController : ControllerBase
     /// <param name="command">Adjustment data (item, counted quantity).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPost("inventory")]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.Inventory.Manage)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> InventoryAdjust([FromBody] InventoryAdjustCommand command, CancellationToken cancellationToken)
     {
