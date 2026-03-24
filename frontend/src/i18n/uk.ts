@@ -1115,6 +1115,16 @@ const uk = {
     welcomeTitle: 'Ласкаво просимо до АгроТех!',
     welcomeSubtitle: 'Давайте налаштуємо систему. Це займе 5 хвилин.',
   },
+  offline: {
+    offline: 'Офлайн',
+    online: 'Онлайн',
+    queued: 'Збережено офлайн — синхронізується автоматично',
+    syncing: 'Синхронізація...',
+    syncNow: 'Синхронізувати зараз',
+    pendingCount: '{n} у черзі',
+    syncSuccess: 'Синхронізовано успішно',
+    syncFailed: 'Помилка синхронізації',
+  },
 } as const;
 
 export default uk;
