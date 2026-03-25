@@ -10,6 +10,7 @@ using AgroPlatform.Application.Economics.Queries.GetCostAnalytics;
 using AgroPlatform.Application.Economics.Queries.GetMarginality;
 using AgroPlatform.Application.Economics.Queries.GetSeasonComparison;
 using AgroPlatform.Domain.Authorization;
+using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
