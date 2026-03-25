@@ -14,9 +14,21 @@ public class BatchConfiguration : IEntityTypeConfiguration<Batch>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(b => b.ReceivedDate)
+            .IsRequired();
+
+        builder.Property(b => b.SupplierName)
+            .HasMaxLength(255);
+
+        builder.Property(b => b.CostPerUnit)
+            .HasColumnType("numeric(18,4)");
+
         builder.HasOne(b => b.Item)
             .WithMany()
             .HasForeignKey(b => b.ItemId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(b => new { b.ItemId, b.ExpiryDate })
+            .HasDatabaseName("IX_Batches_ItemId_ExpiryDate");
     }
 }
