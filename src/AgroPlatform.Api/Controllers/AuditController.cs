@@ -1,4 +1,5 @@
 using AgroPlatform.Application.AuditLog.Queries.GetAuditLogs;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace AgroPlatform.Api.Controllers;
 /// Provides access to the system audit log.
 /// </summary>
 [ApiController]
-[Authorize(Roles = "Administrator")]
+[Authorize(Policy = Permissions.Admin.Manage)]
 [Route("api/audit")]
 [Produces("application/json")]
 public class AuditController : ControllerBase

@@ -9,7 +9,7 @@ using AgroPlatform.Application.Economics.Queries.GetFieldPnl;
 using AgroPlatform.Application.Economics.Queries.GetCostAnalytics;
 using AgroPlatform.Application.Economics.Queries.GetMarginality;
 using AgroPlatform.Application.Economics.Queries.GetSeasonComparison;
-using AgroPlatform.Domain.Enums;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ public class EconomicsController : ControllerBase
     }
 
     [HttpPost("cost-records")]
-    [Authorize(Roles = "Administrator,Manager,Director")]
+    [Authorize(Policy = Permissions.Economics.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateCostRecord([FromBody] CreateCostRecordCommand command, CancellationToken cancellationToken)
     {
@@ -83,7 +83,7 @@ public class EconomicsController : ControllerBase
     }
 
     [HttpDelete("cost-records/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Director")]
+    [Authorize(Policy = Permissions.Economics.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteCostRecord(Guid id, CancellationToken cancellationToken)

@@ -21,8 +21,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
     public async Task<AuthResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
-        var isPasswordValid = user != null && await _userManager.CheckPasswordAsync(user, request.Password);
-        if (!isPasswordValid)
+        if (user == null || !user.IsActive || !await _userManager.CheckPasswordAsync(user, request.Password))
             throw new UnauthorizedException("Invalid email or password.");
 
         var validUser = user!;

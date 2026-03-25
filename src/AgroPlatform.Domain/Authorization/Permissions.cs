@@ -34,4 +34,34 @@ public static class Permissions
         public const string View   = "Fields.View";
         public const string Manage = "Fields.Manage";
     }
+
+    public static class Economics
+    {
+        public const string Manage = "Economics.Manage";
+    }
+
+    public static class HR
+    {
+        public const string Manage = "HR.Manage";
+    }
+
+    public static class GrainStorage
+    {
+        public const string Manage = "GrainStorage.Manage";
+    }
+
+    public static class Fuel
+    {
+        public const string Manage = "Fuel.Manage";
+    }
+
+    public static class Sales
+    {
+        public const string Manage = "Sales.Manage";
+    }
+
+    public static class Admin
+    {
+        public const string Manage = "Admin.Manage";
+    }
 }
