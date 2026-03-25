@@ -450,7 +450,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Creates an inspection record for a field.</summary>
     [HttpPost("{fieldId:guid}/inspections")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateInspection(Guid fieldId, [FromBody] CreateFieldInspectionRequest request, CancellationToken cancellationToken)
     {
@@ -462,7 +462,7 @@ public class FieldsController : ControllerBase
 
     /// <summary>Deletes an inspection record.</summary>
     [HttpDelete("{fieldId:guid}/inspections/{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteInspection(Guid fieldId, Guid id, CancellationToken cancellationToken)

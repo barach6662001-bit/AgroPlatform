@@ -42,7 +42,6 @@ public class ApiKeyAuthMiddleware
         // tenant-filtered DbContext before TenantId is resolved from the API key.
         using var scope = scopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
         // Ignore tenant query filters here because tenant can be unknown before API key auth.
         var apiKey = await dbContext.ApiKeys
             .IgnoreQueryFilters()

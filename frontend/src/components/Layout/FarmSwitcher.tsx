@@ -1,18 +1,23 @@
-import { useState, useEffect } from 'react';
-import { Select } from 'antd';
+import { useState, useEffect, useRef } from 'react';
+import { Select, message } from 'antd';
 import { BankOutlined } from '@ant-design/icons';
 import { getTenants, type TenantDto } from '../../api/tenants';
 import { useAuthStore } from '../../stores/authStore';
+import { useTranslation } from '../../i18n';
 
 export default function FarmSwitcher() {
   const [tenants, setTenants] = useState<TenantDto[]>([]);
   const { tenantId, setTenantId } = useAuthStore();
+  const { t } = useTranslation();
+  const loadErrorRef = useRef(t.farmSwitcher.loadError);
+  loadErrorRef.current = t.farmSwitcher.loadError;
 
   useEffect(() => {
     getTenants()
       .then(setTenants)
       .catch((err) => {
         console.warn('[FarmSwitcher] Failed to load tenants:', err?.message ?? err);
+        message.warning(loadErrorRef.current);
       });
   }, []);
 
@@ -30,12 +35,13 @@ export default function FarmSwitcher() {
     <Select
       value={tenantId && tenants.some((t) => t.id === tenantId) ? tenantId : undefined}
       onChange={(value) => setTenantId(value)}
+      placeholder={t.farmSwitcher.placeholder}
       style={{ minWidth: 160, maxWidth: 220 }}
       size="small"
       variant="filled"
       suffixIcon={<BankOutlined style={{ color: 'var(--text-secondary)' }} />}
       popupMatchSelectWidth={false}
-      options={tenants.map((t) => ({ label: t.name, value: t.id }))}
+      options={tenants.map((tenant) => ({ label: tenant.name, value: tenant.id }))}
     />
   );
 }

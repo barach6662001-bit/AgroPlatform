@@ -34,5 +34,8 @@ public class FieldSeedingConfiguration : IEntityTypeConfiguration<FieldSeeding>
 
         builder.HasIndex(s => s.TenantId)
             .HasDatabaseName("IX_FieldSeedings_TenantId");
+
+        builder.HasIndex(s => new { s.FieldId, s.Year })
+            .HasDatabaseName("IX_FieldSeedings_FieldId_Year");
     }
 }

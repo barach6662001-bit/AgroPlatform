@@ -29,7 +29,8 @@ public class StockBalanceService : IStockBalanceService
                 BatchId = batchId,
                 BalanceBase = quantity,
                 BaseUnit = baseUnit,
-                LastUpdatedUtc = _dateTime.UtcNow
+                LastUpdatedUtc = _dateTime.UtcNow,
+                RowVersion = NewRowVersionToken()
             };
             _context.StockBalances.Add(balance);
         }
@@ -37,6 +38,7 @@ public class StockBalanceService : IStockBalanceService
         {
             balance.BalanceBase += quantity;
             balance.LastUpdatedUtc = _dateTime.UtcNow;
+            balance.RowVersion = NewRowVersionToken();
         }
     }
 
@@ -49,6 +51,7 @@ public class StockBalanceService : IStockBalanceService
 
         balance.BalanceBase -= quantity;
         balance.LastUpdatedUtc = _dateTime.UtcNow;
+        balance.RowVersion = NewRowVersionToken();
     }
 
     public async Task SetBalance(Guid warehouseId, Guid itemId, Guid? batchId, decimal quantity, string baseUnit, CancellationToken cancellationToken)
@@ -64,7 +67,8 @@ public class StockBalanceService : IStockBalanceService
                 BatchId = batchId,
                 BalanceBase = quantity,
                 BaseUnit = baseUnit,
-                LastUpdatedUtc = _dateTime.UtcNow
+                LastUpdatedUtc = _dateTime.UtcNow,
+                RowVersion = NewRowVersionToken()
             };
             _context.StockBalances.Add(balance);
         }
@@ -72,6 +76,7 @@ public class StockBalanceService : IStockBalanceService
         {
             balance.BalanceBase = quantity;
             balance.LastUpdatedUtc = _dateTime.UtcNow;
+            balance.RowVersion = NewRowVersionToken();
         }
     }
 
@@ -82,4 +87,6 @@ public class StockBalanceService : IStockBalanceService
                 b.ItemId == itemId &&
                 b.BatchId == batchId,
                 cancellationToken);
+
+    private static byte[] NewRowVersionToken() => Guid.NewGuid().ToByteArray();
 }
