@@ -3,6 +3,7 @@ using AgroPlatform.Application.Fuel.Commands.CreateFuelSupply;
 using AgroPlatform.Application.Fuel.Commands.CreateFuelTank;
 using AgroPlatform.Application.Fuel.Queries.GetFuelTanks;
 using AgroPlatform.Application.Fuel.Queries.GetFuelTransactions;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -38,7 +39,7 @@ public class FuelController : ControllerBase
 
     /// <summary>Creates a new fuel tank.</summary>
     [HttpPost("tanks")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.Machinery.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateFuelTank([FromBody] CreateFuelTankRequest request, CancellationToken cancellationToken)
     {
@@ -49,7 +50,7 @@ public class FuelController : ControllerBase
 
     /// <summary>Records a fuel supply (receipt) to a tank.</summary>
     [HttpPost("supply")]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.Fuel.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateFuelSupply([FromBody] CreateFuelSupplyCommand command, CancellationToken cancellationToken)
     {
@@ -59,7 +60,7 @@ public class FuelController : ControllerBase
 
     /// <summary>Records a fuel issue (dispensing) from a tank.</summary>
     [HttpPost("issue")]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.Fuel.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateFuelIssue([FromBody] CreateFuelIssueCommand command, CancellationToken cancellationToken)
     {

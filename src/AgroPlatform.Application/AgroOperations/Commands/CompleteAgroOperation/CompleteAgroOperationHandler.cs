@@ -102,11 +102,11 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
                 // Map warehouse item category to cost category
                 var costCategory = warehouseItem.Category switch
                 {
-                    "Fertilizers" => "Fertilizers",
-                    "Seeds" => "Seeds",
-                    "Pesticides" => "Pesticides",
-                    "Fuel" => "Fuel",
-                    _ => "Other"
+                    "Fertilizers" => CostCategory.Fertilizer,
+                    "Seeds" => CostCategory.Seeds,
+                    "Pesticides" => CostCategory.Pesticide,
+                    "Fuel" => CostCategory.Fuel,
+                    _ => CostCategory.Other
                 };
 
                 _context.CostRecords.Add(new CostRecord

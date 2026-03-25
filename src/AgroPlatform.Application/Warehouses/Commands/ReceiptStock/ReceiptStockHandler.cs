@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Exceptions;
+using AgroPlatform.Application.Common.Extensions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Warehouses;
@@ -22,13 +23,22 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
 
     public async Task<Guid> Handle(ReceiptStockCommand request, CancellationToken cancellationToken)
     {
+        await using var tx = await _context.Database.BeginRepeatableReadTransactionIfSupportedAsync(cancellationToken);
+
         // Idempotency check
         if (!string.IsNullOrEmpty(request.ClientOperationId))
         {
             var existing = await _context.StockMoves
                 .FirstOrDefaultAsync(m => m.ClientOperationId == request.ClientOperationId, cancellationToken);
             if (existing != null)
+            {
+                if (tx is not null)
+                {
+                    await tx.CommitAsync(cancellationToken);
+                }
+
                 return existing.Id;
+            }
         }
 
         var warehouse = await _context.Warehouses.FindAsync(new object[] { request.WarehouseId }, cancellationToken)
@@ -67,6 +77,11 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
         await _stockBalance.IncreaseBalance(request.WarehouseId, request.ItemId, request.BatchId, request.Quantity, request.UnitCode, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
+        if (tx is not null)
+        {
+            await tx.CommitAsync(cancellationToken);
+        }
+
         return move.Id;
     }
 }

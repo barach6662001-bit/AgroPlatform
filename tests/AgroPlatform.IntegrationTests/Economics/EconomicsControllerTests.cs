@@ -30,7 +30,7 @@ public class EconomicsControllerTests : IntegrationTestBase
     {
         var response = await PostAsync("/api/economics/cost-records", new
         {
-            category = "Fertilizers",
+            category = "Fertilizer",
             amount = 10000.0,
             currency = "USD",
             date = DateTime.UtcNow.Date.ToString("o"),
@@ -45,7 +45,7 @@ public class EconomicsControllerTests : IntegrationTestBase
     [Fact]
     public async Task GetCostRecords_ReturnsOk()
     {
-        await CreateCostRecordAsync("Pesticides");
+        await CreateCostRecordAsync("Pesticide");
 
         var result = await GetAsync<JsonElement>("/api/economics/cost-records");
 

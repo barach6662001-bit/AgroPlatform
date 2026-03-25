@@ -243,7 +243,7 @@ public class AgroOperationHandlerTests
             .FirstOrDefaultAsync(c => c.AgroOperationId == op.Id);
         costRecord.Should().NotBeNull();
         costRecord!.Amount.Should().Be(1000m); // 40 kg × 25 UAH
-        costRecord.Category.Should().Be("Fertilizers");
+        costRecord.Category.Should().Be(CostCategory.Fertilizer);
         costRecord.Currency.Should().Be("UAH");
         costRecord.FieldId.Should().Be(field.Id);
         costRecord.Date.Should().Be(completedDate);

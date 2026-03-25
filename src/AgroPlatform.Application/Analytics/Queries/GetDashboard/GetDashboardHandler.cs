@@ -18,25 +18,21 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
     public async Task<DashboardDto> Handle(GetDashboardQuery request, CancellationToken cancellationToken)
     {
         var dto = new DashboardDto();
+        var activeFields = _context.Fields.Where(f => !f.IsDeleted);
 
         // ── Fields ────────────────────────────────────────────────────────
-        var fields = await _context.Fields
-            .Where(f => !f.IsDeleted)
-            .ToListAsync(cancellationToken);
-
-        dto.TotalFields = fields.Count;
-        dto.TotalAreaHectares = fields.Sum(f => f.AreaHectares);
-        dto.AreaByCrop = fields
-            .Where(f => f.CurrentCrop.HasValue)
-            .GroupBy(f => f.CurrentCrop!.Value.ToString())
-            .ToDictionary(g => g.Key, g => g.Sum(f => f.AreaHectares));
+        dto.TotalFields = await activeFields.CountAsync(cancellationToken);
+        dto.TotalAreaHectares = await activeFields.SumAsync(f => f.AreaHectares, cancellationToken);
+        dto.AreaByCrop = (await activeFields
+            .Where(f => f.CurrentCrop != null)
+            .GroupBy(f => f.CurrentCrop!.Value)
+            .Select(g => new { Crop = g.Key, Area = g.Sum(f => f.AreaHectares) })
+            .ToListAsync(cancellationToken))
+            .ToDictionary(x => x.Crop.ToString(), x => x.Area);
 
         // ── Warehouses ────────────────────────────────────────────────────
-        dto.TotalWarehouses = await _context.Warehouses
-            .CountAsync(w => !w.IsDeleted, cancellationToken);
-
-        dto.TotalWarehouseItems = await _context.WarehouseItems
-            .CountAsync(i => !i.IsDeleted, cancellationToken);
+        dto.TotalWarehouses = await _context.Warehouses.CountAsync(cancellationToken);
+        dto.TotalWarehouseItems = await _context.WarehouseItems.CountAsync(cancellationToken);
 
         var topBalances = await _context.StockBalances
             .GroupBy(sb => sb.ItemId)
@@ -47,7 +43,7 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
 
         var topItemIds = topBalances.Select(x => x.ItemId).ToList();
         var topWarehouseItems = await _context.WarehouseItems
-            .Where(i => !i.IsDeleted && topItemIds.Contains(i.Id))
+            .Where(i => topItemIds.Contains(i.Id))
             .ToListAsync(cancellationToken);
 
         dto.TopStockItems = topBalances
@@ -62,47 +58,37 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
             .ToList();
 
         // ── Operations ────────────────────────────────────────────────────
-        var operations = await _context.AgroOperations
-            .Where(o => !o.IsDeleted)
-            .ToListAsync(cancellationToken);
-
-        dto.TotalOperations = operations.Count;
-        dto.CompletedOperations = operations.Count(o => o.IsCompleted);
-        dto.PendingOperations = operations.Count(o => !o.IsCompleted);
-        dto.OperationsByType = operations
-            .GroupBy(o => o.OperationType.ToString())
-            .ToDictionary(g => g.Key, g => g.Count());
+        dto.TotalOperations = await _context.AgroOperations.CountAsync(cancellationToken);
+        dto.CompletedOperations = await _context.AgroOperations.CountAsync(o => o.IsCompleted, cancellationToken);
+        dto.PendingOperations = await _context.AgroOperations.CountAsync(o => !o.IsCompleted, cancellationToken);
+        dto.OperationsByType = (await _context.AgroOperations
+            .GroupBy(o => o.OperationType)
+            .Select(g => new { Type = g.Key, Count = g.Count() })
+            .ToListAsync(cancellationToken))
+            .ToDictionary(x => x.Type.ToString(), x => x.Count);
 
         // ── Machinery ─────────────────────────────────────────────────────
-        var machines = await _context.Machines
-            .Where(m => !m.IsDeleted)
-            .ToListAsync(cancellationToken);
-
-        dto.TotalMachines = machines.Count;
-        dto.ActiveMachines = machines.Count(m => m.Status == MachineryStatus.Active);
-        dto.UnderRepairMachines = machines.Count(m => m.Status == MachineryStatus.UnderRepair);
+        dto.TotalMachines = await _context.Machines.CountAsync(cancellationToken);
+        dto.ActiveMachines = await _context.Machines.CountAsync(m => m.Status == MachineryStatus.Active, cancellationToken);
+        dto.UnderRepairMachines = await _context.Machines.CountAsync(m => m.Status == MachineryStatus.UnderRepair, cancellationToken);
 
         dto.TotalHoursWorked = await _context.MachineWorkLogs
-            .Where(l => !l.IsDeleted)
             .SumAsync(l => l.HoursWorked, cancellationToken);
 
         dto.TotalFuelConsumed = await _context.FuelLogs
-            .Where(l => !l.IsDeleted)
             .SumAsync(l => l.Quantity, cancellationToken);
 
         // ── Economics ─────────────────────────────────────────────────────
         var cutoff = DateTime.UtcNow.AddMonths(-12);
 
-        var costRecords = await _context.CostRecords
-            .Where(c => !c.IsDeleted)
-            .ToListAsync(cancellationToken);
-
-        dto.TotalCosts = costRecords.Sum(c => c.Amount);
-        dto.CostsByCategory = costRecords
+        dto.TotalCosts = await _context.CostRecords.SumAsync(c => c.Amount, cancellationToken);
+        dto.CostsByCategory = (await _context.CostRecords
             .GroupBy(c => c.Category)
-            .ToDictionary(g => g.Key, g => g.Sum(c => c.Amount));
+            .Select(g => new { Category = g.Key, Total = g.Sum(c => c.Amount) })
+            .ToListAsync(cancellationToken))
+            .ToDictionary(x => x.Category.ToString(), x => x.Total);
 
-        dto.CostTrend = costRecords
+        dto.CostTrend = await _context.CostRecords
             .Where(c => c.Date >= cutoff)
             .GroupBy(c => new { c.Date.Year, c.Date.Month })
             .Select(g => new MonthlyCostTrendDto
@@ -113,7 +99,7 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
             })
             .OrderBy(t => t.Year)
             .ThenBy(t => t.Month)
-            .ToList();
+            .ToListAsync(cancellationToken);
 
         return dto;
     }

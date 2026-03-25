@@ -22,9 +22,11 @@ export interface BreakEvenDto {
   breakEvenYield?: number;
 }
 
+export type CostCategory = 'Fuel' | 'Seeds' | 'Fertilizer' | 'Pesticide' | 'Machinery' | 'Labor' | 'Lease' | 'Other';
+
 export interface CostRecordDto {
   id: string;
-  category: string;
+  category: CostCategory;
   amount: number;
   currency: string;
   date: string;
