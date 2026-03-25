@@ -14,7 +14,9 @@ public class StockBalanceConfiguration : IEntityTypeConfiguration<StockBalance>
             .HasPrecision(18, 4);
 
         builder.Property(b => b.RowVersion)
-            .IsRowVersion();
+            .IsRequired()
+            .IsConcurrencyToken()
+            .HasDefaultValueSql("'\\x00'::bytea");
 
         builder.HasIndex(sb => new { sb.WarehouseId, sb.ItemId, sb.BatchId, sb.TenantId })
             .IsUnique()

@@ -30,9 +30,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 name: "RowVersion",
                 table: "StockBalances",
                 type: "bytea",
-                rowVersion: true,
                 nullable: false,
-                defaultValue: new byte[0]);
+                defaultValueSql: "'\\x00'::bytea");
 
             migrationBuilder.AlterColumn<string>(
                 name: "UserId",
