@@ -13,6 +13,13 @@ public class AgroOperationConfiguration : IEntityTypeConfiguration<AgroOperation
         builder.Property(o => o.OperationType)
             .HasConversion<string>();
 
+        builder.Property(o => o.Status)
+            .HasConversion<string>()
+            .HasMaxLength(50)
+            .IsRequired();
+
+        builder.Ignore(o => o.IsCompleted);
+
         builder.Property(o => o.PlannedDate)
             .IsRequired();
 
