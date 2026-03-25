@@ -1,4 +1,5 @@
 using AgroPlatform.Domain.Economics;
+using AgroPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,7 +13,8 @@ public class CostRecordConfiguration : IEntityTypeConfiguration<CostRecord>
 
         builder.Property(c => c.Category)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(50)
+            .HasConversion<string>();
 
         builder.Property(c => c.Amount)
             .HasPrecision(18, 2)

@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Economics;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.GrainStorage;
 using MediatR;
@@ -82,7 +83,7 @@ public class AddLeasePaymentHandler : IRequestHandler<AddLeasePaymentCommand, Gu
 
         _context.CostRecords.Add(new CostRecord
         {
-            Category = "Lease",
+            Category = CostCategory.Lease,
             Amount = costAmount,
             Currency = "UAH",
             Date = request.PaymentDate,
