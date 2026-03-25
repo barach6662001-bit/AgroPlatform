@@ -18,11 +18,12 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
     public async Task<DashboardDto> Handle(GetDashboardQuery request, CancellationToken cancellationToken)
     {
         var dto = new DashboardDto();
+        var activeFields = _context.Fields.Where(f => !f.IsDeleted);
 
         // ── Fields ────────────────────────────────────────────────────────
-        dto.TotalFields = await _context.Fields.CountAsync(cancellationToken);
-        dto.TotalAreaHectares = await _context.Fields.SumAsync(f => f.AreaHectares, cancellationToken);
-        dto.AreaByCrop = (await _context.Fields
+        dto.TotalFields = await activeFields.CountAsync(cancellationToken);
+        dto.TotalAreaHectares = await activeFields.SumAsync(f => f.AreaHectares, cancellationToken);
+        dto.AreaByCrop = (await activeFields
             .Where(f => f.CurrentCrop != null)
             .GroupBy(f => f.CurrentCrop!.Value)
             .Select(g => new { Crop = g.Key, Area = g.Sum(f => f.AreaHectares) })
