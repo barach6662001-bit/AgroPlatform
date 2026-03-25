@@ -28,7 +28,7 @@ public class GetCostAnalyticsHandler : IRequestHandler<GetCostAnalyticsQuery, Co
 
         var byCategory = records
             .GroupBy(r => r.Category)
-            .Select(g => new EconomicsByCategoryDto(g.Key, g.Sum(r => r.Amount), g.Count()))
+            .Select(g => new EconomicsByCategoryDto(g.Key.ToString(), g.Sum(r => r.Amount), g.Count()))
             .OrderByDescending(c => Math.Abs(c.Amount))
             .ToList();
 

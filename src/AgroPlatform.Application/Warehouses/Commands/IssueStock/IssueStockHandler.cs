@@ -78,11 +78,11 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
         {
             var costCategory = item.Category switch
             {
-                "Fertilizers" => "Fertilizers",
-                "Seeds" => "Seeds",
-                "Pesticides" => "Pesticides",
-                "Fuel" => "Fuel",
-                _ => "Other"
+                "Fertilizers" => CostCategory.Fertilizer,
+                "Seeds" => CostCategory.Seeds,
+                "Pesticides" => CostCategory.Pesticide,
+                "Fuel" => CostCategory.Fuel,
+                _ => CostCategory.Other
             };
 
             _context.CostRecords.Add(new CostRecord

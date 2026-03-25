@@ -10,6 +10,7 @@ using AgroPlatform.Application.Economics.Queries.GetCostAnalytics;
 using AgroPlatform.Application.Economics.Queries.GetMarginality;
 using AgroPlatform.Application.Economics.Queries.GetSeasonComparison;
 using AgroPlatform.Domain.Authorization;
+using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,7 +51,8 @@ public class EconomicsController : ControllerBase
         [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetCostRecordsQuery(category, fieldId, agroOperationId, dateFrom, dateTo, page, pageSize), cancellationToken);
+        var cat = Enum.TryParse<CostCategory>(category, out var parsed) ? (CostCategory?)parsed : null;
+        var result = await _sender.Send(new GetCostRecordsQuery(cat, fieldId, agroOperationId, dateFrom, dateTo, page, pageSize), cancellationToken);
         return Ok(result);
     }
 
@@ -63,7 +65,8 @@ public class EconomicsController : ControllerBase
         [FromQuery] DateTime? dateTo,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new ExportCostRecordsQuery(category, dateFrom, dateTo), cancellationToken);
+        var cat = Enum.TryParse<CostCategory>(category, out var parsed) ? (CostCategory?)parsed : null;
+        var result = await _sender.Send(new ExportCostRecordsQuery(cat, dateFrom, dateTo), cancellationToken);
         return File(result.Content, result.ContentType, result.FileName);
     }
 
@@ -75,7 +78,8 @@ public class EconomicsController : ControllerBase
         [FromQuery] DateTime? dateTo,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetCostSummaryQuery(category, dateFrom, dateTo), cancellationToken);
+        var cat = Enum.TryParse<CostCategory>(category, out var parsed) ? (CostCategory?)parsed : null;
+        var result = await _sender.Send(new GetCostSummaryQuery(cat, dateFrom, dateTo), cancellationToken);
         return Ok(result);
     }
 

@@ -1,9 +1,10 @@
+using AgroPlatform.Domain.Enums;
 using MediatR;
 
 namespace AgroPlatform.Application.Economics.Commands.CreateCostRecord;
 
 public record CreateCostRecordCommand(
-    string Category,
+    CostCategory Category,
     decimal Amount,
     string Currency,
     DateTime Date,
