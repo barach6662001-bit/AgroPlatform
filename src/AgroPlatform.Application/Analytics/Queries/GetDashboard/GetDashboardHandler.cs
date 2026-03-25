@@ -100,7 +100,7 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
         dto.TotalCosts = costRecords.Sum(c => c.Amount);
         dto.CostsByCategory = costRecords
             .GroupBy(c => c.Category)
-            .ToDictionary(g => g.Key, g => g.Sum(c => c.Amount));
+            .ToDictionary(g => g.Key.ToString(), g => g.Sum(c => c.Amount));
 
         dto.CostTrend = costRecords
             .Where(c => c.Date >= cutoff)
