@@ -13,6 +13,11 @@ public class StockBalanceConfiguration : IEntityTypeConfiguration<StockBalance>
         builder.Property(b => b.BalanceBase)
             .HasPrecision(18, 4);
 
+        builder.Property(b => b.RowVersion)
+            .IsRequired()
+            .IsConcurrencyToken()
+            .HasDefaultValueSql("'\\x00'::bytea");
+
         builder.HasIndex(sb => new { sb.WarehouseId, sb.ItemId, sb.BatchId, sb.TenantId })
             .IsUnique()
             .HasFilter("\"IsDeleted\" = false");
