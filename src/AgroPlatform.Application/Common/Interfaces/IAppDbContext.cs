@@ -11,11 +11,13 @@ using AgroPlatform.Domain.Sales;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AgroPlatform.Application.Common.Interfaces;
 
 public interface IAppDbContext
 {
+    DatabaseFacade Database { get; }
     DbSet<Warehouse> Warehouses { get; }
     DbSet<WarehouseItem> WarehouseItems { get; }
     DbSet<StockMove> StockMoves { get; }

@@ -4,6 +4,7 @@ using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Warehouses;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace AgroPlatform.Application.Warehouses.Commands.InventoryAdjust;
 
@@ -22,6 +23,8 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
 
     public async Task<InventoryAdjustResultDto> Handle(InventoryAdjustCommand request, CancellationToken cancellationToken)
     {
+        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead, cancellationToken);
+
         var warehouse = await _context.Warehouses.FindAsync(new object[] { request.WarehouseId }, cancellationToken)
             ?? throw new NotFoundException(nameof(Warehouse), request.WarehouseId);
 
@@ -68,6 +71,7 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
         await _stockBalance.SetBalance(request.WarehouseId, request.ItemId, request.BatchId, request.ActualQuantity, request.UnitCode, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
+        await tx.CommitAsync(cancellationToken);
 
         return new InventoryAdjustResultDto
         {

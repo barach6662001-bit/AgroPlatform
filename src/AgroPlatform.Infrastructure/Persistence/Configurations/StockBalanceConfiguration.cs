@@ -13,6 +13,9 @@ public class StockBalanceConfiguration : IEntityTypeConfiguration<StockBalance>
         builder.Property(b => b.BalanceBase)
             .HasPrecision(18, 4);
 
+        builder.Property(b => b.RowVersion)
+            .IsRowVersion();
+
         builder.HasIndex(b => new { b.WarehouseId, b.ItemId, b.BatchId })
             .IsUnique();
 

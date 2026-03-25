@@ -5,6 +5,7 @@ using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Warehouses;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace AgroPlatform.Application.Warehouses.Commands.IssueStock;
 
@@ -23,13 +24,18 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
 
     public async Task<Guid> Handle(IssueStockCommand request, CancellationToken cancellationToken)
     {
+        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead, cancellationToken);
+
         // Idempotency check
         if (!string.IsNullOrEmpty(request.ClientOperationId))
         {
             var existing = await _context.StockMoves
                 .FirstOrDefaultAsync(m => m.ClientOperationId == request.ClientOperationId, cancellationToken);
             if (existing != null)
+            {
+                await tx.CommitAsync(cancellationToken);
                 return existing.Id;
+            }
         }
 
         var warehouse = await _context.Warehouses.FindAsync(new object[] { request.WarehouseId }, cancellationToken)
@@ -88,6 +94,7 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+        await tx.CommitAsync(cancellationToken);
         return move.Id;
     }
 }
