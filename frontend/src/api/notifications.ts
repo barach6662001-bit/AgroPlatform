@@ -9,8 +9,8 @@ export interface NotificationDto {
   createdAtUtc: string;
 }
 
-export const getNotifications = (params?: { unreadOnly?: boolean; page?: number; pageSize?: number }) =>
-  apiClient.get<NotificationDto[]>('/api/notifications', { params }).then((r) => r.data);
+export const getNotifications = (params?: { unreadOnly?: boolean; page?: number; pageSize?: number }, signal?: AbortSignal) =>
+  apiClient.get<NotificationDto[]>('/api/notifications', { params, signal }).then((r) => r.data);
 
 export const markNotificationRead = (id: string) =>
   apiClient.put(`/api/notifications/${id}/read`);

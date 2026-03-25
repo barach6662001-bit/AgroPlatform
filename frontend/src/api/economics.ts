@@ -18,8 +18,8 @@ export const getCostRecords = (params?: {
   dateTo?: string;
   page?: number;
   pageSize?: number;
-}) =>
-  apiClient.get<PaginatedResult<CostRecordDto>>('/api/economics/cost-records', { params }).then((r) => r.data);
+}, signal?: AbortSignal) =>
+  apiClient.get<PaginatedResult<CostRecordDto>>('/api/economics/cost-records', { params, signal }).then((r) => r.data);
 
 export const createCostRecord = (data: {
   category: string;
@@ -35,8 +35,8 @@ export const createCostRecord = (data: {
 export const deleteCostRecord = (id: string) =>
   apiClient.delete(`/api/economics/cost-records/${id}`);
 
-export const getCostSummary = (params?: { category?: string; dateFrom?: string; dateTo?: string }) =>
-  apiClient.get<CostSummaryDto>('/api/economics/cost-summary', { params }).then((r) => r.data);
+export const getCostSummary = (params?: { category?: string; dateFrom?: string; dateTo?: string; fieldId?: string }, signal?: AbortSignal) =>
+  apiClient.get<CostSummaryDto>('/api/economics/cost-summary', { params, signal }).then((r) => r.data);
 
 export const getFieldPnl = (params?: {
   year?: number;
