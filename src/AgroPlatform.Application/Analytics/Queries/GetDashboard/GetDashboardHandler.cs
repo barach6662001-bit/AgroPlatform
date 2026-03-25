@@ -86,7 +86,7 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
             .GroupBy(c => c.Category)
             .Select(g => new { Category = g.Key, Total = g.Sum(c => c.Amount) })
             .ToListAsync(cancellationToken))
-            .ToDictionary(x => x.Category, x => x.Total);
+            .ToDictionary(x => x.Category.ToString(), x => x.Total);
 
         dto.CostTrend = await _context.CostRecords
             .Where(c => c.Date >= cutoff)
