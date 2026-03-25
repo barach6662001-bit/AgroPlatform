@@ -25,8 +25,10 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
         if (!isPasswordValid)
             throw new UnauthorizedException("Invalid email or password.");
 
-        var validUser = user!;
-        var (token, expiresAt) = _jwtTokenService.GenerateToken(validUser);
-        return new AuthResponse(token, validUser.Email!, validUser.Role.ToString(), expiresAt, validUser.TenantId);
+        if (!user!.IsActive)
+            throw new UnauthorizedException("Account is inactive.");
+
+        var (token, expiresAt) = _jwtTokenService.GenerateToken(user);
+        return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt, user.TenantId);
     }
 }
