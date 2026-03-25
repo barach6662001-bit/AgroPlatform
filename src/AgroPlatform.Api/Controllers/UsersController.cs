@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Users.Commands.UpdateUserRole;
 using AgroPlatform.Application.Users.Queries.GetUsers;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class UsersController : ControllerBase
 
     /// <summary>Returns all users belonging to the current tenant.</summary>
     [HttpGet]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Policy = Permissions.Admin.Manage)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
     {
@@ -36,7 +37,7 @@ public class UsersController : ControllerBase
     /// <param name="id">User ID.</param>
     /// <param name="command">The new role.</param>
     [HttpPut("{id}/role")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Policy = Permissions.Admin.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
