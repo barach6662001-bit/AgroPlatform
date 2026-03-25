@@ -8,6 +8,7 @@ import { useTranslation } from './i18n';
 import { darkTheme } from './theme/darkTheme';
 import AppLayout from './components/Layout/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -64,6 +65,7 @@ export default function App() {
       locale={lang === 'uk' ? ukUA : enUS}
       theme={darkTheme}
     >
+      <ErrorBoundary>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -121,6 +123,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      </ErrorBoundary>
     </ConfigProvider>
   );
 }
