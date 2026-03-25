@@ -8,6 +8,7 @@ using AgroPlatform.Application.HR.Commands.UpdateWorkLog;
 using AgroPlatform.Application.HR.Queries.GetEmployees;
 using AgroPlatform.Application.HR.Queries.GetSalarySummary;
 using AgroPlatform.Application.HR.Queries.GetWorkLogs;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +49,7 @@ public class HRController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created employee.</returns>
     [HttpPost("api/employees")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.HR.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeCommand command, CancellationToken cancellationToken)
     {
@@ -61,7 +62,7 @@ public class HRController : ControllerBase
     /// <param name="command">Updated employee data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("api/employees/{id}")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.HR.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateEmployee(Guid id, [FromBody] UpdateEmployeeCommand command, CancellationToken cancellationToken)
@@ -74,7 +75,7 @@ public class HRController : ControllerBase
     /// <param name="id">Employee ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("api/employees/{id}")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.HR.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteEmployee(Guid id, CancellationToken cancellationToken)
@@ -107,7 +108,7 @@ public class HRController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created work log.</returns>
     [HttpPost("api/worklogs")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.HR.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateWorkLog([FromBody] CreateWorkLogCommand command, CancellationToken cancellationToken)
@@ -121,7 +122,7 @@ public class HRController : ControllerBase
     /// <param name="command">Updated work log data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("api/worklogs/{id}")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.HR.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateWorkLog(Guid id, [FromBody] UpdateWorkLogCommand command, CancellationToken cancellationToken)
@@ -134,7 +135,7 @@ public class HRController : ControllerBase
     /// <param name="id">Work log ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("api/worklogs/{id}")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.HR.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteWorkLog(Guid id, CancellationToken cancellationToken)
@@ -150,7 +151,7 @@ public class HRController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created payment.</returns>
     [HttpPost("api/salary-payments")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.HR.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateSalaryPayment([FromBody] CreateSalaryPaymentCommand request, CancellationToken cancellationToken)
