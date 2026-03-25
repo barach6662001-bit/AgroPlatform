@@ -1,10 +1,10 @@
 using AgroPlatform.Application.Common.Exceptions;
+using AgroPlatform.Application.Common.Extensions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Warehouses;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace AgroPlatform.Application.Warehouses.Commands.TransferStock;
 
@@ -26,7 +26,7 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
         if (request.SourceWarehouseId == request.DestinationWarehouseId)
             throw new ConflictException("Source and destination warehouses must be different.");
 
-        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead, cancellationToken);
+        await using var tx = await _context.Database.BeginRepeatableReadTransactionIfSupportedAsync(cancellationToken);
 
         // Idempotency check
         if (!string.IsNullOrEmpty(request.ClientOperationId))
@@ -35,7 +35,11 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
                 .FirstOrDefaultAsync(m => m.ClientOperationId == request.ClientOperationId, cancellationToken);
             if (existing != null)
             {
-                await tx.CommitAsync(cancellationToken);
+                if (tx is not null)
+                {
+                    await tx.CommitAsync(cancellationToken);
+                }
+
                 return existing.OperationId ?? existing.Id;
             }
         }
@@ -91,7 +95,11 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
         await _stockBalance.IncreaseBalance(request.DestinationWarehouseId, request.ItemId, request.BatchId, request.Quantity, request.UnitCode, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
-        await tx.CommitAsync(cancellationToken);
+        if (tx is not null)
+        {
+            await tx.CommitAsync(cancellationToken);
+        }
+
         return operationId;
     }
 }

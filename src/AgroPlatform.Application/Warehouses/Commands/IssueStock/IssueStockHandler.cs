@@ -1,11 +1,11 @@
 using AgroPlatform.Application.Common.Exceptions;
+using AgroPlatform.Application.Common.Extensions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Warehouses;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace AgroPlatform.Application.Warehouses.Commands.IssueStock;
 
@@ -24,7 +24,7 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
 
     public async Task<Guid> Handle(IssueStockCommand request, CancellationToken cancellationToken)
     {
-        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead, cancellationToken);
+        await using var tx = await _context.Database.BeginRepeatableReadTransactionIfSupportedAsync(cancellationToken);
 
         // Idempotency check
         if (!string.IsNullOrEmpty(request.ClientOperationId))
@@ -33,7 +33,11 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
                 .FirstOrDefaultAsync(m => m.ClientOperationId == request.ClientOperationId, cancellationToken);
             if (existing != null)
             {
-                await tx.CommitAsync(cancellationToken);
+                if (tx is not null)
+                {
+                    await tx.CommitAsync(cancellationToken);
+                }
+
                 return existing.Id;
             }
         }
@@ -94,7 +98,11 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
         }
 
         await _context.SaveChangesAsync(cancellationToken);
-        await tx.CommitAsync(cancellationToken);
+        if (tx is not null)
+        {
+            await tx.CommitAsync(cancellationToken);
+        }
+
         return move.Id;
     }
 }
