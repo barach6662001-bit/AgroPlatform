@@ -43,5 +43,7 @@ public class AgroOperationConfiguration : IEntityTypeConfiguration<AgroOperation
         builder.HasQueryFilter(o => !o.IsDeleted);
 
         builder.HasIndex(o => new { o.FieldId, o.PlannedDate });
+        builder.HasIndex(o => new { o.TenantId, o.IsCompleted });
+        builder.HasIndex(o => new { o.TenantId, o.FieldId });
     }
 }

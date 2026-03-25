@@ -41,5 +41,7 @@ public class CostRecordConfiguration : IEntityTypeConfiguration<CostRecord>
         builder.HasQueryFilter(c => !c.IsDeleted);
 
         builder.HasIndex(c => new { c.TenantId, c.Date });
+        builder.HasIndex(c => new { c.TenantId, c.Category });
+        builder.HasIndex(c => new { c.TenantId, c.FieldId });
     }
 }

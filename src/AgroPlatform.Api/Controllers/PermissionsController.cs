@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Users.Commands.UpdatePermissions;
 using AgroPlatform.Application.Users.Queries.GetPermissions;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ namespace AgroPlatform.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrator")]
+[Authorize(Policy = Permissions.Admin.Manage)]
 public class PermissionsController : ControllerBase
 {
     private readonly IMediator _mediator;

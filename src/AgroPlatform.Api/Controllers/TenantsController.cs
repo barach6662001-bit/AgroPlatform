@@ -3,6 +3,7 @@ using AgroPlatform.Application.Tenants.Commands.SeedDemoData;
 using AgroPlatform.Application.Tenants.Commands.UpdateTenant;
 using AgroPlatform.Application.Tenants.Queries.GetCurrentTenant;
 using AgroPlatform.Application.Tenants.Queries.GetTenants;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -70,7 +71,7 @@ public class TenantsController : ControllerBase
     /// <param name="command">Updated company data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("current")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Policy = Permissions.Admin.Manage)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateCurrentTenant(
@@ -83,7 +84,7 @@ public class TenantsController : ControllerBase
 
     /// <summary>Seed demo data for the current tenant</summary>
     [HttpPost("seed-demo")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Policy = Permissions.Admin.Manage)]
     public async Task<IActionResult> SeedDemoData(CancellationToken ct)
     {
         await _sender.Send(new SeedDemoDataCommand(), ct);
