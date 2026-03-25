@@ -14,4 +14,3 @@ public class Batch : AuditableEntity
 
     public WarehouseItem Item { get; set; } = null!;
 }
-
