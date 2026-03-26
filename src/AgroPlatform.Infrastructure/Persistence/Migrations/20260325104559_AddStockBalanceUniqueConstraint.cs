@@ -30,6 +30,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 table: "AuditEntries",
                 newName: "IX_AuditEntries_TenantId_CreatedAtUtc");
 
+            // Ensure no NULLs before making UserId non-nullable
+            migrationBuilder.Sql("UPDATE \"AuditEntries\" SET \"UserId\" = '' WHERE \"UserId\" IS NULL;");
+
             migrationBuilder.AlterColumn<string>(
                 name: "UserId",
                 table: "AuditEntries",
@@ -42,14 +45,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 oldMaxLength: 450,
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<Guid>(
-                name: "EntityId",
-                table: "AuditEntries",
-                type: "uuid",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "character varying(100)",
-                oldMaxLength: 100);
+            // PostgreSQL requires explicit USING clause for varchar -> uuid cast
+            migrationBuilder.Sql("UPDATE \"AuditEntries\" SET \"EntityId\" = '00000000-0000-0000-0000-000000000000' WHERE \"EntityId\" !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';");
+            migrationBuilder.Sql("ALTER TABLE \"AuditEntries\" ALTER COLUMN \"EntityId\" TYPE uuid USING \"EntityId\"::uuid;");
 
             migrationBuilder.AddColumn<string>(
                 name: "IpAddress",
