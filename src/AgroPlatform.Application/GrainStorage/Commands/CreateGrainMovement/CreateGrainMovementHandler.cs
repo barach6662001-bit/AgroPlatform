@@ -27,7 +27,7 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
         {
             GrainBatchId = request.GrainBatchId,
             MovementType = request.MovementType,
-            QuantityTons = request.QuantityTons,
+            QuantityTons = Math.Abs(request.QuantityTons),
             MovementDate = request.MovementDate,
             Reason = request.Reason,
             Notes = request.Notes,
@@ -35,18 +35,32 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
             BuyerName = request.BuyerName,
         };
 
-        if (request.MovementType == "Out" && request.PricePerTon.HasValue)
-            movement.TotalRevenue = request.QuantityTons * request.PricePerTon.Value;
+        bool isIncoming = request.MovementType is GrainMovementType.Receipt or GrainMovementType.Merge;
+        bool isOutgoing = request.MovementType is GrainMovementType.Issue or GrainMovementType.SaleDispatch or GrainMovementType.WriteOff;
+
+        if (request.MovementType == GrainMovementType.Adjustment)
+        {
+            // Adjustment quantity may be signed; positive = increase, negative = decrease
+            var signed = request.QuantityTons;
+            movement.QuantityTons = Math.Abs(signed);
+            batch.QuantityTons += signed;
+        }
+        else if (isIncoming)
+        {
+            batch.QuantityTons += movement.QuantityTons;
+        }
+        else if (isOutgoing)
+        {
+            batch.QuantityTons -= movement.QuantityTons;
+        }
+
+        if (request.MovementType == GrainMovementType.SaleDispatch && request.PricePerTon.HasValue)
+            movement.TotalRevenue = movement.QuantityTons * request.PricePerTon.Value;
 
         _context.GrainMovements.Add(movement);
 
-        if (request.MovementType == "In")
-            batch.QuantityTons += request.QuantityTons;
-        else if (request.MovementType == "Out")
-            batch.QuantityTons -= request.QuantityTons;
-
         // Auto-create revenue record for grain sales
-        if (request.MovementType == "Out" && movement.TotalRevenue.HasValue && movement.TotalRevenue > 0)
+        if (movement.TotalRevenue.HasValue && movement.TotalRevenue > 0)
         {
             _context.CostRecords.Add(new CostRecord
             {
@@ -55,17 +69,16 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
                 Currency = "UAH",
                 Date = request.MovementDate,
                 FieldId = batch.SourceFieldId,
-                Description = $"Продаж зерна: {request.QuantityTons:F2}т × {request.PricePerTon ?? 0:F0} UAH/т"
+                Description = $"Продаж зерна: {movement.QuantityTons:F2}т × {request.PricePerTon ?? 0:F0} UAH/т"
             });
         }
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        if (request.MovementType == "In" && batch.SourceFieldId.HasValue)
+        if (isIncoming && batch.SourceFieldId.HasValue)
         {
             var field = await _context.Fields.FindAsync(new object[] { batch.SourceFieldId.Value }, cancellationToken);
 
-            // Find harvest by batch ID first, then fall back to field+year match
             var harvest = await _context.FieldHarvests
                 .FirstOrDefaultAsync(h =>
                     (h.GrainBatchId == batch.Id ||
@@ -74,7 +87,7 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
 
             if (harvest != null)
             {
-                harvest.TotalTons += request.QuantityTons;
+                harvest.TotalTons += movement.QuantityTons;
                 harvest.YieldTonsPerHa = field?.AreaHectares > 0
                     ? Math.Round(harvest.TotalTons / field.AreaHectares, 2)
                     : null;
