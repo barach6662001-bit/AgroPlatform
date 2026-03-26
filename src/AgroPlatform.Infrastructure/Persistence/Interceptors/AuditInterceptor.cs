@@ -21,6 +21,7 @@ public class AuditInterceptor : SaveChangesInterceptor
         "Employee",
         "GrainMovement",
         "GrainBatch",
+        "GrainStorage",
         "Sale",
         "FuelTransaction",
     };

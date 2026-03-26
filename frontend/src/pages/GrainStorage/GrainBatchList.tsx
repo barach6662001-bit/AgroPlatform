@@ -56,7 +56,7 @@ export default function GrainBatchList() {
 
   const { t } = useTranslation();
   const { hasPermission } = useRole();
-  const canCreate = hasPermission('inventory', 'manage');
+  const canCreate = hasPermission('grain-storage', 'manage');
 
   useEffect(() => {
     getGrainTypes()
