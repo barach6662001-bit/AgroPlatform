@@ -34,10 +34,10 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
             .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(AgroOperation), request.Id);
 
-        if (operation.IsCompleted)
+        if (operation.Status == OperationStatus.Completed)
             throw new ConflictException("Operation already completed.");
 
-        operation.IsCompleted = true;
+        operation.Status = OperationStatus.Completed;
         operation.CompletedDate = request.CompletedDate;
 
         if (request.AreaProcessed.HasValue)
@@ -102,11 +102,11 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
                 // Map warehouse item category to cost category
                 var costCategory = warehouseItem.Category switch
                 {
-                    "Fertilizers" => "Fertilizers",
-                    "Seeds" => "Seeds",
-                    "Pesticides" => "Pesticides",
-                    "Fuel" => "Fuel",
-                    _ => "Other"
+                    "Fertilizers" => CostCategory.Fertilizer,
+                    "Seeds" => CostCategory.Seeds,
+                    "Pesticides" => CostCategory.Pesticide,
+                    "Fuel" => CostCategory.Fuel,
+                    _ => CostCategory.Other
                 };
 
                 _context.CostRecords.Add(new CostRecord

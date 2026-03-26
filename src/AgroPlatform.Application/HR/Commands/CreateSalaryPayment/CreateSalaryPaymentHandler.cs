@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Economics;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.HR;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,7 @@ public class CreateSalaryPaymentHandler : IRequestHandler<CreateSalaryPaymentCom
         // Automatically create a cost record when salary is paid
         var costRecord = new CostRecord
         {
-            Category = "Salary",
+            Category = CostCategory.Labor,
             Amount = request.Amount,
             Currency = "UAH",
             Date = request.PaymentDate,

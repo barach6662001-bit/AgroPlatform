@@ -1,10 +1,11 @@
 using AgroPlatform.Application.Economics.DTOs;
+using AgroPlatform.Domain.Enums;
 using MediatR;
 
 namespace AgroPlatform.Application.Economics.Queries.GetCostSummary;
 
 public record GetCostSummaryQuery(
-    string? Category,
+    CostCategory? Category,
     DateTime? DateFrom,
     DateTime? DateTo
 ) : IRequest<CostSummaryDto>;

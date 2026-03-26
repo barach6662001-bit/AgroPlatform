@@ -54,7 +54,7 @@ public class CreateAgroOperationHandlerTests
         operation!.FieldId.Should().Be(field.Id);
         operation.OperationType.Should().Be(AgroOperationType.Fertilizing);
         operation.PlannedDate.Should().Be(performedAt);
-        operation.CompletedDate.Should().Be(performedAt);
+        operation.CompletedDate.Should().BeNull();
         operation.Description.Should().Be("Spring fertilizing");
     }
 
@@ -73,8 +73,9 @@ public class CreateAgroOperationHandlerTests
         var id = await handler.Handle(command, CancellationToken.None);
 
         var operation = await ((TestDbContext)context).AgroOperations.FindAsync(id);
-        operation!.IsCompleted.Should().BeTrue();
-        operation.CompletedDate.Should().NotBeNull();
+        operation!.Status.Should().Be(OperationStatus.Planned);
+        operation.IsCompleted.Should().BeFalse();
+        operation.CompletedDate.Should().BeNull();
     }
 
     [Fact]

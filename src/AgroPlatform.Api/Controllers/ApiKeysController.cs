@@ -12,7 +12,7 @@ namespace AgroPlatform.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/api-keys")]
-[Authorize]
+[Authorize(Roles = "Administrator")]
 public class ApiKeysController : ControllerBase
 {
     private readonly IMediator _mediator;

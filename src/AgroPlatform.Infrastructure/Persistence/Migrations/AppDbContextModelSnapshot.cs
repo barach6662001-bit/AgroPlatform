@@ -53,9 +53,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -73,6 +70,11 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("PlannedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -85,6 +87,10 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FieldId", "PlannedDate");
+
+                    b.HasIndex("TenantId", "Status");
+
+                    b.HasIndex("TenantId", "FieldId");
 
                     b.ToTable("AgroOperations");
                 });
@@ -215,26 +221,34 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("EntityId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("EntityType")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<string>("Metadata")
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewValues")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldValues")
                         .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("character varying(450)");
 
@@ -243,8 +257,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_AuditEntries_TenantId");
 
-                    b.HasIndex("TenantId", "Timestamp")
-                        .HasDatabaseName("IX_AuditEntries_TenantId_Timestamp");
+                    b.HasIndex("TenantId", "CreatedAtUtc")
+                        .HasDatabaseName("IX_AuditEntries_TenantId_CreatedAtUtc");
 
                     b.ToTable("AuditEntries");
                 });
@@ -316,8 +330,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -361,7 +375,11 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("FieldId");
 
+                    b.HasIndex("TenantId", "Category");
+
                     b.HasIndex("TenantId", "Date");
+
+                    b.HasIndex("TenantId", "FieldId");
 
                     b.ToTable("CostRecords");
                 });
@@ -708,6 +726,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_FieldHarvests_TenantId");
 
+                    b.HasIndex("FieldId", "Year")
+                        .HasDatabaseName("IX_FieldHarvests_FieldId_Year");
+
                     b.ToTable("FieldHarvests");
                 });
 
@@ -915,6 +936,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_FieldSeedings_TenantId");
+
+                    b.HasIndex("FieldId", "Year")
+                        .HasDatabaseName("IX_FieldSeedings_FieldId_Year");
 
                     b.ToTable("FieldSeedings");
                 });
@@ -2225,6 +2249,68 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("Sales");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Users.ApiKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("KeyHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastUsedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("RateLimitPerHour")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Scopes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("WebhookEventTypes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("WebhookUrl")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApiKeys");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Users.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -2304,6 +2390,63 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Users.Permission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("CanCreate")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanDelete")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanUpdate")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastReviewedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Module")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Users.Tenant", b =>
@@ -2425,6 +2568,12 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("LastUpdatedUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -2443,8 +2592,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("WarehouseId", "ItemId", "BatchId")
-                        .IsUnique();
+                    b.HasIndex("WarehouseId", "ItemId", "BatchId", "TenantId")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("StockBalances");
                 });

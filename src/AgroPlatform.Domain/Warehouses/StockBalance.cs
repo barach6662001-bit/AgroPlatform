@@ -10,6 +10,7 @@ public class StockBalance : AuditableEntity
     public decimal BalanceBase { get; set; }
     public string BaseUnit { get; set; } = string.Empty;
     public DateTime LastUpdatedUtc { get; set; }
+    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
     public Warehouse Warehouse { get; set; } = null!;
     public WarehouseItem Item { get; set; } = null!;

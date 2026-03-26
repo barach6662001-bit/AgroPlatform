@@ -21,6 +21,9 @@ public class DeleteFieldFertilizerHandler : IRequestHandler<DeleteFieldFertilize
             .FirstOrDefaultAsync(f => f.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(FieldFertilizer), request.Id);
 
+        if (fertilizer.FieldId != request.FieldId)
+            throw new NotFoundException(nameof(FieldFertilizer), request.Id);
+
         _context.FieldFertilizers.Remove(fertilizer);
         await _context.SaveChangesAsync(cancellationToken);
     }

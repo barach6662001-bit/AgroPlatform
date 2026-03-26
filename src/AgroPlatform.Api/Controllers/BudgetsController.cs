@@ -2,6 +2,7 @@ using AgroPlatform.Application.Economics.Commands.UpsertBudget;
 using AgroPlatform.Application.Economics.Queries.ExportBudgets;
 using AgroPlatform.Application.Economics.Queries.GetBudgetPlanVsFact;
 using AgroPlatform.Application.Economics.Queries.GetBudgets;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +42,7 @@ public class BudgetsController : ControllerBase
 
     /// <summary>Creates or updates a budget entry for a given year + category pair.</summary>
     [HttpPut]
-    [Authorize(Roles = "Administrator,Manager,Director")]
+    [Authorize(Policy = Permissions.Economics.Manage)]
     public async Task<IActionResult> UpsertBudget([FromBody] UpsertBudgetCommand command, CancellationToken cancellationToken)
     {
         var id = await _sender.Send(command, cancellationToken);
