@@ -23,7 +23,7 @@ public class CreateCostRecordHandlerTests
     {
         var context = CreateDbContext();
         var handler = new CreateCostRecordHandler(context);
-        var command = new CreateCostRecordCommand("Fuel", 1500m, "UAH", DateTime.UtcNow, null, null, null);
+        var command = new CreateCostRecordCommand(CostCategory.Fuel, 1500m, "UAH", DateTime.UtcNow, null, null, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -36,13 +36,13 @@ public class CreateCostRecordHandlerTests
         var context = CreateDbContext();
         var handler = new CreateCostRecordHandler(context);
         var date = new DateTime(2024, 4, 15, 0, 0, 0, DateTimeKind.Utc);
-        var command = new CreateCostRecordCommand("Seeds", 3200m, "UAH", date, null, null, "Spring sowing seeds");
+        var command = new CreateCostRecordCommand(CostCategory.Seeds, 3200m, "UAH", date, null, null, "Spring sowing seeds");
 
         var id = await handler.Handle(command, CancellationToken.None);
 
         var record = await ((TestDbContext)context).CostRecords.FindAsync(id);
         record.Should().NotBeNull();
-        record!.Category.Should().Be("Seeds");
+        record!.Category.Should().Be(CostCategory.Seeds);
         record.Amount.Should().Be(3200m);
         record.Currency.Should().Be("UAH");
         record.Date.Should().Be(date);
@@ -58,7 +58,7 @@ public class CreateCostRecordHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new CreateCostRecordHandler(context);
-        var command = new CreateCostRecordCommand("Fertilizer", 2500m, "UAH", DateTime.UtcNow, field.Id, null, null);
+        var command = new CreateCostRecordCommand(CostCategory.Fertilizer, 2500m, "UAH", DateTime.UtcNow, field.Id, null, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -77,7 +77,7 @@ public class CreateCostRecordHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new CreateCostRecordHandler(context);
-        var command = new CreateCostRecordCommand("Labor", 800m, "UAH", DateTime.UtcNow, null, operation.Id, null);
+        var command = new CreateCostRecordCommand(CostCategory.Labor, 800m, "UAH", DateTime.UtcNow, null, operation.Id, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -90,7 +90,7 @@ public class CreateCostRecordHandlerTests
     {
         var context = CreateDbContext();
         var handler = new CreateCostRecordHandler(context);
-        var command = new CreateCostRecordCommand("Maintenance", 500m, "UAH", DateTime.UtcNow, null, null, null);
+        var command = new CreateCostRecordCommand(CostCategory.Other, 500m, "UAH", DateTime.UtcNow, null, null, null);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -106,8 +106,8 @@ public class CreateCostRecordHandlerTests
         var context = CreateDbContext();
         var handler = new CreateCostRecordHandler(context);
 
-        var id1 = await handler.Handle(new CreateCostRecordCommand("Fuel", 1000m, "UAH", DateTime.UtcNow, null, null, null), CancellationToken.None);
-        var id2 = await handler.Handle(new CreateCostRecordCommand("Seeds", 2000m, "UAH", DateTime.UtcNow, null, null, null), CancellationToken.None);
+        var id1 = await handler.Handle(new CreateCostRecordCommand(CostCategory.Fuel, 1000m, "UAH", DateTime.UtcNow, null, null, null), CancellationToken.None);
+        var id2 = await handler.Handle(new CreateCostRecordCommand(CostCategory.Seeds, 2000m, "UAH", DateTime.UtcNow, null, null, null), CancellationToken.None);
 
         id1.Should().NotBe(id2);
         var count = await ((TestDbContext)context).CostRecords.CountAsync();

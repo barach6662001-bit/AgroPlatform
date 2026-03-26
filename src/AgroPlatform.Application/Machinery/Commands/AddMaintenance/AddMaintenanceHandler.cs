@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Economics;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Machinery;
 using MediatR;
 
@@ -44,7 +45,7 @@ public class AddMaintenanceHandler : IRequestHandler<AddMaintenanceCommand, Guid
         {
             _context.CostRecords.Add(new CostRecord
             {
-                Category = "Equipment",
+                Category = CostCategory.Machinery,
                 Amount = request.Cost.Value,
                 Currency = "UAH",
                 Date = request.Date,

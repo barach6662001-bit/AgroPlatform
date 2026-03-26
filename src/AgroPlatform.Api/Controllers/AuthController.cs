@@ -3,6 +3,7 @@ using AgroPlatform.Application.Auth.Commands.Register;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AgroPlatform.Api.Controllers;
 
@@ -42,6 +43,7 @@ public class AuthController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A JWT token response on success.</returns>
     [HttpPost("login")]
+    [EnableRateLimiting("auth-login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken cancellationToken)
     {

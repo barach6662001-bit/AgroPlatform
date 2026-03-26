@@ -1,6 +1,7 @@
 using AgroPlatform.Application.AgroOperations.DTOs;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.Common.Models;
+using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,8 +28,15 @@ public class GetAgroOperationsHandler : IRequestHandler<GetAgroOperationsQuery, 
         if (request.OperationType.HasValue)
             query = query.Where(o => o.OperationType == request.OperationType.Value);
 
-        if (request.IsCompleted.HasValue)
-            query = query.Where(o => o.IsCompleted == request.IsCompleted.Value);
+        if (request.Status.HasValue)
+            query = query.Where(o => o.Status == request.Status.Value);
+        else if (request.IsCompleted.HasValue)
+        {
+            if (request.IsCompleted.Value)
+                query = query.Where(o => o.Status == OperationStatus.Completed);
+            else
+                query = query.Where(o => o.Status != OperationStatus.Completed);
+        }
 
         if (request.DateFrom.HasValue)
             query = query.Where(o => o.PlannedDate >= request.DateFrom.Value);
@@ -47,9 +55,9 @@ public class GetAgroOperationsHandler : IRequestHandler<GetAgroOperationsQuery, 
                 FieldId = o.FieldId,
                 FieldName = o.Field.Name,
                 OperationType = o.OperationType,
+                Status = o.Status,
                 PlannedDate = o.PlannedDate,
                 CompletedDate = o.CompletedDate,
-                IsCompleted = o.IsCompleted,
                 Description = o.Description,
                 AreaProcessed = o.AreaProcessed,
                 PerformedByEmployeeId = o.PerformedByEmployeeId,

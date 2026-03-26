@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Table, Button, Space, Tag, Input, message, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
 import { PlusOutlined, SearchOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getFields, deleteField, createField, updateField } from '../../api/fields';
+import { useQueryClient } from '@tanstack/react-query';
+import { deleteField, createField, updateField } from '../../api/fields';
 import { getCadastreParcel } from '../../api/cadastre';
 import type { CadastreParcelResult } from '../../api/cadastre';
 import type { FieldDto } from '../../types/field';
-import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import FieldMap from '../../components/Map/FieldMap';
 import TableSkeleton from '../../components/TableSkeleton';
@@ -14,10 +14,9 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { exportToCsv } from '../../utils/exportCsv';
+import { useFieldsQuery, FIELDS_QUERY_KEY } from '../../hooks/useFieldsQuery';
 
 export default function FieldsList() {
-  const [result, setResult] = useState<PaginatedResult<FieldDto> | null>(null);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
@@ -32,7 +31,9 @@ export default function FieldsList() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { hasPermission } = useRole();
+  const queryClient = useQueryClient();
 
+  const { data: result, isFetching: loading, isLoading } = useFieldsQuery({ page, pageSize, search: search || undefined });
   const cropOptions = (['Wheat', 'Corn', 'Sunflower', 'Soybean', 'Barley', 'Rapeseed', 'SugarBeet', 'Fallow', 'Other'] as const)
     .map(v => ({ value: v, label: t.crops[v] }));
 
@@ -76,27 +77,19 @@ export default function FieldsList() {
   const canDelete = hasPermission('fields', 'manage');
   const canEdit = hasPermission('fields', 'manage');
 
-  const load = (p = page, ps = pageSize, s = search) => {
-    setLoading(true);
-    getFields({ page: p, pageSize: ps, search: s || undefined })
-      .then(setResult)
-      .catch(() => message.error(t.fields.loadError))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => { load(); }, [page, pageSize]);
+  const invalidateFields = () =>
+    queryClient.invalidateQueries({ queryKey: FIELDS_QUERY_KEY() });
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setPage(1);
-    load(1, pageSize, value);
   };
 
   const handleDelete = async (id: string) => {
     try {
       await deleteField(id);
       message.success(t.fields.deleteSuccess);
-      load();
+      invalidateFields();
     } catch {
       message.error(t.fields.deleteError);
     }
@@ -110,7 +103,7 @@ export default function FieldsList() {
       message.success(t.fields.createSuccess);
       form.resetFields();
       setModalOpen(false);
-      load();
+      invalidateFields();
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       if (status === 409) {
@@ -135,7 +128,7 @@ export default function FieldsList() {
       editForm.resetFields();
       setEditModalOpen(false);
       setEditRecord(null);
-      load();
+      invalidateFields();
     } catch {
       message.error(t.fields.fieldUpdateError);
     } finally {
@@ -240,7 +233,7 @@ export default function FieldsList() {
 
       {viewMode === 'map' ? (
         <FieldMap fields={result?.items ?? []} height={500} />
-      ) : loading && !result ? (
+      ) : isLoading ? (
         <TableSkeleton rows={8} />
       ) : (
         <Table

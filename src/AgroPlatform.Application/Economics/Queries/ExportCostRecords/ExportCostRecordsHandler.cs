@@ -18,8 +18,8 @@ public class ExportCostRecordsHandler : IRequestHandler<ExportCostRecordsQuery, 
     {
         var query = _context.CostRecords.AsQueryable();
 
-        if (!string.IsNullOrEmpty(request.Category))
-            query = query.Where(c => c.Category == request.Category);
+        if (request.Category.HasValue)
+            query = query.Where(c => c.Category == request.Category.Value);
         if (request.DateFrom.HasValue)
             query = query.Where(c => c.Date >= request.DateFrom.Value);
         if (request.DateTo.HasValue)
@@ -34,7 +34,7 @@ public class ExportCostRecordsHandler : IRequestHandler<ExportCostRecordsQuery, 
         sb.AppendLine("Date,Category,Amount,Currency,Description");
         foreach (var r in records)
         {
-            sb.AppendLine($"{r.Date:yyyy-MM-dd},{Escape(r.Category)},{r.Amount},{r.Currency},{Escape(r.Description ?? "")}");
+            sb.AppendLine($"{r.Date:yyyy-MM-dd},{Escape(r.Category.ToString())},{r.Amount},{r.Currency},{Escape(r.Description ?? "")}");
         }
 
         var bytes = Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(sb.ToString())).ToArray();

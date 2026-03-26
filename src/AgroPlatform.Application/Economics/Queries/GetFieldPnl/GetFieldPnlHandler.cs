@@ -77,7 +77,7 @@ public class GetFieldPnlHandler : IRequestHandler<GetFieldPnlQuery, IReadOnlyLis
             var costsByCategory = fieldCosts
                 .Where(c => c.Amount > 0)
                 .GroupBy(c => c.Category)
-                .ToDictionary(g => g.Key, g => g.Sum(c => c.Amount));
+                .ToDictionary(g => g.Key.ToString(), g => g.Sum(c => c.Amount));
 
             var yieldRecord = yieldHistory.FirstOrDefault(h => h.FieldId == field.Id);
             var yieldPerHectare = yieldRecord?.YieldPerHectare;

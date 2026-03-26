@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Economics;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Fuel;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -71,7 +72,7 @@ public class CreateFuelIssueHandler : IRequestHandler<CreateFuelIssueCommand, Gu
         {
             _context.CostRecords.Add(new CostRecord
             {
-                Category = "Fuel",
+                Category = CostCategory.Fuel,
                 Amount = totalCost.Value,
                 Currency = "UAH",
                 Date = request.TransactionDate,

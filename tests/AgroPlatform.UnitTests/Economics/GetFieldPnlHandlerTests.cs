@@ -36,7 +36,7 @@ public class GetFieldPnlHandlerTests
         context.Fields.Add(field);
         context.CostRecords.Add(new CostRecord
         {
-            Category = "Fuel",
+            Category = CostCategory.Fuel,
             Amount = 10000m,
             Currency = "UAH",
             Date = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -44,7 +44,7 @@ public class GetFieldPnlHandlerTests
         });
         context.CostRecords.Add(new CostRecord
         {
-            Category = "Seeds",
+            Category = CostCategory.Seeds,
             Amount = 5000m,
             Currency = "UAH",
             Date = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -73,7 +73,7 @@ public class GetFieldPnlHandlerTests
         context.Fields.Add(field);
         context.CostRecords.Add(new CostRecord
         {
-            Category = "Fertilizer",
+            Category = CostCategory.Fertilizer,
             Amount = 20000m,
             Currency = "UAH",
             Date = new DateTime(2025, 4, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -110,7 +110,7 @@ public class GetFieldPnlHandlerTests
         // In-year cost
         context.CostRecords.Add(new CostRecord
         {
-            Category = "Fuel",
+            Category = CostCategory.Fuel,
             Amount = 3000m,
             Currency = "UAH",
             Date = new DateTime(2025, 5, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -119,7 +119,7 @@ public class GetFieldPnlHandlerTests
         // Out-of-year cost (2024)
         context.CostRecords.Add(new CostRecord
         {
-            Category = "Fuel",
+            Category = CostCategory.Fuel,
             Amount = 9999m,
             Currency = "UAH",
             Date = new DateTime(2024, 12, 31, 0, 0, 0, DateTimeKind.Utc),
@@ -142,7 +142,7 @@ public class GetFieldPnlHandlerTests
         context.Fields.AddRange(field1, field2);
         context.CostRecords.Add(new CostRecord
         {
-            Category = "Labor",
+            Category = CostCategory.Labor,
             Amount = 1000m,
             Currency = "UAH",
             Date = new DateTime(2025, 7, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -219,7 +219,7 @@ public class GetFieldPnlHandlerTests
         // Expense
         context.CostRecords.Add(new CostRecord
         {
-            Category = "Fertilizer",
+            Category = CostCategory.Fertilizer,
             Amount = 30000m,
             Currency = "UAH",
             Date = new DateTime(2025, 4, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -228,7 +228,7 @@ public class GetFieldPnlHandlerTests
         // Actual revenue stored as negative amount
         context.CostRecords.Add(new CostRecord
         {
-            Category = "Revenue",
+            Category = CostCategory.Other,
             Amount = -120000m,
             Currency = "UAH",
             Date = new DateTime(2025, 10, 1, 0, 0, 0, DateTimeKind.Utc),

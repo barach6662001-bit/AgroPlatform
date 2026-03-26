@@ -156,6 +156,16 @@ try
 
     builder.Services.AddRateLimiter(limiterOptions =>
     {
+        // Brute-force protection: 5 login attempts per IP per 15 minutes
+        limiterOptions.AddPolicy("auth-login", context =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? context.Connection.Id,
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromMinutes(15)
+                }));
+
         limiterOptions.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
         {
             var ip = context.Connection.RemoteIpAddress?.ToString() ?? context.Connection.Id;
