@@ -1,12 +1,21 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography, Divider, Tooltip, Tag } from 'antd';
-import { PlusOutlined, ExportOutlined, DownloadOutlined, ScissorOutlined, DeleteOutlined, SwapOutlined } from '@ant-design/icons';
+import {
+  Table, Badge, message, Button, Space, Modal, Form, Input, Select,
+  DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography, Tabs, Tag, Tooltip,
+} from 'antd';
+import {
+  PlusOutlined, ExportOutlined, DownloadOutlined, SwapOutlined,
+  ScissorOutlined, EditOutlined, DeleteOutlined,
+} from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes, getGrainStorages, splitGrainBatch, transferGrain } from '../../api/grain';
-import type { SplitTarget, TransferGrainRequest, CreateGrainBatchRequest } from '../../api/grain';
+import {
+  getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements,
+  getGrainTypes, getGrainStorages, transferGrain, splitGrainBatch,
+  adjustGrainBatch, writeOffGrainBatch, getGrainLedger,
+} from '../../api/grain';
 import { getFields } from '../../api/fields';
-import type { GrainBatchDto, GrainMovementDto, GrainOwnershipType, GrainStorageDto } from '../../types/grain';
+import type { GrainBatchDto, GrainMovementDto, GrainMovementType, GrainOwnershipType, GrainStorageDto } from '../../types/grain';
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
@@ -24,6 +33,34 @@ const ownershipOptions = (t: ReturnType<typeof useTranslation>['t']) => [
   { value: 3, label: t.grain.ownershipOther },
 ];
 
+const movementTypeColor = (type: GrainMovementType): string => {
+  switch (type) {
+    case 'Receipt': return 'green';
+    case 'SaleDispatch': return 'gold';
+    case 'Issue': return 'orange';
+    case 'Transfer': return 'blue';
+    case 'Split': return 'purple';
+    case 'Merge': return 'cyan';
+    case 'Adjustment': return 'geekblue';
+    case 'WriteOff': return 'red';
+    default: return 'default';
+  }
+};
+
+function MovementTypeLabel({ type, t }: { type: GrainMovementType; t: ReturnType<typeof useTranslation>['t'] }) {
+  const labelMap: Record<GrainMovementType, string> = {
+    Receipt: t.grain.typeReceipt,
+    Transfer: t.grain.typeTransfer,
+    Split: t.grain.typeSplit,
+    Merge: t.grain.typeMerge,
+    Issue: t.grain.typeIssue,
+    SaleDispatch: t.grain.typeSaleDispatch,
+    Adjustment: t.grain.typeAdjustment,
+    WriteOff: t.grain.typeWriteOff,
+  };
+  return <Tag color={movementTypeColor(type)}>{labelMap[type] ?? type}</Tag>;
+}
+
 export default function GrainBatchList() {
   const [result, setResult] = useState<PaginatedResult<GrainBatchDto> | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,57 +77,56 @@ export default function GrainBatchList() {
   const [savingBatch, setSavingBatch] = useState(false);
   const [batchForm] = Form.useForm();
 
-  const [movementModalOpen, setMovementModalOpen] = useState(false);
-  const [movementBatchId, setMovementBatchId] = useState<string | null>(null);
-  const [savingMovement, setSavingMovement] = useState(false);
-  const [movementForm] = Form.useForm();
-  const [currentMovementType, setCurrentMovementType] = useState<string>('In');
-
   const [issueModalOpen, setIssueModalOpen] = useState(false);
   const [savingIssue, setSavingIssue] = useState(false);
   const [issueForm] = Form.useForm();
   const [selectedIssueBatch, setSelectedIssueBatch] = useState<GrainBatchDto | null>(null);
 
-  const [movementsModalOpen, setMovementsModalOpen] = useState(false);
-  const [movements, setMovements] = useState<GrainMovementDto[]>([]);
-  const [loadingMovements, setLoadingMovements] = useState(false);
-  const [detailsBatch, setDetailsBatch] = useState<GrainBatchDto | null>(null);
-
-  const [splitModalOpen, setSplitModalOpen] = useState(false);
-  const [splitSourceBatch, setSplitSourceBatch] = useState<GrainBatchDto | null>(null);
-  const [savingSplit, setSavingSplit] = useState(false);
-  const [splitTargets, setSplitTargets] = useState<Array<{ storageId: string; quantity: number | null }>>([{ storageId: '', quantity: null }]);
-  const [splitNotes, setSplitNotes] = useState('');
-
-  // Transfer state
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [savingTransfer, setSavingTransfer] = useState(false);
   const [transferForm] = Form.useForm();
-  const [transferSourceBatch, setTransferSourceBatch] = useState<GrainBatchDto | null>(null);
-  const [transferCreateNew, setTransferCreateNew] = useState(false);
+
+  const [splitModalOpen, setSplitModalOpen] = useState(false);
+  const [savingSplit, setSavingSplit] = useState(false);
+  const [splitForm] = Form.useForm();
+  const [selectedSplitBatch, setSelectedSplitBatch] = useState<GrainBatchDto | null>(null);
+
+  const [adjustModalOpen, setAdjustModalOpen] = useState(false);
+  const [savingAdjust, setSavingAdjust] = useState(false);
+  const [adjustForm] = Form.useForm();
+  const [selectedAdjustBatch, setSelectedAdjustBatch] = useState<GrainBatchDto | null>(null);
+
+  const [writeOffModalOpen, setWriteOffModalOpen] = useState(false);
+  const [savingWriteOff, setSavingWriteOff] = useState(false);
+  const [writeOffForm] = Form.useForm();
+  const [selectedWriteOffBatch, setSelectedWriteOffBatch] = useState<GrainBatchDto | null>(null);
+
+  const [movementsModalOpen, setMovementsModalOpen] = useState(false);
+  const [movements, setMovements] = useState<GrainMovementDto[]>([]);
+  const [loadingMovements, setLoadingMovements] = useState(false);
+  const [movementsBatchLabel, setMovementsBatchLabel] = useState('');
+
+  const [ledgerResult, setLedgerResult] = useState<PaginatedResult<GrainMovementDto> | null>(null);
+  const [ledgerLoading, setLedgerLoading] = useState(false);
+  const [ledgerPage, setLedgerPage] = useState(1);
+  const [ledgerPageSize, setLedgerPageSize] = useState(25);
+  const [ledgerTypeFilter, setLedgerTypeFilter] = useState<string | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState<string>('batches');
 
   const { t } = useTranslation();
   const { hasPermission } = useRole();
   const canCreate = hasPermission('inventory', 'manage');
 
-  const validSplitTargets = splitTargets.filter(tgt => tgt.storageId && tgt.quantity && tgt.quantity > 0);
-
   useEffect(() => {
-    getGrainTypes()
-      .then(setGrainTypes)
-      .catch(() => message.warning(t.grain.loadError));
+    getGrainTypes().then(setGrainTypes).catch(() => message.warning(t.grain.loadError));
   }, []);
 
   useEffect(() => {
-    getFields({ pageSize: 200 })
-      .then((r) => setFields(r.items))
-      .catch(() => {/* ignore */});
+    getFields({ pageSize: 200 }).then((r) => setFields(r.items)).catch(() => {/* ignore */});
   }, []);
 
   useEffect(() => {
-    getGrainStorages({ activeOnly: true })
-      .then(setStorages)
-      .catch(() => {/* ignore */});
+    getGrainStorages({ activeOnly: true }).then(setStorages).catch(() => {/* ignore */});
   }, []);
 
   const load = (p = page, ps = pageSize, ownership = filterOwnership, storageId = selectedStorageId) => {
@@ -103,46 +139,31 @@ export default function GrainBatchList() {
 
   useEffect(() => { load(); }, [page, pageSize, filterOwnership, selectedStorageId]);
 
+  const loadLedger = (p = ledgerPage, ps = ledgerPageSize, type = ledgerTypeFilter, storageId = selectedStorageId) => {
+    setLedgerLoading(true);
+    getGrainLedger({ page: p, pageSize: ps, movementType: type, storageId })
+      .then(setLedgerResult)
+      .catch(() => message.error(t.grain.loadError))
+      .finally(() => setLedgerLoading(false));
+  };
+
+  useEffect(() => {
+    if (activeTab === 'ledger') loadLedger();
+  }, [activeTab, ledgerPage, ledgerPageSize, ledgerTypeFilter, selectedStorageId]);
+
+  // ---- Batch create ----
   const openBatchModal = () => {
     const lastGrainType = localStorage.getItem(LAST_GRAIN_KEY);
     batchForm.resetFields();
-    batchForm.setFieldsValue({
-      grainType: lastGrainType ?? grainTypes[0],
-      receivedDate: dayjs(),
-      grainStorageId: selectedStorageId ?? (storages.length === 1 ? storages[0].id : undefined),
-    });
+    batchForm.setFieldsValue({ grainType: lastGrainType ?? grainTypes[0], receivedDate: dayjs() });
     setBatchModalOpen(true);
-  };
-
-  const openMovementModal = (batchId: string) => {
-    movementForm.resetFields();
-    movementForm.setFieldsValue({
-      movementType: 'In',
-      movementDate: dayjs(),
-    });
-    setCurrentMovementType('In');
-    setMovementBatchId(batchId);
-    setMovementModalOpen(true);
   };
 
   const handleCreateBatch = async () => {
     try {
       const values = await batchForm.validateFields();
       setSavingBatch(true);
-      const payload: CreateGrainBatchRequest = {
-        grainStorageId: values.grainStorageId,
-        grainType: values.grainType,
-        initialQuantityTons: values.initialQuantityTons,
-        ownershipType: values.ownershipType,
-        ownerName: values.ownerName,
-        contractNumber: values.contractNumber,
-        pricePerTon: values.pricePerTon,
-        receivedDate: values.receivedDate?.toISOString(),
-        sourceFieldId: values.sourceFieldId,
-        moisturePercent: values.moisturePercent,
-        notes: values.notes,
-      };
-      await createGrainBatch(payload);
+      await createGrainBatch({ ...values, receivedDate: values.receivedDate?.toISOString() });
       message.success(t.grain.createSuccess);
       localStorage.setItem(LAST_GRAIN_KEY, values.grainType);
       batchForm.resetFields();
@@ -156,27 +177,7 @@ export default function GrainBatchList() {
     }
   };
 
-  const handleCreateMovement = async () => {
-    if (!movementBatchId) return;
-    try {
-      const values = await movementForm.validateFields();
-      setSavingMovement(true);
-      await createGrainMovement(movementBatchId, {
-        ...values,
-        movementDate: values.movementDate?.toISOString(),
-      });
-      message.success(t.grain.movementSuccess);
-      movementForm.resetFields();
-      setMovementModalOpen(false);
-      load();
-    } catch (err: unknown) {
-      const status = (err as { response?: { status?: number } })?.response?.status;
-      if (status) message.error(t.grain.loadError);
-    } finally {
-      setSavingMovement(false);
-    }
-  };
-
+  // ---- Issue grain ----
   const openIssueModal = () => {
     issueForm.resetFields();
     setSelectedIssueBatch(null);
@@ -187,8 +188,9 @@ export default function GrainBatchList() {
     try {
       const values = await issueForm.validateFields();
       setSavingIssue(true);
+      const isSale = values.reason === 'sale';
       await createGrainMovement(values.grainBatchId, {
-        movementType: 'Out',
+        movementType: isSale ? 'SaleDispatch' : 'Issue',
         quantityTons: values.quantityTons,
         reason: values.reason,
         pricePerTon: values.pricePerTon,
@@ -200,6 +202,7 @@ export default function GrainBatchList() {
       setSelectedIssueBatch(null);
       setIssueModalOpen(false);
       load();
+      if (activeTab === 'ledger') loadLedger();
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       if (status) message.error(t.grain.loadError);
@@ -208,10 +211,133 @@ export default function GrainBatchList() {
     }
   };
 
+  // ---- Transfer ----
+  const handleTransfer = async () => {
+    try {
+      const values = await transferForm.validateFields();
+      setSavingTransfer(true);
+      await transferGrain({
+        sourceBatchId: values.sourceBatchId,
+        targetBatchId: values.targetBatchId,
+        quantityTons: values.quantityTons,
+        notes: values.notes,
+        movementDate: new Date().toISOString(),
+      });
+      message.success(t.grain.transferSuccess);
+      transferForm.resetFields();
+      setTransferModalOpen(false);
+      load();
+      if (activeTab === 'ledger') loadLedger();
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status) message.error(t.grain.loadError);
+    } finally {
+      setSavingTransfer(false);
+    }
+  };
+
+  // ---- Split ----
+  const openSplitModal = (batch: GrainBatchDto) => {
+    splitForm.resetFields();
+    setSelectedSplitBatch(batch);
+    setSplitModalOpen(true);
+  };
+
+  const handleSplit = async () => {
+    if (!selectedSplitBatch) return;
+    try {
+      const values = await splitForm.validateFields();
+      setSavingSplit(true);
+      await splitGrainBatch({
+        sourceBatchId: selectedSplitBatch.id,
+        splitQuantityTons: values.splitQuantityTons,
+        targetStorageId: values.targetStorageId,
+        notes: values.notes,
+        movementDate: new Date().toISOString(),
+      });
+      message.success(t.grain.splitSuccess);
+      splitForm.resetFields();
+      setSelectedSplitBatch(null);
+      setSplitModalOpen(false);
+      load();
+      if (activeTab === 'ledger') loadLedger();
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status) message.error(t.grain.loadError);
+    } finally {
+      setSavingSplit(false);
+    }
+  };
+
+  // ---- Adjust ----
+  const openAdjustModal = (batch: GrainBatchDto) => {
+    adjustForm.resetFields();
+    setSelectedAdjustBatch(batch);
+    setAdjustModalOpen(true);
+  };
+
+  const handleAdjust = async () => {
+    if (!selectedAdjustBatch) return;
+    try {
+      const values = await adjustForm.validateFields();
+      setSavingAdjust(true);
+      await adjustGrainBatch(selectedAdjustBatch.id, {
+        adjustmentTons: values.adjustmentTons,
+        reason: values.reason,
+        notes: values.notes,
+        movementDate: new Date().toISOString(),
+      });
+      message.success(t.grain.adjustSuccess);
+      adjustForm.resetFields();
+      setSelectedAdjustBatch(null);
+      setAdjustModalOpen(false);
+      load();
+      if (activeTab === 'ledger') loadLedger();
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status) message.error(t.grain.loadError);
+    } finally {
+      setSavingAdjust(false);
+    }
+  };
+
+  // ---- WriteOff ----
+  const openWriteOffModal = (batch: GrainBatchDto) => {
+    writeOffForm.resetFields();
+    setSelectedWriteOffBatch(batch);
+    setWriteOffModalOpen(true);
+  };
+
+  const handleWriteOff = async () => {
+    if (!selectedWriteOffBatch) return;
+    try {
+      const values = await writeOffForm.validateFields();
+      setSavingWriteOff(true);
+      await writeOffGrainBatch(selectedWriteOffBatch.id, {
+        quantityTons: values.quantityTons,
+        reason: values.reason,
+        notes: values.notes,
+        movementDate: new Date().toISOString(),
+      });
+      message.success(t.grain.writeOffSuccess);
+      writeOffForm.resetFields();
+      setSelectedWriteOffBatch(null);
+      setWriteOffModalOpen(false);
+      load();
+      if (activeTab === 'ledger') loadLedger();
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status) message.error(t.grain.loadError);
+    } finally {
+      setSavingWriteOff(false);
+    }
+  };
+
+  // ---- Movements history per batch ----
   const openMovementsModal = async (batch: GrainBatchDto) => {
-    setDetailsBatch(batch);
     setMovementsModalOpen(true);
     setLoadingMovements(true);
+    setMovementsBatchLabel(`${batch.grainType} — ${batch.quantityTons.toFixed(2)} т`);
     try {
       const data = await getGrainMovements(batch.id);
       setMovements(data);
@@ -219,85 +345,6 @@ export default function GrainBatchList() {
       message.error(t.grain.loadError);
     } finally {
       setLoadingMovements(false);
-    }
-  };
-
-  const openSplitModal = (batch: GrainBatchDto) => {
-    setSplitSourceBatch(batch);
-    setSplitTargets([{ storageId: '', quantity: null }]);
-    setSplitNotes('');
-    setSplitModalOpen(true);
-  };
-
-  const handleSplitBatch = async (notes?: string) => {
-    if (!splitSourceBatch) return;
-
-    if (validSplitTargets.length === 0) {
-      message.warning(t.grain.splitAtLeastOne);
-      return;
-    }
-
-    const total = validSplitTargets.reduce((s, tgt) => s + (tgt.quantity ?? 0), 0);
-    if (total > splitSourceBatch.quantityTons) {
-      message.error(t.grain.splitExceedsAvailable);
-      return;
-    }
-
-    try {
-      setSavingSplit(true);
-      const targets: SplitTarget[] = validSplitTargets.map(tgt => ({
-        targetStorageId: tgt.storageId,
-        quantityTons: tgt.quantity!,
-      }));
-      await splitGrainBatch(splitSourceBatch.id, targets, notes);
-      message.success(t.grain.splitSuccess);
-      setSplitModalOpen(false);
-      setSplitSourceBatch(null);
-      setSplitTargets([{ storageId: '', quantity: null }]);
-      load();
-    } catch (err: unknown) {
-      const data = (err as { response?: { data?: { title?: string } } })?.response?.data;
-      message.error(data?.title ?? t.grain.splitError);
-    } finally {
-      setSavingSplit(false);
-    }
-  };
-
-  const openTransferModal = (batch: GrainBatchDto) => {
-    transferForm.resetFields();
-    transferForm.setFieldsValue({ transferDate: dayjs() });
-    setTransferSourceBatch(batch);
-    setTransferCreateNew(false);
-    setTransferModalOpen(true);
-  };
-
-  const handleTransferGrain = async () => {
-    if (!transferSourceBatch) return;
-    try {
-      const values = await transferForm.validateFields();
-      setSavingTransfer(true);
-      await transferGrain(transferSourceBatch.id, {
-        targetBatchId: transferCreateNew ? undefined : values.targetBatchId,
-        targetStorageId: transferCreateNew ? values.targetStorageId : undefined,
-        quantityTons: values.quantityTons,
-        transferDate: values.transferDate?.toISOString() ?? new Date().toISOString(),
-        notes: values.notes,
-      });
-      message.success(t.grain.transferSuccess);
-      transferForm.resetFields();
-      setTransferModalOpen(false);
-      setTransferSourceBatch(null);
-      load();
-    } catch (err: unknown) {
-      const status = (err as { response?: { status?: number } })?.response?.status;
-      if (status === 409) {
-        const errData = (err as { response?: { data?: { detail?: string } } })?.response?.data;
-        message.error(errData?.detail ?? t.grain.transferError);
-      } else if (status) {
-        message.error(t.grain.transferError);
-      }
-    } finally {
-      setSavingTransfer(false);
     }
   };
 
@@ -311,31 +358,10 @@ export default function GrainBatchList() {
     return labels[type] ?? String(type);
   };
 
-  const columns = [
+  const batchColumns = [
+    { title: t.grain.grainType, dataIndex: 'grainType', key: 'grainType' },
     {
-      title: t.grain.grainType,
-      dataIndex: 'grainType',
-      key: 'grainType',
-    },
-    {
-      title: t.grain.storage,
-      key: 'placements',
-      render: (_: unknown, record: GrainBatchDto) => (
-        record.placements.length > 0 ? (
-          <Space size={4} wrap>
-            {record.placements.map(p => (
-              <Tag key={p.id} color="blue">
-                {p.grainStorageName}: {p.quantityTons.toFixed(2)} т
-              </Tag>
-            ))}
-          </Space>
-        ) : '—'
-      ),
-    },
-    {
-      title: t.grain.ownershipType,
-      dataIndex: 'ownershipType',
-      key: 'ownershipType',
+      title: t.grain.ownershipType, dataIndex: 'ownershipType', key: 'ownershipType',
       render: (v: GrainOwnershipType, record: GrainBatchDto) => (
         <Space>
           <Badge
@@ -346,79 +372,47 @@ export default function GrainBatchList() {
         </Space>
       ),
     },
+    { title: t.grain.sourceField, dataIndex: 'sourceFieldName', key: 'sourceFieldName', render: (v?: string) => v || '—' },
     {
-      title: t.grain.sourceField,
-      dataIndex: 'sourceFieldName',
-      key: 'sourceFieldName',
-      render: (v?: string) => v || '—',
-    },
-    {
-      title: t.grain.moisture,
-      dataIndex: 'moisturePercent',
-      key: 'moisturePercent',
+      title: t.grain.moisture, dataIndex: 'moisturePercent', key: 'moisturePercent',
       render: (v?: number) => v != null ? `${v.toFixed(1)}%` : '—',
     },
     {
-      title: t.grain.initialQuantity,
-      dataIndex: 'initialQuantityTons',
-      key: 'initialQuantityTons',
+      title: t.grain.initialQuantity, dataIndex: 'initialQuantityTons', key: 'initialQuantityTons',
       render: (v: number) => `${v.toFixed(2)} т`,
     },
     {
-      title: t.grain.quantityTons,
-      dataIndex: 'quantityTons',
-      key: 'quantityTons',
+      title: t.grain.quantityTons, dataIndex: 'quantityTons', key: 'quantityTons',
       render: (v: number) => `${v.toFixed(2)} т`,
     },
     {
-      title: t.grain.pricePerTon,
-      dataIndex: 'pricePerTon',
-      key: 'pricePerTon',
+      title: t.grain.pricePerTon, dataIndex: 'pricePerTon', key: 'pricePerTon',
       render: (v?: number) => v != null ? `${v.toFixed(2)}` : '—',
     },
     {
-      title: t.grain.receivedDate,
-      dataIndex: 'receivedDate',
-      key: 'receivedDate',
+      title: t.grain.receivedDate, dataIndex: 'receivedDate', key: 'receivedDate',
       render: (v: string) => v ? dayjs(v).format('DD.MM.YYYY') : '—',
     },
     {
-      title: t.common.actions,
-      key: 'actions',
+      title: t.common.actions, key: 'actions',
       render: (_: unknown, record: GrainBatchDto) => (
-        <Space>
-          {canCreate && (
-            <Button
-              size="small"
-              onClick={e => { e.stopPropagation(); openMovementModal(record.id); }}
-            >
-              + {t.grain.createMovement}
-            </Button>
-          )}
-          {canCreate && record.quantityTons > 0 && (
-            <Tooltip title={t.grain.splitBatch}>
-              <Button
-                size="small"
-                icon={<ScissorOutlined />}
-                onClick={e => { e.stopPropagation(); openSplitModal(record); }}
-              />
-            </Tooltip>
-          )}
-          {canCreate && record.quantityTons > 0 && (
-            <Button
-              size="small"
-              icon={<SwapOutlined />}
-              onClick={e => { e.stopPropagation(); openTransferModal(record); }}
-            >
-              {t.grain.transfer}
-            </Button>
-          )}
-          <Button
-            size="small"
-            onClick={e => { e.stopPropagation(); openMovementsModal(record); }}
-          >
+        <Space wrap>
+          <Button size="small" onClick={e => { e.stopPropagation(); openMovementsModal(record); }}>
             {t.common.details}
           </Button>
+          {canCreate && (
+            <>
+              <Tooltip title={t.grain.splitBatch}>
+                <Button size="small" icon={<ScissorOutlined />} onClick={e => { e.stopPropagation(); openSplitModal(record); }} />
+              </Tooltip>
+              <Tooltip title={t.grain.adjustBatch}>
+                <Button size="small" icon={<EditOutlined />} onClick={e => { e.stopPropagation(); openAdjustModal(record); }} />
+              </Tooltip>
+              <Tooltip title={t.grain.writeOffBatch}>
+                <Button size="small" danger icon={<DeleteOutlined />} onClick={e => { e.stopPropagation(); openWriteOffModal(record); }} />
+              </Tooltip>
+            </>
+          )}
         </Space>
       ),
     },
@@ -426,34 +420,33 @@ export default function GrainBatchList() {
 
   const movementColumns = [
     {
-      title: t.grain.movementDate,
-      dataIndex: 'movementDate',
-      key: 'movementDate',
-      render: (v: string) => dayjs(v).format('DD.MM.YYYY'),
+      title: t.grain.movementDate, dataIndex: 'movementDate', key: 'movementDate',
+      render: (v: string) => dayjs(v).format('DD.MM.YYYY HH:mm'),
     },
     {
-      title: t.grain.movementType,
-      dataIndex: 'movementType',
-      key: 'movementType',
-      render: (v: string) => (
-        <Badge
-          status={v === 'In' ? 'success' : 'error'}
-          text={v === 'In' ? t.grain.movementIn : t.grain.movementOut}
-        />
-      ),
+      title: t.grain.movementType, dataIndex: 'movementType', key: 'movementType',
+      render: (v: GrainMovementType) => <MovementTypeLabel type={v} t={t} />,
     },
     {
-      title: t.grain.quantityTons,
-      dataIndex: 'quantityTons',
-      key: 'quantityTons',
-      render: (v: number) => `${v.toFixed(2)} т`,
+      title: t.grain.quantityTons, dataIndex: 'quantityTons', key: 'quantityTons',
+      render: (v: number) => `${v.toFixed(4)} т`,
+    },
+    { title: t.grain.reason, dataIndex: 'reason', key: 'reason', render: (v?: string) => v || '—' },
+    {
+      title: t.grain.operationId, dataIndex: 'operationId', key: 'operationId',
+      render: (v?: string) => v
+        ? <Tooltip title={v}><Tag color="blue">{v.substring(0, 8)}…</Tag></Tooltip>
+        : '—',
     },
     {
-      title: t.grain.reason,
-      dataIndex: 'reason',
-      key: 'reason',
+      title: t.grain.sourceStorage, dataIndex: 'sourceStorageName', key: 'sourceStorageName',
       render: (v?: string) => v || '—',
     },
+    {
+      title: t.grain.targetStorage, dataIndex: 'targetStorageName', key: 'targetStorageName',
+      render: (v?: string) => v || '—',
+    },
+    { title: t.grain.createdBy, dataIndex: 'createdBy', key: 'createdBy', render: (v?: string) => v || '—' },
   ];
 
   const batches = result?.items ?? [];
@@ -461,6 +454,22 @@ export default function GrainBatchList() {
   const totalValue = batches.reduce((s, b) => s + b.quantityTons * (b.pricePerTon || 0), 0);
   const cultures = [...new Set(batches.map(b => b.grainType))];
   const { Text } = Typography;
+
+  const batchOptions = (result?.items ?? []).map(b => ({
+    value: b.id,
+    label: `${b.grainType} — ${b.quantityTons.toFixed(2)} т (${ownershipLabel(b.ownershipType)})`,
+  }));
+
+  const movementTypeOptions = [
+    { value: 'Receipt', label: t.grain.typeReceipt },
+    { value: 'Transfer', label: t.grain.typeTransfer },
+    { value: 'Split', label: t.grain.typeSplit },
+    { value: 'Merge', label: t.grain.typeMerge },
+    { value: 'Issue', label: t.grain.typeIssue },
+    { value: 'SaleDispatch', label: t.grain.typeSaleDispatch },
+    { value: 'Adjustment', label: t.grain.typeAdjustment },
+    { value: 'WriteOff', label: t.grain.typeWriteOff },
+  ];
 
   return (
     <div>
@@ -485,6 +494,8 @@ export default function GrainBatchList() {
           </Card>
         </Col>
       </Row>
+
+      {/* Filters & Actions */}
       <Space style={{ marginBottom: 16 }} wrap>
         {storages.length > 1 && (
           <Select
@@ -504,23 +515,29 @@ export default function GrainBatchList() {
           onChange={v => { setFilterOwnership(v); setPage(1); }}
         />
         {canCreate && (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            style={{ background: '#238636', borderColor: '#238636' }}
-            onClick={openBatchModal}
-          >
-            {t.grain.receiveGrain}
-          </Button>
-        )}
-        {canCreate && (
-          <Button
-            icon={<ExportOutlined />}
-            style={{ borderColor: '#d29922', color: '#d29922' }}
-            onClick={openIssueModal}
-          >
-            {t.grain.issueGrain}
-          </Button>
+          <>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              style={{ background: '#238636', borderColor: '#238636' }}
+              onClick={openBatchModal}
+            >
+              {t.grain.receiveGrain}
+            </Button>
+            <Button
+              icon={<ExportOutlined />}
+              style={{ borderColor: '#d29922', color: '#d29922' }}
+              onClick={openIssueModal}
+            >
+              {t.grain.issueGrain}
+            </Button>
+            <Button
+              icon={<SwapOutlined />}
+              onClick={() => { transferForm.resetFields(); setTransferModalOpen(true); }}
+            >
+              {t.grain.transferGrain}
+            </Button>
+          </>
         )}
         <Button
           icon={<DownloadOutlined />}
@@ -537,27 +554,105 @@ export default function GrainBatchList() {
           {t.common.export}
         </Button>
       </Space>
-      <Table
-        dataSource={result?.items ?? []}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize,
-          total: result?.totalCount ?? 0,
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-        }}
-        locale={{
-          emptyText: <EmptyState
-            message={t.grain.noBatches || 'Ще немає партій зерна. Прийміть перше зерно'}
-            actionLabel={canCreate ? t.grain.receiveGrain : undefined}
-            onAction={canCreate ? openBatchModal : undefined}
-          />,
-        }}
+
+      {/* Main tabs: Batches | Ledger */}
+      <Tabs
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        items={[
+          {
+            key: 'batches',
+            label: t.grain.batchList,
+            children: (
+              <Table
+                dataSource={result?.items ?? []}
+                columns={batchColumns}
+                rowKey="id"
+                loading={loading}
+                pagination={{
+                  current: page,
+                  pageSize,
+                  total: result?.totalCount ?? 0,
+                  onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+                }}
+                locale={{
+                  emptyText: (
+                    <EmptyState
+                      message={t.grain.noBatches}
+                      actionLabel={canCreate ? t.grain.receiveGrain : undefined}
+                      onAction={canCreate ? openBatchModal : undefined}
+                    />
+                  ),
+                }}
+              />
+            ),
+          },
+          {
+            key: 'ledger',
+            label: t.grain.ledger,
+            children: (
+              <>
+                <Space style={{ marginBottom: 12 }} wrap>
+                  <Select
+                    allowClear
+                    placeholder={t.grain.movementType}
+                    style={{ width: 160 }}
+                    options={movementTypeOptions}
+                    value={ledgerTypeFilter}
+                    onChange={v => { setLedgerTypeFilter(v); setLedgerPage(1); }}
+                  />
+                </Space>
+                <Table
+                  dataSource={ledgerResult?.items ?? []}
+                  columns={[
+                    {
+                      title: t.grain.movementDate, dataIndex: 'movementDate', key: 'movementDate',
+                      render: (v: string) => dayjs(v).format('DD.MM.YYYY HH:mm'),
+                    },
+                    { title: t.grain.grainType, dataIndex: 'grainType', key: 'grainType' },
+                    { title: t.grain.storageName, dataIndex: 'storageName', key: 'storageName' },
+                    {
+                      title: t.grain.movementType, dataIndex: 'movementType', key: 'movementType',
+                      render: (v: GrainMovementType) => <MovementTypeLabel type={v} t={t} />,
+                    },
+                    {
+                      title: t.grain.quantityTons, dataIndex: 'quantityTons', key: 'quantityTons',
+                      render: (v: number) => `${v.toFixed(4)} т`,
+                    },
+                    { title: t.grain.reason, dataIndex: 'reason', key: 'reason', render: (v?: string) => v || '—' },
+                    {
+                      title: t.grain.linkedOperation, dataIndex: 'operationId', key: 'operationId',
+                      render: (v?: string) => v
+                        ? <Tooltip title={v}><Tag color="blue">{v.substring(0, 8)}…</Tag></Tooltip>
+                        : '—',
+                    },
+                    {
+                      title: t.grain.sourceStorage, dataIndex: 'sourceStorageName', key: 'sourceStorageName',
+                      render: (v?: string) => v || '—',
+                    },
+                    {
+                      title: t.grain.targetStorage, dataIndex: 'targetStorageName', key: 'targetStorageName',
+                      render: (v?: string) => v || '—',
+                    },
+                    { title: t.grain.createdBy, dataIndex: 'createdBy', key: 'createdBy', render: (v?: string) => v || '—' },
+                  ]}
+                  rowKey="id"
+                  loading={ledgerLoading}
+                  pagination={{
+                    current: ledgerPage,
+                    pageSize: ledgerPageSize,
+                    total: ledgerResult?.totalCount ?? 0,
+                    onChange: (p, ps) => { setLedgerPage(p); setLedgerPageSize(ps); },
+                  }}
+                  locale={{ emptyText: <EmptyState message={t.grain.noMovements} /> }}
+                />
+              </>
+            ),
+          },
+        ]}
       />
 
-      {/* Create Batch Modal */}
+      {/* ── Create Batch Modal ── */}
       <Modal
         title={t.grain.receiveGrain}
         open={batchModalOpen}
@@ -568,23 +663,10 @@ export default function GrainBatchList() {
         confirmLoading={savingBatch}
       >
         <Form form={batchForm} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="grainStorageId" label={t.grain.selectStorage} rules={[{ required: true, message: t.common.required }]}>
-            <Select
-              showSearch
-              placeholder={t.grain.selectStorage}
-              options={storages.map(s => ({ value: s.id, label: s.name }))}
-              optionFilterProp="label"
-            />
-          </Form.Item>
           <div style={{ marginBottom: 8 }}>
             <span style={{ fontSize: 12, color: '#888' }}>{t.grain.quickSelect}: </span>
             {QUICK_GRAIN_TYPES.map(grain => (
-              <Button
-                key={grain}
-                size="small"
-                onClick={() => batchForm.setFieldsValue({ grainType: grain })}
-                style={{ marginRight: 8, marginBottom: 4 }}
-              >
+              <Button key={grain} size="small" onClick={() => batchForm.setFieldsValue({ grainType: grain })} style={{ marginRight: 8, marginBottom: 4 }}>
                 {grain}
               </Button>
             ))}
@@ -592,10 +674,16 @@ export default function GrainBatchList() {
           <Form.Item name="grainType" label={t.grain.grainType} rules={[{ required: true, message: t.common.required }]}>
             <AutoComplete
               options={grainTypes.map(g => ({ value: g, label: g }))}
-              filterOption={(input, option) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-              }
+              filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
               placeholder={t.grain.selectGrainType}
+            />
+          </Form.Item>
+          <Form.Item name="grainStorageId" label={t.grain.selectStorage} rules={[{ required: true, message: t.common.required }]}>
+            <Select
+              showSearch
+              placeholder={t.grain.selectStorage}
+              options={storages.map(s => ({ value: s.id, label: s.name }))}
+              optionFilterProp="label"
             />
           </Form.Item>
           <Form.Item name="ownershipType" label={t.grain.ownershipType} rules={[{ required: true, message: t.common.required }]}>
@@ -615,9 +703,7 @@ export default function GrainBatchList() {
           </Form.Item>
           <Form.Item name="sourceFieldId" label={t.grain.sourceField}>
             <Select
-              allowClear
-              showSearch
-              placeholder={t.grain.selectSourceField}
+              allowClear showSearch placeholder={t.grain.selectSourceField}
               options={fields.map(f => ({ value: f.id, label: f.name }))}
               optionFilterProp="label"
             />
@@ -634,94 +720,7 @@ export default function GrainBatchList() {
         </Form>
       </Modal>
 
-      {/* Create Movement Modal */}
-      <Modal
-        title={t.grain.createMovement}
-        open={movementModalOpen}
-        onOk={handleCreateMovement}
-        onCancel={() => { setMovementModalOpen(false); movementForm.resetFields(); }}
-        okText={t.common.create}
-        cancelText={t.common.cancel}
-        confirmLoading={savingMovement}
-      >
-        <Form form={movementForm} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="movementType" label={t.grain.movementType} rules={[{ required: true, message: t.common.required }]}>
-            <Select
-              options={[
-                { value: 'In', label: t.grain.movementIn },
-                { value: 'Out', label: t.grain.movementOut },
-              ]}
-              onChange={(v) => setCurrentMovementType(v)}
-            />
-          </Form.Item>
-          <Form.Item name="quantityTons" label={t.grain.issueQuantity} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0.001} style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item name="movementDate" label={t.grain.movementDate} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
-          </Form.Item>
-          {currentMovementType === 'Out' && (
-            <>
-              <Form.Item name="pricePerTon" label={t.grain.exportPrice}>
-                <InputNumber min={0} precision={2} addonAfter="грн/т" style={{ width: '100%' }} />
-              </Form.Item>
-              <Form.Item name="reason" label={t.grain.exportReason}>
-                <Select options={[
-                  { value: 'sale', label: t.grain.reasonSale },
-                  { value: 'processing', label: t.grain.reasonProcessing },
-                  { value: 'transfer', label: t.grain.reasonTransfer },
-                  { value: 'other', label: t.grain.reasonOther },
-                ]} />
-              </Form.Item>
-            </>
-          )}
-          {currentMovementType !== 'Out' && (
-            <Form.Item name="reason" label={t.grain.reason}>
-              <Input />
-            </Form.Item>
-          )}
-          <Form.Item name="notes" label={t.common.notes}>
-            <Input.TextArea rows={2} />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Movements Details Modal */}
-      <Modal
-        title={t.grain.batchList}
-        open={movementsModalOpen}
-        onCancel={() => { setMovementsModalOpen(false); setDetailsBatch(null); }}
-        footer={null}
-        width={700}
-      >
-        {detailsBatch && detailsBatch.placements.length > 0 && (
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 12, color: '#888', textTransform: 'uppercase', marginBottom: 6 }}>
-              {t.grain.storagePlacements}
-            </div>
-            <Table
-              dataSource={detailsBatch.placements}
-              rowKey="id"
-              pagination={false}
-              size="small"
-              columns={[
-                { title: t.grainStorages.name, dataIndex: 'grainStorageName', key: 'grainStorageName' },
-                { title: t.grain.quantityTons, dataIndex: 'quantityTons', key: 'quantityTons', render: (v: number) => `${v.toFixed(2)} т` },
-              ]}
-            />
-          </div>
-        )}
-        <Table
-          dataSource={movements}
-          columns={movementColumns}
-          rowKey="id"
-          loading={loadingMovements}
-          pagination={false}
-          size="small"
-        />
-      </Modal>
-
-      {/* Issue Grain Modal */}
+      {/* ── Issue Grain Modal ── */}
       <Modal
         title={t.grain.issueGrain}
         open={issueModalOpen}
@@ -734,220 +733,59 @@ export default function GrainBatchList() {
         <Form form={issueForm} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item name="grainBatchId" label={t.grain.selectBatch} rules={[{ required: true, message: t.common.required }]}>
             <Select
-              showSearch
-              placeholder={t.grain.selectBatch}
-              options={(result?.items ?? []).map(b => ({
-                value: b.id,
-                label: `${b.grainType} — ${b.quantityTons.toFixed(2)} т (${ownershipLabel(b.ownershipType)})`,
-              }))}
+              showSearch placeholder={t.grain.selectBatch}
+              options={batchOptions}
               onChange={(val) => {
                 const batch = (result?.items ?? []).find(b => b.id === val);
                 setSelectedIssueBatch(batch ?? null);
               }}
-              filterOption={(input, option) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-              }
+              filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
             />
           </Form.Item>
           {selectedIssueBatch && (
-            <Alert
-              type="info"
-              message={`${t.grain.available}: ${selectedIssueBatch.quantityTons.toFixed(3)} т`}
-              style={{ marginBottom: 12 }}
-            />
+            <Alert type="info" message={`${t.grain.available}: ${selectedIssueBatch.quantityTons.toFixed(3)} т`} style={{ marginBottom: 12 }} />
           )}
           <Form.Item name="quantityTons" label={t.grain.issueQuantity} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber
-              min={0.001}
-              max={selectedIssueBatch?.quantityTons}
-              precision={3}
-              addonAfter="т"
-              style={{ width: '100%' }}
-            />
+            <InputNumber min={0.001} max={selectedIssueBatch?.quantityTons} precision={3} addonAfter="т" style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="reason" label={t.grain.exportReason}>
-            <Select
-              allowClear
-              options={[
-                { value: 'sale', label: t.grain.reasonSale },
-                { value: 'processing', label: t.grain.reasonProcessing },
-                { value: 'transfer', label: t.grain.reasonTransfer },
-                { value: 'other', label: t.grain.reasonOther },
-              ]}
-            />
+            <Select allowClear options={[
+              { value: 'sale', label: t.grain.reasonSale },
+              { value: 'processing', label: t.grain.reasonProcessing },
+              { value: 'transfer', label: t.grain.reasonTransfer },
+              { value: 'other', label: t.grain.reasonOther },
+            ]} />
           </Form.Item>
           <Form.Item name="pricePerTon" label={t.grain.exportPrice}>
             <InputNumber min={0} precision={2} addonAfter="грн/т" style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="buyerName" label={t.grain.buyer || 'Покупець'}>
+          <Form.Item name="buyerName" label={t.grain.buyer}>
             <Input placeholder="Назва покупця або отримувача" />
           </Form.Item>
         </Form>
       </Modal>
 
-      {/* Split Batch Modal */}
-      {(() => {
-        const totalSplit = splitTargets.reduce((s, tgt) => s + (tgt.quantity ?? 0), 0);
-        const remaining = (splitSourceBatch?.quantityTons ?? 0) - totalSplit;
-        const exceedsBalance = !!splitSourceBatch && totalSplit > splitSourceBatch.quantityTons;
-
-        return (
-          <Modal
-            title={t.grain.splitTitle}
-            open={splitModalOpen}
-            onOk={() => handleSplitBatch(splitNotes || undefined)}
-            onCancel={() => { setSplitModalOpen(false); setSplitSourceBatch(null); setSplitTargets([{ storageId: '', quantity: null }]); }}
-            okText={t.grain.splitBatch}
-            cancelText={t.common.cancel}
-            confirmLoading={savingSplit}
-            okButtonProps={{ disabled: exceedsBalance || validSplitTargets.length === 0 }}
-            width={600}
-          >
-            {splitSourceBatch && (
-              <Alert
-                type="info"
-                message={`${t.grain.splitSource}: ${splitSourceBatch.grainType} — ${splitSourceBatch.quantityTons.toFixed(3)} т`}
-                style={{ marginBottom: 12 }}
-              />
-            )}
-            {exceedsBalance && (
-              <Alert type="error" message={t.grain.splitExceedsAvailable} style={{ marginBottom: 12 }} />
-            )}
-            <Divider orientation="left" style={{ fontSize: 13 }}>{t.grain.splitTargets}</Divider>
-            {splitTargets.map((tgt, idx) => (
-              <Row key={idx} gutter={8} style={{ marginBottom: 8 }} align="middle">
-                <Col flex="1">
-                  <Select
-                    placeholder={t.grain.splitTargetStorage}
-                    style={{ width: '100%' }}
-                    value={tgt.storageId || undefined}
-                    options={storages.filter(s => s.isActive).map(s => ({ value: s.id, label: s.name }))}
-                    onChange={val => {
-                      const next = [...splitTargets];
-                      next[idx] = { ...next[idx], storageId: val };
-                      setSplitTargets(next);
-                    }}
-                    showSearch
-                    optionFilterProp="label"
-                  />
-                </Col>
-                <Col flex="140px">
-                  <InputNumber
-                    min={0.001}
-                    precision={3}
-                    addonAfter="т"
-                    style={{ width: '100%' }}
-                    value={tgt.quantity ?? undefined}
-                    onChange={val => {
-                      const next = [...splitTargets];
-                      next[idx] = { ...next[idx], quantity: val ?? null };
-                      setSplitTargets(next);
-                    }}
-                  />
-                </Col>
-                <Col flex="32px">
-                  <Button
-                    size="small"
-                    danger
-                    icon={<DeleteOutlined />}
-                    disabled={splitTargets.length === 1}
-                    onClick={() => setSplitTargets(splitTargets.filter((_, i) => i !== idx))}
-                  />
-                </Col>
-              </Row>
-            ))}
-            <Button
-              type="dashed"
-              icon={<PlusOutlined />}
-              onClick={() => setSplitTargets([...splitTargets, { storageId: '', quantity: null }])}
-              style={{ marginBottom: 12, width: '100%' }}
-            >
-              {t.grain.addTarget}
-            </Button>
-            <Row gutter={16} style={{ marginBottom: 8 }}>
-              <Col span={12}>
-                <span style={{ color: '#888', fontSize: 12 }}>{t.grain.splitTotalLabel}: </span>
-                <strong style={{ color: exceedsBalance ? '#ff4d4f' : undefined }}>{totalSplit.toFixed(3)} т</strong>
-              </Col>
-              <Col span={12}>
-                <span style={{ color: '#888', fontSize: 12 }}>{t.grain.splitRemaining}: </span>
-                <strong style={{ color: remaining < 0 ? '#ff4d4f' : '#52c41a' }}>{remaining.toFixed(3)} т</strong>
-              </Col>
-            </Row>
-            <Form layout="vertical">
-              <Form.Item label={t.grain.splitNotes}>
-                <Input.TextArea rows={2} value={splitNotes} onChange={e => setSplitNotes(e.target.value)} />
-              </Form.Item>
-            </Form>
-          </Modal>
-        );
-      })()}
-      {/* Transfer Grain Modal */}
+      {/* ── Transfer Modal ── */}
       <Modal
-        title={t.grain.transferTitle}
+        title={t.grain.transferGrain}
         open={transferModalOpen}
-        onOk={handleTransferGrain}
-        onCancel={() => { setTransferModalOpen(false); transferForm.resetFields(); setTransferSourceBatch(null); }}
+        onOk={handleTransfer}
+        onCancel={() => { setTransferModalOpen(false); transferForm.resetFields(); }}
         okText={t.common.confirm}
         cancelText={t.common.cancel}
         confirmLoading={savingTransfer}
       >
         <Form form={transferForm} layout="vertical" style={{ marginTop: 16 }}>
-          {transferSourceBatch && (
-            <Alert
-              type="info"
-              message={`${t.grain.available}: ${transferSourceBatch.quantityTons.toFixed(3)} т (${transferSourceBatch.grainType})`}
-              style={{ marginBottom: 12 }}
-            />
-          )}
-          <Form.Item label={t.grain.targetBatch}>
-            <Select
-              value={transferCreateNew ? '__new__' : 'existing'}
-              onChange={(v) => { setTransferCreateNew(v === '__new__'); transferForm.setFieldsValue({ targetBatchId: undefined, targetStorageId: undefined }); }}
-              options={[
-                { value: 'existing', label: t.grain.selectTargetBatch },
-                { value: '__new__', label: t.grain.newBatchInStorage },
-              ]}
-            />
+          <Form.Item name="sourceBatchId" label={t.grain.sourceBatch} rules={[{ required: true, message: t.common.required }]}>
+            <Select showSearch placeholder={t.grain.selectBatch} options={batchOptions}
+              filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())} />
           </Form.Item>
-          {!transferCreateNew ? (
-            <Form.Item name="targetBatchId" label={t.grain.selectTargetBatch} rules={[{ required: true, message: t.common.required }]}>
-              <Select
-                showSearch
-                placeholder={t.grain.selectTargetBatch}
-                options={(result?.items ?? [])
-                  .filter(b => b.id !== transferSourceBatch?.id && b.grainType === transferSourceBatch?.grainType)
-                  .map(b => ({
-                    value: b.id,
-                    label: `${b.grainType} — ${b.quantityTons.toFixed(2)} т (${storages.find(s => s.id === b.placements?.[0]?.grainStorageId)?.name ?? b.placements?.[0]?.grainStorageId ?? ''})`,
-                  }))}
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-              />
-            </Form.Item>
-          ) : (
-            <Form.Item name="targetStorageId" label={t.grain.targetStorage} rules={[{ required: true, message: t.common.required }]}>
-              <Select
-                showSearch
-                placeholder={t.grain.targetStorage}
-                options={storages
-                  .filter(s => s.isActive)
-                  .map(s => ({ value: s.id, label: s.name }))}
-              />
-            </Form.Item>
-          )}
+          <Form.Item name="targetBatchId" label={t.grain.targetBatch} rules={[{ required: true, message: t.common.required }]}>
+            <Select showSearch placeholder={t.grain.selectBatch} options={batchOptions}
+              filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())} />
+          </Form.Item>
           <Form.Item name="quantityTons" label={t.grain.issueQuantity} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber
-              min={0.001}
-              max={transferSourceBatch?.quantityTons}
-              precision={3}
-              addonAfter="т"
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-          <Form.Item name="transferDate" label={t.grain.transferDate} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <InputNumber min={0.001} precision={3} addonAfter="т" style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />
@@ -955,7 +793,103 @@ export default function GrainBatchList() {
         </Form>
       </Modal>
 
+      {/* ── Split Batch Modal ── */}
+      <Modal
+        title={`${t.grain.splitBatch}${selectedSplitBatch ? `: ${selectedSplitBatch.grainType}` : ''}`}
+        open={splitModalOpen}
+        onOk={handleSplit}
+        onCancel={() => { setSplitModalOpen(false); splitForm.resetFields(); setSelectedSplitBatch(null); }}
+        okText={t.common.confirm}
+        cancelText={t.common.cancel}
+        confirmLoading={savingSplit}
+      >
+        {selectedSplitBatch && (
+          <Alert type="info" message={`${t.grain.available}: ${selectedSplitBatch.quantityTons.toFixed(3)} т`} style={{ marginBottom: 12 }} />
+        )}
+        <Form form={splitForm} layout="vertical" style={{ marginTop: 8 }}>
+          <Form.Item name="splitQuantityTons" label={t.grain.splitQuantity} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={0.001} max={selectedSplitBatch?.quantityTons} precision={3} addonAfter="т" style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="targetStorageId" label={t.grain.selectStorage}>
+            <Select allowClear options={storages.map(s => ({ value: s.id, label: s.name }))} placeholder={t.grain.selectStorage} />
+          </Form.Item>
+          <Form.Item name="notes" label={t.common.notes}>
+            <Input.TextArea rows={2} />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* ── Adjust Batch Modal ── */}
+      <Modal
+        title={`${t.grain.adjustBatch}${selectedAdjustBatch ? `: ${selectedAdjustBatch.grainType}` : ''}`}
+        open={adjustModalOpen}
+        onOk={handleAdjust}
+        onCancel={() => { setAdjustModalOpen(false); adjustForm.resetFields(); setSelectedAdjustBatch(null); }}
+        okText={t.common.save}
+        cancelText={t.common.cancel}
+        confirmLoading={savingAdjust}
+      >
+        {selectedAdjustBatch && (
+          <Alert type="info" message={`${t.grain.available}: ${selectedAdjustBatch.quantityTons.toFixed(3)} т`} style={{ marginBottom: 12 }} />
+        )}
+        <Form form={adjustForm} layout="vertical" style={{ marginTop: 8 }}>
+          <Form.Item name="adjustmentTons" label={t.grain.adjustmentTons} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber precision={3} addonAfter="т" style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="reason" label={t.grain.reason}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="notes" label={t.common.notes}>
+            <Input.TextArea rows={2} />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* ── WriteOff Batch Modal ── */}
+      <Modal
+        title={`${t.grain.writeOffBatch}${selectedWriteOffBatch ? `: ${selectedWriteOffBatch.grainType}` : ''}`}
+        open={writeOffModalOpen}
+        onOk={handleWriteOff}
+        onCancel={() => { setWriteOffModalOpen(false); writeOffForm.resetFields(); setSelectedWriteOffBatch(null); }}
+        okText={t.common.confirm}
+        cancelText={t.common.cancel}
+        confirmLoading={savingWriteOff}
+        okButtonProps={{ danger: true }}
+      >
+        {selectedWriteOffBatch && (
+          <Alert type="warning" message={`${t.grain.available}: ${selectedWriteOffBatch.quantityTons.toFixed(3)} т`} style={{ marginBottom: 12 }} />
+        )}
+        <Form form={writeOffForm} layout="vertical" style={{ marginTop: 8 }}>
+          <Form.Item name="quantityTons" label={t.grain.issueQuantity} rules={[{ required: true, message: t.common.required }]}>
+            <InputNumber min={0.001} max={selectedWriteOffBatch?.quantityTons} precision={3} addonAfter="т" style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="reason" label={t.grain.reason}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="notes" label={t.common.notes}>
+            <Input.TextArea rows={2} />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* ── Movement History Modal (per batch) ── */}
+      <Modal
+        title={movementsBatchLabel || t.grain.batchList}
+        open={movementsModalOpen}
+        onCancel={() => setMovementsModalOpen(false)}
+        footer={null}
+        width={900}
+      >
+        <Table
+          dataSource={movements}
+          columns={movementColumns}
+          rowKey="id"
+          loading={loadingMovements}
+          pagination={false}
+          size="small"
+          locale={{ emptyText: <EmptyState message={t.grain.noMovements} /> }}
+        />
+      </Modal>
     </div>
   );
 }
-
