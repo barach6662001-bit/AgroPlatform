@@ -254,7 +254,7 @@ export default function Login() {
                     }
                   }}
                 >
-                  Увійти як Demo
+                  Спробувати демо
                 </Button>
               </div>
             }
