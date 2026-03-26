@@ -88,6 +88,10 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("FieldId", "PlannedDate");
 
+                    b.HasIndex("TenantId", "FieldId");
+
+                    b.HasIndex("TenantId", "IsCompleted");
+
                     b.ToTable("AgroOperations");
                 });
 
@@ -326,8 +330,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -371,7 +375,11 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("FieldId");
 
+                    b.HasIndex("TenantId", "Category");
+
                     b.HasIndex("TenantId", "Date");
+
+                    b.HasIndex("TenantId", "FieldId");
 
                     b.ToTable("CostRecords");
                 });
@@ -718,6 +726,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_FieldHarvests_TenantId");
 
+                    b.HasIndex("FieldId", "Year")
+                        .HasDatabaseName("IX_FieldHarvests_FieldId_Year");
+
                     b.ToTable("FieldHarvests");
                 });
 
@@ -925,6 +936,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_FieldSeedings_TenantId");
+
+                    b.HasIndex("FieldId", "Year")
+                        .HasDatabaseName("IX_FieldSeedings_FieldId_Year");
 
                     b.ToTable("FieldSeedings");
                 });
@@ -2554,6 +2568,12 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("LastUpdatedUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -2572,8 +2592,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("WarehouseId", "ItemId", "BatchId")
-                        .IsUnique();
+                    b.HasIndex("WarehouseId", "ItemId", "BatchId", "TenantId")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("StockBalances");
                 });

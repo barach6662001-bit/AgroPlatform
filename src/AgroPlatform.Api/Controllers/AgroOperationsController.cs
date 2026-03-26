@@ -11,6 +11,7 @@ using AgroPlatform.Application.AgroOperations.Commands.UpdateMachinery;
 using AgroPlatform.Application.AgroOperations.Commands.UpdateResourceActual;
 using AgroPlatform.Application.AgroOperations.Queries.GetAgroOperationById;
 using AgroPlatform.Application.AgroOperations.Queries.GetAgroOperations;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -42,7 +43,7 @@ public class AgroOperationsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created operation.</returns>
     [HttpPost]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateAgroOperation([FromBody] CreateAgroOperationCommand command, CancellationToken cancellationToken)
     {
@@ -96,7 +97,7 @@ public class AgroOperationsController : ControllerBase
     /// <param name="command">Updated operation data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAgroOperation(Guid id, [FromBody] UpdateAgroOperationCommand command, CancellationToken cancellationToken)
@@ -118,7 +119,7 @@ public class AgroOperationsController : ControllerBase
     /// <param name="command">Completion data (completion date).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPost("{id:guid}/complete")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -150,7 +151,7 @@ public class AgroOperationsController : ControllerBase
     /// <param name="id">Operation ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAgroOperation(Guid id, CancellationToken cancellationToken)
@@ -165,7 +166,7 @@ public class AgroOperationsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created operation-resource record.</returns>
     [HttpPost("{id:guid}/resources")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> AddResource(Guid id, [FromBody] AddResourceCommand command, CancellationToken cancellationToken)
     {
@@ -181,7 +182,7 @@ public class AgroOperationsController : ControllerBase
     /// <param name="command">Actual quantity data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("resources/{resourceId:guid}/actual")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateResourceActual(Guid resourceId, [FromBody] UpdateResourceActualCommand command, CancellationToken cancellationToken)
@@ -197,7 +198,7 @@ public class AgroOperationsController : ControllerBase
     /// <param name="resourceId">Operation-resource record ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("resources/{resourceId:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveResource(Guid resourceId, CancellationToken cancellationToken)
@@ -212,7 +213,7 @@ public class AgroOperationsController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created operation-machinery record.</returns>
     [HttpPost("{id:guid}/machinery")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> AddMachinery(Guid id, [FromBody] AddMachineryCommand command, CancellationToken cancellationToken)
     {
@@ -228,7 +229,7 @@ public class AgroOperationsController : ControllerBase
     /// <param name="command">Updated machinery data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("machinery/{machineryId:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateMachinery(Guid machineryId, [FromBody] UpdateMachineryCommand command, CancellationToken cancellationToken)
@@ -244,7 +245,7 @@ public class AgroOperationsController : ControllerBase
     /// <param name="machineryId">Operation-machinery record ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpDelete("machinery/{machineryId:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [Authorize(Policy = Permissions.Fields.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveMachinery(Guid machineryId, CancellationToken cancellationToken)

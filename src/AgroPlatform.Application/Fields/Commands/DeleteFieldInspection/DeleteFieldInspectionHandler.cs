@@ -21,6 +21,9 @@ public class DeleteFieldInspectionHandler : IRequestHandler<DeleteFieldInspectio
             .FirstOrDefaultAsync(i => i.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(FieldInspection), request.Id);
 
+        if (inspection.FieldId != request.FieldId)
+            throw new NotFoundException(nameof(FieldInspection), request.Id);
+
         _context.FieldInspections.Remove(inspection);
         await _context.SaveChangesAsync(cancellationToken);
     }

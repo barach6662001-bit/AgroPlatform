@@ -1,12 +1,13 @@
 using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Common;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Fields;
 
 namespace AgroPlatform.Domain.Economics;
 
 public class CostRecord : AuditableEntity
 {
-    public string Category { get; set; } = string.Empty;
+    public CostCategory Category { get; set; }
     public decimal Amount { get; set; }
     public string Currency { get; set; } = "UAH";
     public DateTime Date { get; set; }

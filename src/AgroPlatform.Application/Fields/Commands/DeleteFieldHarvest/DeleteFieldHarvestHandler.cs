@@ -21,6 +21,9 @@ public class DeleteFieldHarvestHandler : IRequestHandler<DeleteFieldHarvestComma
             .FirstOrDefaultAsync(h => h.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(FieldHarvest), request.Id);
 
+        if (harvest.FieldId != request.FieldId)
+            throw new NotFoundException(nameof(FieldHarvest), request.Id);
+
         _context.FieldHarvests.Remove(harvest);
         await _context.SaveChangesAsync(cancellationToken);
     }
