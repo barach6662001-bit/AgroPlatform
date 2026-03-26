@@ -20,7 +20,7 @@ public class GetGrainBatchesHandler : IRequestHandler<GetGrainBatchesQuery, Pagi
         var query = _context.GrainBatches.AsQueryable();
 
         if (request.StorageId.HasValue)
-            query = query.Where(b => b.GrainStorageId == request.StorageId.Value);
+            query = query.Where(b => b.Placements.Any(p => p.GrainStorageId == request.StorageId.Value));
 
         if (request.OwnershipType.HasValue)
             query = query.Where(b => b.OwnershipType == request.OwnershipType.Value);
@@ -37,7 +37,6 @@ public class GetGrainBatchesHandler : IRequestHandler<GetGrainBatchesQuery, Pagi
             .Select(b => new GrainBatchDto
             {
                 Id = b.Id,
-                GrainStorageId = b.GrainStorageId,
                 GrainType = b.GrainType,
                 QuantityTons = b.QuantityTons,
                 InitialQuantityTons = b.InitialQuantityTons,
@@ -52,6 +51,16 @@ public class GetGrainBatchesHandler : IRequestHandler<GetGrainBatchesQuery, Pagi
                     : null,
                 MoisturePercent = b.MoisturePercent,
                 Notes = b.Notes,
+                Placements = b.Placements
+                    .Select(p => new GrainBatchPlacementDto
+                    {
+                        Id = p.Id,
+                        GrainStorageId = p.GrainStorageId,
+                        GrainStorageName = p.GrainStorage.Name,
+                        GrainStorageUnitId = p.GrainStorageUnitId,
+                        QuantityTons = p.QuantityTons,
+                    })
+                    .ToList(),
             })
             .ToListAsync(cancellationToken);
 

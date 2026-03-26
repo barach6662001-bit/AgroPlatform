@@ -1,10 +1,10 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography, Divider, Tooltip } from 'antd';
+import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography, Divider, Tooltip, Tag } from 'antd';
 import { PlusOutlined, ExportOutlined, DownloadOutlined, ScissorOutlined, DeleteOutlined, SwapOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes, getGrainStorages, splitGrainBatch, transferGrain } from '../../api/grain';
-import type { SplitTarget, TransferGrainRequest } from '../../api/grain';
+import type { SplitTarget, TransferGrainRequest, CreateGrainBatchRequest } from '../../api/grain';
 import { getFields } from '../../api/fields';
 import type { GrainBatchDto, GrainMovementDto, GrainOwnershipType, GrainStorageDto } from '../../types/grain';
 import type { FieldDto } from '../../types/field';
@@ -54,6 +54,7 @@ export default function GrainBatchList() {
   const [movementsModalOpen, setMovementsModalOpen] = useState(false);
   const [movements, setMovements] = useState<GrainMovementDto[]>([]);
   const [loadingMovements, setLoadingMovements] = useState(false);
+  const [detailsBatch, setDetailsBatch] = useState<GrainBatchDto | null>(null);
 
   const [splitModalOpen, setSplitModalOpen] = useState(false);
   const [splitSourceBatch, setSplitSourceBatch] = useState<GrainBatchDto | null>(null);
@@ -108,6 +109,7 @@ export default function GrainBatchList() {
     batchForm.setFieldsValue({
       grainType: lastGrainType ?? grainTypes[0],
       receivedDate: dayjs(),
+      grainStorageId: selectedStorageId ?? (storages.length === 1 ? storages[0].id : undefined),
     });
     setBatchModalOpen(true);
   };
@@ -127,10 +129,20 @@ export default function GrainBatchList() {
     try {
       const values = await batchForm.validateFields();
       setSavingBatch(true);
-      await createGrainBatch({
-        ...values,
+      const payload: CreateGrainBatchRequest = {
+        grainStorageId: values.grainStorageId,
+        grainType: values.grainType,
+        initialQuantityTons: values.initialQuantityTons,
+        ownershipType: values.ownershipType,
+        ownerName: values.ownerName,
+        contractNumber: values.contractNumber,
+        pricePerTon: values.pricePerTon,
         receivedDate: values.receivedDate?.toISOString(),
-      });
+        sourceFieldId: values.sourceFieldId,
+        moisturePercent: values.moisturePercent,
+        notes: values.notes,
+      };
+      await createGrainBatch(payload);
       message.success(t.grain.createSuccess);
       localStorage.setItem(LAST_GRAIN_KEY, values.grainType);
       batchForm.resetFields();
@@ -196,11 +208,12 @@ export default function GrainBatchList() {
     }
   };
 
-  const openMovementsModal = async (batchId: string) => {
+  const openMovementsModal = async (batch: GrainBatchDto) => {
+    setDetailsBatch(batch);
     setMovementsModalOpen(true);
     setLoadingMovements(true);
     try {
-      const data = await getGrainMovements(batchId);
+      const data = await getGrainMovements(batch.id);
       setMovements(data);
     } catch {
       message.error(t.grain.loadError);
@@ -305,6 +318,21 @@ export default function GrainBatchList() {
       key: 'grainType',
     },
     {
+      title: t.grain.storage,
+      key: 'placements',
+      render: (_: unknown, record: GrainBatchDto) => (
+        record.placements.length > 0 ? (
+          <Space size={4} wrap>
+            {record.placements.map(p => (
+              <Tag key={p.id} color="blue">
+                {p.grainStorageName}: {p.quantityTons.toFixed(2)} т
+              </Tag>
+            ))}
+          </Space>
+        ) : '—'
+      ),
+    },
+    {
       title: t.grain.ownershipType,
       dataIndex: 'ownershipType',
       key: 'ownershipType',
@@ -387,7 +415,7 @@ export default function GrainBatchList() {
           )}
           <Button
             size="small"
-            onClick={e => { e.stopPropagation(); openMovementsModal(record.id); }}
+            onClick={e => { e.stopPropagation(); openMovementsModal(record); }}
           >
             {t.common.details}
           </Button>

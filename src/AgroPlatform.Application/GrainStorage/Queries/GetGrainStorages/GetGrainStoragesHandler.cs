@@ -33,8 +33,8 @@ public class GetGrainStoragesHandler : IRequestHandler<GetGrainStoragesQuery, IR
                 CapacityTons = s.CapacityTons,
                 IsActive = s.IsActive,
                 Notes = s.Notes,
-                BatchCount = s.GrainBatches.Count(b => !b.IsDeleted),
-                TotalTons = s.GrainBatches.Where(b => !b.IsDeleted).Sum(b => b.QuantityTons),
+                BatchCount = s.Placements.Select(p => p.GrainBatchId).Distinct().Count(),
+                TotalTons = s.Placements.Sum(p => p.QuantityTons),
             })
             .ToListAsync(cancellationToken);
 

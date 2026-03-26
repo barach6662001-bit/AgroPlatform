@@ -1,11 +1,31 @@
 import apiClient from './axios';
-import type { GrainBatchDto, GrainMovementDto, GrainStorageDto, SplitGrainBatchResultDto, GrainTransferDto, GrainStorageOverviewDto } from '../types/grain';
+import type { GrainBatchDto, GrainBatchPlacementDto, GrainMovementDto, GrainStorageDto, SplitGrainBatchResultDto, GrainTransferDto, GrainStorageOverviewDto } from '../types/grain';
 import type { PaginatedResult } from '../types/common';
 
 export interface GrainSummaryItem {
   grainType: string;
   totalTons: number;
   batchCount: number;
+}
+
+export interface CreateGrainBatchRequest {
+  grainStorageId: string;
+  grainType: string;
+  initialQuantityTons: number;
+  ownershipType: number;
+  ownerName?: string;
+  contractNumber?: string;
+  pricePerTon?: number;
+  receivedDate: string;
+  sourceFieldId?: string;
+  moisturePercent?: number;
+  notes?: string;
+}
+
+export interface AddGrainBatchPlacementRequest {
+  grainStorageId: string;
+  grainStorageUnitId?: string;
+  quantityTons: number;
 }
 
 // --- Grain Storage Facilities ---
@@ -24,12 +44,18 @@ export const deleteGrainStorage = (id: string) =>
 export const getGrainStorageOverview = (params?: { activeOnly?: boolean; storageId?: string }) =>
   apiClient.get<GrainStorageOverviewDto[]>('/api/grain-storages/overview', { params }).then(r => r.data);
 
+// --- Grain Batches ---
 export const getGrainBatches = (params?: { storageId?: string; ownershipType?: number; page?: number; pageSize?: number }) =>
   apiClient.get<PaginatedResult<GrainBatchDto>>('/api/grain-batches', { params }).then(r => r.data);
 
-export const createGrainBatch = (data: Partial<GrainBatchDto>) =>
+export const createGrainBatch = (data: CreateGrainBatchRequest) =>
   apiClient.post<{ id: string }>('/api/grain-batches', data).then(r => r.data);
 
+// --- Grain Placements ---
+export const addGrainBatchPlacement = (batchId: string, data: AddGrainBatchPlacementRequest) =>
+  apiClient.post<{ id: string }>(`/api/grain-batches/${batchId}/placements`, data).then(r => r.data);
+
+// --- Grain Movements ---
 export const createGrainMovement = (batchId: string, data: Partial<GrainMovementDto>) =>
   apiClient.post<{ id: string }>(`/api/grain-batches/${batchId}/movements`, data).then(r => r.data);
 

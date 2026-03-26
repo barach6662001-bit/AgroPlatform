@@ -5,7 +5,6 @@ namespace AgroPlatform.Application.GrainStorage.DTOs;
 public class GrainBatchDto
 {
     public Guid Id { get; set; }
-    public Guid GrainStorageId { get; set; }
     public string GrainType { get; set; } = string.Empty;
     public decimal QuantityTons { get; set; }
     public decimal InitialQuantityTons { get; set; }
@@ -18,4 +17,5 @@ public class GrainBatchDto
     public string? SourceFieldName { get; set; }
     public decimal? MoisturePercent { get; set; }
     public string? Notes { get; set; }
+    public IReadOnlyList<GrainBatchPlacementDto> Placements { get; set; } = [];
 }
