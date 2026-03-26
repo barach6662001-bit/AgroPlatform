@@ -3,6 +3,7 @@ using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.HR.Commands.CreateEmployee;
 using AgroPlatform.Application.HR.Commands.CreateSalaryPayment;
 using AgroPlatform.Application.HR.Commands.CreateWorkLog;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.HR;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -156,7 +157,7 @@ public class HRHandlerTests
         payment.PaymentType.Should().Be("Salary");
 
         var costRecord = await ((TestDbContext)context).CostRecords
-            .FirstOrDefaultAsync(c => c.Category == "Salary");
+            .FirstOrDefaultAsync(c => c.Category == CostCategory.Labor);
         costRecord.Should().NotBeNull();
         costRecord!.Amount.Should().Be(5000m);
         costRecord.Currency.Should().Be("UAH");

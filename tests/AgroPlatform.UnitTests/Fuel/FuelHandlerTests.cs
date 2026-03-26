@@ -212,7 +212,7 @@ public class FuelHandlerTests
         await handler.Handle(command, CancellationToken.None);
 
         var costRecord = await ((TestDbContext)context).CostRecords
-            .FirstOrDefaultAsync(c => c.Category == "Fuel");
+            .FirstOrDefaultAsync(c => c.Category == CostCategory.Fuel);
         costRecord.Should().NotBeNull();
         costRecord!.Amount.Should().Be(4500m); // 100L × 45 UAH/L
     }

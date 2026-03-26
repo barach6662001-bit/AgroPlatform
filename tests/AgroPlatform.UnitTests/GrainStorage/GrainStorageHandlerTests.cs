@@ -145,7 +145,7 @@ public class GrainStorageHandlerTests
         await handler.Handle(command, CancellationToken.None);
 
         var costRecord = await ((TestDbContext)context).CostRecords
-            .FirstOrDefaultAsync(c => c.Category == "Revenue");
+            .FirstOrDefaultAsync(c => c.Category == CostCategory.Other);
         costRecord.Should().NotBeNull();
         costRecord!.Amount.Should().Be(-750000m); // -100t × 7500 UAH/t (negative = income)
         costRecord.Currency.Should().Be("UAH");
