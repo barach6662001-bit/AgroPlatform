@@ -65,6 +65,8 @@ export default function GrainBatchList() {
   const { hasPermission } = useRole();
   const canCreate = hasPermission('inventory', 'manage');
 
+  const validSplitTargets = splitTargets.filter(tgt => tgt.storageId && tgt.quantity && tgt.quantity > 0);
+
   useEffect(() => {
     getGrainTypes()
       .then(setGrainTypes)
@@ -210,13 +212,12 @@ export default function GrainBatchList() {
   const handleSplitBatch = async (notes?: string) => {
     if (!splitSourceBatch) return;
 
-    const validTargets = splitTargets.filter(t => t.storageId && t.quantity && t.quantity > 0);
-    if (validTargets.length === 0) {
+    if (validSplitTargets.length === 0) {
       message.warning(t.grain.splitAtLeastOne);
       return;
     }
 
-    const total = validTargets.reduce((s, t) => s + (t.quantity ?? 0), 0);
+    const total = validSplitTargets.reduce((s, tgt) => s + (tgt.quantity ?? 0), 0);
     if (total > splitSourceBatch.quantityTons) {
       message.error(t.grain.splitExceedsAvailable);
       return;
@@ -224,9 +225,9 @@ export default function GrainBatchList() {
 
     try {
       setSavingSplit(true);
-      const targets: SplitTarget[] = validTargets.map(t => ({
-        targetStorageId: t.storageId,
-        quantityTons: t.quantity!,
+      const targets: SplitTarget[] = validSplitTargets.map(tgt => ({
+        targetStorageId: tgt.storageId,
+        quantityTons: tgt.quantity!,
       }));
       await splitGrainBatch(splitSourceBatch.id, targets, notes);
       message.success(t.grain.splitSuccess);
@@ -692,7 +693,7 @@ export default function GrainBatchList() {
             okText={t.grain.splitBatch}
             cancelText={t.common.cancel}
             confirmLoading={savingSplit}
-            okButtonProps={{ disabled: exceedsBalance || splitTargets.every(tgt => !tgt.storageId || !tgt.quantity) }}
+            okButtonProps={{ disabled: exceedsBalance || validSplitTargets.length === 0 }}
             width={600}
           >
             {splitSourceBatch && (
