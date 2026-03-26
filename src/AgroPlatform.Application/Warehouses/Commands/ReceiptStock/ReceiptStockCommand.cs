@@ -10,5 +10,10 @@ public record ReceiptStockCommand(
     string UnitCode,
     decimal? PricePerUnit,
     string? Note,
-    string? ClientOperationId
+    string? ClientOperationId,
+    string? BatchCode,
+    DateTime? ReceivedDate,
+    DateTime? ExpiryDate,
+    string? SupplierName,
+    decimal? CostPerUnit
 ) : IRequest<Guid>;
