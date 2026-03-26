@@ -21,4 +21,5 @@ public class GrainBatch : AuditableEntity
 
     public ICollection<GrainMovement> Movements { get; set; } = new List<GrainMovement>();
     public Field? SourceField { get; set; }
+    public GrainStorage? GrainStorage { get; set; }
 }

@@ -26,8 +26,6 @@ public static class DataSeeder
 
     static readonly Guid W_Main      = new("aaaaaaaa-0000-0000-0001-000000000001");
     static readonly Guid W_Fuel      = new("aaaaaaaa-0000-0000-0001-000000000002");
-    static readonly Guid W_GrainEast = new("aaaaaaaa-0000-0000-0001-000000000003");
-    static readonly Guid W_GrainWest = new("aaaaaaaa-0000-0000-0001-000000000004");
     static readonly Guid W_Chem      = new("aaaaaaaa-0000-0000-0001-000000000005");
 
     static readonly Guid I_Wheat      = new("aaaaaaaa-0000-0000-0002-000000000001");
@@ -63,6 +61,10 @@ public static class DataSeeder
     static readonly Guid GB_Wheat = new("aaaaaaaa-0000-0000-0006-000000000001");
     static readonly Guid GB_Sun   = new("aaaaaaaa-0000-0000-0006-000000000002");
     static readonly Guid GB_Corn  = new("aaaaaaaa-0000-0000-0006-000000000003");
+
+    // Proper GrainStorage entity IDs (separate from Warehouse IDs)
+    static readonly Guid GS_West = new("aaaaaaaa-0000-0000-0009-000000000001");
+    static readonly Guid GS_East = new("aaaaaaaa-0000-0000-0009-000000000002");
 
     static readonly Guid Emp1 = new("aaaaaaaa-0000-0000-0007-000000000001");
     static readonly Guid Emp2 = new("aaaaaaaa-0000-0000-0007-000000000002");
@@ -160,13 +162,17 @@ public static class DataSeeder
                 Role = UserRole.Manager, TenantId = DemoTenantId, IsActive = true
             }, "ManagerPass1");
 
-            // 3. Warehouses
+            // 3. Warehouses (materials only — Type=0)
             context.Warehouses.AddRange(
-                new Warehouse { Id = W_Main,      Name = "Головний склад МТС",      Location = "с. Демо, вул. Польова, 1",  IsActive = true, Type = 0, TenantId = DemoTenantId, CreatedAtUtc = now },
-                new Warehouse { Id = W_Fuel,      Name = "Паливно-мастильний склад", Location = "с. Демо, вул. Польова, 2",  IsActive = true, Type = 0, TenantId = DemoTenantId, CreatedAtUtc = now },
-                new Warehouse { Id = W_GrainEast, Name = "Зерносховище Схід",       Location = "с. Демо, поле №2",          IsActive = true, Type = 1, TenantId = DemoTenantId, CreatedAtUtc = now },
-                new Warehouse { Id = W_GrainWest, Name = "Зерносховище Захід",      Location = "с. Демо, поле №1",          IsActive = true, Type = 1, TenantId = DemoTenantId, CreatedAtUtc = now },
-                new Warehouse { Id = W_Chem,      Name = "Агрохімічний склад",      Location = "с. Демо, вул. Садова, 5",   IsActive = true, Type = 0, TenantId = DemoTenantId, CreatedAtUtc = now }
+                new Warehouse { Id = W_Main,  Name = "Головний склад МТС",      Location = "с. Демо, вул. Польова, 1",  IsActive = true, Type = 0, TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Warehouse { Id = W_Fuel,  Name = "Паливно-мастильний склад", Location = "с. Демо, вул. Польова, 2",  IsActive = true, Type = 0, TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Warehouse { Id = W_Chem,  Name = "Агрохімічний склад",      Location = "с. Демо, вул. Садова, 5",   IsActive = true, Type = 0, TenantId = DemoTenantId, CreatedAtUtc = now }
+            );
+
+            // 3b. Grain storage facilities (dedicated grain entities)
+            context.GrainStorages.AddRange(
+                new Domain.GrainStorage.GrainStorage { Id = GS_West, Name = "Зерносховище Захід", Code = "GS-W01", Location = "с. Демо, поле №1", StorageType = "Flat",     CapacityTons = 500.0m, IsActive = true, TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.GrainStorage.GrainStorage { Id = GS_East, Name = "Зерносховище Схід",  Code = "GS-E01", Location = "с. Демо, поле №2", StorageType = "Elevator", CapacityTons = 800.0m, IsActive = true, TenantId = DemoTenantId, CreatedAtUtc = now }
             );
 
             // 4. Warehouse items
@@ -304,9 +310,9 @@ public static class DataSeeder
 
             // 16. Grain storage batches
             context.GrainBatches.AddRange(
-                new GrainBatch { Id = GB_Wheat, GrainStorageId = W_GrainWest, GrainType = "Пшениця озима", QuantityTons = 180.0m, InitialQuantityTons = 255.0m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(20), SourceFieldId = F1, MoisturePercent = 13.5m, PricePerTon = 7200.0m,  Notes = "Урожай поточного сезону", TenantId = DemoTenantId, CreatedAtUtc = now },
-                new GrainBatch { Id = GB_Sun,   GrainStorageId = W_GrainEast, GrainType = "Соняшник",      QuantityTons = 106.4m, InitialQuantityTons = 106.4m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(5),  SourceFieldId = F2, MoisturePercent = 7.8m,  PricePerTon = 18500.0m, Notes = "Збирання в процесі",       TenantId = DemoTenantId, CreatedAtUtc = now },
-                new GrainBatch { Id = GB_Corn,  GrainStorageId = W_GrainEast, GrainType = "Кукурудза",     QuantityTons = 250.0m, InitialQuantityTons = 440.0m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(90), SourceFieldId = F3, MoisturePercent = 14.2m, PricePerTon = 5800.0m,  Notes = "Частково реалізовано",     TenantId = DemoTenantId, CreatedAtUtc = now }
+                new GrainBatch { Id = GB_Wheat, GrainStorageId = GS_West, GrainType = "Пшениця озима", QuantityTons = 180.0m, InitialQuantityTons = 255.0m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(20), SourceFieldId = F1, MoisturePercent = 13.5m, PricePerTon = 7200.0m,  Notes = "Урожай поточного сезону", TenantId = DemoTenantId, CreatedAtUtc = now },
+                new GrainBatch { Id = GB_Sun,   GrainStorageId = GS_East, GrainType = "Соняшник",      QuantityTons = 106.4m, InitialQuantityTons = 106.4m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(5),  SourceFieldId = F2, MoisturePercent = 7.8m,  PricePerTon = 18500.0m, Notes = "Збирання в процесі",       TenantId = DemoTenantId, CreatedAtUtc = now },
+                new GrainBatch { Id = GB_Corn,  GrainStorageId = GS_East, GrainType = "Кукурудза",     QuantityTons = 250.0m, InitialQuantityTons = 440.0m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(90), SourceFieldId = F3, MoisturePercent = 14.2m, PricePerTon = 5800.0m,  Notes = "Частково реалізовано",     TenantId = DemoTenantId, CreatedAtUtc = now }
             );
             context.GrainMovements.AddRange(
                 new GrainMovement { GrainBatchId = GB_Wheat, MovementType = "Receipt", QuantityTons = 255.0m, MovementDate = D(20), Reason = "Збирання врожаю",                                                          TenantId = DemoTenantId, CreatedAtUtc = now },
@@ -391,7 +397,7 @@ public static class DataSeeder
 
             await context.SaveChangesAsync();
             logger.LogInformation(
-                "Demo environment seeded: 7 fields, 5 warehouses, 3 grain batches, 5 machines, 7 operations, 5 sales, 12 costs, 4 employees. Login: {Email} / {Password}",
+                "Demo environment seeded: 7 fields, 3 warehouses, 2 grain storages, 3 grain batches, 5 machines, 7 operations, 5 sales, 12 costs, 4 employees. Login: {Email} / {Password}",
                 DemoEmail, DemoPassword);
         }
         catch (Exception ex)

@@ -4,6 +4,7 @@ using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.Fuel;
 using AgroPlatform.Domain.GrainStorage;
+using GrainStorageEntity = AgroPlatform.Domain.GrainStorage.GrainStorage;
 using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
@@ -48,6 +49,7 @@ public interface IAppDbContext
     DbSet<Tenant> Tenants { get; }
     DbSet<LandLease> LandLeases { get; }
     DbSet<LeasePayment> LeasePayments { get; }
+    DbSet<GrainStorageEntity> GrainStorages { get; }
     DbSet<GrainType> GrainTypes { get; }
     DbSet<GrainBatch> GrainBatches { get; }
     DbSet<GrainMovement> GrainMovements { get; }

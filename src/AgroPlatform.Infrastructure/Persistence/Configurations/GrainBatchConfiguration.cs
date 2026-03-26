@@ -35,6 +35,11 @@ public class GrainBatchConfiguration : IEntityTypeConfiguration<GrainBatch>
             .OnDelete(DeleteBehavior.SetNull)
             .IsRequired(false);
 
+        builder.HasOne(b => b.GrainStorage)
+            .WithMany(s => s.GrainBatches)
+            .HasForeignKey(b => b.GrainStorageId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(b => b.Movements)
             .WithOne(m => m.GrainBatch)
             .HasForeignKey(m => m.GrainBatchId)
