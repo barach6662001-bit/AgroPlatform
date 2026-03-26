@@ -226,7 +226,7 @@ public class FieldsController : ControllerBase
         var id = await _sender.Send(new CreateFieldSeedingCommand(
             fieldId, request.Year, request.CropName, request.Variety,
             request.SeedingRateKgPerHa, request.TotalSeedKg, request.SeedingDate, request.Notes), cancellationToken);
-        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+        return CreatedAtAction(nameof(GetSeedings), new { fieldId }, new { id });
     }
 
     /// <summary>Deletes a seeding record.</summary>
@@ -236,7 +236,7 @@ public class FieldsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSeeding(Guid fieldId, Guid id, CancellationToken cancellationToken)
     {
-        await _sender.Send(new DeleteFieldSeedingCommand(id), cancellationToken);
+        await _sender.Send(new DeleteFieldSeedingCommand(fieldId, id), cancellationToken);
         return NoContent();
     }
 
@@ -261,7 +261,7 @@ public class FieldsController : ControllerBase
             fieldId, request.Year, request.FertilizerName, request.ApplicationType,
             request.RateKgPerHa, request.TotalKg, request.CostPerKg, request.TotalCost,
             request.ApplicationDate, request.Notes), cancellationToken);
-        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+        return CreatedAtAction(nameof(GetFertilizers), new { fieldId }, new { id });
     }
 
     /// <summary>Deletes a fertilizer record.</summary>
@@ -271,7 +271,7 @@ public class FieldsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteFertilizer(Guid fieldId, Guid id, CancellationToken cancellationToken)
     {
-        await _sender.Send(new DeleteFieldFertilizerCommand(id), cancellationToken);
+        await _sender.Send(new DeleteFieldFertilizerCommand(fieldId, id), cancellationToken);
         return NoContent();
     }
 
@@ -296,7 +296,7 @@ public class FieldsController : ControllerBase
             fieldId, request.Year, request.ProductName, request.ProtectionType,
             request.RateLPerHa, request.TotalLiters, request.CostPerLiter, request.TotalCost,
             request.ApplicationDate, request.Notes), cancellationToken);
-        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+        return CreatedAtAction(nameof(GetProtections), new { fieldId }, new { id });
     }
 
     /// <summary>Deletes a plant protection record.</summary>
@@ -306,7 +306,7 @@ public class FieldsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteProtection(Guid fieldId, Guid id, CancellationToken cancellationToken)
     {
-        await _sender.Send(new DeleteFieldProtectionCommand(id), cancellationToken);
+        await _sender.Send(new DeleteFieldProtectionCommand(fieldId, id), cancellationToken);
         return NoContent();
     }
 
@@ -330,7 +330,7 @@ public class FieldsController : ControllerBase
         var id = await _sender.Send(new CreateFieldHarvestCommand(
             fieldId, request.Year, request.CropName, request.TotalTons,
             request.MoisturePercent, request.PricePerTon, request.HarvestDate, request.Notes), cancellationToken);
-        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+        return CreatedAtAction(nameof(GetHarvests), new { fieldId }, new { id });
     }
 
     /// <summary>Deletes a harvest record.</summary>
@@ -340,7 +340,7 @@ public class FieldsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteHarvest(Guid fieldId, Guid id, CancellationToken cancellationToken)
     {
-        await _sender.Send(new DeleteFieldHarvestCommand(id), cancellationToken);
+        await _sender.Send(new DeleteFieldHarvestCommand(fieldId, id), cancellationToken);
         return NoContent();
     }
 
@@ -363,7 +363,7 @@ public class FieldsController : ControllerBase
     {
         var id = await _sender.Send(new CreateFieldZoneCommand(
             fieldId, request.Name, request.GeoJson, request.SoilType, request.Notes), cancellationToken);
-        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+        return CreatedAtAction(nameof(GetZones), new { fieldId }, new { id });
     }
 
     /// <summary>Updates a management zone.</summary>
@@ -384,7 +384,7 @@ public class FieldsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteZone(Guid fieldId, Guid id, CancellationToken cancellationToken)
     {
-        await _sender.Send(new DeleteFieldZoneCommand(id), cancellationToken);
+        await _sender.Send(new DeleteFieldZoneCommand(fieldId, id), cancellationToken);
         return NoContent();
     }
 
@@ -409,7 +409,7 @@ public class FieldsController : ControllerBase
             fieldId, request.ZoneId, request.SampleDate, request.pH,
             request.Nitrogen, request.Phosphorus, request.Potassium,
             request.Humus, request.Notes), cancellationToken);
-        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+        return CreatedAtAction(nameof(GetSoilAnalyses), new { fieldId }, new { id });
     }
 
     /// <summary>Updates a soil analysis record.</summary>
@@ -433,7 +433,7 @@ public class FieldsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSoilAnalysis(Guid fieldId, Guid id, CancellationToken cancellationToken)
     {
-        await _sender.Send(new DeleteSoilAnalysisCommand(id), cancellationToken);
+        await _sender.Send(new DeleteSoilAnalysisCommand(fieldId, id), cancellationToken);
         return NoContent();
     }
 
@@ -457,7 +457,7 @@ public class FieldsController : ControllerBase
         var id = await _sender.Send(new CreateFieldInspectionCommand(
             fieldId, request.Date, request.InspectorName, request.Notes,
             request.Severity, request.Latitude, request.Longitude, request.PhotoUrl), cancellationToken);
-        return CreatedAtAction(nameof(GetField), new { id = fieldId }, new { id });
+        return CreatedAtAction(nameof(GetInspections), new { fieldId }, new { id });
     }
 
     /// <summary>Deletes an inspection record.</summary>
@@ -467,7 +467,7 @@ public class FieldsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteInspection(Guid fieldId, Guid id, CancellationToken cancellationToken)
     {
-        await _sender.Send(new DeleteFieldInspectionCommand(id), cancellationToken);
+        await _sender.Send(new DeleteFieldInspectionCommand(fieldId, id), cancellationToken);
         return NoContent();
     }
 
