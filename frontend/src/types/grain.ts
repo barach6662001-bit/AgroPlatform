@@ -41,4 +41,18 @@ export interface GrainMovementDto {
   pricePerTon?: number;
   totalRevenue?: number;
   buyerName?: string;
+  grainTransferId?: string;
+}
+
+export interface GrainTransferDto {
+  id: string;
+  sourceBatchId: string;
+  sourceGrainType: string;
+  sourceStorageName: string;
+  targetBatchId: string;
+  targetGrainType: string;
+  targetStorageName: string;
+  quantityTons: number;
+  transferDate: string;
+  notes?: string;
 }

@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { GrainBatchDto, GrainMovementDto, GrainStorageDto } from '../types/grain';
+import type { GrainBatchDto, GrainMovementDto, GrainStorageDto, GrainTransferDto } from '../types/grain';
 import type { PaginatedResult } from '../types/common';
 
 export interface GrainSummaryItem {
@@ -41,3 +41,18 @@ export const addGrainType = (name: string) =>
 
 export const getGrainSummary = () =>
   apiClient.get<GrainSummaryItem[]>('/api/grain-batches/summary').then(r => r.data);
+
+export interface TransferGrainRequest {
+  sourceBatchId?: string;
+  targetBatchId?: string;
+  targetStorageId?: string;
+  quantityTons: number;
+  transferDate: string;
+  notes?: string;
+}
+
+export const transferGrain = (sourceBatchId: string, data: TransferGrainRequest) =>
+  apiClient.post<{ id: string }>(`/api/grain-batches/${sourceBatchId}/transfers`, data).then(r => r.data);
+
+export const getGrainTransfers = (batchId: string) =>
+  apiClient.get<GrainTransferDto[]>(`/api/grain-batches/${batchId}/transfers`).then(r => r.data);
