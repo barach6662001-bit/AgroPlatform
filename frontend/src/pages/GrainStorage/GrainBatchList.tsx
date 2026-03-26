@@ -568,6 +568,14 @@ export default function GrainBatchList() {
         confirmLoading={savingBatch}
       >
         <Form form={batchForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="grainStorageId" label={t.grain.selectStorage} rules={[{ required: true, message: t.common.required }]}>
+            <Select
+              showSearch
+              placeholder={t.grain.selectStorage}
+              options={storages.map(s => ({ value: s.id, label: s.name }))}
+              optionFilterProp="label"
+            />
+          </Form.Item>
           <div style={{ marginBottom: 8 }}>
             <span style={{ fontSize: 12, color: '#888' }}>{t.grain.quickSelect}: </span>
             {QUICK_GRAIN_TYPES.map(grain => (
@@ -682,10 +690,27 @@ export default function GrainBatchList() {
       <Modal
         title={t.grain.batchList}
         open={movementsModalOpen}
-        onCancel={() => setMovementsModalOpen(false)}
+        onCancel={() => { setMovementsModalOpen(false); setDetailsBatch(null); }}
         footer={null}
         width={700}
       >
+        {detailsBatch && detailsBatch.placements.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: '#888', textTransform: 'uppercase', marginBottom: 6 }}>
+              {t.grain.storagePlacements}
+            </div>
+            <Table
+              dataSource={detailsBatch.placements}
+              rowKey="id"
+              pagination={false}
+              size="small"
+              columns={[
+                { title: t.grainStorages.name, dataIndex: 'grainStorageName', key: 'grainStorageName' },
+                { title: t.grain.quantityTons, dataIndex: 'quantityTons', key: 'quantityTons', render: (v: number) => `${v.toFixed(2)} т` },
+              ]}
+            />
+          </div>
+        )}
         <Table
           dataSource={movements}
           columns={movementColumns}

@@ -130,7 +130,7 @@ public class GrainStorageController : ControllerBase
         var placementId = await _sender.Send(
             new AddGrainBatchPlacementCommand(id, request.GrainStorageId, request.GrainStorageUnitId, request.QuantityTons),
             cancellationToken);
-        return CreatedAtAction(nameof(GetGrainBatches), new { }, new { id = placementId });
+        return Created(string.Empty, new { id = placementId });
     }
 }
 
