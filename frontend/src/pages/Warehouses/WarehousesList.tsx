@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Badge, message, Button, Space, Modal, Form, Input } from 'antd';
+import { Table, Badge, message, Button, Space, Modal, Form, Input, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getWarehouses, createWarehouse } from '../../api/warehouses';
@@ -62,6 +62,12 @@ export default function WarehousesList() {
     { title: t.warehouses.name, dataIndex: 'name', key: 'name', sorter: (a: WarehouseDto, b: WarehouseDto) => a.name.localeCompare(b.name) },
     { title: t.warehouses.location, dataIndex: 'location', key: 'location', render: (v: string) => v || '—' },
     {
+      title: t.warehouses.type, dataIndex: 'type', key: 'type',
+      render: (v: number) => v === 1 ? t.warehouses.typeGrain : t.warehouses.typeGeneral,
+      filters: [{ text: t.warehouses.typeGeneral, value: 0 }, { text: t.warehouses.typeGrain, value: 1 }],
+      onFilter: (value: unknown, record: WarehouseDto) => record.type === value,
+    },
+    {
       title: t.warehouses.status, dataIndex: 'isActive', key: 'isActive',
       render: (v: boolean) => v ? <Badge status="success" text={t.warehouses.active} /> : <Badge status="default" text={t.warehouses.inactive} />,
       filters: [{ text: t.warehouses.active, value: true }, { text: t.warehouses.inactive, value: false }],
@@ -119,6 +125,12 @@ export default function WarehousesList() {
           </Form.Item>
           <Form.Item name="location" label={t.warehouses.location}>
             <Input />
+          </Form.Item>
+          <Form.Item name="type" label={t.warehouses.type} initialValue={0}>
+            <Select options={[
+              { value: 0, label: t.warehouses.typeGeneral },
+              { value: 1, label: t.warehouses.typeGrain },
+            ]} />
           </Form.Item>
         </Form>
       </Modal>

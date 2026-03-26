@@ -19,6 +19,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const { isAdmin } = useRole();
 
   const storageChildren = [
+    { key: '/warehouses', label: t.nav.warehouses, style: { padding: '4px 8px' } },
     { key: '/warehouses/items', label: t.nav.materials, style: { padding: '4px 8px' } },
     { key: '/warehouses/movements', label: t.nav.movements, style: { padding: '4px 8px' } },
   ];
@@ -59,6 +60,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/grain' },
     { key: '/sales' },
     { key: '/sales/analytics' },
+    { key: '/warehouses' },
     ...analyticsChildren,
     ...storageChildren,
     ...financeChildren,
