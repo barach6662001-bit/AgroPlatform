@@ -88,9 +88,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("FieldId", "PlannedDate");
 
-                    b.HasIndex("TenantId", "FieldId");
+                    b.HasIndex("TenantId", "Status");
 
-                    b.HasIndex("TenantId", "IsCompleted");
+                    b.HasIndex("TenantId", "FieldId");
 
                     b.ToTable("AgroOperations");
                 });
