@@ -1,5 +1,6 @@
 using AgroPlatform.Application.AgroOperations.Commands.AddMachinery;
 using AgroPlatform.Application.AgroOperations.Commands.AddResource;
+using AgroPlatform.Application.AgroOperations.Commands.CancelAgroOperation;
 using AgroPlatform.Application.AgroOperations.Commands.CompleteAgroOperation;
 using AgroPlatform.Application.AgroOperations.Commands.CreateAgroOperation;
 using AgroPlatform.Application.AgroOperations.Commands.DeleteAgroOperation;
@@ -53,7 +54,8 @@ public class AgroOperationsController : ControllerBase
     /// <summary>Returns a paginated list of agro-operations with optional filters.</summary>
     /// <param name="fieldId">Optional field filter.</param>
     /// <param name="operationType">Optional operation type filter.</param>
-    /// <param name="isCompleted">Optional completion status filter.</param>
+    /// <param name="isCompleted">Optional completion status filter (backward compat).</param>
+    /// <param name="status">Optional operation status filter.</param>
     /// <param name="dateFrom">Start of the planned date range (inclusive).</param>
     /// <param name="dateTo">End of the planned date range (inclusive).</param>
     /// <param name="page">Page number (1-based, default 1).</param>
@@ -65,13 +67,14 @@ public class AgroOperationsController : ControllerBase
         [FromQuery] Guid? fieldId,
         [FromQuery] AgroOperationType? operationType,
         [FromQuery] bool? isCompleted,
+        [FromQuery] OperationStatus? status,
         [FromQuery] DateTime? dateFrom,
         [FromQuery] DateTime? dateTo,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
-        var result = await _sender.Send(new GetAgroOperationsQuery(fieldId, operationType, isCompleted, dateFrom, dateTo, page, pageSize), cancellationToken);
+        var result = await _sender.Send(new GetAgroOperationsQuery(fieldId, operationType, isCompleted, dateFrom, dateTo, page, pageSize, status), cancellationToken);
         return Ok(result);
     }
 
@@ -127,6 +130,20 @@ public class AgroOperationsController : ControllerBase
             return BadRequest();
 
         await _sender.Send(command, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>Cancels an agro-operation. Cannot cancel a completed operation.</summary>
+    /// <param name="id">Operation ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("{id:guid}/cancel")]
+    [Authorize(Roles = "Administrator,Manager,Agronomist")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> CancelAgroOperation(Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new CancelAgroOperationCommand(id), cancellationToken);
         return NoContent();
     }
 

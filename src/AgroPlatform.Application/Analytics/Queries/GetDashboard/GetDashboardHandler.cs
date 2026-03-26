@@ -59,8 +59,8 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
 
         // ── Operations ────────────────────────────────────────────────────
         dto.TotalOperations = await _context.AgroOperations.CountAsync(cancellationToken);
-        dto.CompletedOperations = await _context.AgroOperations.CountAsync(o => o.IsCompleted, cancellationToken);
-        dto.PendingOperations = await _context.AgroOperations.CountAsync(o => !o.IsCompleted, cancellationToken);
+        dto.CompletedOperations = await _context.AgroOperations.CountAsync(o => o.Status == OperationStatus.Completed, cancellationToken);
+        dto.PendingOperations = await _context.AgroOperations.CountAsync(o => o.Status != OperationStatus.Completed, cancellationToken);
         dto.OperationsByType = (await _context.AgroOperations
             .GroupBy(o => o.OperationType)
             .Select(g => new { Type = g.Key, Count = g.Count() })

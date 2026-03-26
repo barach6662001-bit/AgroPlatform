@@ -34,10 +34,10 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
             .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(AgroOperation), request.Id);
 
-        if (operation.IsCompleted)
+        if (operation.Status == OperationStatus.Completed)
             throw new ConflictException("Operation already completed.");
 
-        operation.IsCompleted = true;
+        operation.Status = OperationStatus.Completed;
         operation.CompletedDate = request.CompletedDate;
 
         if (request.AreaProcessed.HasValue)

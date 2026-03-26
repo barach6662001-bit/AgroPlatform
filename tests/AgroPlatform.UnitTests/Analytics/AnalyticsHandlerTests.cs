@@ -89,14 +89,14 @@ public class AnalyticsHandlerTests
             FieldId = field.Id,
             OperationType = AgroOperationType.Sowing,
             PlannedDate = DateTime.UtcNow,
-            IsCompleted = true
+            Status = OperationStatus.Completed
         });
         context.AgroOperations.Add(new AgroOperation
         {
             FieldId = field.Id,
             OperationType = AgroOperationType.Harvesting,
             PlannedDate = DateTime.UtcNow,
-            IsCompleted = false
+            Status = OperationStatus.Planned
         });
         await context.SaveChangesAsync();
 
