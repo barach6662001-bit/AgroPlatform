@@ -1,9 +1,12 @@
-import { Form, Input, Button, Dropdown, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Dropdown, message, Alert } from 'antd';
+import { UserOutlined, LockOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
 import { useTranslation, languages } from '../i18n';
+
+const DEMO_EMAIL = 'demo@agro.local';
+const DEMO_PASSWORD = 'DemoPass1';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -226,6 +229,36 @@ export default function Login() {
             </p>
           </div>
 
+          <Alert
+            type="info"
+            style={{ marginBottom: 16, borderRadius: 8, fontSize: 13 }}
+            message={
+              <span style={{ fontWeight: 600 }}>🚀 Demo-доступ</span>
+            }
+            description={
+              <div style={{ marginTop: 4 }}>
+                <div><b>Email:</b> {DEMO_EMAIL}</div>
+                <div><b>Пароль:</b> {DEMO_PASSWORD}</div>
+                <Button
+                  size="small"
+                  icon={<ThunderboltOutlined />}
+                  style={{ marginTop: 8 }}
+                  onClick={async () => {
+                    try {
+                      const data = await login({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+                      setAuth(data.token, data.email, data.role, data.tenantId);
+                      message.success('Вітаємо в демо!');
+                      navigate('/');
+                    } catch {
+                      message.error('Demo login failed. Make sure the server is running.');
+                    }
+                  }}
+                >
+                  Увійти як Demo
+                </Button>
+              </div>
+            }
+          />
           <Form layout="vertical" onFinish={onFinish}>
             <Form.Item
               name="email"
