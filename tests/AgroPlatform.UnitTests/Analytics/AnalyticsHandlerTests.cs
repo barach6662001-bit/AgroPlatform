@@ -89,14 +89,14 @@ public class AnalyticsHandlerTests
             FieldId = field.Id,
             OperationType = AgroOperationType.Sowing,
             PlannedDate = DateTime.UtcNow,
-            IsCompleted = true
+            Status = OperationStatus.Completed
         });
         context.AgroOperations.Add(new AgroOperation
         {
             FieldId = field.Id,
             OperationType = AgroOperationType.Harvesting,
             PlannedDate = DateTime.UtcNow,
-            IsCompleted = false
+            Status = OperationStatus.Planned
         });
         await context.SaveChangesAsync();
 
@@ -155,9 +155,9 @@ public class AnalyticsHandlerTests
     {
         var context = CreateDbContext();
         var now = DateTime.UtcNow;
-        context.CostRecords.Add(new CostRecord { Category = "Seeds", Amount = 1000m, Currency = "UAH", Date = now });
-        context.CostRecords.Add(new CostRecord { Category = "Fuel", Amount = 500m, Currency = "UAH", Date = now.AddMonths(-1) });
-        context.CostRecords.Add(new CostRecord { Category = "Seeds", Amount = 200m, Currency = "UAH", Date = now.AddMonths(-13) }); // outside 12-month window
+        context.CostRecords.Add(new CostRecord { Category = CostCategory.Seeds, Amount = 1000m, Currency = "UAH", Date = now });
+        context.CostRecords.Add(new CostRecord { Category = CostCategory.Fuel, Amount = 500m, Currency = "UAH", Date = now.AddMonths(-1) });
+        context.CostRecords.Add(new CostRecord { Category = CostCategory.Seeds, Amount = 200m, Currency = "UAH", Date = now.AddMonths(-13) }); // outside 12-month window
         await context.SaveChangesAsync();
 
         var handler = new GetDashboardHandler(context);
@@ -279,7 +279,7 @@ public class AnalyticsHandlerTests
 
         context.CostRecords.Add(new CostRecord
         {
-            Category = "Seeds",
+            Category = CostCategory.Seeds,
             Amount = 500m,
             Currency = "UAH",
             Date = DateTime.UtcNow,

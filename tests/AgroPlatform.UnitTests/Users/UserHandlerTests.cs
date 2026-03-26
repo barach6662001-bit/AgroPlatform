@@ -1,4 +1,6 @@
+using AgroPlatform.Application.Auth.Commands.Login;
 using AgroPlatform.Application.Common.Exceptions;
+using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.Users.Commands.UpdateUserRole;
 using AgroPlatform.Application.Users.Queries.GetUsers;
 using AgroPlatform.Domain.Enums;
@@ -56,6 +58,33 @@ public class UserHandlerTests
             await handler.Handle(new UpdateUserRoleCommand("non-existent-id", "Manager"), CancellationToken.None);
 
         await act.Should().ThrowAsync<NotFoundException>();
+    }
+
+    // ── Login ─────────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task Login_InactiveUser_ThrowsUnauthorizedException()
+    {
+        var user = new AppUser
+        {
+            Id = Guid.NewGuid().ToString(),
+            Email = "inactive@test.com",
+            TenantId = Guid.NewGuid(),
+            Role = UserRole.Agronomist,
+            IsActive = false,
+        };
+
+        var userManager = CreateUserManager();
+        userManager.FindByEmailAsync(user.Email).Returns(user);
+
+        var jwtService = Substitute.For<IJwtTokenService>();
+        var handler = new LoginHandler(userManager, jwtService);
+
+        var act = async () =>
+            await handler.Handle(new LoginCommand(user.Email, "anyPassword"), CancellationToken.None);
+
+        await act.Should().ThrowAsync<UnauthorizedException>()
+            .WithMessage("Invalid email or password.");
     }
 
     // ── GetUsers ─────────────────────────────────────────────────────────

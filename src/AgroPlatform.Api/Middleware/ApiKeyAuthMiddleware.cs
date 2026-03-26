@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AgroPlatform.Api.Middleware;
 
@@ -19,7 +20,7 @@ public class ApiKeyAuthMiddleware
         _next = next;
     }
 
-    public async Task InvokeAsync(HttpContext context, AppDbContext dbContext)
+    public async Task InvokeAsync(HttpContext context, IServiceScopeFactory scopeFactory)
     {
         // If JWT auth already succeeded, skip API key flow.
         if (context.User?.Identity?.IsAuthenticated == true)
@@ -37,6 +38,10 @@ public class ApiKeyAuthMiddleware
 
         var keyHash = HashKey(apiKeyRaw);
 
+        // Create a dedicated scope for API key lookup so we don't initialize the request-scoped
+        // tenant-filtered DbContext before TenantId is resolved from the API key.
+        using var scope = scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         // Ignore tenant query filters here because tenant can be unknown before API key auth.
         var apiKey = await dbContext.ApiKeys
             .IgnoreQueryFilters()
@@ -77,9 +82,9 @@ public class ApiKeyAuthMiddleware
             new("auth_type", "ApiKey")
         };
 
-        foreach (var scope in SplitScopes(apiKey.Scopes))
+        foreach (var apiScope in SplitScopes(apiKey.Scopes))
         {
-            claims.Add(new Claim("scope", scope));
+            claims.Add(new Claim("scope", apiScope));
         }
 
         var identity = new ClaimsIdentity(claims, authenticationType: "ApiKey");

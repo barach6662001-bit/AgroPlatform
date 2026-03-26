@@ -3,6 +3,7 @@ using AgroPlatform.Application.Fields.Commands.CreateLandLease;
 using AgroPlatform.Application.Fields.Commands.UpdateLandLease;
 using AgroPlatform.Application.Fields.Queries.GetLeases;
 using AgroPlatform.Application.Fields.Queries.GetLeasesSummary;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -53,7 +54,7 @@ public class LandLeasesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created lease contract.</returns>
     [HttpPost]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.HR.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateLease([FromBody] CreateLandLeaseCommand command, CancellationToken cancellationToken)
@@ -67,7 +68,7 @@ public class LandLeasesController : ControllerBase
     /// <param name="request">Updated lease data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.HR.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateLease(Guid id, [FromBody] UpdateLandLeaseRequest request, CancellationToken cancellationToken)
@@ -84,7 +85,7 @@ public class LandLeasesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The ID of the created payment record.</returns>
     [HttpPost("{id:guid}/payments")]
-    [Authorize(Roles = "Administrator,Manager")]
+    [Authorize(Policy = Permissions.HR.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddPayment(Guid id, [FromBody] AddLeasePaymentRequest request, CancellationToken cancellationToken)

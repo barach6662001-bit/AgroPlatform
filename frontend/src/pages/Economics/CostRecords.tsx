@@ -5,7 +5,7 @@ import { printReport } from '../../utils/printReport';
 import { getCostRecords, getCostSummary, createCostRecord, deleteCostRecord } from '../../api/economics';
 import { getBudgets } from '../../api/budgets';
 import type { BudgetDto } from '../../api/budgets';
-import type { CostRecordDto, CostSummaryDto, MaterialKpiItem } from '../../types/economics';
+import type { CostRecordDto, CostSummaryDto, MaterialKpiItem, CostCategory } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import PLTable from '../../components/PLTable';
@@ -23,20 +23,19 @@ import { enqueueOperation } from '../../utils/offlineQueue';
 const { RangePicker } = DatePicker;
 
 const categoryColors: Record<string, string> = {
-  Seeds: 'green', Fertilizers: 'blue', Pesticides: 'orange',
-  Fuel: 'volcano', Labor: 'purple', Equipment: 'cyan',
-  Lease: 'gold', Salary: 'magenta', Revenue: 'lime',
-  Other: 'default',
+  Fuel: 'volcano', Seeds: 'green', Fertilizer: 'blue',
+  Pesticide: 'orange', Machinery: 'cyan', Labor: 'purple',
+  Lease: 'gold', Other: 'default',
 };
 
-const CATEGORIES = ['Seeds', 'Fertilizers', 'Pesticides', 'Fuel', 'Labor', 'Equipment', 'Lease', 'Salary', 'Other'];
+const CATEGORIES = ['Fuel', 'Seeds', 'Fertilizer', 'Pesticide', 'Machinery', 'Labor', 'Lease', 'Other'];
 
 export default function CostRecords() {
   const [result, setResult] = useState<PaginatedResult<CostRecordDto> | null>(null);
   const [summary, setSummary] = useState<CostSummaryDto | null>(null);
   const [budgets, setBudgets] = useState<BudgetDto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState<string | undefined>();
+  const [category, setCategory] = useState<CostCategory | undefined>();
   const [dateRange, setDateRange] = useState<[string, string] | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -155,9 +154,9 @@ export default function CostRecords() {
   const hasBudget = plRows.some((r) => r.plan > 0);
 
   const kpiItems: MaterialKpiItem[] = [
-    { key: 'Fertilizers', label: t.materialKpi.fertilizers, amount: sumByCategory('Fertilizers'), icon: <ExperimentOutlined /> },
+    { key: 'Fertilizers', label: t.materialKpi.fertilizers, amount: sumByCategory('Fertilizer'), icon: <ExperimentOutlined /> },
     { key: 'Seeds', label: t.materialKpi.seeds, amount: sumByCategory('Seeds'), icon: <AppstoreOutlined /> },
-    { key: 'Pesticides', label: t.materialKpi.pesticides, amount: sumByCategory('Pesticides'), icon: <MedicineBoxOutlined /> },
+    { key: 'Pesticides', label: t.materialKpi.pesticides, amount: sumByCategory('Pesticide'), icon: <MedicineBoxOutlined /> },
     { key: 'Fuel', label: t.materialKpi.fuel, amount: sumByCategory('Fuel'), icon: <ThunderboltOutlined /> },
     { key: 'Lease', label: t.costCategories.Lease, amount: sumByCategory('Lease'), icon: <HomeOutlined /> },
     { key: 'Harvest', label: t.materialKpi.harvest, amount: 0, icon: <GiftOutlined /> },
@@ -230,7 +229,7 @@ export default function CostRecords() {
           allowClear
           style={{ width: 200 }}
           value={category}
-          onChange={setCategory}
+          onChange={(val) => setCategory(val as CostCategory | undefined)}
           options={Object.entries(t.costCategories).map(([k, v]) => ({ value: k, label: v }))}
         />
         <RangePicker

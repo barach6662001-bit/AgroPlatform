@@ -21,6 +21,9 @@ public class DeleteFieldSeedingHandler : IRequestHandler<DeleteFieldSeedingComma
             .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(FieldSeeding), request.Id);
 
+        if (seeding.FieldId != request.FieldId)
+            throw new NotFoundException(nameof(FieldSeeding), request.Id);
+
         _context.FieldSeedings.Remove(seeding);
         await _context.SaveChangesAsync(cancellationToken);
     }

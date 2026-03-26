@@ -2,8 +2,8 @@ import apiClient from './axios';
 import type { FieldDto, FieldDetailDto, CropType, FieldGeometryPayload, FieldSeedingDto, FieldFertilizerDto, FieldProtectionDto, FieldHarvestDto, FieldZoneDto, SoilAnalysisDto, PrescriptionMapDto, RotationAdviceDto, FieldInspectionDto } from '../types/field';
 import type { PaginatedResult } from '../types/common';
 
-export const getFields = (params?: { page?: number; pageSize?: number; search?: string; ownershipType?: number[] }) =>
-  apiClient.get<PaginatedResult<FieldDto>>('/api/fields', { params }).then((r) => r.data);
+export const getFields = (params?: { page?: number; pageSize?: number; search?: string; ownershipType?: number[] }, signal?: AbortSignal) =>
+  apiClient.get<PaginatedResult<FieldDto>>('/api/fields', { params, signal }).then((r) => r.data);
 
 export const getFieldById = (id: string) =>
   apiClient.get<FieldDetailDto>(`/api/fields/${id}`).then((r) => r.data);
