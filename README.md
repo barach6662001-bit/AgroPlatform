@@ -1,4 +1,4 @@
-# 🌾 Agrotech
+# 🌾 AgroPlatform
 
 [![CI](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml/badge.svg)](https://github.com/barach6662001-bit/AgroPlatform/actions/workflows/ci.yml)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=github)](https://barach6662001-bit.github.io/AgroPlatform/)
@@ -7,302 +7,336 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Keywords / Topics:**
-`agriculture` `agro` `farm-management` `erp` `agritech`
-`dotnet` `aspnet-core` `entity-framework-core` `clean-architecture` `cqrs` `postgresql`
-`react` `typescript` `ant-design` `vite` `zustand` `leaflet`
-`docker` `jwt-authentication` `multi-tenant`
-
-**Цифровая платформа управления агропредприятием** — комплексное решение для управления складом, полями, агрооперациями, техникой, экономикой и аналитикой сельскохозяйственного предприятия.
+**Цифрова платформа управління агропідприємством** — комплексне рішення для обліку складу, полів, агрооперацій, техніки, економіки та аналітики сільськогосподарського підприємства.
 
 ---
 
-## 📖 Документация
+## Зміст
 
-Полная документация доступна на: **[barach6662001-bit.github.io/AgroPlatform](https://barach6662001-bit.github.io/AgroPlatform/)**
-
-- [📡 API Reference](https://barach6662001-bit.github.io/AgroPlatform/api)
-- [📐 Архитектура](https://barach6662001-bit.github.io/AgroPlatform/architecture)
-- [🚀 Руководство по деплою](https://barach6662001-bit.github.io/AgroPlatform/deployment)
-- [🛠️ Руководство разработчика](https://barach6662001-bit.github.io/AgroPlatform/development)
+- [Можливості](#-можливості)
+- [Технологічний стек](#-технологічний-стек)
+- [Архітектура](#-архітектура)
+- [Швидкий старт](#-швидкий-старт)
+- [Конфігурація](#-конфігурація)
+- [API](#-api)
+- [Тести](#-тести)
+- [CI/CD](#-cicd)
+- [Документація](#-документація)
+- [Contributing](#-contributing)
+- [Ліцензія](#-ліцензія)
 
 ---
 
-## 🚀 Быстрый старт
+## ✅ Можливості
 
-### Вариант A — Docker Compose (рекомендуется)
+| Модуль | Опис |
+|--------|------|
+| **Склад** | Склади та товари, прихід / витрата / переміщення, інвентаризація, партійний облік (FIFO/FEFO), залишки та історія рухів |
+| **Поля** | Карта полів з площею та кадастровими даними, поточна культура, історія культур, урожайність, планування сівозміни |
+| **Агрооперації** | Посів, удобрення, ЗЗР, обробіток, збирання. Прив'язка ресурсів і техніки, автоматичне списання ресурсів при завершенні операції |
+| **Техніка** | Парк техніки, журнал наробітку, облік заправок, статуси (активна / в ремонті / списана), зведена картка |
+| **Економіка** | Облік витрат по категоріях із прив'язкою до полів та агрооперацій. Від'ємна сума = дохід |
+| **Аналітика** | Зведений Dashboard, витрата ресурсів у розрізі дат і полів, ефективність полів |
+| **HR** | Персонал, посади, норми виходу, облік відпрацьованого часу |
+| **Зерносховище** | Облік прийому, відвантаження та залишків зерна по культурах |
+| **Продажі** | Реестр угод, покупці, відвантаження із зерносховища |
+
+---
+
+## 🛠️ Технологічний стек
+
+| Шар | Технології |
+|-----|-----------|
+| **Backend** | .NET 8, ASP.NET Core Web API, EF Core 8, PostgreSQL 16 + PostGIS, MediatR, FluentValidation, Serilog, JWT |
+| **Frontend** | React 18, TypeScript, Vite, Ant Design 5, Zustand, React Query, Recharts, Leaflet |
+| **Тести** | xUnit, Testcontainers, Moq |
+| **Інфраструктура** | Docker, Docker Compose, GitHub Actions, Nginx, Let's Encrypt |
+
+---
+
+## 📐 Архітектура
+
+Проект побудований за принципами **Clean Architecture** з підходом **CQRS + MediatR**:
+
+```
+src/
+├── AgroPlatform.Domain/         — Доменні сутності, enum-и
+├── AgroPlatform.Application/    — CQRS команди / запити, DTO, валідатори, інтерфейси
+├── AgroPlatform.Infrastructure/ — EF Core, PostgreSQL, Identity, JWT, перехоплювачі
+└── AgroPlatform.Api/            — Контролери, middleware, Swagger, SignalR Hubs
+
+frontend/
+├── src/api/          — Axios + React Query клієнт
+├── src/components/   — Спільні UI-компоненти
+├── src/pages/        — Сторінки модулів
+├── src/stores/       — Zustand стани
+├── src/types/        — TypeScript інтерфейси
+└── src/i18n/         — Локалізація (uk.ts, en.ts)
+
+tests/
+├── AgroPlatform.UnitTests/        — Юніт-тести
+└── AgroPlatform.IntegrationTests/ — Інтеграційні тести (Testcontainers)
+```
+
+**Ключові паттерни:**
+- Всі сутності наслідують `AuditableEntity` (`TenantId`, `IsDeleted`, `CreatedAtUtc`, `UpdatedAtUtc`)
+- Мультиорендність через заголовок `X-Tenant-Id`
+- М'яке видалення через прапор `IsDeleted`
+- Оптимістичне блокування через `RowVersion` на `StockBalance`
+
+---
+
+## 🚀 Швидкий старт
+
+### Варіант A — Docker Compose (рекомендується)
 
 ```bash
 git clone https://github.com/barach6662001-bit/AgroPlatform.git
 cd AgroPlatform
 docker-compose up --build -d
-# Frontend: http://localhost:3000
-# API:      http://localhost:8080
-# Swagger:  http://localhost:8080/swagger  (включён по умолчанию в Docker)
 ```
 
-> **Примечание:** Frontend запускается на порту 3000. API-запросы (`/api/*`) автоматически проксируются через Nginx к бэкенду (`api:8080`) внутри Docker-сети.
+| Сервіс | URL |
+|--------|-----|
+| Frontend | http://localhost:3000 |
+| API | http://localhost:8080 |
+| Swagger | http://localhost:8080/swagger |
 
-> **Пароль при регистрации:** минимум **8 символов**, обязательно **цифра** и **строчная буква**. Пример: `Password1`.
+> **Пароль при реєстрації:** мінімум 8 символів, обов'язкова цифра та мала літера. Наприклад: `Password1`.
 
-> **Конфликт портов:** запускайте только один способ одновременно — либо Docker Compose (порт 3000), либо `npm run dev` (тоже порт 3000). Перед переключением выполните `docker-compose down`.
+---
 
-### Вариант B — Локальный .NET + Docker PostgreSQL
+### Варіант B — Локальний .NET + Docker PostgreSQL
 
 ```bash
-# 1. Поднять только PostgreSQL
+# 1. Підняти тільки PostgreSQL
 docker-compose up -d postgres
 
-# 2. Применить миграции
-dotnet ef database update -p src/AgroPlatform.Infrastructure -s src/AgroPlatform.Api
+# 2. Застосувати міграції
+dotnet ef database update \
+  --project src/AgroPlatform.Infrastructure \
+  --startup-project src/AgroPlatform.Api
 
-# 3. Запустить API
+# 3. Запустити API
 dotnet run --project src/AgroPlatform.Api
 # API:     http://localhost:5224
 # Swagger: http://localhost:5224/swagger
 ```
 
-### Вариант C — Фронтенд (отдельно)
+---
+
+### Варіант C — Frontend окремо
 
 ```bash
 cd frontend
-# По умолчанию .env.development указывает на Docker API (http://localhost:8080).
-# Для локального .NET (порт 5224) создайте файл frontend/.env.development.local:
-#   VITE_API_URL=http://localhost:5224
 npm install
 npm run dev
-# Фронтенд: http://localhost:3000
+# Frontend: http://localhost:3000
 ```
 
----
-
-## 🔐 Аутентификация в Swagger
-
-1. `POST /api/auth/register` — зарегистрироваться
-2. `POST /api/auth/login` — получить JWT токен
-3. Нажать **Authorize** 🔒 → вставить токен (без `Bearer `)
-4. Добавить заголовок `X-Tenant-Id: <uuid>` к запросам (подробнее — [docs/tenancy.md](docs/tenancy.md))
+> За замовчуванням `vite.config.ts` проксує `/api` на `http://localhost:8080`.  
+> Для локального .NET (порт 5224) додайте `frontend/.env.development.local`:
+> ```
+> VITE_API_URL=http://localhost:5224
+> ```
 
 ---
 
-## ⚙️ Конфигурация
+## 🔐 Аутентифікація в Swagger
 
-| Переменная | Описание | Значение по умолчанию |
-|---|---|---|
-| `ConnectionStrings__DefaultConnection` | PostgreSQL connection string | см. docker-compose.yml |
-| `JwtSettings__Key` | HMAC ключ подписи JWT (≥ 32 символа) | placeholder в docker-compose |
-| `JwtSettings__Issuer` | Издатель JWT | `Agrotech` |
-| `JwtSettings__Audience` | Аудитория JWT | `Agrotech` |
-| `Cors__AllowedOrigins__0` | Разрешённый CORS origin | `http://localhost:3000` |
-| `Swagger__Enabled` | Включить Swagger вне Development | `false` |
-| `RateLimiting__ReadPermitLimit` | Лимит GET запросов / окно | `100` |
-| `RateLimiting__WritePermitLimit` | Лимит POST/PUT/DELETE / окно | `30` |
-
-> **Важно:** Замените `JwtSettings__Key` на надёжный секрет (≥ 32 символа) перед деплоем в любое общее окружение.
+1. `POST /api/auth/register` — зареєструватися
+2. `POST /api/auth/login` — отримати JWT-токен
+3. Натиснути **Authorize** 🔒 → вставити токен (без `Bearer `)
+4. Додати заголовок `X-Tenant-Id: <uuid>` до запитів (детальніше — [docs/tenancy.md](docs/tenancy.md))
 
 ---
 
-## 🛠️ Технологический стек
+## ⚙️ Конфігурація
 
-| Слой | Технологии |
-|------|-----------|
-| **Backend** | .NET 8, ASP.NET Core Web API, EF Core 8, PostgreSQL 16, MediatR, FluentValidation, Serilog, JWT, xUnit |
-| **Frontend** | React 18, TypeScript, Vite, Ant Design 5, Zustand, Recharts, Leaflet |
-| **Инфраструктура** | Docker, Docker Compose, GitHub Actions, Testcontainers |
+| Змінна | Опис | За замовчуванням |
+|--------|------|-----------------|
+| `ConnectionStrings__DefaultConnection` | PostgreSQL connection string | див. docker-compose.yml |
+| `JwtSettings__Key` | HMAC ключ підпису JWT (≥ 32 символи) | placeholder у docker-compose |
+| `JwtSettings__Issuer` | Видавець JWT | `Agrotech` |
+| `JwtSettings__Audience` | Аудиторія JWT | `Agrotech` |
+| `Cors__AllowedOrigins__0` | Дозволений CORS origin | `http://localhost:3000` |
+| `Swagger__Enabled` | Увімкнути Swagger поза Development | `false` |
+| `AUTO_MIGRATE` | Автоматично застосовувати міграції при старті | `false` |
+| `RateLimiting__ReadPermitLimit` | Ліміт GET-запитів / вікно | `100` |
+| `RateLimiting__WritePermitLimit` | Ліміт POST/PUT/DELETE / вікно | `30` |
 
----
+> **Важливо:** Замініть `JwtSettings__Key` на надійний секрет (≥ 32 символи) перед деплоєм.
 
-## 📐 Архитектура проекта
-
-```
-src/
-├── AgroPlatform.Api/            — Web API, контроллеры, middleware, Swagger
-├── AgroPlatform.Application/    — CQRS handlers, DTOs, validators, пагинация
-├── AgroPlatform.Domain/         — Доменные модели, enums
-└── AgroPlatform.Infrastructure/ — EF Core, PostgreSQL, Identity, JWT, interceptors
-
-frontend/
-├── src/api/          — Axios клиент
-├── src/components/   — UI компоненты
-├── src/pages/        — Страницы модулей
-├── src/stores/       — Zustand
-└── src/types/        — TypeScript типы
-
-tests/
-├── AgroPlatform.UnitTests/
-└── AgroPlatform.IntegrationTests/
-```
+Зразок файлу конфігурації: [`.env.example`](.env.example)
 
 ---
 
-## 📦 Модули системы
+## 🌐 API
 
-### 📦 Склад (`api/warehouses`)
-Управление складами и товарами: приход, расход, перемещение между складами, инвентаризация, партийный учёт, остатки и история движений.
+> Всі list-ендпоінти підтримують пагінацію: `?page=1&pageSize=20`
 
-### 🌾 Поля (`api/fields`)
-Карта полей с площадью и кадастровыми данными, учёт текущей культуры, история культур, урожайность, планирование севооборота.
+<details>
+<summary>Показати повну таблицю ендпоінтів</summary>
 
-### ⚙️ Агрооперации (`api/agro-operations`)
-Посев, удобрение, СЗР, обработка, уборка. Привязка ресурсов и техники к операциям. Автоматическое списание ресурсов со склада при завершении операции.
-
-### 🚜 Техника (`api/machinery`)
-Управление парком техники, журнал наработки, учёт заправок, статусы (активна / в ремонте / списана), сводка по всему парку.
-
-### 💰 Экономика (`api/economics`)
-Учёт затрат по категориям с привязкой к полям и агрооперациям.
-
-### 📊 Аналитика (`api/analytics`)
-Сводный Dashboard, расход ресурсов в разрезе периодов и полей, эффективность полей.
-
----
-
-## 🌐 API Endpoints
-
-> Все list-эндпоинты поддерживают пагинацию: `?page=1&pageSize=20`
-
-| Метод | URL | Описание |
-|-------|-----|----------|
-| **🔑 Аутентификация** | | |
-| POST | `/api/auth/register` | Зарегистрироваться |
-| POST | `/api/auth/login` | Получить JWT токен |
-| **📦 Склад** | | |
-| POST | `/api/warehouses` | Создать склад |
-| GET | `/api/warehouses` | Список складов |
-| POST | `/api/warehouses/items` | Создать товар |
-| GET | `/api/warehouses/items` | Список товаров |
-| POST | `/api/warehouses/receipt` | Приход на склад |
-| POST | `/api/warehouses/issue` | Расход со склада |
-| POST | `/api/warehouses/transfer` | Перемещение между складами |
-| POST | `/api/warehouses/inventory` | Инвентаризация |
-| GET | `/api/warehouses/balances` | Остатки |
-| GET | `/api/warehouses/moves` | История движений |
-| **🌾 Поля** | | |
-| POST | `/api/fields` | Создать поле |
-| GET | `/api/fields` | Список полей |
-| GET | `/api/fields/{id}` | Карточка поля |
-| PUT | `/api/fields/{id}` | Обновить поле |
-| DELETE | `/api/fields/{id}` | Удалить поле |
-| POST | `/api/fields/assign-crop` | Назначить культуру |
-| PUT | `/api/fields/crop-history/{id}/yield` | Обновить урожайность |
-| POST | `/api/fields/rotation-plans` | Планировать севооборот |
-| DELETE | `/api/fields/rotation-plans/{id}` | Удалить план севооборота |
-| **⚙️ Агрооперации** | | |
-| POST | `/api/agro-operations` | Создать операцию |
-| GET | `/api/agro-operations` | Список операций |
-| GET | `/api/agro-operations/{id}` | Карточка операции |
-| PUT | `/api/agro-operations/{id}` | Обновить операцию |
-| POST | `/api/agro-operations/{id}/complete` | Завершить операцию |
-| DELETE | `/api/agro-operations/{id}` | Удалить операцию |
-| POST | `/api/agro-operations/{id}/resources` | Добавить ресурс |
-| PUT | `/api/agro-operations/resources/{id}/actual` | Обновить факт расхода ресурса |
-| DELETE | `/api/agro-operations/resources/{id}` | Убрать ресурс |
-| POST | `/api/agro-operations/{id}/machinery` | Привязать технику |
-| PUT | `/api/agro-operations/machinery/{id}` | Обновить технику операции |
-| DELETE | `/api/agro-operations/machinery/{id}` | Убрать технику из операции |
-| **🚜 Техника** | | |
-| POST | `/api/machinery` | Создать технику |
-| GET | `/api/machinery` | Список техники |
-| GET | `/api/machinery/summary` | Сводка по парку |
-| GET | `/api/machinery/{id}` | Карточка техники |
-| PUT | `/api/machinery/{id}` | Обновить технику |
-| DELETE | `/api/machinery/{id}` | Удалить технику |
-| POST | `/api/machinery/{id}/work-logs` | Записать наработку |
-| POST | `/api/machinery/{id}/fuel-logs` | Записать заправку |
-| **💰 Экономика** | | |
-| POST | `/api/economics/cost-records` | Записать затрату |
-| GET | `/api/economics/cost-records` | Список затрат |
-| DELETE | `/api/economics/cost-records/{id}` | Удалить затрату |
-| **📊 Аналитика** | | |
-| GET | `/api/analytics/dashboard` | Сводный Dashboard |
-| GET | `/api/analytics/resource-consumption` | Расход ресурсов |
-| GET | `/api/analytics/field-efficiency` | Эффективность полей |
-| **❤️ Health Checks** | | |
+| Метод | URL | Опис |
+|-------|-----|------|
+| **Аутентифікація** | | |
+| POST | `/api/auth/register` | Реєстрація |
+| POST | `/api/auth/login` | Отримати JWT-токен |
+| **Склад** | | |
+| POST | `/api/warehouses` | Створити склад |
+| GET | `/api/warehouses` | Список складів |
+| POST | `/api/warehouses/items` | Створити товар |
+| GET | `/api/warehouses/items` | Список товарів |
+| POST | `/api/warehouses/receipt` | Прихід на склад |
+| POST | `/api/warehouses/issue` | Витрата зі складу |
+| POST | `/api/warehouses/transfer` | Переміщення між складами |
+| POST | `/api/warehouses/inventory` | Інвентаризація |
+| GET | `/api/warehouses/balances` | Залишки |
+| GET | `/api/warehouses/moves` | Історія рухів |
+| **Поля** | | |
+| POST | `/api/fields` | Створити поле |
+| GET | `/api/fields` | Список полів |
+| GET | `/api/fields/{id}` | Картка поля |
+| PUT | `/api/fields/{id}` | Оновити поле |
+| DELETE | `/api/fields/{id}` | Видалити поле |
+| POST | `/api/fields/assign-crop` | Призначити культуру |
+| PUT | `/api/fields/crop-history/{id}/yield` | Оновити врожайність |
+| POST | `/api/fields/rotation-plans` | Планувати сівозміну |
+| DELETE | `/api/fields/rotation-plans/{id}` | Видалити план сівозміни |
+| **Агрооперації** | | |
+| POST | `/api/agro-operations` | Створити операцію |
+| GET | `/api/agro-operations` | Список операцій |
+| GET | `/api/agro-operations/{id}` | Картка операції |
+| PUT | `/api/agro-operations/{id}` | Оновити операцію |
+| POST | `/api/agro-operations/{id}/complete` | Завершити операцію |
+| DELETE | `/api/agro-operations/{id}` | Видалити операцію |
+| POST | `/api/agro-operations/{id}/resources` | Додати ресурс |
+| PUT | `/api/agro-operations/resources/{id}/actual` | Оновити факт витрати ресурсу |
+| DELETE | `/api/agro-operations/resources/{id}` | Прибрати ресурс |
+| POST | `/api/agro-operations/{id}/machinery` | Прив'язати техніку |
+| PUT | `/api/agro-operations/machinery/{id}` | Оновити техніку операції |
+| DELETE | `/api/agro-operations/machinery/{id}` | Прибрати техніку з операції |
+| **Техніка** | | |
+| POST | `/api/machinery` | Створити техніку |
+| GET | `/api/machinery` | Список техніки |
+| GET | `/api/machinery/summary` | Зведення по парку |
+| GET | `/api/machinery/{id}` | Картка техніки |
+| PUT | `/api/machinery/{id}` | Оновити техніку |
+| DELETE | `/api/machinery/{id}` | Видалити техніку |
+| POST | `/api/machinery/{id}/work-logs` | Записати наробіток |
+| POST | `/api/machinery/{id}/fuel-logs` | Записати заправку |
+| **Економіка** | | |
+| POST | `/api/economics/cost-records` | Записати витрату |
+| GET | `/api/economics/cost-records` | Список витрат |
+| DELETE | `/api/economics/cost-records/{id}` | Видалити витрату |
+| **Аналітика** | | |
+| GET | `/api/analytics/dashboard` | Зведений Dashboard |
+| GET | `/api/analytics/resource-consumption` | Витрата ресурсів |
+| GET | `/api/analytics/field-efficiency` | Ефективність полів |
+| **Health Checks** | | |
 | GET | `/health/live` | Liveness probe |
-| GET | `/health/ready` | Readiness probe (проверка базы данных) |
+| GET | `/health/ready` | Readiness probe (перевіряє БД) |
+
+</details>
+
+Повна інтерактивна документація: **Swagger UI** за адресою `/swagger` (увімкнено в Development та Docker).
 
 ---
 
-## 🧪 Тесты
+## 🧪 Тести
 
 ```bash
-dotnet test                                       # все тесты
-dotnet test tests/AgroPlatform.UnitTests          # unit
-dotnet test tests/AgroPlatform.IntegrationTests   # integration (нужен Docker)
+# Всі тести
+dotnet test
+
+# Тільки юніт-тести
+dotnet test tests/AgroPlatform.UnitTests
+
+# Тільки інтеграційні (потрібен Docker)
+dotnet test tests/AgroPlatform.IntegrationTests
 ```
 
 ---
 
-## 🔧 Сборка и публикация
+## 🔧 Збірка
 
 ```bash
-# Сборка (Release)
+# Backend
 dotnet build --configuration Release
 
-# Публикация API
-dotnet publish src/AgroPlatform.Api --configuration Release --output ./publish/api
+# Frontend (type-check)
+cd frontend && npx tsc --noEmit
 
-# Запустить из артефакта
-dotnet publish/api/AgroPlatform.Api.dll
+# Публікація API
+dotnet publish src/AgroPlatform.Api --configuration Release --output ./publish/api
 ```
 
 ---
 
 ## 🤖 CI/CD
 
-GitHub Actions автоматически запускается на каждый push в `main` и на каждый Pull Request:
+GitHub Actions запускається на кожен push до `main` та на кожен Pull Request:
 
-| Шаг | Описание |
-|-----|----------|
-| Restore | Восстановление NuGet зависимостей (с кешем) |
-| Build | Сборка всего решения в конфигурации Release |
-| Warn-as-error | Строгая проверка предупреждений в Domain и Application |
-| Unit tests | Юнит-тесты с покрытием кода (Cobertura XML) |
-| Integration tests | Интеграционные тесты (Testcontainers + PostgreSQL) |
-| Artifacts | Загрузка результатов тестов, покрытия и API-артефакта |
-| Vulnerability scan | `dotnet list package --vulnerable` (не критичный шаг) |
+| Крок | Опис |
+|------|------|
+| Restore | Відновлення NuGet-залежностей (з кешем) |
+| Build | Збірка всього рішення в конфігурації Release |
+| Backend tests | Юніт + інтеграційні тести (Testcontainers) |
+| Frontend tests | Vitest, ESLint, TypeScript type-check, Docker build dry-run |
+| Lockfile guard | Перевірка синхронізації `package-lock.json` з `package.json` |
+| Vulnerability scan | `dotnet list package --vulnerable` |
+| Artifacts | Результати тестів, покриття коду, API-артефакт (7 днів) |
 
-Артефакты сборки хранятся 7 дней и доступны на вкладке **Actions → Artifacts**.
-
----
-
-## 🔐 Production Secrets (Секреты для продакшена)
-
-Для деплоя в продакшен необходимо настроить следующие **GitHub Secrets** в репозитории (**Settings → Secrets and variables → Actions**):
-
-| Секрет | Описание |
-|--------|----------|
-| `POSTGRES_PASSWORD` | Пароль базы данных PostgreSQL |
-| `JWT_KEY` | Ключ подписи JWT (минимум 32 символа) |
-| `DOMAIN` | Домен для TLS-сертификата (Let's Encrypt) |
-| `EMAIL` | Email для регистрации в Let's Encrypt |
-| `CORS_ORIGIN` | URL фронтенда, разрешённый CORS политикой |
-
-Запустить деплой можно через воркфлоу **Deploy to Production** на вкладке Actions (с ручным запуском и одобрением через GitHub Environment `production`).
-
-📖 Полное руководство по настройке секретов: [docs/production-secrets.md](docs/production-secrets.md)
+**CD:** workflow `Deploy to Production` публікує Docker-образи до GitHub Container Registry (`ghcr.io`) та запускає деплой через ручний тригер з підтвердженням через GitHub Environment `production`.
 
 ---
 
-## 🧹 Очистка веток
+## 📦 Production Secrets
 
-Устаревшие ветки очищаются автоматически:
-- **При слиянии PR:** ветка удаляется автоматически через GitHub Actions
-- **Еженедельно:** плановое задание удаляет оставшиеся слитые ветки (воскресенье, 03:00 UTC)
-- **Вручную:** запустите воркфлоу `Cleanup merged branches` на вкладке **Actions**
+Для деплою в продакшен налаштуйте **GitHub Secrets** у **Settings → Secrets and variables → Actions**:
 
-> **Совет:** включите «Automatically delete head branches» в **Settings → General → Pull Requests** для мгновенного удаления веток после слияния.
+| Секрет | Опис |
+|--------|------|
+| `POSTGRES_PASSWORD` | Пароль бази даних PostgreSQL |
+| `JWT_KEY` | Ключ підпису JWT (мінімум 32 символи) |
+| `DOMAIN` | Домен для TLS-сертифіката (Let's Encrypt) |
+| `EMAIL` | Email для реєстрації в Let's Encrypt |
+| `CORS_ORIGIN` | URL фронтенда, дозволений CORS-політикою |
+
+Детально: [docs/production-secrets.md](docs/production-secrets.md)
+
+---
+
+## 📖 Документація
+
+Повна документація: **[barach6662001-bit.github.io/AgroPlatform](https://barach6662001-bit.github.io/AgroPlatform/)**
+
+| Документ | Опис |
+|----------|------|
+| [docs/api.md](docs/api.md) | Довідник по API |
+| [docs/architecture.md](docs/architecture.md) | Архітектурні рішення |
+| [docs/auth.md](docs/auth.md) | Аутентифікація та авторизація |
+| [docs/tenancy.md](docs/tenancy.md) | Мультиорендність |
+| [docs/deployment.md](docs/deployment.md) | Керівництво по деплою |
+| [docs/development.md](docs/development.md) | Налаштування середовища розробки |
+| [docs/local-development.md](docs/local-development.md) | Локальна розробка в Codespace |
+| [docs/backup-restore.md](docs/backup-restore.md) | Резервне копіювання та відновлення |
+| [docs/production-secrets.md](docs/production-secrets.md) | Секрети для продакшену |
+| [docs/branch-protection.md](docs/branch-protection.md) | Захист гілок |
 
 ---
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch workflow, PR requirements, CI checks, commit conventions, and code review guidelines.
+Дивись [CONTRIBUTING.md](CONTRIBUTING.md) — workflow гілок, вимоги до PR, CI-перевірки, конвенції коміт-повідомлень.
 
-For repository admins: branch protection setup instructions are in [docs/branch-protection.md](docs/branch-protection.md).
+Автоматичне очищення гілок:
+- при злитті PR — гілка видаляється автоматично
+- щотижня (неділя, 03:00 UTC) — видаляються залишені злиті гілки
 
 ---
 
-## 📄 Лицензия
+## 📄 Ліцензія
 
-MIT — см. файл [LICENSE](LICENSE).
+MIT — див. [LICENSE](LICENSE).
