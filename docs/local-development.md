@@ -184,3 +184,26 @@ dotnet test tests/AgroPlatform.IntegrationTests
 ```
 
 See the [project README](../README.md#-tests) for more details.
+
+---
+
+## 10. GitHub Codespaces
+
+When running inside a GitHub Codespace, the simplest approach is:
+
+```bash
+# 1. Start docker-compose
+docker-compose up --build -d
+
+# 2. Add Codespaces CORS origin to .env (one-time)
+echo "CODESPACES_URL=https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}" >> .env
+docker-compose up -d api   # restart API to pick up new CORS
+
+# 3. Open the forwarded port 3000 in your browser
+```
+
+The frontend URL is displayed in the **Ports** panel of VS Code.
+
+> **Why CODESPACES_URL is needed:** when running inside Codespaces with docker-compose,
+> the browser Origin is `https://your-codespace-3000.app.github.dev`, not `http://localhost:3000`.
+> The API must have that origin in its CORS allowed list.
