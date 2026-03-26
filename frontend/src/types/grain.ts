@@ -42,3 +42,16 @@ export interface GrainMovementDto {
   totalRevenue?: number;
   buyerName?: string;
 }
+
+export interface SplitResultItem {
+  newBatchId: string;
+  targetStorageId: string;
+  targetStorageName: string;
+  quantityTons: number;
+}
+
+export interface SplitGrainBatchResultDto {
+  sourceBatchId: string;
+  remainingQuantityTons: number;
+  createdBatches: SplitResultItem[];
+}

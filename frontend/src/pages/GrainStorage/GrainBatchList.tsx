@@ -1,9 +1,10 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography } from 'antd';
-import { PlusOutlined, ExportOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography, Divider, Tooltip } from 'antd';
+import { PlusOutlined, ExportOutlined, DownloadOutlined, ScissorOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes, getGrainStorages } from '../../api/grain';
+import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes, getGrainStorages, splitGrainBatch } from '../../api/grain';
+import type { SplitTarget } from '../../api/grain';
 import { getFields } from '../../api/fields';
 import type { GrainBatchDto, GrainMovementDto, GrainOwnershipType, GrainStorageDto } from '../../types/grain';
 import type { FieldDto } from '../../types/field';
@@ -53,6 +54,12 @@ export default function GrainBatchList() {
   const [movementsModalOpen, setMovementsModalOpen] = useState(false);
   const [movements, setMovements] = useState<GrainMovementDto[]>([]);
   const [loadingMovements, setLoadingMovements] = useState(false);
+
+  const [splitModalOpen, setSplitModalOpen] = useState(false);
+  const [splitSourceBatch, setSplitSourceBatch] = useState<GrainBatchDto | null>(null);
+  const [savingSplit, setSavingSplit] = useState(false);
+  const [splitTargets, setSplitTargets] = useState<Array<{ storageId: string; quantity: number | null }>>([{ storageId: '', quantity: null }]);
+  const [splitNotes, setSplitNotes] = useState('');
 
   const { t } = useTranslation();
   const { hasPermission } = useRole();
@@ -193,6 +200,48 @@ export default function GrainBatchList() {
     }
   };
 
+  const openSplitModal = (batch: GrainBatchDto) => {
+    setSplitSourceBatch(batch);
+    setSplitTargets([{ storageId: '', quantity: null }]);
+    setSplitNotes('');
+    setSplitModalOpen(true);
+  };
+
+  const handleSplitBatch = async (notes?: string) => {
+    if (!splitSourceBatch) return;
+
+    const validTargets = splitTargets.filter(t => t.storageId && t.quantity && t.quantity > 0);
+    if (validTargets.length === 0) {
+      message.warning(t.grain.splitAtLeastOne);
+      return;
+    }
+
+    const total = validTargets.reduce((s, t) => s + (t.quantity ?? 0), 0);
+    if (total > splitSourceBatch.quantityTons) {
+      message.error(t.grain.splitExceedsAvailable);
+      return;
+    }
+
+    try {
+      setSavingSplit(true);
+      const targets: SplitTarget[] = validTargets.map(t => ({
+        targetStorageId: t.storageId,
+        quantityTons: t.quantity!,
+      }));
+      await splitGrainBatch(splitSourceBatch.id, targets, notes);
+      message.success(t.grain.splitSuccess);
+      setSplitModalOpen(false);
+      setSplitSourceBatch(null);
+      setSplitTargets([{ storageId: '', quantity: null }]);
+      load();
+    } catch (err: unknown) {
+      const data = (err as { response?: { data?: { title?: string } } })?.response?.data;
+      message.error(data?.title ?? t.grain.splitError);
+    } finally {
+      setSavingSplit(false);
+    }
+  };
+
   const ownershipLabel = (type: GrainOwnershipType): string => {
     const labels: Record<number, string> = {
       0: t.grain.ownershipOwn,
@@ -271,6 +320,15 @@ export default function GrainBatchList() {
             >
               + {t.grain.createMovement}
             </Button>
+          )}
+          {canCreate && record.quantityTons > 0 && (
+            <Tooltip title={t.grain.splitBatch}>
+              <Button
+                size="small"
+                icon={<ScissorOutlined />}
+                onClick={e => { e.stopPropagation(); openSplitModal(record); }}
+              />
+            </Tooltip>
           )}
           <Button
             size="small"
@@ -618,6 +676,104 @@ export default function GrainBatchList() {
           </Form.Item>
         </Form>
       </Modal>
+
+      {/* Split Batch Modal */}
+      {(() => {
+        const totalSplit = splitTargets.reduce((s, tgt) => s + (tgt.quantity ?? 0), 0);
+        const remaining = (splitSourceBatch?.quantityTons ?? 0) - totalSplit;
+        const exceedsBalance = !!splitSourceBatch && totalSplit > splitSourceBatch.quantityTons;
+
+        return (
+          <Modal
+            title={t.grain.splitTitle}
+            open={splitModalOpen}
+            onOk={() => handleSplitBatch(splitNotes || undefined)}
+            onCancel={() => { setSplitModalOpen(false); setSplitSourceBatch(null); setSplitTargets([{ storageId: '', quantity: null }]); }}
+            okText={t.grain.splitBatch}
+            cancelText={t.common.cancel}
+            confirmLoading={savingSplit}
+            okButtonProps={{ disabled: exceedsBalance || splitTargets.every(tgt => !tgt.storageId || !tgt.quantity) }}
+            width={600}
+          >
+            {splitSourceBatch && (
+              <Alert
+                type="info"
+                message={`${t.grain.splitSource}: ${splitSourceBatch.grainType} — ${splitSourceBatch.quantityTons.toFixed(3)} т`}
+                style={{ marginBottom: 12 }}
+              />
+            )}
+            {exceedsBalance && (
+              <Alert type="error" message={t.grain.splitExceedsAvailable} style={{ marginBottom: 12 }} />
+            )}
+            <Divider orientation="left" style={{ fontSize: 13 }}>{t.grain.splitTargets}</Divider>
+            {splitTargets.map((tgt, idx) => (
+              <Row key={idx} gutter={8} style={{ marginBottom: 8 }} align="middle">
+                <Col flex="1">
+                  <Select
+                    placeholder={t.grain.splitTargetStorage}
+                    style={{ width: '100%' }}
+                    value={tgt.storageId || undefined}
+                    options={storages.filter(s => s.isActive).map(s => ({ value: s.id, label: s.name }))}
+                    onChange={val => {
+                      const next = [...splitTargets];
+                      next[idx] = { ...next[idx], storageId: val };
+                      setSplitTargets(next);
+                    }}
+                    showSearch
+                    optionFilterProp="label"
+                  />
+                </Col>
+                <Col flex="140px">
+                  <InputNumber
+                    min={0.001}
+                    precision={3}
+                    addonAfter="т"
+                    style={{ width: '100%' }}
+                    value={tgt.quantity ?? undefined}
+                    onChange={val => {
+                      const next = [...splitTargets];
+                      next[idx] = { ...next[idx], quantity: val ?? null };
+                      setSplitTargets(next);
+                    }}
+                  />
+                </Col>
+                <Col flex="32px">
+                  <Button
+                    size="small"
+                    danger
+                    icon={<DeleteOutlined />}
+                    disabled={splitTargets.length === 1}
+                    onClick={() => setSplitTargets(splitTargets.filter((_, i) => i !== idx))}
+                  />
+                </Col>
+              </Row>
+            ))}
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              onClick={() => setSplitTargets([...splitTargets, { storageId: '', quantity: null }])}
+              style={{ marginBottom: 12, width: '100%' }}
+            >
+              {t.grain.addTarget}
+            </Button>
+            <Row gutter={16} style={{ marginBottom: 8 }}>
+              <Col span={12}>
+                <span style={{ color: '#888', fontSize: 12 }}>{t.grain.splitTotalLabel}: </span>
+                <strong style={{ color: exceedsBalance ? '#ff4d4f' : undefined }}>{totalSplit.toFixed(3)} т</strong>
+              </Col>
+              <Col span={12}>
+                <span style={{ color: '#888', fontSize: 12 }}>{t.grain.splitRemaining}: </span>
+                <strong style={{ color: remaining < 0 ? '#ff4d4f' : '#52c41a' }}>{remaining.toFixed(3)} т</strong>
+              </Col>
+            </Row>
+            <Form layout="vertical">
+              <Form.Item label={t.grain.splitNotes}>
+                <Input.TextArea rows={2} value={splitNotes} onChange={e => setSplitNotes(e.target.value)} />
+              </Form.Item>
+            </Form>
+          </Modal>
+        );
+      })()}
     </div>
   );
 }

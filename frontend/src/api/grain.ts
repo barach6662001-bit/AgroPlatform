@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { GrainBatchDto, GrainMovementDto, GrainStorageDto } from '../types/grain';
+import type { GrainBatchDto, GrainMovementDto, GrainStorageDto, SplitGrainBatchResultDto } from '../types/grain';
 import type { PaginatedResult } from '../types/common';
 
 export interface GrainSummaryItem {
@@ -41,3 +41,11 @@ export const addGrainType = (name: string) =>
 
 export const getGrainSummary = () =>
   apiClient.get<GrainSummaryItem[]>('/api/grain-batches/summary').then(r => r.data);
+
+export interface SplitTarget {
+  targetStorageId: string;
+  quantityTons: number;
+}
+
+export const splitGrainBatch = (batchId: string, targets: SplitTarget[], notes?: string) =>
+  apiClient.post<SplitGrainBatchResultDto>(`/api/grain-batches/${batchId}/split`, { targets, notes }).then(r => r.data);
