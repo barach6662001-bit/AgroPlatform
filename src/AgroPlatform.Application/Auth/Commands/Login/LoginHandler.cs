@@ -21,12 +21,13 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
     public async Task<AuthResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
-        var isPasswordValid = user != null && await _userManager.CheckPasswordAsync(user, request.Password);
-        if (!isPasswordValid)
+        if (user == null || !user.IsActive || !await _userManager.CheckPasswordAsync(user, request.Password))
             throw new UnauthorizedException("Invalid email or password.");
 
-        var validUser = user!;
-        var (token, expiresAt) = _jwtTokenService.GenerateToken(validUser);
-        return new AuthResponse(token, validUser.Email!, validUser.Role.ToString(), expiresAt, validUser.TenantId);
+        if (!user!.IsActive)
+            throw new UnauthorizedException("Account is inactive.");
+
+        var (token, expiresAt) = _jwtTokenService.GenerateToken(user);
+        return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt, user.TenantId);
     }
 }

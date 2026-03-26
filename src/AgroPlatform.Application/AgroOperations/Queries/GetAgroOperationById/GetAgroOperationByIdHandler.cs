@@ -33,9 +33,9 @@ public class GetAgroOperationByIdHandler : IRequestHandler<GetAgroOperationByIdQ
             FieldId = operation.FieldId,
             FieldName = operation.Field.Name,
             OperationType = operation.OperationType,
+            Status = operation.Status,
             PlannedDate = operation.PlannedDate,
             CompletedDate = operation.CompletedDate,
-            IsCompleted = operation.IsCompleted,
             Description = operation.Description,
             AreaProcessed = operation.AreaProcessed,
             Resources = operation.Resources.Select(r => new AgroOperationResourceDto

@@ -91,7 +91,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
         };
 
         var first = await PostAsync($"/api/agro-operations/{opId}/complete", completePayload);
-        first.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        first.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         var second = await PostAsync($"/api/agro-operations/{opId}/complete", completePayload);
         second.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -110,7 +110,7 @@ public class AgroOperationsControllerTests : IntegrationTestBase
             areaProcessed = 45.0
         });
 
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
     [Fact]

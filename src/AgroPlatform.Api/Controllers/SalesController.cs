@@ -4,6 +4,7 @@ using AgroPlatform.Application.Sales.Commands.UpdateSale;
 using AgroPlatform.Application.Sales.Queries.GetSaleById;
 using AgroPlatform.Application.Sales.Queries.GetSales;
 using AgroPlatform.Application.Sales.Queries.GetSalesAnalytics;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class SalesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Administrator,Manager,Director")]
+    [Authorize(Policy = Permissions.Sales.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateSale([FromBody] CreateSaleCommand command, CancellationToken cancellationToken)
     {
@@ -67,7 +68,7 @@ public class SalesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Director")]
+    [Authorize(Policy = Permissions.Sales.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateSale(Guid id, [FromBody] UpdateSaleCommand command, CancellationToken cancellationToken)
@@ -78,7 +79,7 @@ public class SalesController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Administrator,Manager,Director")]
+    [Authorize(Policy = Permissions.Sales.Manage)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSale(Guid id, CancellationToken cancellationToken)

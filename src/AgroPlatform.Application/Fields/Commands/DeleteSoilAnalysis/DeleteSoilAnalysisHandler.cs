@@ -21,6 +21,9 @@ public class DeleteSoilAnalysisHandler : IRequestHandler<DeleteSoilAnalysisComma
             .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(SoilAnalysis), request.Id);
 
+        if (analysis.FieldId != request.FieldId)
+            throw new NotFoundException(nameof(SoilAnalysis), request.Id);
+
         _context.SoilAnalyses.Remove(analysis);
         await _context.SaveChangesAsync(cancellationToken);
     }

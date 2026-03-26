@@ -23,6 +23,9 @@ public class DeleteFieldZoneHandler : IRequestHandler<DeleteFieldZoneCommand>
         if (zone is null)
             throw new NotFoundException(nameof(FieldZone), request.Id);
 
+        if (zone.FieldId != request.FieldId)
+            throw new NotFoundException(nameof(FieldZone), request.Id);
+
         _context.FieldZones.Remove(zone);
         await _context.SaveChangesAsync(cancellationToken);
     }

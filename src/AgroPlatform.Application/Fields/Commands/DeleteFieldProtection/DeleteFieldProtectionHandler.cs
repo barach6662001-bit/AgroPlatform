@@ -21,6 +21,9 @@ public class DeleteFieldProtectionHandler : IRequestHandler<DeleteFieldProtectio
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(FieldProtection), request.Id);
 
+        if (protection.FieldId != request.FieldId)
+            throw new NotFoundException(nameof(FieldProtection), request.Id);
+
         _context.FieldProtections.Remove(protection);
         await _context.SaveChangesAsync(cancellationToken);
     }

@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Exceptions;
+using AgroPlatform.Application.Common.Extensions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Warehouses;
@@ -22,13 +23,22 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
 
     public async Task<Guid> Handle(ReceiptStockCommand request, CancellationToken cancellationToken)
     {
+        await using var tx = await _context.Database.BeginRepeatableReadTransactionIfSupportedAsync(cancellationToken);
+
         // Idempotency check
         if (!string.IsNullOrEmpty(request.ClientOperationId))
         {
             var existing = await _context.StockMoves
                 .FirstOrDefaultAsync(m => m.ClientOperationId == request.ClientOperationId, cancellationToken);
             if (existing != null)
+            {
+                if (tx is not null)
+                {
+                    await tx.CommitAsync(cancellationToken);
+                }
+
                 return existing.Id;
+            }
         }
 
         var warehouse = await _context.Warehouses.FindAsync(new object[] { request.WarehouseId }, cancellationToken)
@@ -46,11 +56,28 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
             item.PurchasePrice = request.PricePerUnit.Value;
         }
 
+        var batchId = request.BatchId;
+
+        if (batchId == null && !string.IsNullOrEmpty(request.BatchCode))
+        {
+            var batch = new Batch
+            {
+                Code = request.BatchCode,
+                ItemId = request.ItemId,
+                ReceivedDate = request.ReceivedDate ?? _dateTime.UtcNow,
+                ExpiryDate = request.ExpiryDate,
+                SupplierName = request.SupplierName,
+                CostPerUnit = request.CostPerUnit ?? request.PricePerUnit,
+            };
+            _context.Batches.Add(batch);
+            batchId = batch.Id;
+        }
+
         var move = new StockMove
         {
             WarehouseId = request.WarehouseId,
             ItemId = request.ItemId,
-            BatchId = request.BatchId,
+            BatchId = batchId,
             MoveType = StockMoveType.Receipt,
             Quantity = request.Quantity,
             UnitCode = request.UnitCode,
@@ -64,9 +91,14 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
 
         _context.StockMoves.Add(move);
 
-        await _stockBalance.IncreaseBalance(request.WarehouseId, request.ItemId, request.BatchId, request.Quantity, request.UnitCode, cancellationToken);
+        await _stockBalance.IncreaseBalance(request.WarehouseId, request.ItemId, batchId, request.Quantity, request.UnitCode, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
+        if (tx is not null)
+        {
+            await tx.CommitAsync(cancellationToken);
+        }
+
         return move.Id;
     }
 }

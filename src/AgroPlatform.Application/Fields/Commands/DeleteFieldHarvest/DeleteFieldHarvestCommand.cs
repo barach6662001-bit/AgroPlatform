@@ -2,4 +2,4 @@ using MediatR;
 
 namespace AgroPlatform.Application.Fields.Commands.DeleteFieldHarvest;
 
-public record DeleteFieldHarvestCommand(Guid Id) : IRequest;
+public record DeleteFieldHarvestCommand(Guid FieldId, Guid Id) : IRequest;

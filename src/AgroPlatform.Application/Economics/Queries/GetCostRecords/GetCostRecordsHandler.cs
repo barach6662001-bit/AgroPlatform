@@ -19,8 +19,8 @@ public class GetCostRecordsHandler : IRequestHandler<GetCostRecordsQuery, Pagina
     {
         var query = _context.CostRecords.AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(request.Category))
-            query = query.Where(c => c.Category == request.Category);
+        if (request.Category.HasValue)
+            query = query.Where(c => c.Category == request.Category.Value);
 
         if (request.FieldId.HasValue)
             query = query.Where(c => c.FieldId == request.FieldId.Value);
@@ -36,22 +36,34 @@ public class GetCostRecordsHandler : IRequestHandler<GetCostRecordsQuery, Pagina
 
         var totalCount = await query.CountAsync(cancellationToken);
 
-        var items = await query
+        var raw = await query
             .OrderByDescending(c => c.Date)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(c => new CostRecordDto
+            .Select(c => new
             {
-                Id = c.Id,
-                Category = c.Category,
-                Amount = c.Amount,
-                Currency = c.Currency,
-                Date = c.Date,
-                FieldId = c.FieldId,
-                AgroOperationId = c.AgroOperationId,
-                Description = c.Description
+                c.Id,
+                c.Category,
+                c.Amount,
+                c.Currency,
+                c.Date,
+                c.FieldId,
+                c.AgroOperationId,
+                c.Description
             })
             .ToListAsync(cancellationToken);
+
+        var items = raw.Select(c => new CostRecordDto
+        {
+            Id = c.Id,
+            Category = c.Category.ToString(),
+            Amount = c.Amount,
+            Currency = c.Currency,
+            Date = c.Date,
+            FieldId = c.FieldId,
+            AgroOperationId = c.AgroOperationId,
+            Description = c.Description
+        }).ToList();
 
         return new PaginatedResult<CostRecordDto>
         {

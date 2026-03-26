@@ -18,8 +18,8 @@ public class GetCostSummaryHandler : IRequestHandler<GetCostSummaryQuery, CostSu
     {
         var query = _context.CostRecords.AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(request.Category))
-            query = query.Where(c => c.Category == request.Category);
+        if (request.Category.HasValue)
+            query = query.Where(c => c.Category == request.Category.Value);
 
         if (request.DateFrom.HasValue)
             query = query.Where(c => c.Date >= request.DateFrom.Value);
@@ -27,10 +27,14 @@ public class GetCostSummaryHandler : IRequestHandler<GetCostSummaryQuery, CostSu
         if (request.DateTo.HasValue)
             query = query.Where(c => c.Date <= request.DateTo.Value);
 
-        var byCategory = await query
+        var raw = await query
             .GroupBy(c => c.Category)
-            .Select(g => new EconomicsByCategoryDto(g.Key, g.Sum(c => c.Amount), g.Count()))
+            .Select(g => new { Category = g.Key, Amount = g.Sum(c => c.Amount), Count = g.Count() })
             .ToListAsync(cancellationToken);
+
+        var byCategory = raw
+            .Select(g => new EconomicsByCategoryDto(g.Category.ToString(), g.Amount, g.Count))
+            .ToList();
 
         var totalAmount = byCategory.Sum(c => c.Amount);
 
