@@ -1,7 +1,8 @@
 import { Button, Dropdown } from 'antd';
 import { LogoutOutlined, MenuOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import Sidebar from './Sidebar';
 import MobileDrawer from './MobileDrawer';
 import NotificationBell from './NotificationBell';
@@ -17,9 +18,22 @@ export default function AppLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth < TABLET_BREAKPOINT);
-  const { email, role, logout } = useAuthStore();
+  const { email, role, logout, tenantId } = useAuthStore();
   const navigate = useNavigate();
   const { t, lang, setLang } = useTranslation();
+  const queryClient = useQueryClient();
+  // Tracks whether the component has mounted; initial value is undefined so we skip
+  // invalidation on the first render and only react to real farm-switch events.
+  const prevTenantIdRef = useRef<string | null | undefined>(undefined);
+
+  // Invalidate all cached queries when the active farm (tenant) changes so that
+  // stale data from the previous farm is never shown to the user.
+  useEffect(() => {
+    if (prevTenantIdRef.current !== undefined && prevTenantIdRef.current !== tenantId) {
+      queryClient.invalidateQueries();
+    }
+    prevTenantIdRef.current = tenantId;
+  }, [tenantId, queryClient]);
 
   useEffect(() => {
     const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
