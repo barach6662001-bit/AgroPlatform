@@ -36,7 +36,7 @@ public class ReceiptStockHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new ReceiptStockHandler(context, dateTime, stockBalance);
-        var command = new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, null);
+        var command = new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, null, null, null, null, null, null);
 
         // Act
         var moveId = await handler.Handle(command, CancellationToken.None);
@@ -69,8 +69,8 @@ public class ReceiptStockHandlerTests
         var handler = new ReceiptStockHandler(context, dateTime, stockBalance);
 
         // Act
-        await handler.Handle(new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, null), CancellationToken.None);
-        await handler.Handle(new ReceiptStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null, null), CancellationToken.None);
+        await handler.Handle(new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, null, null, null, null, null, null), CancellationToken.None);
+        await handler.Handle(new ReceiptStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null, null, null, null, null, null, null), CancellationToken.None);
 
         // Assert
         var balance = await context.StockBalances
@@ -94,8 +94,8 @@ public class ReceiptStockHandlerTests
         var clientOpId = "op-123";
 
         // Act
-        var moveId1 = await handler.Handle(new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, clientOpId), CancellationToken.None);
-        var moveId2 = await handler.Handle(new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, clientOpId), CancellationToken.None);
+        var moveId1 = await handler.Handle(new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, clientOpId, null, null, null, null, null), CancellationToken.None);
+        var moveId2 = await handler.Handle(new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, clientOpId, null, null, null, null, null), CancellationToken.None);
 
         // Assert
         moveId1.Should().Be(moveId2);
@@ -107,7 +107,7 @@ public class ReceiptStockHandlerTests
         // Arrange
         var (context, dateTime, stockBalance) = CreateDependencies();
         var handler = new ReceiptStockHandler(context, dateTime, stockBalance);
-        var command = new ReceiptStockCommand(Guid.NewGuid(), Guid.NewGuid(), null, 10m, "kg", null, null, null);
+        var command = new ReceiptStockCommand(Guid.NewGuid(), Guid.NewGuid(), null, 10m, "kg", null, null, null, null, null, null, null, null);
 
         // Act
         var act = () => handler.Handle(command, CancellationToken.None);
@@ -129,7 +129,7 @@ public class ReceiptStockHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new ReceiptStockHandler(context, dateTime, stockBalance);
-        var command = new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, null);
+        var command = new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, null, null, null, null, null, null);
 
         // Act
         var act = () => handler.Handle(command, CancellationToken.None);
