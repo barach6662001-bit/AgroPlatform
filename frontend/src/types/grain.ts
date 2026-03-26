@@ -1,5 +1,18 @@
 export type GrainOwnershipType = 0 | 1 | 2 | 3;
 
+export interface GrainStorageDto {
+  id: string;
+  name: string;
+  code?: string;
+  location?: string;
+  storageType?: string;
+  capacityTons?: number;
+  isActive: boolean;
+  notes?: string;
+  batchCount: number;
+  totalTons: number;
+}
+
 export interface GrainBatchDto {
   id: string;
   grainStorageId: string;

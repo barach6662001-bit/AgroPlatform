@@ -3,12 +3,10 @@ import { useEffect, useState } from 'react';
 import { Table, Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography } from 'antd';
 import { PlusOutlined, ExportOutlined, DownloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes } from '../../api/grain';
-import { getWarehouses } from '../../api/warehouses';
+import { getGrainBatches, createGrainBatch, createGrainMovement, getGrainMovements, getGrainTypes, getGrainStorages } from '../../api/grain';
 import { getFields } from '../../api/fields';
-import type { GrainBatchDto, GrainMovementDto, GrainOwnershipType } from '../../types/grain';
+import type { GrainBatchDto, GrainMovementDto, GrainOwnershipType, GrainStorageDto } from '../../types/grain';
 import type { FieldDto } from '../../types/field';
-import type { WarehouseDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
@@ -32,7 +30,7 @@ export default function GrainBatchList() {
   const [pageSize, setPageSize] = useState(15);
   const [filterOwnership, setFilterOwnership] = useState<number | undefined>(undefined);
   const [selectedStorageId, setSelectedStorageId] = useState<string | undefined>(undefined);
-  const [storages, setStorages] = useState<WarehouseDto[]>([]);
+  const [storages, setStorages] = useState<GrainStorageDto[]>([]);
 
   const [grainTypes, setGrainTypes] = useState<string[]>([]);
   const [fields, setFields] = useState<FieldDto[]>([]);
@@ -73,8 +71,8 @@ export default function GrainBatchList() {
   }, []);
 
   useEffect(() => {
-    getWarehouses({ type: 1, pageSize: 100 })
-      .then((r) => setStorages(r.items))
+    getGrainStorages({ activeOnly: true })
+      .then(setStorages)
       .catch(() => {/* ignore */});
   }, []);
 
