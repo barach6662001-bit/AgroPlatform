@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Row, Col, Card, message, Typography, Table, Tag, List, Button, Space, Divider } from 'antd';
 import TableSkeleton from '../components/TableSkeleton';
 import {
@@ -23,14 +23,12 @@ import {
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useNavigate } from 'react-router-dom';
-import { getDashboard } from '../api/analytics';
-import { getFields } from '../api/fields';
-import { getNotifications, type NotificationDto } from '../api/notifications';
-import type { DashboardDto } from '../types/analytics';
+import type { NotificationDto } from '../api/notifications';
 import type { FieldDto } from '../types/field';
 import PageHeader from '../components/PageHeader';
 import WeatherWidget from '../components/WeatherWidget';
 import { useTranslation } from '../i18n';
+import { useDashboardQuery, useDashboardNotificationsQuery, useDashboardFieldsQuery } from '../hooks/useDashboardQuery';
 
 dayjs.extend(relativeTime);
 
@@ -41,27 +39,22 @@ const ONBOARDING_THRESHOLD_FIELDS = 3;
 const { Text } = Typography;
 
 export default function Dashboard() {
-  const [data, setData] = useState<DashboardDto | null>(null);
-  const [fields, setFields] = useState<FieldDto[]>([]);
-  const [notifications, setNotifications] = useState<NotificationDto[]>([]);
-  const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const { data, isLoading: dashLoading, isError: dashError } = useDashboardQuery();
+  const { data: notificationsData, isLoading: notifsLoading } = useDashboardNotificationsQuery();
+  const { data: fieldsData, isLoading: fieldsLoading } = useDashboardFieldsQuery();
+
+  const loading = dashLoading || notifsLoading || fieldsLoading;
+  const notifications: NotificationDto[] = notificationsData ?? [];
+  const fields: FieldDto[] = fieldsData?.items ?? [];
+
   useEffect(() => {
-    Promise.all([
-      getDashboard(),
-      getFields({ pageSize: 8 }),
-      getNotifications({ pageSize: 8 }),
-    ])
-      .then(([dash, fieldsRes, notifs]) => {
-        setData(dash);
-        setFields(fieldsRes.items);
-        setNotifications(notifs);
-      })
-      .catch(() => message.error(t.dashboard.loadError))
-      .finally(() => setLoading(false));
-  }, []);
+    if (dashError) {
+      message.error(t.dashboard.loadError);
+    }
+  }, [dashError, t.dashboard.loadError]);
 
   if (loading) return <TableSkeleton rows={8} />;
   if (!data) return null;
