@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Economics;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.GrainStorage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +50,7 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
         {
             _context.CostRecords.Add(new CostRecord
             {
-                Category = "Revenue",
+                Category = CostCategory.Other,
                 Amount = -movement.TotalRevenue.Value, // Negative = income (revenue)
                 Currency = "UAH",
                 Date = request.MovementDate,

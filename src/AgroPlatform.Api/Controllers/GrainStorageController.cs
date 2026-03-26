@@ -3,6 +3,7 @@ using AgroPlatform.Application.GrainStorage.Commands.CreateGrainMovement;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainBatches;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainMovements;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainSummary;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -44,7 +45,7 @@ public class GrainStorageController : ControllerBase
 
     /// <summary>Creates a new grain batch (receives grain into storage).</summary>
     [HttpPost]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateGrainBatch([FromBody] CreateGrainBatchCommand command, CancellationToken cancellationToken)
     {
@@ -54,7 +55,7 @@ public class GrainStorageController : ControllerBase
 
     /// <summary>Records a grain movement (in or out) for a specific batch.</summary>
     [HttpPost("{id:guid}/movements")]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateGrainMovement(Guid id, [FromBody] CreateGrainMovementCommand command, CancellationToken cancellationToken)

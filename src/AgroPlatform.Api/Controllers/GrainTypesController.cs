@@ -1,5 +1,6 @@
 using AgroPlatform.Application.GrainStorage.Commands.AddGrainType;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainTypes;
+using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,7 @@ public class GrainTypesController : ControllerBase
 
     /// <summary>Adds a custom grain type for the current tenant.</summary>
     [HttpPost]
-    [Authorize(Roles = "Administrator,Manager,Storekeeper")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> AddGrainType([FromBody] AddGrainTypeRequest request, CancellationToken cancellationToken)
     {

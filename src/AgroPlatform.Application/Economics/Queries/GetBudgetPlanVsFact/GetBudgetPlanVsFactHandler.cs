@@ -27,7 +27,7 @@ public class GetBudgetPlanVsFactHandler : IRequestHandler<GetBudgetPlanVsFactQue
             .ToListAsync(cancellationToken);
 
         var categories = budgets.Select(b => b.Category)
-            .Union(actuals.Select(a => a.Category))
+            .Union(actuals.Select(a => a.Category.ToString()))
             .Distinct()
             .OrderBy(c => c)
             .ToList();
@@ -35,7 +35,7 @@ public class GetBudgetPlanVsFactHandler : IRequestHandler<GetBudgetPlanVsFactQue
         return categories.Select(cat =>
         {
             var planned = budgets.FirstOrDefault(b => b.Category == cat)?.PlannedAmount ?? 0m;
-            var fact = actuals.FirstOrDefault(a => a.Category == cat)?.FactAmount ?? 0m;
+            var fact = actuals.FirstOrDefault(a => a.Category.ToString() == cat)?.FactAmount ?? 0m;
             var variance = planned - fact;
             var executionPercent = planned > 0 ? Math.Round(fact / planned * 100, 1) : 0m;
             return new BudgetPlanVsFactDto(cat, planned, fact, variance, executionPercent);

@@ -40,5 +40,8 @@ public class FieldHarvestConfiguration : IEntityTypeConfiguration<FieldHarvest>
 
         builder.HasIndex(h => h.TenantId)
             .HasDatabaseName("IX_FieldHarvests_TenantId");
+
+        builder.HasIndex(h => new { h.FieldId, h.Year })
+            .HasDatabaseName("IX_FieldHarvests_FieldId_Year");
     }
 }
