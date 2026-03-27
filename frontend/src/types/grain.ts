@@ -37,6 +37,7 @@ export interface GrainBatchDto {
   sourceFieldName?: string;
   moisturePercent?: number;
   notes?: string;
+  placements: GrainBatchPlacementDto[];
 }
 
 export interface GrainMovementDto {
