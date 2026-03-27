@@ -18,7 +18,7 @@ export default function GrainStorageList() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const { hasPermission } = useRole();
-  const canManage = hasPermission('warehouses', 'manage');
+  const canManage = hasPermission('grain-storage', 'manage');
 
   const load = () => {
     setLoading(true);

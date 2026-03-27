@@ -297,18 +297,26 @@ export default function WarehouseItems() {
           onChange={handleWarehouseChange}
           value={selectedWarehouse}
         />
-        <Button icon={<PlusOutlined />} type="primary" onClick={() => setReceiptOpen(true)}>
-          {t.warehouses.receipt}
-        </Button>
-        <Button icon={<PlusOutlined />} onClick={() => setIssueOpen(true)}>
-          {t.warehouses.issue}
-        </Button>
-        <Button icon={<PlusOutlined />} onClick={() => setCreateItemOpen(true)}>
-          {t.warehouses.createItem}
-        </Button>
-        <Button icon={<PlusOutlined />} onClick={() => setTransferOpen(true)}>
-          {t.warehouses.transfer}
-        </Button>
+        {canManageItems && (
+          <Button icon={<PlusOutlined />} type="primary" onClick={() => setReceiptOpen(true)}>
+            {t.warehouses.receipt}
+          </Button>
+        )}
+        {canManageItems && (
+          <Button icon={<PlusOutlined />} onClick={() => setIssueOpen(true)}>
+            {t.warehouses.issue}
+          </Button>
+        )}
+        {canManageItems && (
+          <Button icon={<PlusOutlined />} onClick={() => setCreateItemOpen(true)}>
+            {t.warehouses.createItem}
+          </Button>
+        )}
+        {canManageItems && (
+          <Button icon={<PlusOutlined />} onClick={() => setTransferOpen(true)}>
+            {t.warehouses.transfer}
+          </Button>
+        )}
         <Button icon={<DownloadOutlined />} loading={exporting} onClick={handleExportBalances}>
           {t.warehouses_export.exportBalances}
         </Button>
