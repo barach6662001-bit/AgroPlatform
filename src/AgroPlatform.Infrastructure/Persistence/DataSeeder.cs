@@ -310,15 +310,20 @@ public static class DataSeeder
 
             // 16. Grain storage batches
             context.GrainBatches.AddRange(
-                new GrainBatch { Id = GB_Wheat, GrainStorageId = GS_West, GrainType = "Пшениця озима", QuantityTons = 180.0m, InitialQuantityTons = 255.0m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(20), SourceFieldId = F1, MoisturePercent = 13.5m, PricePerTon = 7200.0m,  Notes = "Урожай поточного сезону", TenantId = DemoTenantId, CreatedAtUtc = now },
-                new GrainBatch { Id = GB_Sun,   GrainStorageId = GS_East, GrainType = "Соняшник",      QuantityTons = 106.4m, InitialQuantityTons = 106.4m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(5),  SourceFieldId = F2, MoisturePercent = 7.8m,  PricePerTon = 18500.0m, Notes = "Збирання в процесі",       TenantId = DemoTenantId, CreatedAtUtc = now },
-                new GrainBatch { Id = GB_Corn,  GrainStorageId = GS_East, GrainType = "Кукурудза",     QuantityTons = 250.0m, InitialQuantityTons = 440.0m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(90), SourceFieldId = F3, MoisturePercent = 14.2m, PricePerTon = 5800.0m,  Notes = "Частково реалізовано",     TenantId = DemoTenantId, CreatedAtUtc = now }
+                new GrainBatch { Id = GB_Wheat, GrainType = "Пшениця озима", QuantityTons = 180.0m, InitialQuantityTons = 255.0m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(20), SourceFieldId = F1, MoisturePercent = 13.5m, PricePerTon = 7200.0m,  Notes = "Урожай поточного сезону", TenantId = DemoTenantId, CreatedAtUtc = now },
+                new GrainBatch { Id = GB_Sun,   GrainType = "Соняшник",      QuantityTons = 106.4m, InitialQuantityTons = 106.4m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(5),  SourceFieldId = F2, MoisturePercent = 7.8m,  PricePerTon = 18500.0m, Notes = "Збирання в процесі",       TenantId = DemoTenantId, CreatedAtUtc = now },
+                new GrainBatch { Id = GB_Corn,  GrainType = "Кукурудза",     QuantityTons = 250.0m, InitialQuantityTons = 440.0m, OwnershipType = GrainOwnershipType.Own, ReceivedDate = D(90), SourceFieldId = F3, MoisturePercent = 14.2m, PricePerTon = 5800.0m,  Notes = "Частково реалізовано",     TenantId = DemoTenantId, CreatedAtUtc = now }
+            );
+            context.GrainBatchPlacements.AddRange(
+                new GrainBatchPlacement { GrainBatchId = GB_Wheat, GrainStorageId = GS_West, QuantityTons = 180.0m, TenantId = DemoTenantId, CreatedAtUtc = now },
+                new GrainBatchPlacement { GrainBatchId = GB_Sun,   GrainStorageId = GS_East, QuantityTons = 106.4m, TenantId = DemoTenantId, CreatedAtUtc = now },
+                new GrainBatchPlacement { GrainBatchId = GB_Corn,  GrainStorageId = GS_East, QuantityTons = 250.0m, TenantId = DemoTenantId, CreatedAtUtc = now }
             );
             context.GrainMovements.AddRange(
-                new GrainMovement { GrainBatchId = GB_Wheat, MovementType = "Receipt", QuantityTons = 255.0m, MovementDate = D(20), Reason = "Збирання врожаю",                                                          TenantId = DemoTenantId, CreatedAtUtc = now },
-                new GrainMovement { GrainBatchId = GB_Wheat, MovementType = "Sale",    QuantityTons = 75.0m,  MovementDate = D(10), Reason = "Продаж", BuyerName = "Kernel Holding",  PricePerTon = 7200.0m,  TotalRevenue = 540000.0m,  TenantId = DemoTenantId, CreatedAtUtc = now },
-                new GrainMovement { GrainBatchId = GB_Corn,  MovementType = "Receipt", QuantityTons = 440.0m, MovementDate = D(90), Reason = "Збирання врожаю",                                                          TenantId = DemoTenantId, CreatedAtUtc = now },
-                new GrainMovement { GrainBatchId = GB_Corn,  MovementType = "Sale",    QuantityTons = 190.0m, MovementDate = D(30), Reason = "Продаж", BuyerName = "АДМ Україна",       PricePerTon = 5800.0m,  TotalRevenue = 1102000.0m, TenantId = DemoTenantId, CreatedAtUtc = now }
+                new GrainMovement { GrainBatchId = GB_Wheat, MovementType = GrainMovementType.Receipt,      QuantityTons = 255.0m, MovementDate = D(20), Reason = "Збирання врожаю",                                                          TenantId = DemoTenantId, CreatedAtUtc = now },
+                new GrainMovement { GrainBatchId = GB_Wheat, MovementType = GrainMovementType.SaleDispatch, QuantityTons = 75.0m,  MovementDate = D(10), Reason = "Продаж", BuyerName = "Kernel Holding",  PricePerTon = 7200.0m,  TotalRevenue = 540000.0m,  TenantId = DemoTenantId, CreatedAtUtc = now },
+                new GrainMovement { GrainBatchId = GB_Corn,  MovementType = GrainMovementType.Receipt,      QuantityTons = 440.0m, MovementDate = D(90), Reason = "Збирання врожаю",                                                          TenantId = DemoTenantId, CreatedAtUtc = now },
+                new GrainMovement { GrainBatchId = GB_Corn,  MovementType = GrainMovementType.SaleDispatch, QuantityTons = 190.0m, MovementDate = D(30), Reason = "Продаж", BuyerName = "АДМ Україна",       PricePerTon = 5800.0m,  TotalRevenue = 1102000.0m, TenantId = DemoTenantId, CreatedAtUtc = now }
             );
 
             // 17. Sales
