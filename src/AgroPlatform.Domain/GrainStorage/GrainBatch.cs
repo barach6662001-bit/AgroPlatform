@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Fields;
@@ -17,6 +18,9 @@ public class GrainBatch : AuditableEntity
     public Guid? SourceFieldId { get; set; }
     public decimal? MoisturePercent { get; set; }
     public string? Notes { get; set; }
+
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
     public ICollection<GrainMovement> Movements { get; set; } = new List<GrainMovement>();
     public ICollection<GrainBatchPlacement> Placements { get; set; } = new List<GrainBatchPlacement>();

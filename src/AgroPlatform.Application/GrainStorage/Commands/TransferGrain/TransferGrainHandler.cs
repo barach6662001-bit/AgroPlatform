@@ -92,7 +92,14 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
             });
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("The grain batch was modified by another operation. Please retry.");
+        }
 
         return operationId;
     }

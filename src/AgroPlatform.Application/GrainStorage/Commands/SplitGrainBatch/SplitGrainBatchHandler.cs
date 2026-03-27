@@ -95,7 +95,14 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
 
         source.QuantityTons -= request.SplitQuantityTons;
 
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("The grain batch was modified by another operation. Please retry.");
+        }
 
         return newBatch.Id;
     }

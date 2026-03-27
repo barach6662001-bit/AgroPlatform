@@ -35,7 +35,14 @@ public class AdjustGrainBatchHandler : IRequestHandler<AdjustGrainBatchCommand, 
         _context.GrainMovements.Add(movement);
         batch.QuantityTons += request.AdjustmentTons;
 
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("The grain batch was modified by another operation. Please retry.");
+        }
         return movement.Id;
     }
 }

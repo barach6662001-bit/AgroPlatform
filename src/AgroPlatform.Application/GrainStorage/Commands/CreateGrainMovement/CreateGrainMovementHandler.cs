@@ -73,7 +73,14 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
             });
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("The grain batch was modified by another operation. Please retry.");
+        }
 
         if (isIncoming && batch.SourceFieldId.HasValue)
         {

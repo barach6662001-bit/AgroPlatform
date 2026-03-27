@@ -17,5 +17,6 @@ public class GrainBatchDto
     public string? SourceFieldName { get; set; }
     public decimal? MoisturePercent { get; set; }
     public string? Notes { get; set; }
+    public Guid? GrainStorageId { get; set; }
     public IReadOnlyList<GrainBatchPlacementDto> Placements { get; set; } = [];
 }

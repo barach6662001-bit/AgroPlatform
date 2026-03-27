@@ -51,6 +51,10 @@ public class GetGrainBatchesHandler : IRequestHandler<GetGrainBatchesQuery, Pagi
                     : null,
                 MoisturePercent = b.MoisturePercent,
                 Notes = b.Notes,
+                GrainStorageId = b.Placements
+                    .OrderByDescending(p => p.QuantityTons)
+                    .Select(p => (Guid?)p.GrainStorageId)
+                    .FirstOrDefault(),
                 Placements = b.Placements
                     .Select(p => new GrainBatchPlacementDto
                     {

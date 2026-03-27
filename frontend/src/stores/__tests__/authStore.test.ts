@@ -8,6 +8,8 @@ describe('authStore', () => {
       email: null,
       role: null,
       tenantId: null,
+      firstName: null,
+      lastName: null,
       isAuthenticated: false,
     });
   });
