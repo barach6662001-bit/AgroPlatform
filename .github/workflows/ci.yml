@@ -42,6 +42,37 @@ jobs:
         working-directory: .
         run: docker build -f frontend/Dockerfile frontend/
 
+  docker-compose-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build Docker images
+        run: docker compose build
+
+      - name: Start services
+        run: docker compose up -d
+
+      - name: Wait for API health check
+        run: |
+          echo "Waiting for API to become healthy..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8080/health/live > /dev/null 2>&1; then
+              echo "API is healthy after ${i}s"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::API health check failed after 60s"
+          docker compose logs api
+          exit 1
+
+      - name: Stop services
+        if: always()
+        run: docker compose down -v
+
   build-and-test:
     runs-on: ubuntu-latest
     permissions:
