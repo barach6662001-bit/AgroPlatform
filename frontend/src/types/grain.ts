@@ -69,3 +69,35 @@ export interface SplitGrainBatchResultDto {
   remainingQuantityTons: number;
   createdBatches: SplitResultItem[];
 }
+
+export interface GrainBatchSummaryDto {
+  id: string;
+  grainStorageId: string;
+  grainType: string;
+  quantityTons: number;
+  initialQuantityTons: number;
+  ownershipType: GrainOwnershipType;
+  ownerName?: string;
+  receivedDate: string;
+  moisturePercent?: number;
+  sourceFieldName?: string;
+  contractNumber?: string;
+}
+
+export interface GrainStorageOverviewDto {
+  id: string;
+  name: string;
+  code?: string;
+  location?: string;
+  storageType?: string;
+  capacityTons?: number;
+  isActive: boolean;
+  notes?: string;
+  occupiedTons: number;
+  freeTons?: number;
+  occupancyPercent?: number;
+  batchCount: number;
+  grainTypes: string[];
+  batches: GrainBatchSummaryDto[];
+  warnings: string[];
+}
