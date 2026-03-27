@@ -828,6 +828,12 @@ const en: Translations = {
     companySaveSuccess: 'Company information saved',
     companySaveError: 'Error saving company info',
     companyLoadError: 'Error loading company data',
+    demoDataTitle: 'Demo Data',
+    demoDataDescription: 'Load a set of sample data: fields, machinery, operations, warehouses and grain batches. Use only in dev / demo environments.',
+    demoDataWarning: 'This action will overwrite or supplement existing tenant data!',
+    demoDataButton: 'Load demo data',
+    demoDataSuccess: 'Demo data loaded successfully',
+    demoDataError: 'Error loading demo data',
   },
   profile: {
     title: 'Profile',
