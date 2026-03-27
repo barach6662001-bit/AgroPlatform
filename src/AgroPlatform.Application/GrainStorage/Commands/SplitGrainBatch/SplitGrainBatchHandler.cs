@@ -4,6 +4,7 @@ using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.GrainStorage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AgroPlatform.Application.GrainStorage.Commands.SplitGrainBatch;
 
@@ -32,7 +33,12 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
         var movementDate = request.MovementDate ?? DateTime.UtcNow;
         var operationId = Guid.NewGuid();
 
-        await using var tx = await _context.Database.BeginTransactionAsync(cancellationToken);
+        // Begin a real DB transaction only when supported (relational providers).
+        // In-memory provider used in unit tests does not support transactions.
+        IDbContextTransaction? tx = _context.Database.IsRelational()
+            ? await _context.Database.BeginTransactionAsync(cancellationToken)
+            : null;
+        await using var _ = tx;
 
         // Create the new (split-off) batch
         var newBatch = new GrainBatch
@@ -101,7 +107,8 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        await tx.CommitAsync(cancellationToken);
+        if (tx != null)
+            await tx.CommitAsync(cancellationToken);
 
         return newBatch.Id;
     }
