@@ -18,7 +18,7 @@ public class GetGrainMovementsHandler : IRequestHandler<GetGrainMovementsQuery, 
     {
         return await _context.GrainMovements
             .Where(m => m.GrainBatchId == request.BatchId)
-            .Include(m => m.GrainBatch).ThenInclude(b => b.GrainStorage)
+            .Include(m => m.GrainBatch).ThenInclude(b => b.Placements).ThenInclude(p => p.GrainStorage)
             .Include(m => m.SourceStorage)
             .Include(m => m.TargetStorage)
             .OrderByDescending(m => m.MovementDate)
@@ -27,7 +27,7 @@ public class GetGrainMovementsHandler : IRequestHandler<GetGrainMovementsQuery, 
                 Id = m.Id,
                 GrainBatchId = m.GrainBatchId,
                 GrainType = m.GrainBatch.GrainType,
-                StorageName = m.GrainBatch.GrainStorage != null ? m.GrainBatch.GrainStorage.Name : string.Empty,
+                StorageName = m.GrainBatch.Placements.Select(p => p.GrainStorage.Name).FirstOrDefault() ?? string.Empty,
                 MovementType = m.MovementType.ToString(),
                 QuantityTons = m.QuantityTons,
                 MovementDate = m.MovementDate,

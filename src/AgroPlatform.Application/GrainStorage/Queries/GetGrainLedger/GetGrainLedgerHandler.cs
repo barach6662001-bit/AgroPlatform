@@ -19,13 +19,13 @@ public class GetGrainLedgerHandler : IRequestHandler<GetGrainLedgerQuery, Pagina
     public async Task<PaginatedResult<GrainMovementDto>> Handle(GetGrainLedgerQuery request, CancellationToken cancellationToken)
     {
         var query = _context.GrainMovements
-            .Include(m => m.GrainBatch).ThenInclude(b => b.GrainStorage)
+            .Include(m => m.GrainBatch).ThenInclude(b => b.Placements).ThenInclude(p => p.GrainStorage)
             .Include(m => m.SourceStorage)
             .Include(m => m.TargetStorage)
             .AsQueryable();
 
         if (request.StorageId.HasValue)
-            query = query.Where(m => m.GrainBatch.GrainStorageId == request.StorageId.Value);
+            query = query.Where(m => m.GrainBatch.Placements.Any(p => p.GrainStorageId == request.StorageId.Value));
 
         if (request.BatchId.HasValue)
             query = query.Where(m => m.GrainBatchId == request.BatchId.Value);
@@ -54,7 +54,7 @@ public class GetGrainLedgerHandler : IRequestHandler<GetGrainLedgerQuery, Pagina
                 Id = m.Id,
                 GrainBatchId = m.GrainBatchId,
                 GrainType = m.GrainBatch.GrainType,
-                StorageName = m.GrainBatch.GrainStorage != null ? m.GrainBatch.GrainStorage.Name : string.Empty,
+                StorageName = m.GrainBatch.Placements.Select(p => p.GrainStorage.Name).FirstOrDefault() ?? string.Empty,
                 MovementType = m.MovementType.ToString(),
                 QuantityTons = m.QuantityTons,
                 MovementDate = m.MovementDate,

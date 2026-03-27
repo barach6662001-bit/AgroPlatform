@@ -19,6 +19,7 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
     public async Task<Guid> Handle(SplitGrainBatchCommand request, CancellationToken cancellationToken)
     {
         var source = await _context.GrainBatches
+            .Include(b => b.Placements)
             .FirstOrDefaultAsync(b => b.Id == request.SourceBatchId, cancellationToken)
             ?? throw new NotFoundException(nameof(GrainBatch), request.SourceBatchId);
 
@@ -26,14 +27,14 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
             throw new InvalidOperationException(
                 $"Insufficient quantity in source batch: available {source.QuantityTons:F4} t, requested {request.SplitQuantityTons:F4} t.");
 
-        var targetStorageId = request.TargetStorageId ?? source.GrainStorageId;
+        var sourceStorageId = source.Placements.FirstOrDefault()?.GrainStorageId;
+        var targetStorageId = request.TargetStorageId ?? sourceStorageId;
         var movementDate = request.MovementDate ?? DateTime.UtcNow;
         var operationId = Guid.NewGuid();
 
         // Create the new (split-off) batch
         var newBatch = new GrainBatch
         {
-            GrainStorageId = targetStorageId,
             GrainType = source.GrainType,
             QuantityTons = request.SplitQuantityTons,
             InitialQuantityTons = request.SplitQuantityTons,
@@ -47,6 +48,23 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
             Notes = request.Notes,
         };
         _context.GrainBatches.Add(newBatch);
+
+        // Place split batch in target storage if known
+        if (targetStorageId.HasValue)
+        {
+            _context.GrainBatchPlacements.Add(new GrainBatchPlacement
+            {
+                GrainBatchId = newBatch.Id,
+                GrainStorageId = targetStorageId.Value,
+                QuantityTons = request.SplitQuantityTons,
+            });
+
+            // Reduce source batch placement quantity too
+            var sourcePlacement = source.Placements.FirstOrDefault(p => p.GrainStorageId == sourceStorageId);
+            if (sourcePlacement != null)
+                sourcePlacement.QuantityTons -= request.SplitQuantityTons;
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
 
         // Outgoing leg on source batch
@@ -57,7 +75,7 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
             QuantityTons = request.SplitQuantityTons,
             MovementDate = movementDate,
             OperationId = operationId,
-            SourceStorageId = source.GrainStorageId,
+            SourceStorageId = sourceStorageId,
             TargetStorageId = targetStorageId,
             TargetBatchId = newBatch.Id,
             Notes = request.Notes,
@@ -71,7 +89,7 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
             QuantityTons = request.SplitQuantityTons,
             MovementDate = movementDate,
             OperationId = operationId,
-            SourceStorageId = source.GrainStorageId,
+            SourceStorageId = sourceStorageId,
             TargetStorageId = targetStorageId,
             SourceBatchId = source.Id,
             Notes = request.Notes,

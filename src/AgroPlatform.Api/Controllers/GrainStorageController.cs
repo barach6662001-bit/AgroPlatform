@@ -155,7 +155,7 @@ public class GrainStorageController : ControllerBase
         var movementId = await _sender.Send(command with { BatchId = id }, cancellationToken);
         return Ok(new { id = movementId });
     }
-}
+
     /// <summary>Adds a placement record to an existing grain batch, allowing one batch to span multiple storages.</summary>
     [HttpPost("{id:guid}/placements")]
     [Authorize(Policy = Permissions.GrainStorage.Manage)]

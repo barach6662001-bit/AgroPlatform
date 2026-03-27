@@ -19,12 +19,12 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
     public async Task<Guid> Handle(TransferGrainCommand request, CancellationToken cancellationToken)
     {
         var source = await _context.GrainBatches
-            .Include(b => b.GrainStorage)
+            .Include(b => b.Placements)
             .FirstOrDefaultAsync(b => b.Id == request.SourceBatchId, cancellationToken)
             ?? throw new NotFoundException(nameof(GrainBatch), request.SourceBatchId);
 
         var target = await _context.GrainBatches
-            .Include(b => b.GrainStorage)
+            .Include(b => b.Placements)
             .FirstOrDefaultAsync(b => b.Id == request.TargetBatchId, cancellationToken)
             ?? throw new NotFoundException(nameof(GrainBatch), request.TargetBatchId);
 
@@ -32,6 +32,8 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
             throw new InvalidOperationException(
                 $"Insufficient quantity in source batch: available {source.QuantityTons:F4} t, requested {request.QuantityTons:F4} t.");
 
+        var sourceStorageId = source.Placements.FirstOrDefault()?.GrainStorageId;
+        var targetStorageId = target.Placements.FirstOrDefault()?.GrainStorageId;
         var operationId = Guid.NewGuid();
         var movementDate = request.MovementDate ?? DateTime.UtcNow;
 
@@ -43,8 +45,8 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
             QuantityTons = request.QuantityTons,
             MovementDate = movementDate,
             OperationId = operationId,
-            SourceStorageId = source.GrainStorageId,
-            TargetStorageId = target.GrainStorageId,
+            SourceStorageId = sourceStorageId,
+            TargetStorageId = targetStorageId,
             TargetBatchId = target.Id,
             Notes = request.Notes,
         });
@@ -57,8 +59,8 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
             QuantityTons = request.QuantityTons,
             MovementDate = movementDate,
             OperationId = operationId,
-            SourceStorageId = source.GrainStorageId,
-            TargetStorageId = target.GrainStorageId,
+            SourceStorageId = sourceStorageId,
+            TargetStorageId = targetStorageId,
             SourceBatchId = source.Id,
             Notes = request.Notes,
         });
