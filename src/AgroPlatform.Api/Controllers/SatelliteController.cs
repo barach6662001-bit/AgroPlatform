@@ -109,8 +109,8 @@ public class SatelliteController : ControllerBase
 
     /// <summary>
     /// Returns an ordered list of available NDVI snapshot dates for a field.
-    /// When real Sentinel Hub date discovery is not configured, returns a synthetic
-    /// fallback list of recent dates so the frontend slider works out of the box.
+    /// Requires SENTINEL_HUB_INSTANCE_ID to be configured; otherwise returns an empty
+    /// list with configured=false so the frontend can show an appropriate message.
     /// </summary>
     [HttpGet("dates/{fieldId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -124,15 +124,21 @@ public class SatelliteController : ControllerBase
         if (!fieldExists)
             return NotFound(new { error = "Field not found" });
 
-        // Generate synthetic recent dates in 10-day steps (Sentinel-2 revisit cadence)
-        // When a real catalog API is integrated, replace this with actual acquisition dates.
-        var today = DateTime.UtcNow.Date;
-        var dates = Enumerable.Range(0, 6)
-            .Select(i => today.AddDays(-i * 10).ToString("yyyy-MM-dd"))
-            .Reverse()
-            .ToArray();
+        if (string.IsNullOrEmpty(_instanceId))
+        {
+            return Ok(new
+            {
+                configured = false,
+                dates = Array.Empty<string>(),
+            });
+        }
 
-        return Ok(dates);
+        // TODO: implement real Sentinel-2 catalog date discovery via Sentinel Hub API.
+        return Ok(new
+        {
+            configured = true,
+            dates = Array.Empty<string>(),
+        });
     }
 
     public sealed record DetectNdviProblemRequest(string Date, double StressedPercent, string Message);
