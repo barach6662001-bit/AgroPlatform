@@ -5,5 +5,7 @@ public record AuthResponse(
     string Email,
     string Role,
     DateTime ExpiresAt,
-    Guid TenantId
+    Guid TenantId,
+    string FirstName,
+    string LastName
 );

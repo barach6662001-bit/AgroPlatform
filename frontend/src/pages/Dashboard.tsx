@@ -65,14 +65,22 @@ export default function Dashboard() {
   }));
 
   // ── Monthly KPIs ──────────────────────────────────────────────────────────
-  const now = dayjs();
-  const currentMonthTrend = data.costTrend.find(
-    (tr) => tr.year === now.year() && tr.month === now.month() + 1,
-  );
-  const monthlyExpenses = currentMonthTrend?.totalAmount ?? 0;
-  // Revenue model not yet implemented; placeholder until a revenue entity is added.
-  const monthlyRevenue = 0;
+  const latestCostPeriod = data.costTrend[data.costTrend.length - 1];
+  const prevCostPeriod = data.costTrend.length > 1 ? data.costTrend[data.costTrend.length - 2] : undefined;
+  const monthlyExpenses = latestCostPeriod?.totalAmount ?? 0;
+
+  const latestRevenuePeriod = data.revenueTrend?.[data.revenueTrend.length - 1];
+  const prevRevenuePeriod = data.revenueTrend?.length > 1 ? data.revenueTrend[data.revenueTrend.length - 2] : undefined;
+  const monthlyRevenue = latestRevenuePeriod?.totalAmount ?? 0;
   const monthlyProfit = monthlyRevenue - monthlyExpenses;
+
+  const expenseDelta = monthlyExpenses - (prevCostPeriod?.totalAmount ?? 0);
+  const revenueDelta = monthlyRevenue - (prevRevenuePeriod?.totalAmount ?? 0);
+  const prevProfit = (prevRevenuePeriod?.totalAmount ?? 0) - (prevCostPeriod?.totalAmount ?? 0);
+  const profitDelta = monthlyProfit - prevProfit;
+
+  const periodLabel = (p?: { month: number; year: number }) =>
+    p ? `${String(p.month).padStart(2, '0')}/${p.year}` : '—';
 
   // ── Notification icon ─────────────────────────────────────────────────────
   const notifIcon = (type: string) => {
@@ -125,28 +133,41 @@ export default function Dashboard() {
               {data.totalAreaHectares.toFixed(0)}{' '}
               <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>га</span>
             </div>
+            <Text style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+              {data.totalFields} {t.dashboard.fieldsCount}
+            </Text>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card style={CARD}>
             <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              {t.dashboard.monthlyExpenses}
+              {t.dashboard.monthlyExpenses} ({periodLabel(latestCostPeriod)})
             </Text>
             <div style={{ fontSize: 28, fontWeight: 600, color: 'var(--text-primary)', marginTop: 4 }}>
               {monthlyExpenses.toFixed(0)}{' '}
               <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>₴</span>
             </div>
+            {prevCostPeriod && (
+              <Text style={{ fontSize: 11, color: expenseDelta > 0 ? 'var(--error)' : 'var(--success)' }}>
+                {expenseDelta > 0 ? '▲' : '▼'} {Math.abs(expenseDelta).toFixed(0)} ₴ {t.dashboard.vsPrevMonth}
+              </Text>
+            )}
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card style={CARD}>
             <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              {t.dashboard.monthlyRevenue}
+              {t.dashboard.monthlyRevenue} ({periodLabel(latestRevenuePeriod)})
             </Text>
             <div style={{ fontSize: 28, fontWeight: 600, color: 'var(--text-primary)', marginTop: 4 }}>
               {monthlyRevenue.toFixed(0)}{' '}
               <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>₴</span>
             </div>
+            {prevRevenuePeriod && (
+              <Text style={{ fontSize: 11, color: revenueDelta >= 0 ? 'var(--success)' : 'var(--error)' }}>
+                {revenueDelta >= 0 ? '▲' : '▼'} {Math.abs(revenueDelta).toFixed(0)} ₴ {t.dashboard.vsPrevMonth}
+              </Text>
+            )}
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -162,6 +183,11 @@ export default function Dashboard() {
               {monthlyProfit.toFixed(0)}{' '}
               <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>₴</span>
             </div>
+            {prevCostPeriod && (
+              <Text style={{ fontSize: 11, color: profitDelta >= 0 ? 'var(--success)' : 'var(--error)' }}>
+                {profitDelta >= 0 ? '▲' : '▼'} {Math.abs(profitDelta).toFixed(0)} ₴ {t.dashboard.vsPrevMonth}
+              </Text>
+            )}
           </Card>
         </Col>
       </Row>

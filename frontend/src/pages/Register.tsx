@@ -26,7 +26,7 @@ export default function Register() {
   }) => {
     try {
       const data = await register(values);
-      setAuth(data.token, data.email, data.role, data.tenantId);
+      setAuth(data.token, data.email, data.role, data.tenantId, data.firstName, data.lastName);
       message.success(t.auth.registerSuccess);
       navigate('/');
     } catch {

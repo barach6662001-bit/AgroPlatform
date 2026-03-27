@@ -101,6 +101,22 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
             .ThenBy(t => t.Month)
             .ToListAsync(cancellationToken);
 
+        // ── Sales / Revenue ───────────────────────────────────────────────
+        dto.TotalRevenue = await _context.Sales.SumAsync(s => s.TotalAmount, cancellationToken);
+
+        dto.RevenueTrend = await _context.Sales
+            .Where(s => s.Date >= cutoff)
+            .GroupBy(s => new { s.Date.Year, s.Date.Month })
+            .Select(g => new MonthlyCostTrendDto
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                TotalAmount = g.Sum(s => s.TotalAmount)
+            })
+            .OrderBy(t => t.Year)
+            .ThenBy(t => t.Month)
+            .ToListAsync(cancellationToken);
+
         return dto;
     }
 }

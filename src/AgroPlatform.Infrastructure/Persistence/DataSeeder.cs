@@ -389,7 +389,15 @@ public static class DataSeeder
                 new Notification { TenantId = DemoTenantId, Type = "info",    Title = "Збирання соняшника в процесі", Body = "Операція на полі Схід-2 (38 га) розпочата. Очікуваний кінець — 2 дні.",    IsRead = false, CreatedAtUtc = D(0) },
                 new Notification { TenantId = DemoTenantId, Type = "warning", Title = "КамАЗ 45143 на ремонті",       Body = "Зерновоз ТК-001 на ремонті. Транспортування зерна обмежено.",              IsRead = true,  CreatedAtUtc = D(10) },
                 new Notification { TenantId = DemoTenantId, Type = "info",    Title = "Продаж пшениці завершено",     Body = "Реалізовано 225 т пшениці (1 620 000 UAH). Контрагент: Kernel Holding.",  IsRead = true,  CreatedAtUtc = D(9) },
-                new Notification { TenantId = DemoTenantId, Type = "info",    Title = "Сезон сівби завершено",        Body = "Засіяно 6 полів, 320.5 га. Залишки насіння — на головному складі.",        IsRead = true,  CreatedAtUtc = D(70) }
+                new Notification { TenantId = DemoTenantId, Type = "info",    Title = "Сезон сівби завершено",        Body = "Засіяно 6 полів, 320.5 га. Залишки насіння — на головному складі.",        IsRead = true,  CreatedAtUtc = D(70) },
+                new Notification { TenantId = DemoTenantId, Type = "info",    Title = "Збирання пшениці завершено",   Body = "Поле Захід-1: 255 т зібрано (6.0 т/га). Вологість 13.5%.",               IsRead = true,  CreatedAtUtc = D(20) },
+                new Notification { TenantId = DemoTenantId, Type = "info",    Title = "Продаж кукурудзи",            Body = "190 т продано АДМ Україна за 1 102 000 ₴.",                              IsRead = true,  CreatedAtUtc = D(5) },
+                new Notification { TenantId = DemoTenantId, Type = "warning", Title = "Залишок гербіциду нижче норми",Body = "Раундап: 320 л (норма 500 л). Рекомендуємо замовлення.",                  IsRead = false, CreatedAtUtc = D(3) },
+                new Notification { TenantId = DemoTenantId, Type = "info",    Title = "ТО трактора завершено",        Body = "John Deere 8R 310: ТО-500 виконано. Наступне ТО при 1740 м/г.",          IsRead = true,  CreatedAtUtc = D(15) },
+                new Notification { TenantId = DemoTenantId, Type = "info",    Title = "Нова заправка дизелем",        Body = "КамАЗ 45143: 120 л дизпалива. Пробіг: 2 540 км.",                       IsRead = true,  CreatedAtUtc = D(2) },
+                new Notification { TenantId = DemoTenantId, Type = "warning", Title = "Незавершена операція",         Body = "Обприскування на Центр-3 заплановано 5 днів тому, ще не розпочато.",      IsRead = false, CreatedAtUtc = D(5) },
+                new Notification { TenantId = DemoTenantId, Type = "info",    Title = "Прийом зерна на сховище",      Body = "Сховище Захід: прийнято 180 т ячменю. Вологість 12.8%.",                 IsRead = true,  CreatedAtUtc = D(12) },
+                new Notification { TenantId = DemoTenantId, Type = "info",    Title = "Виплата зарплати",             Body = "Нараховано зарплату за серпень: 4 працівники, 98 000 ₴.",                IsRead = true,  CreatedAtUtc = D(15) }
             );
 
             // 22. Audit entries

@@ -28,6 +28,6 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
             throw new UnauthorizedException("Account is inactive.");
 
         var (token, expiresAt) = _jwtTokenService.GenerateToken(user);
-        return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt, user.TenantId);
+        return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt, user.TenantId, user.FirstName, user.LastName);
     }
 }

@@ -1,12 +1,9 @@
-import { Form, Input, Button, Dropdown, message, Alert } from 'antd';
+import { Form, Input, Button, Dropdown, message } from 'antd';
 import { UserOutlined, LockOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
 import { useTranslation, languages } from '../i18n';
-
-const DEMO_EMAIL = 'demo@agro.local';
-const DEMO_PASSWORD = 'DemoPass1';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -16,7 +13,7 @@ export default function Login() {
   const onFinish = async (values: { email: string; password: string }) => {
     try {
       const data = await login(values);
-      setAuth(data.token, data.email, data.role, data.tenantId);
+      setAuth(data.token, data.email, data.role, data.tenantId, data.firstName, data.lastName);
       message.success(t.auth.welcomeMessage);
       navigate('/');
     } catch {
@@ -117,7 +114,7 @@ export default function Login() {
               <span style={{ color: '#2ea043', fontWeight: 700, fontSize: 24 }}>Tech</span>
             </div>
             <p style={{ color: '#8b949e', fontSize: 13, margin: '4px 0 0' }}>
-              Farm Management Platform
+              {t.auth.platformSubtitle}
             </p>
           </div>
         </div>
@@ -142,7 +139,7 @@ export default function Login() {
             letterSpacing: '-1px',
             lineHeight: 1.15,
           }}>
-            Повний контроль над вашим агробізнесом
+            {t.auth.heroTitle}
           </h2>
           <p style={{
             margin: 0,
@@ -151,7 +148,7 @@ export default function Login() {
             lineHeight: 1.6,
             maxWidth: 480,
           }}>
-            Управляйте полями, технікою, складами, персоналом та фінансами в єдиній системі.
+            {t.auth.heroSubtitle}
           </p>
 
           {/* Feature list */}
@@ -229,36 +226,6 @@ export default function Login() {
             </p>
           </div>
 
-          <Alert
-            type="info"
-            style={{ marginBottom: 16, borderRadius: 8, fontSize: 13 }}
-            message={
-              <span style={{ fontWeight: 600 }}>🚀 Demo-доступ</span>
-            }
-            description={
-              <div style={{ marginTop: 4 }}>
-                <div><b>Email:</b> {DEMO_EMAIL}</div>
-                <div><b>Пароль:</b> {DEMO_PASSWORD}</div>
-                <Button
-                  size="small"
-                  icon={<ThunderboltOutlined />}
-                  style={{ marginTop: 8 }}
-                  onClick={async () => {
-                    try {
-                      const data = await login({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
-                      setAuth(data.token, data.email, data.role, data.tenantId);
-                      message.success('Вітаємо в демо!');
-                      navigate('/');
-                    } catch {
-                      message.error('Demo login failed. Make sure the server is running.');
-                    }
-                  }}
-                >
-                  Спробувати демо
-                </Button>
-              </div>
-            }
-          />
           <Form layout="vertical" onFinish={onFinish}>
             <Form.Item
               name="email"
@@ -288,7 +255,23 @@ export default function Login() {
               </Button>
             </Form.Item>
             <div style={{ textAlign: 'center' }}>
-              <Link to="/register" style={{ color: 'var(--text-tertiary)', fontSize: 13 }}>{t.auth.register}</Link>
+              <Button
+                type="link"
+                icon={<ThunderboltOutlined />}
+                style={{ color: 'var(--text-tertiary)', fontSize: 13 }}
+                onClick={async () => {
+                  try {
+                    const data = await login({ email: 'demo@agro.local', password: 'DemoPass1' });
+                    setAuth(data.token, data.email, data.role, data.tenantId, data.firstName, data.lastName);
+                    message.success(t.auth.welcomeMessage);
+                    navigate('/');
+                  } catch {
+                    message.error(t.auth.loginError);
+                  }
+                }}
+              >
+                {t.auth.tryDemo}
+              </Button>
             </div>
           </Form>
         </div>

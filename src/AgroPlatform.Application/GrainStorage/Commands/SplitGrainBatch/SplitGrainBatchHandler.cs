@@ -65,8 +65,6 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
                 sourcePlacement.QuantityTons -= request.SplitQuantityTons;
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
-
         // Outgoing leg on source batch
         _context.GrainMovements.Add(new GrainMovement
         {

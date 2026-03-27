@@ -18,7 +18,7 @@ export default function AppLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth < TABLET_BREAKPOINT);
-  const { email, role, logout, tenantId } = useAuthStore();
+  const { email, role, logout, tenantId, firstName, lastName } = useAuthStore();
   const navigate = useNavigate();
   const { t, lang, setLang } = useTranslation();
   const queryClient = useQueryClient();
@@ -64,7 +64,9 @@ export default function AppLayout() {
     ),
   }));
 
-  const userInitial = email ? email.charAt(0).toUpperCase() : '?';
+  const displayName = firstName && lastName ? `${firstName} ${lastName}` : email;
+  const userInitial = firstName ? firstName.charAt(0).toUpperCase() : (email ? email.charAt(0).toUpperCase() : '?');
+  const roleLabel = role ? (t.roles[role as keyof typeof t.roles] || role) : '';
 
   return (
     <div style={{
@@ -119,14 +121,6 @@ export default function AppLayout() {
                 }}>
                   Agro<span style={{ color: '#2ea043' }}>Tech</span>
                 </div>
-                <div style={{
-                  color: '#484f58',
-                  fontSize: 10,
-                  letterSpacing: '0.5px',
-                  textTransform: 'uppercase',
-                }}>
-                  Farm Management
-                </div>
               </div>
             )}
           </div>
@@ -164,9 +158,9 @@ export default function AppLayout() {
             {!sidebarCollapsed && (
               <div style={{ overflow: 'hidden', flex: 1 }}>
                 <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {email}
+                  {displayName}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{role}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{roleLabel}</div>
               </div>
             )}
           </div>

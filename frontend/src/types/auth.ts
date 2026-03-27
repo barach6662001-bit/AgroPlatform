@@ -4,6 +4,8 @@ export interface AuthResponse {
   role: string;
   expiresAt: string;
   tenantId: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface LoginRequest {

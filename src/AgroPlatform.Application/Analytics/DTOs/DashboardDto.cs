@@ -29,4 +29,8 @@ public class DashboardDto
     public decimal TotalCosts { get; set; }
     public Dictionary<string, decimal> CostsByCategory { get; set; } = new();
     public List<MonthlyCostTrendDto> CostTrend { get; set; } = new();
+
+    // Revenue summary
+    public decimal TotalRevenue { get; set; }
+    public List<MonthlyCostTrendDto> RevenueTrend { get; set; } = new();
 }

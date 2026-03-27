@@ -1,0 +1,16 @@
+using FluentValidation;
+
+namespace AgroPlatform.Application.GrainStorage.Commands.TransferGrain;
+
+public class TransferGrainValidator : AbstractValidator<TransferGrainCommand>
+{
+    public TransferGrainValidator()
+    {
+        RuleFor(x => x.SourceBatchId).NotEmpty();
+        RuleFor(x => x.TargetBatchId).NotEmpty();
+        RuleFor(x => x.QuantityTons).GreaterThan(0);
+        RuleFor(x => x.TargetBatchId)
+            .NotEqual(x => x.SourceBatchId)
+            .WithMessage("Source and target batches must be different.");
+    }
+}

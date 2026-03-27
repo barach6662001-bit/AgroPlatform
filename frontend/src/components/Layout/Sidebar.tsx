@@ -74,7 +74,6 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       ? [
           { key: '/settings/users' },
           { key: '/settings/audit' },
-          { key: '/admin/permissions' },
           { key: '/admin/audit' },
           { key: '/admin/api-keys' },
         ]
@@ -138,9 +137,8 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
             children: [
               { key: '/settings/users', label: t.nav.users, style: { padding: '4px 8px' } },
               { key: '/settings/audit', label: t.nav.auditLog, style: { padding: '4px 8px' } },
-              { key: '/admin/permissions', label: 'Permissions', style: { padding: '4px 8px' } },
-              { key: '/admin/audit', label: 'Audit Log', style: { padding: '4px 8px' } },
-              { key: '/admin/api-keys', label: 'API Keys', style: { padding: '4px 8px' } },
+              { key: '/admin/audit', label: t.nav.auditLog, style: { padding: '4px 8px' } },
+              { key: '/admin/api-keys', label: t.nav.apiKeys, style: { padding: '4px 8px' } },
             ],
           },
         ]
@@ -159,7 +157,12 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
           (item.key !== '/' && location.pathname.startsWith(item.key))
       )?.key ?? '/';
 
-  const openKeys = ['fields-group', 'storage-group', 'finance-group', 'hr-group', 'analytics-group', ...(isAdmin ? ['settings-group'] : [])];
+  const openKeys = menuItems
+    .filter((item): item is typeof item & { children: unknown[] } =>
+      'children' in item && Array.isArray((item as Record<string, unknown>).children) &&
+      ((item as Record<string, unknown>).children as { key: string }[]).some(child => location.pathname.startsWith(child.key))
+    )
+    .map(item => item.key as string);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>
@@ -178,10 +181,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       {!collapsed && (
         <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)' }}>
           <span style={{ fontSize: 11, color: 'var(--text-disabled)', display: 'block' }}>
-            v1.0.0 · Agrotech Platform
-          </span>
-          <span style={{ fontSize: 10, color: 'var(--text-disabled)' }}>
-            {import.meta.env.MODE}
+            © AgroTech 2026
           </span>
         </div>
       )}

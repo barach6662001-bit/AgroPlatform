@@ -57,6 +57,6 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthResponse>
         }
 
         var (token, expiresAt) = _jwtTokenService.GenerateToken(user);
-        return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt, tenantId);
+        return new AuthResponse(token, user.Email!, user.Role.ToString(), expiresAt, tenantId, user.FirstName, user.LastName);
     }
 }
