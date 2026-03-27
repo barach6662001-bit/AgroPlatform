@@ -1,6 +1,7 @@
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainStorage;
 using AgroPlatform.Application.GrainStorage.Commands.DeleteGrainStorage;
 using AgroPlatform.Application.GrainStorage.Commands.UpdateGrainStorage;
+using AgroPlatform.Application.GrainStorage.Queries.GetGrainStorageOverview;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainStorages;
 using AgroPlatform.Domain.Authorization;
 using MediatR;
@@ -35,6 +36,21 @@ public class GrainStoragesController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(new GetGrainStoragesQuery(activeOnly), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns an aggregated overview of grain storages including occupancy,
+    /// batch list, grain types, and warnings (mixed crops, over-capacity, high moisture).
+    /// </summary>
+    [HttpGet("overview")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGrainStorageOverview(
+        [FromQuery] bool? activeOnly,
+        [FromQuery] Guid? storageId,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetGrainStorageOverviewQuery(activeOnly, storageId), cancellationToken);
         return Ok(result);
     }
 

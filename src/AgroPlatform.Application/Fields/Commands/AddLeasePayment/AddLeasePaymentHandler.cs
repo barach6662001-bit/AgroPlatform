@@ -61,7 +61,7 @@ public class AddLeasePaymentHandler : IRequestHandler<AddLeasePaymentCommand, Gu
             var movement = new GrainMovement
             {
                 GrainBatchId = batch.Id,
-                MovementType = "Out",
+                MovementType = GrainMovementType.Issue,
                 QuantityTons = qty,
                 PricePerTon = request.GrainPricePerTon,
                 TotalRevenue = qty * request.GrainPricePerTon,

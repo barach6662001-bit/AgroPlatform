@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.GrainStorage;
 using MediatR;
@@ -19,7 +20,6 @@ public class CreateGrainBatchHandler : IRequestHandler<CreateGrainBatchCommand, 
     {
         var batch = new GrainBatch
         {
-            GrainStorageId = request.GrainStorageId,
             GrainType = request.GrainType,
             QuantityTons = request.InitialQuantityTons,
             InitialQuantityTons = request.InitialQuantityTons,
@@ -34,6 +34,26 @@ public class CreateGrainBatchHandler : IRequestHandler<CreateGrainBatchCommand, 
         };
 
         _context.GrainBatches.Add(batch);
+
+        // Create the initial placement representing where the grain is stored on receipt.
+        _context.GrainBatchPlacements.Add(new GrainBatchPlacement
+        {
+            GrainBatchId = batch.Id,
+            GrainStorageId = request.GrainStorageId,
+            QuantityTons = request.InitialQuantityTons,
+        });
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        // Record the initial receipt as a ledger entry
+        _context.GrainMovements.Add(new GrainMovement
+        {
+            GrainBatchId = batch.Id,
+            MovementType = GrainMovementType.Receipt,
+            QuantityTons = request.InitialQuantityTons,
+            MovementDate = request.ReceivedDate,
+            Notes = request.Notes,
+        });
         await _context.SaveChangesAsync(cancellationToken);
 
         if (request.SourceFieldId.HasValue)
