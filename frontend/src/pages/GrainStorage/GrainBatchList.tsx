@@ -1,5 +1,6 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Table, Badge, message, Button, Space, Modal, Form, Input, Select,
   DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography, Tabs, Tag, Tooltip,
@@ -64,6 +65,7 @@ function MovementTypeLabel({ type, t }: { type: GrainMovementType; t: ReturnType
 export default function GrainBatchList() {
   const [result, setResult] = useState<PaginatedResult<GrainBatchDto> | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [filterOwnership, setFilterOwnership] = useState<number | undefined>(undefined);
@@ -474,6 +476,20 @@ export default function GrainBatchList() {
   return (
     <div>
       <PageHeader title={t.grain.title} subtitle={t.grain.subtitle} />
+      {!loading && storages.length === 0 && (
+        <Alert
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+          message={t.grainStorages.noStorages}
+          description={t.grainStorages.noStoragesHint}
+          action={
+            <Button size="small" type="primary" onClick={() => navigate('/grain-storages')}>
+              {t.grainStorages.create}
+            </Button>
+          }
+        />
+      )}
       <Row gutter={12} style={{ marginBottom: 16 }}>
         <Col span={8}>
           <Card size="small" style={{ background: 'var(--agro-bg-card)', border: '1px solid var(--agro-border)' }}>
