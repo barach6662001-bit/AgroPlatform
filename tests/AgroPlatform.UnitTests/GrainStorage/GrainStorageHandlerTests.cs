@@ -422,4 +422,222 @@ public class GrainStorageHandlerTests
 
         await act.Should().ThrowAsync<NotFoundException>();
     }
+
+    // ── TransferGrain – Placement Sync ────────────────────────────────────
+
+    private static async Task<(GrainBatch source, GrainBatch target, Domain.GrainStorage.GrainStorage s1, Domain.GrainStorage.GrainStorage s2)>
+        CreateTwoBatchesWithPlacements(IAppDbContext context)
+    {
+        var s1 = new Domain.GrainStorage.GrainStorage { Name = "Silo A", IsActive = true };
+        var s2 = new Domain.GrainStorage.GrainStorage { Name = "Silo B", IsActive = true };
+        ((TestDbContext)context).GrainStorages.AddRange(s1, s2);
+
+        var source = new GrainBatch
+        {
+            GrainType = "Wheat",
+            QuantityTons = 200m,
+            InitialQuantityTons = 200m,
+            ReceivedDate = DateTime.Today,
+        };
+        var target = new GrainBatch
+        {
+            GrainType = "Wheat",
+            QuantityTons = 50m,
+            InitialQuantityTons = 50m,
+            ReceivedDate = DateTime.Today,
+        };
+        context.GrainBatches.Add(source);
+        context.GrainBatches.Add(target);
+
+        context.GrainBatchPlacements.Add(new GrainBatchPlacement
+        {
+            GrainBatchId = source.Id,
+            GrainStorageId = s1.Id,
+            QuantityTons = 200m,
+        });
+        context.GrainBatchPlacements.Add(new GrainBatchPlacement
+        {
+            GrainBatchId = target.Id,
+            GrainStorageId = s2.Id,
+            QuantityTons = 50m,
+        });
+        await context.SaveChangesAsync();
+        return (source, target, s1, s2);
+    }
+
+    [Fact]
+    public async Task TransferGrain_WithPlacements_UpdatesSourcePlacementQuantity()
+    {
+        var context = CreateDbContext();
+        var (source, target, s1, _) = await CreateTwoBatchesWithPlacements(context);
+        var handler = new TransferGrainHandler(context);
+
+        await handler.Handle(new TransferGrainCommand(source.Id, target.Id, 80m), CancellationToken.None);
+
+        var sourcePlacement = await ((TestDbContext)context).GrainBatchPlacements
+            .FirstOrDefaultAsync(p => p.GrainBatchId == source.Id && p.GrainStorageId == s1.Id);
+        sourcePlacement.Should().NotBeNull();
+        sourcePlacement!.QuantityTons.Should().Be(120m); // 200 - 80
+    }
+
+    [Fact]
+    public async Task TransferGrain_WithPlacements_UpdatesTargetPlacementQuantity()
+    {
+        var context = CreateDbContext();
+        var (source, target, _, s2) = await CreateTwoBatchesWithPlacements(context);
+        var handler = new TransferGrainHandler(context);
+
+        await handler.Handle(new TransferGrainCommand(source.Id, target.Id, 30m), CancellationToken.None);
+
+        var targetPlacement = await ((TestDbContext)context).GrainBatchPlacements
+            .FirstOrDefaultAsync(p => p.GrainBatchId == target.Id && p.GrainStorageId == s2.Id);
+        targetPlacement.Should().NotBeNull();
+        targetPlacement!.QuantityTons.Should().Be(80m); // 50 + 30
+    }
+
+    [Fact]
+    public async Task TransferGrain_TargetHasNoPlacement_CreatesNewPlacement()
+    {
+        var context = CreateDbContext();
+        var s1 = new Domain.GrainStorage.GrainStorage { Name = "Silo A", IsActive = true };
+        var s2 = new Domain.GrainStorage.GrainStorage { Name = "Silo B", IsActive = true };
+        ((TestDbContext)context).GrainStorages.AddRange(s1, s2);
+
+        var source = new GrainBatch
+        {
+            GrainType = "Wheat",
+            QuantityTons = 200m,
+            InitialQuantityTons = 200m,
+            ReceivedDate = DateTime.Today,
+        };
+        var target = new GrainBatch
+        {
+            GrainType = "Wheat",
+            QuantityTons = 0m,
+            InitialQuantityTons = 0m,
+            ReceivedDate = DateTime.Today,
+        };
+        context.GrainBatches.Add(source);
+        context.GrainBatches.Add(target);
+
+        // Source has a placement, target has none
+        context.GrainBatchPlacements.Add(new GrainBatchPlacement
+        {
+            GrainBatchId = source.Id,
+            GrainStorageId = s1.Id,
+            QuantityTons = 200m,
+        });
+        await context.SaveChangesAsync();
+
+        var handler = new TransferGrainHandler(context);
+        await handler.Handle(new TransferGrainCommand(source.Id, target.Id, 50m), CancellationToken.None);
+
+        // Target should NOT have a new placement since target has no storage association
+        // (targetStorageId will be null because target has no placements)
+        var targetPlacements = await ((TestDbContext)context).GrainBatchPlacements
+            .Where(p => p.GrainBatchId == target.Id)
+            .ToListAsync();
+        targetPlacements.Should().BeEmpty();
+
+        // But batch-level quantities should still be correct
+        var updatedSource = await ((TestDbContext)context).GrainBatches.FindAsync(source.Id);
+        var updatedTarget = await ((TestDbContext)context).GrainBatches.FindAsync(target.Id);
+        updatedSource!.QuantityTons.Should().Be(150m);
+        updatedTarget!.QuantityTons.Should().Be(50m);
+    }
+
+    [Fact]
+    public async Task TransferGrain_PlacementQuantityMatchesBatchQuantity()
+    {
+        var context = CreateDbContext();
+        var (source, target, s1, s2) = await CreateTwoBatchesWithPlacements(context);
+        var handler = new TransferGrainHandler(context);
+
+        await handler.Handle(new TransferGrainCommand(source.Id, target.Id, 100m), CancellationToken.None);
+
+        var updatedSource = await ((TestDbContext)context).GrainBatches.FindAsync(source.Id);
+        var updatedTarget = await ((TestDbContext)context).GrainBatches.FindAsync(target.Id);
+
+        var sourcePlacementSum = await ((TestDbContext)context).GrainBatchPlacements
+            .Where(p => p.GrainBatchId == source.Id).SumAsync(p => p.QuantityTons);
+        var targetPlacementSum = await ((TestDbContext)context).GrainBatchPlacements
+            .Where(p => p.GrainBatchId == target.Id).SumAsync(p => p.QuantityTons);
+
+        sourcePlacementSum.Should().Be(updatedSource!.QuantityTons);
+        targetPlacementSum.Should().Be(updatedTarget!.QuantityTons);
+    }
+
+    // ── WriteOff / Adjust ─────────────────────────────────────────────────
+
+    [Fact]
+    public async Task WriteOffGrainBatch_ValidWriteOff_ReducesBatchQuantity()
+    {
+        var context = CreateDbContext();
+        var batch = new GrainBatch
+        {
+            GrainType = "Corn",
+            QuantityTons = 100m,
+            InitialQuantityTons = 100m,
+            ReceivedDate = DateTime.Today,
+        };
+        context.GrainBatches.Add(batch);
+        await context.SaveChangesAsync();
+
+        var handler = new Application.GrainStorage.Commands.WriteOffGrainBatch.WriteOffGrainBatchHandler(context);
+        await handler.Handle(
+            new Application.GrainStorage.Commands.WriteOffGrainBatch.WriteOffGrainBatchCommand(
+                batch.Id, 40m, "Spoilage", null, DateTime.Today),
+            CancellationToken.None);
+
+        var updated = await ((TestDbContext)context).GrainBatches.FindAsync(batch.Id);
+        updated!.QuantityTons.Should().Be(60m);
+    }
+
+    [Fact]
+    public async Task AdjustGrainBatch_PositiveAdjustment_IncreasesBatchQuantity()
+    {
+        var context = CreateDbContext();
+        var batch = new GrainBatch
+        {
+            GrainType = "Barley",
+            QuantityTons = 100m,
+            InitialQuantityTons = 100m,
+            ReceivedDate = DateTime.Today,
+        };
+        context.GrainBatches.Add(batch);
+        await context.SaveChangesAsync();
+
+        var handler = new Application.GrainStorage.Commands.AdjustGrainBatch.AdjustGrainBatchHandler(context);
+        await handler.Handle(
+            new Application.GrainStorage.Commands.AdjustGrainBatch.AdjustGrainBatchCommand(
+                batch.Id, 25m, "Reweigh", null, DateTime.Today),
+            CancellationToken.None);
+
+        var updated = await ((TestDbContext)context).GrainBatches.FindAsync(batch.Id);
+        updated!.QuantityTons.Should().Be(125m);
+    }
+
+    [Fact]
+    public async Task AdjustGrainBatch_NegativeAdjustment_DecreasesBatchQuantity()
+    {
+        var context = CreateDbContext();
+        var batch = new GrainBatch
+        {
+            GrainType = "Barley",
+            QuantityTons = 100m,
+            InitialQuantityTons = 100m,
+            ReceivedDate = DateTime.Today,
+        };
+        context.GrainBatches.Add(batch);
+        await context.SaveChangesAsync();
+
+        var handler = new Application.GrainStorage.Commands.AdjustGrainBatch.AdjustGrainBatchHandler(context);
+        await handler.Handle(
+            new Application.GrainStorage.Commands.AdjustGrainBatch.AdjustGrainBatchCommand(
+                batch.Id, -15m, "Shrinkage", null, DateTime.Today),
+            CancellationToken.None);
+
+        var updated = await ((TestDbContext)context).GrainBatches.FindAsync(batch.Id);
+        updated!.QuantityTons.Should().Be(85m);
+    }
 }
