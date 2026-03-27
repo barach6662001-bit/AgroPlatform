@@ -49,7 +49,8 @@ public class GetCostRecordsHandler : IRequestHandler<GetCostRecordsQuery, Pagina
                 c.Date,
                 c.FieldId,
                 c.AgroOperationId,
-                c.Description
+                c.Description,
+                c.SaleId
             })
             .ToListAsync(cancellationToken);
 
@@ -62,7 +63,8 @@ public class GetCostRecordsHandler : IRequestHandler<GetCostRecordsQuery, Pagina
             Date = c.Date,
             FieldId = c.FieldId,
             AgroOperationId = c.AgroOperationId,
-            Description = c.Description
+            Description = c.Description,
+            SaleId = c.SaleId
         }).ToList();
 
         return new PaginatedResult<CostRecordDto>

@@ -2,6 +2,7 @@ using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Sales;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Application.Sales.Commands.UpdateSale;
 
@@ -29,6 +30,19 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand>
         sale.Currency = request.Currency;
         sale.FieldId = request.FieldId;
         sale.Notes = request.Notes;
+
+        // Keep the linked revenue CostRecord in sync with the sale
+        var revenueRecord = await _context.CostRecords
+            .FirstOrDefaultAsync(c => c.SaleId == sale.Id, cancellationToken);
+
+        if (revenueRecord != null)
+        {
+            revenueRecord.Amount = -sale.TotalAmount;
+            revenueRecord.Currency = sale.Currency;
+            revenueRecord.Date = sale.Date;
+            revenueRecord.FieldId = sale.FieldId;
+            revenueRecord.Description = $"Продаж: {sale.Product}, {sale.Quantity:F2} {sale.Unit} × {sale.PricePerUnit:F0} {sale.Currency}/од.";
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
     }

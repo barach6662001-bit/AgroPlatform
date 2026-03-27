@@ -30,7 +30,8 @@ public class GetSaleByIdHandler : IRequestHandler<GetSaleByIdQuery, SaleDto?>
                 TotalAmount = s.TotalAmount,
                 Currency = s.Currency,
                 FieldId = s.FieldId,
-                Notes = s.Notes
+                Notes = s.Notes,
+                GrainMovementId = s.GrainMovementId
             })
             .FirstOrDefaultAsync(cancellationToken);
     }
