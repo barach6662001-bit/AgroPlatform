@@ -18,6 +18,11 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const { t } = useTranslation();
   const { isAdmin } = useRole();
 
+  const fieldsChildren = [
+    { key: '/fields', label: t.nav.fields, style: { padding: '4px 8px' } },
+    { key: '/fields/rotation-advisor', label: t.nav.cropRotationAdvisor, style: { padding: '4px 8px' } },
+  ];
+
   const storageChildren = [
     { key: '/warehouses', label: t.nav.warehouses, style: { padding: '4px 8px' } },
     { key: '/warehouses/items', label: t.nav.materials, style: { padding: '4px 8px' } },
@@ -57,9 +62,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/machinery' },
     { key: '/fleet' },
     { key: '/fuel' },
-    { key: '/grain-storages' },
-    { key: '/grain' },
-    { key: '/grain-overview' },
+    { key: '/storage' },
     { key: '/sales' },
     { key: '/sales/analytics' },
     { key: '/warehouses' },
@@ -81,8 +84,13 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const menuItems = [
     { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined />, style: { padding: '4px 8px' } },
     { type: 'divider' as const },
-    { key: '/fields', label: t.nav.fields, icon: <AimOutlined />, style: { padding: '4px 8px' } },
-    { key: '/fields/rotation-advisor', label: t.nav.cropRotationAdvisor, icon: <AimOutlined />, style: { padding: '4px 8px' } },
+    {
+      key: 'fields-group',
+      label: t.nav.fields,
+      icon: <AimOutlined />,
+      style: { padding: '4px 8px' },
+      children: fieldsChildren,
+    },
     { key: '/operations', label: t.nav.operations, icon: <ToolOutlined />, style: { padding: '4px 8px' } },
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined />, style: { padding: '4px 8px' } },
     { type: 'divider' as const },
@@ -93,9 +101,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       style: { padding: '4px 8px' },
       children: storageChildren,
     },
-    { key: '/grain-storages', label: t.nav.grainStorages, icon: <BankOutlined />, style: { padding: '4px 8px' } },
-    { key: '/grain', label: t.nav.grainStorage, icon: <BankOutlined />, style: { padding: '4px 8px' } },
-    { key: '/grain-overview', label: t.nav.grainOverview, icon: <BankOutlined />, style: { padding: '4px 8px' } },
+    { key: '/storage', label: t.nav.grainModule, icon: <BankOutlined />, style: { padding: '4px 8px' } },
     { key: '/fuel', label: t.nav.fuelStation, icon: <FireOutlined />, style: { padding: '4px 8px' } },
     { key: '/sales', label: t.nav.sales, icon: <ShoppingOutlined />, style: { padding: '4px 8px' } },
     { type: 'divider' as const },
@@ -141,7 +147,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       : []),
   ];
 
-  const groupKeys = new Set(['storage-group', 'finance-group', 'hr-group', 'analytics-group', 'settings-group']);
+  const groupKeys = new Set(['fields-group', 'storage-group', 'finance-group', 'hr-group', 'analytics-group', 'settings-group']);
 
   const selectedKey =
     allLeafItems
@@ -153,7 +159,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
           (item.key !== '/' && location.pathname.startsWith(item.key))
       )?.key ?? '/';
 
-  const openKeys = ['storage-group', 'finance-group', 'hr-group', 'analytics-group', ...(isAdmin ? ['settings-group'] : [])];
+  const openKeys = ['fields-group', 'storage-group', 'finance-group', 'hr-group', 'analytics-group', ...(isAdmin ? ['settings-group'] : [])];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>
