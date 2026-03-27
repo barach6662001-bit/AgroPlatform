@@ -19,9 +19,7 @@ import CropRotationAdvisor from './pages/Fields/CropRotationAdvisor';
 import WarehousesList from './pages/Warehouses/WarehousesList';
 import WarehouseItems from './pages/Warehouses/WarehouseItems';
 import StockMovements from './pages/Warehouses/StockMovements';
-import GrainBatchList from './pages/GrainStorage/GrainBatchList';
-import GrainStorageList from './pages/GrainStorage/GrainStorageList';
-import GrainStorageOverview from './pages/GrainStorage/GrainStorageOverview';
+import StoragePage from './pages/GrainStorage/StoragePage';
 import OperationsList from './pages/Operations/OperationsList';
 import OperationDetail from './pages/Operations/OperationDetail';
 import MachineryList from './pages/Machinery/MachineryList';
@@ -88,10 +86,11 @@ export default function App() {
             <Route path="/warehouses" element={<WarehousesList />} />
             <Route path="/warehouses/items" element={<WarehouseItems />} />
             <Route path="/warehouses/movements" element={<StockMovements />} />
-            <Route path="/grain" element={<GrainBatchList />} />
-            <Route path="/grain-storages" element={<GrainStorageList />} />
-            <Route path="/warehouses/grain" element={<GrainBatchList />} />
-            <Route path="/grain-overview" element={<GrainStorageOverview />} />
+            <Route path="/storage" element={<StoragePage />} />
+            <Route path="/grain" element={<Navigate to="/storage" replace />} />
+            <Route path="/grain-storages" element={<Navigate to="/storage" replace />} />
+            <Route path="/warehouses/grain" element={<Navigate to="/storage" replace />} />
+            <Route path="/grain-overview" element={<Navigate to="/storage" replace />} />
             <Route path="/operations" element={<OperationsList />} />
             <Route path="/operations/:id" element={<OperationDetail />} />
             <Route path="/machinery" element={<MachineryList />} />
