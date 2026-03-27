@@ -919,7 +919,7 @@ export default function GrainBatchList() {
                   .filter(b => b.id !== transferSourceBatch?.id && b.grainType === transferSourceBatch?.grainType)
                   .map(b => ({
                     value: b.id,
-                    label: `${b.grainType} — ${b.quantityTons.toFixed(2)} т (${storages.find(s => s.id === b.grainStorageId)?.name ?? b.grainStorageId})`,
+                    label: `${b.grainType} — ${b.quantityTons.toFixed(2)} т (${storages.find(s => s.id === b.placements?.[0]?.grainStorageId)?.name ?? b.placements?.[0]?.grainStorageId ?? ''})`,
                   }))}
                 filterOption={(input, option) =>
                   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
