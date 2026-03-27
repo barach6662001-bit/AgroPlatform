@@ -33,8 +33,6 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseSetting("AUTO_MIGRATE", "true");
-
         builder.ConfigureServices(services =>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
@@ -78,6 +76,10 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         using var scope = host.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         db.Database.EnsureCreated();
+
+        // Re-run seeding after EnsureCreated (initial seeding in Program.cs
+        // runs before tables exist when using EnsureCreated instead of MigrateAsync)
+        DataSeeder.SeedAsync(host.Services).GetAwaiter().GetResult();
 
         db.Tenants.Add(new Tenant
         {
