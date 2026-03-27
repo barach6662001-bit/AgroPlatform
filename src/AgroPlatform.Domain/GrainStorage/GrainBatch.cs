@@ -6,7 +6,6 @@ namespace AgroPlatform.Domain.GrainStorage;
 
 public class GrainBatch : AuditableEntity
 {
-    public Guid GrainStorageId { get; set; }
     public string GrainType { get; set; } = string.Empty;
     public decimal QuantityTons { get; set; }
     public decimal InitialQuantityTons { get; set; }
@@ -20,6 +19,6 @@ public class GrainBatch : AuditableEntity
     public string? Notes { get; set; }
 
     public ICollection<GrainMovement> Movements { get; set; } = new List<GrainMovement>();
+    public ICollection<GrainBatchPlacement> Placements { get; set; } = new List<GrainBatchPlacement>();
     public Field? SourceField { get; set; }
-    public GrainStorage? GrainStorage { get; set; }
 }

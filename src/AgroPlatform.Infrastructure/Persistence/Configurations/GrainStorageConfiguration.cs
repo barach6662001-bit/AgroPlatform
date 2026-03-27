@@ -29,11 +29,6 @@ public class GrainStorageConfiguration : IEntityTypeConfiguration<GrainStorage>
         builder.Property(s => s.Notes)
             .HasMaxLength(1000);
 
-        builder.HasMany(s => s.GrainBatches)
-            .WithOne(b => b.GrainStorage)
-            .HasForeignKey(b => b.GrainStorageId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasIndex(s => s.TenantId);
         builder.HasIndex(s => new { s.TenantId, s.Code }).IsUnique().HasFilter("\"Code\" IS NOT NULL AND \"IsDeleted\" = false");
     }
