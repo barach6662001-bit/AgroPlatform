@@ -3,6 +3,7 @@ using System;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroPlatform.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260326162336_AddGrainTransfer")]
+    partial class AddGrainTransfer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -360,9 +363,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("SaleId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -377,10 +377,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasIndex("AgroOperationId");
 
                     b.HasIndex("FieldId");
-
-                    b.HasIndex("SaleId")
-                        .IsUnique()
-                        .HasFilter("\"SaleId\" IS NOT NULL");
 
                     b.HasIndex("TenantId", "Category");
 
@@ -2335,9 +2331,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("FieldId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GrainMovementId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -2379,9 +2372,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FieldId");
-
-                    b.HasIndex("GrainMovementId")
-                        .HasFilter("\"GrainMovementId\" IS NOT NULL");
 
                     b.HasIndex("TenantId", "Date");
 
@@ -3137,16 +3127,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("AgroPlatform.Domain.Sales.Sale", "Sale")
-                        .WithMany()
-                        .HasForeignKey("SaleId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("AgroOperation");
 
                     b.Navigation("Field");
-
-                    b.Navigation("Sale");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Fields.CropRotationPlan", b =>
@@ -3429,14 +3412,7 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainMovement", "GrainMovement")
-                        .WithMany()
-                        .HasForeignKey("GrainMovementId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("Field");
-
-                    b.Navigation("GrainMovement");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Warehouses.Batch", b =>

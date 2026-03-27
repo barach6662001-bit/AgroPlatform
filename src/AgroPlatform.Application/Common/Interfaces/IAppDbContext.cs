@@ -53,6 +53,7 @@ public interface IAppDbContext
     DbSet<GrainType> GrainTypes { get; }
     DbSet<GrainBatch> GrainBatches { get; }
     DbSet<GrainMovement> GrainMovements { get; }
+    DbSet<GrainTransfer> GrainTransfers { get; }
     DbSet<Employee> Employees { get; }
     DbSet<WorkLog> WorkLogs { get; }
     DbSet<SalaryPayment> SalaryPayments { get; }
