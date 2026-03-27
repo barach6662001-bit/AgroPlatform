@@ -1,11 +1,16 @@
+using AgroPlatform.Application.GrainStorage.Commands.AdjustGrainBatch;
+using AgroPlatform.Application.GrainStorage.Commands.AddGrainBatchPlacement;
+using AgroPlatform.Application.GrainStorage.Queries.GetGrainTransfers;
+using AgroPlatform.Application.GrainStorage.Queries.GetGrainStorageOverview;
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainBatch;
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainMovement;
 using AgroPlatform.Application.GrainStorage.Commands.SplitGrainBatch;
 using AgroPlatform.Application.GrainStorage.Commands.TransferGrain;
+using AgroPlatform.Application.GrainStorage.Commands.WriteOffGrainBatch;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainBatches;
+using AgroPlatform.Application.GrainStorage.Queries.GetGrainLedger;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainMovements;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainSummary;
-using AgroPlatform.Application.GrainStorage.Queries.GetGrainTransfers;
 using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Enums;
 using MediatR;
@@ -46,7 +51,7 @@ public class GrainStorageController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Creates a new grain batch (receives grain into storage).</summary>
+    /// <summary>Creates a new grain batch (receives grain into storage). Also records an initial Receipt ledger entry.</summary>
     [HttpPost]
     [Authorize(Policy = Permissions.GrainStorage.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -56,7 +61,7 @@ public class GrainStorageController : ControllerBase
         return CreatedAtAction(nameof(GetGrainBatches), new { }, new { id });
     }
 
-    /// <summary>Records a grain movement (in or out) for a specific batch.</summary>
+    /// <summary>Records a grain movement for a specific batch (Receipt, Issue, SaleDispatch, Adjustment, WriteOff).</summary>
     [HttpPost("{id:guid}/movements")]
     [Authorize(Policy = Permissions.GrainStorage.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -76,19 +81,6 @@ public class GrainStorageController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Splits a grain batch across multiple target storage facilities.</summary>
-    [HttpPost("{id:guid}/split")]
-    [Authorize(Policy = Permissions.GrainStorage.Manage)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> SplitGrainBatch(Guid id, [FromBody] SplitGrainBatchRequest request, CancellationToken cancellationToken)
-    {
-        var result = await _sender.Send(new SplitGrainBatchCommand(id, request.Targets, request.Notes), cancellationToken);
-        return Ok(result);
-    }
-
     /// <summary>Returns a summary of grain across all storages, grouped by grain type.</summary>
     [HttpGet("summary")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -98,16 +90,83 @@ public class GrainStorageController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Transfers grain from one batch to another batch or storage.</summary>
-    [HttpPost("{id:guid}/transfers")]
+    /// <summary>Returns the paginated grain movement ledger across all batches, with optional filters.</summary>
+    [HttpGet("ledger")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGrainLedger(
+        [FromQuery] Guid? storageId,
+        [FromQuery] Guid? batchId,
+        [FromQuery] string? movementType,
+        [FromQuery] DateTime? dateFrom,
+        [FromQuery] DateTime? dateTo,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(
+            new GetGrainLedgerQuery(storageId, batchId, movementType, dateFrom, dateTo, page, pageSize),
+            cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Transfers grain between two batches (linked by a shared OperationId). Returns the OperationId.</summary>
+    [HttpPost("transfer")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> TransferGrain([FromBody] TransferGrainCommand command, CancellationToken cancellationToken)
+    {
+        var operationId = await _sender.Send(command, cancellationToken);
+        return Ok(new { operationId });
+    }
+
+    /// <summary>Splits a grain batch: creates a new batch with the specified quantity (linked by OperationId). Returns the new batch id.</summary>
+    [HttpPost("split")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SplitGrainBatch([FromBody] SplitGrainBatchCommand command, CancellationToken cancellationToken)
+    {
+        var newBatchId = await _sender.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetGrainBatches), new { }, new { id = newBatchId });
+    }
+
+    /// <summary>Records an inventory adjustment on a grain batch (positive = increase, negative = decrease).</summary>
+    [HttpPost("{id:guid}/adjust")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AdjustGrainBatch(Guid id, [FromBody] AdjustGrainBatchCommand command, CancellationToken cancellationToken)
+    {
+        var movementId = await _sender.Send(command with { BatchId = id }, cancellationToken);
+        return Ok(new { id = movementId });
+    }
+
+    /// <summary>Records a write-off on a grain batch.</summary>
+    [HttpPost("{id:guid}/writeoff")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> WriteOffGrainBatch(Guid id, [FromBody] WriteOffGrainBatchCommand command, CancellationToken cancellationToken)
+    {
+        var movementId = await _sender.Send(command with { BatchId = id }, cancellationToken);
+        return Ok(new { id = movementId });
+    }
+
+    /// <summary>Adds a placement record to an existing grain batch, allowing one batch to span multiple storages.</summary>
+    [HttpPost("{id:guid}/placements")]
     [Authorize(Policy = Permissions.GrainStorage.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> TransferGrain(Guid id, [FromBody] TransferGrainCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddGrainBatchPlacement(Guid id, [FromBody] AddGrainBatchPlacementRequest request, CancellationToken cancellationToken)
     {
-        var transferId = await _sender.Send(command with { SourceBatchId = id }, cancellationToken);
-        return CreatedAtAction(nameof(GetGrainTransfers), new { id }, new { id = transferId });
+        var placementId = await _sender.Send(
+            new AddGrainBatchPlacementCommand(id, request.GrainStorageId, request.GrainStorageUnitId, request.QuantityTons),
+            cancellationToken);
+        return Created(string.Empty, new { id = placementId });
     }
 
     /// <summary>Returns the transfer history for a specific batch.</summary>
@@ -120,5 +179,5 @@ public class GrainStorageController : ControllerBase
     }
 }
 
-/// <summary>Request body for splitting a grain batch.</summary>
-public record SplitGrainBatchRequest(List<SplitTarget> Targets, string? Notes);
+/// <summary>Request body for adding a placement to a grain batch.</summary>
+public record AddGrainBatchPlacementRequest(Guid GrainStorageId, Guid? GrainStorageUnitId, decimal QuantityTons);

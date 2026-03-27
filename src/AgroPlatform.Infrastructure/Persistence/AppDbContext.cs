@@ -63,6 +63,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<GrainBatch> GrainBatches => Set<GrainBatch>();
     public DbSet<GrainMovement> GrainMovements => Set<GrainMovement>();
     public DbSet<GrainTransfer> GrainTransfers => Set<GrainTransfer>();
+    public DbSet<GrainBatchPlacement> GrainBatchPlacements => Set<GrainBatchPlacement>();
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
     public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
@@ -112,6 +113,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<GrainBatch>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
         builder.Entity<GrainMovement>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
         builder.Entity<GrainTransfer>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
+        builder.Entity<GrainBatchPlacement>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
         builder.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == _tenantId);
         builder.Entity<WorkLog>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
         builder.Entity<SalaryPayment>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);

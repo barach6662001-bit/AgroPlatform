@@ -2,10 +2,11 @@ using MediatR;
 
 namespace AgroPlatform.Application.GrainStorage.Commands.SplitGrainBatch;
 
-public record SplitTarget(Guid TargetStorageId, decimal QuantityTons);
-
+/// <summary>Splits a grain batch: moves <see cref="SplitQuantityTons"/> into a new batch in <see cref="TargetStorageId"/>.</summary>
 public record SplitGrainBatchCommand(
     Guid SourceBatchId,
-    List<SplitTarget> Targets,
-    string? Notes
-) : IRequest<SplitGrainBatchResultDto>;
+    decimal SplitQuantityTons,
+    Guid? TargetStorageId = null,
+    string? Notes = null,
+    DateTime? MovementDate = null
+) : IRequest<Guid>;
