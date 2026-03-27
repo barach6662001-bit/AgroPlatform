@@ -14,4 +14,8 @@ public class GrainMovement : AuditableEntity
     public decimal? PricePerTon { get; set; }
     public decimal? TotalRevenue { get; set; }
     public string? BuyerName { get; set; }
+
+    /// <summary>Links this movement to a GrainTransfer record when the movement was created by a transfer operation.</summary>
+    public Guid? GrainTransferId { get; set; }
+    public GrainTransfer? GrainTransfer { get; set; }
 }

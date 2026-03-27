@@ -1,8 +1,10 @@
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainBatch;
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainMovement;
+using AgroPlatform.Application.GrainStorage.Commands.TransferGrain;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainBatches;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainMovements;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainSummary;
+using AgroPlatform.Application.GrainStorage.Queries.GetGrainTransfers;
 using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Enums;
 using MediatR;
@@ -79,6 +81,27 @@ public class GrainStorageController : ControllerBase
     public async Task<IActionResult> GetGrainSummary(CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new GetGrainSummaryQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Transfers grain from one batch to another batch or storage.</summary>
+    [HttpPost("{id:guid}/transfers")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> TransferGrain(Guid id, [FromBody] TransferGrainCommand command, CancellationToken cancellationToken)
+    {
+        var transferId = await _sender.Send(command with { SourceBatchId = id }, cancellationToken);
+        return CreatedAtAction(nameof(GetGrainTransfers), new { id }, new { id = transferId });
+    }
+
+    /// <summary>Returns the transfer history for a specific batch.</summary>
+    [HttpGet("{id:guid}/transfers")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGrainTransfers(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetGrainTransfersQuery(id), cancellationToken);
         return Ok(result);
     }
 }
