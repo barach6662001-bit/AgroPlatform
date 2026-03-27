@@ -3,6 +3,8 @@ import type {
   GrainBatchDto,
   GrainMovementDto,
   GrainStorageDto,
+  GrainStorageOverviewDto,
+  GrainTransferDto,
   CreateMovementRequest,
   TransferGrainRequest,
   SplitGrainBatchRequest,
@@ -81,6 +83,10 @@ export const getGrainTypes = () =>
 
 export const addGrainType = (name: string) =>
   apiClient.post('/api/grain-types', { name }).then(r => r.data);
+
+// --- Grain Storage Overview ---
+export const getGrainStorageOverview = (params?: { activeOnly?: boolean; storageId?: string }) =>
+  apiClient.get<GrainStorageOverviewDto[]>('/api/grain-storages/overview', { params }).then(r => r.data);
 
 // --- Summary ---
 export const getGrainSummary = () =>

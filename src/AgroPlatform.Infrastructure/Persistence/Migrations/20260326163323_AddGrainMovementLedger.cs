@@ -107,7 +107,7 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 name: "IX_GrainMovements_OperationId",
                 table: "GrainMovements",
                 column: "OperationId",
-                filter: "operation_id IS NOT NULL");
+                filter: "\"OperationId\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GrainMovements_SourceStorageId",

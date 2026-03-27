@@ -45,7 +45,7 @@ public class GrainMovementConfiguration : IEntityTypeConfiguration<GrainMovement
             .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasIndex(m => m.OperationId)
-            .HasFilter("operation_id IS NOT NULL");
+            .HasFilter("\"OperationId\" IS NOT NULL");
 
         builder.HasIndex(m => new { m.GrainBatchId, m.MovementDate });
     }

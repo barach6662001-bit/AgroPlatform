@@ -1593,7 +1593,7 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OperationId")
-                        .HasFilter("operation_id IS NOT NULL");
+                        .HasFilter("\"OperationId\" IS NOT NULL");
 
                     b.HasIndex("SourceStorageId");
 
