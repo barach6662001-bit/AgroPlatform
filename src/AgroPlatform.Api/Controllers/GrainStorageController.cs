@@ -1,5 +1,6 @@
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainBatch;
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainMovement;
+using AgroPlatform.Application.GrainStorage.Commands.SplitGrainBatch;
 using AgroPlatform.Application.GrainStorage.Commands.TransferGrain;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainBatches;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainMovements;
@@ -75,6 +76,19 @@ public class GrainStorageController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Splits a grain batch across multiple target storage facilities.</summary>
+    [HttpPost("{id:guid}/split")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> SplitGrainBatch(Guid id, [FromBody] SplitGrainBatchRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new SplitGrainBatchCommand(id, request.Targets, request.Notes), cancellationToken);
+        return Ok(result);
+    }
+
     /// <summary>Returns a summary of grain across all storages, grouped by grain type.</summary>
     [HttpGet("summary")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -105,3 +119,6 @@ public class GrainStorageController : ControllerBase
         return Ok(result);
     }
 }
+
+/// <summary>Request body for splitting a grain batch.</summary>
+public record SplitGrainBatchRequest(List<SplitTarget> Targets, string? Notes);
