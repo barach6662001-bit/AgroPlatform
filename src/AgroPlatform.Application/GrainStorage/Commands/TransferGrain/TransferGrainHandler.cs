@@ -68,8 +68,10 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
         source.QuantityTons -= request.QuantityTons;
         target.QuantityTons += request.QuantityTons;
 
-        // Update source placement quantity
-        var sourcePlacement = source.Placements.FirstOrDefault();
+        // Update source placement quantity (match by storage to handle multi-placement batches)
+        var sourcePlacement = sourceStorageId.HasValue
+            ? source.Placements.FirstOrDefault(p => p.GrainStorageId == sourceStorageId.Value)
+            : source.Placements.FirstOrDefault();
         if (sourcePlacement != null)
             sourcePlacement.QuantityTons -= request.QuantityTons;
 
