@@ -55,6 +55,7 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<GrainStorageEntities.GrainType> GrainTypes => Set<GrainStorageEntities.GrainType>();
     public DbSet<GrainStorageEntities.GrainBatch> GrainBatches => Set<GrainStorageEntities.GrainBatch>();
     public DbSet<GrainStorageEntities.GrainMovement> GrainMovements => Set<GrainStorageEntities.GrainMovement>();
+    public DbSet<GrainStorageEntities.GrainTransfer> GrainTransfers => Set<GrainStorageEntities.GrainTransfer>();
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<WorkLog> WorkLogs => Set<WorkLog>();
     public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();

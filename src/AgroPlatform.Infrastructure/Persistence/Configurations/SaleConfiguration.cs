@@ -46,8 +46,14 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
             .HasForeignKey(s => s.FieldId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(s => s.GrainMovement)
+            .WithMany()
+            .HasForeignKey(s => s.GrainMovementId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasQueryFilter(s => !s.IsDeleted);
 
         builder.HasIndex(s => new { s.TenantId, s.Date });
+        builder.HasIndex(s => s.GrainMovementId).HasFilter("\"GrainMovementId\" IS NOT NULL");
     }
 }

@@ -114,13 +114,23 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        // Allow per-request overrides via test-only headers so isolation tests
+        // can simulate non-admin users and different JWT TenantId claims.
+        var role = Request.Headers.TryGetValue("X-Test-Role", out var testRole)
+            ? testRole.ToString()
+            : "Administrator";
+
+        var tenantId = Request.Headers.TryGetValue("X-Test-Tenant-Id", out var testTenantId)
+            ? testTenantId.ToString()
+            : TestTenantId.ToString();
+
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, TestUserId.ToString()),
             new Claim(ClaimTypes.Name, "testuser@example.com"),
             new Claim(ClaimTypes.Email, "testuser@example.com"),
-            new Claim(ClaimTypes.Role, "Administrator"),
-            new Claim("TenantId", TestTenantId.ToString()),
+            new Claim(ClaimTypes.Role, role),
+            new Claim("TenantId", tenantId),
         };
 
         var identity = new ClaimsIdentity(claims, "Test");

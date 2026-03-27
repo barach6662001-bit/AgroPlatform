@@ -19,6 +19,7 @@ title: Agrotech — Документация
 
 | Раздел | Описание |
 |--------|----------|
+| [🎯 Demo Guide](demo) | Credentials, startup commands, 7-min та 20-min walkthrough |
 | [📡 API Reference](api) | Полный справочник по API эндпоинтам |
 | [📐 Архитектура](architecture) | Обзор архитектуры проекта (Clean Architecture, CQRS) |
 | [🚀 Деплой](deployment) | Руководство по развёртыванию (Docker Compose, TLS) |

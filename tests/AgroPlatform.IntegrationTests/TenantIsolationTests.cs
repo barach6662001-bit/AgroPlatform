@@ -132,4 +132,46 @@ public class TenantIsolationTests : IntegrationTestBase
         var balancesB = balancesPayload.GetProperty("items").EnumerateArray().ToList();
         balancesB.Should().NotContain(b => b.GetProperty("warehouseId").GetGuid() == warehouseId);
     }
+
+    // ── TenantAuthorizationMiddleware tests ─────────────────────────────────
+
+    /// <summary>
+    /// A non-admin user whose JWT TenantId is Tenant A must receive 403 Forbidden when
+    /// they pass <c>X-Tenant-Id: TenantB</c> in the header — i.e. they cannot spoof
+    /// access to another farm's data.
+    /// </summary>
+    [Fact]
+    public async Task NonAdminUser_CannotAccessOtherTenant_Via_XTenantIdHeader_ReturnsForbidden()
+    {
+        // Arrange: create a client that authenticates as a non-admin user belonging to Tenant A
+        // but sends X-Tenant-Id pointing at Tenant B.
+        var nonAdminTenantBClient = Factory.CreateClient();
+        nonAdminTenantBClient.DefaultRequestHeaders.Add("X-Tenant-Id", TenantBId.ToString());
+        nonAdminTenantBClient.DefaultRequestHeaders.Add("X-Test-Role", "Operator");
+        nonAdminTenantBClient.DefaultRequestHeaders.Add("X-Test-Tenant-Id", TenantId.ToString());
+
+        // Act: attempt to read warehouses (or any tenant-scoped endpoint)
+        var response = await nonAdminTenantBClient.GetAsync("/api/warehouses");
+
+        // Assert: middleware must reject the cross-tenant request
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    /// <summary>
+    /// An admin user IS allowed to use any X-Tenant-Id header value so they can manage
+    /// multiple farms without being blocked by TenantAuthorizationMiddleware.
+    /// </summary>
+    [Fact]
+    public async Task AdminUser_CanAccessAnyTenant_Via_XTenantIdHeader()
+    {
+        // Arrange: admin user whose JWT TenantId is Tenant A but uses Tenant B header
+        // (the default TestAuthHandler sets Role=Administrator, so CreateTenantBClient is sufficient)
+        var adminClientB = CreateTenantBClient();
+
+        // Act: admin reads Tenant B warehouses — should succeed (no data, but 200 OK)
+        var response = await adminClientB.GetAsync("/api/warehouses");
+
+        // Assert: admin request is not blocked
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 }

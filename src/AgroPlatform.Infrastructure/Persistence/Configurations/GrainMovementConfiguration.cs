@@ -22,5 +22,11 @@ public class GrainMovementConfiguration : IEntityTypeConfiguration<GrainMovement
 
         builder.Property(m => m.TotalRevenue)
             .HasPrecision(18, 2);
+
+        builder.HasOne(m => m.GrainTransfer)
+            .WithMany()
+            .HasForeignKey(m => m.GrainTransferId)
+            .OnDelete(DeleteBehavior.SetNull)
+            .IsRequired(false);
     }
 }
