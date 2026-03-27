@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Table, Select, Button, message, Card, Radio, Form, Input, Row, Col } from 'antd';
-import { SaveOutlined } from '@ant-design/icons';
+import { Table, Select, Button, message, Card, Radio, Form, Input, Row, Col, Typography, Divider, Alert } from 'antd';
+import { SaveOutlined, DatabaseOutlined } from '@ant-design/icons';
+import apiClient from '../../api/axios';
 import { getUsers, updateUserRole } from '../../api/users';
 import { getCurrentTenant, updateCurrentTenant } from '../../api/tenants';
 import type { UserDto } from '../../types/users';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation, languages } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+
+const { Text } = Typography;
 
 const ROLES = ['Administrator', 'Manager', 'Agronomist', 'Storekeeper', 'Director'];
 
@@ -20,6 +23,21 @@ export default function UsersPage() {
   const [companyForm] = Form.useForm();
   const { t, lang, setLang } = useTranslation();
   const { isAdmin } = useRole();
+
+  const [seedLoading, setSeedLoading] = useState(false);
+
+  const handleSeedDemo = async () => {
+    setSeedLoading(true);
+    try {
+      await apiClient.post('/api/tenants/seed-demo');
+      message.success(t.settings.demoDataSuccess);
+      setTimeout(() => window.location.reload(), 800);
+    } catch {
+      message.error(t.settings.demoDataError);
+    } finally {
+      setSeedLoading(false);
+    }
+  };
 
   const load = () => {
     setLoading(true);
@@ -175,6 +193,36 @@ export default function UsersPage() {
           ))}
         </Radio.Group>
       </Card>
+
+      {isAdmin && (
+        <Card
+          title={
+            <span>
+              <DatabaseOutlined style={{ marginRight: 8 }} />
+              {t.settings.demoDataTitle}
+            </span>
+          }
+          style={{ marginBottom: 24 }}
+        >
+          <Alert
+            type="warning"
+            showIcon
+            message={t.settings.demoDataWarning}
+            style={{ marginBottom: 16 }}
+          />
+          <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+            {t.settings.demoDataDescription}
+          </Text>
+          <Divider style={{ margin: '12px 0' }} />
+          <Button
+            icon={<DatabaseOutlined />}
+            loading={seedLoading}
+            onClick={handleSeedDemo}
+          >
+            {t.settings.demoDataButton}
+          </Button>
+        </Card>
+      )}
 
       <Table
         dataSource={users}
