@@ -256,6 +256,7 @@ try
     app.UseMiddleware<TenantMiddleware>();
     app.UseAuthentication();
     app.UseMiddleware<ApiKeyAuthMiddleware>();
+    app.UseMiddleware<TenantAuthorizationMiddleware>();
     app.UseAuthorization();
     app.MapControllers();
     app.MapHub<FleetHub>("/hubs/fleet");

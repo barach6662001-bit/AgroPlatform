@@ -14,7 +14,8 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { exportToCsv } from '../../utils/exportCsv';
-import { useFieldsQuery, FIELDS_QUERY_KEY } from '../../hooks/useFieldsQuery';
+import { useFieldsQuery } from '../../hooks/useFieldsQuery';
+import { useAuthStore } from '../../stores/authStore';
 
 export default function FieldsList() {
   const [search, setSearch] = useState('');
@@ -32,6 +33,7 @@ export default function FieldsList() {
   const { t } = useTranslation();
   const { hasPermission } = useRole();
   const queryClient = useQueryClient();
+  const { tenantId } = useAuthStore();
 
   const { data: result, isFetching: loading, isLoading } = useFieldsQuery({ page, pageSize, search: search || undefined });
   const cropOptions = (['Wheat', 'Corn', 'Sunflower', 'Soybean', 'Barley', 'Rapeseed', 'SugarBeet', 'Fallow', 'Other'] as const)
@@ -78,7 +80,7 @@ export default function FieldsList() {
   const canEdit = hasPermission('fields', 'manage');
 
   const invalidateFields = () =>
-    queryClient.invalidateQueries({ queryKey: FIELDS_QUERY_KEY() });
+    queryClient.invalidateQueries({ queryKey: ['fields', tenantId] });
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
