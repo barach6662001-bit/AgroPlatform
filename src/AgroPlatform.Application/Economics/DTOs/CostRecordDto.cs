@@ -10,4 +10,5 @@ public class CostRecordDto
     public Guid? FieldId { get; set; }
     public Guid? AgroOperationId { get; set; }
     public string? Description { get; set; }
+    public Guid? SaleId { get; set; }
 }

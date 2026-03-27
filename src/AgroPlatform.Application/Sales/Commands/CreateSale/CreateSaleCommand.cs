@@ -11,5 +11,6 @@ public record CreateSaleCommand(
     decimal PricePerUnit,
     string Currency,
     Guid? FieldId,
-    string? Notes
+    string? Notes,
+    Guid? GrainMovementId = null
 ) : IRequest<Guid>;
