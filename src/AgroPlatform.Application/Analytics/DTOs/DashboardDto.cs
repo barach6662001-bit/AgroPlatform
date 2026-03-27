@@ -30,7 +30,7 @@ public class DashboardDto
     public Dictionary<string, decimal> CostsByCategory { get; set; } = new();
     public List<MonthlyCostTrendDto> CostTrend { get; set; } = new();
 
-    // Revenue summary
+    // Revenue summary: total sales and monthly trend data
     public decimal TotalRevenue { get; set; }
     public List<MonthlyCostTrendDto> RevenueTrend { get; set; } = new();
 }

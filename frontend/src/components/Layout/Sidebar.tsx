@@ -158,10 +158,10 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       )?.key ?? '/';
 
   const openKeys = menuItems
-    .filter((item): item is typeof item & { children: unknown[] } =>
-      'children' in item && Array.isArray((item as Record<string, unknown>).children) &&
-      ((item as Record<string, unknown>).children as { key: string }[]).some(child => location.pathname.startsWith(child.key))
-    )
+    .filter((item) => {
+      const children = 'children' in item ? (item as { children?: { key: string }[] }).children : undefined;
+      return children?.some(child => location.pathname.startsWith(child.key)) ?? false;
+    })
     .map(item => item.key as string);
 
   return (
