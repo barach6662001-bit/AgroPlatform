@@ -1082,6 +1082,7 @@ const uk = {
     transferHistory: 'Історія переміщень',
     fromStorage: 'Зі сховища',
     toStorage: 'До сховища',
+    storagePlacements: 'Розміщення по сховищах',
   },
   grainStorages: {
     title: 'Зерносховища',

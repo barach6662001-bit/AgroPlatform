@@ -58,7 +58,6 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
             // Create a new batch in the target storage with the same grain type
             targetBatch = new GrainBatch
             {
-                GrainStorageId = targetStorage.Id,
                 GrainType = sourceBatch.GrainType,
                 QuantityTons = 0m,
                 InitialQuantityTons = 0m,
@@ -69,6 +68,12 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
                 Notes = $"Створено автоматично при переміщенні з партії {sourceBatch.Id}",
             };
             _context.GrainBatches.Add(targetBatch);
+            _context.GrainBatchPlacements.Add(new GrainBatchPlacement
+            {
+                GrainBatchId = targetBatch.Id,
+                GrainStorageId = targetStorage.Id,
+                QuantityTons = request.QuantityTons,
+            });
             newBatchCreated = true;
         }
 

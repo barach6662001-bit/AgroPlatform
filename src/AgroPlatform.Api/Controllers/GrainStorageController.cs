@@ -1,3 +1,4 @@
+using AgroPlatform.Application.GrainStorage.Commands.AddGrainBatchPlacement;
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainBatch;
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainMovement;
 using AgroPlatform.Application.GrainStorage.Commands.SplitGrainBatch;
@@ -118,7 +119,23 @@ public class GrainStorageController : ControllerBase
         var result = await _sender.Send(new GetGrainTransfersQuery(id), cancellationToken);
         return Ok(result);
     }
+
+    /// <summary>Adds a placement record to an existing grain batch, allowing one batch to span multiple storages.</summary>
+    [HttpPost("{id:guid}/placements")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddGrainBatchPlacement(Guid id, [FromBody] AddGrainBatchPlacementRequest request, CancellationToken cancellationToken)
+    {
+        var placementId = await _sender.Send(
+            new AddGrainBatchPlacementCommand(id, request.GrainStorageId, request.GrainStorageUnitId, request.QuantityTons),
+            cancellationToken);
+        return Created(string.Empty, new { id = placementId });
+    }
 }
 
 /// <summary>Request body for splitting a grain batch.</summary>
 public record SplitGrainBatchRequest(List<SplitTarget> Targets, string? Notes);
+
+/// <summary>Request body for adding a placement to a grain batch.</summary>
+public record AddGrainBatchPlacementRequest(Guid GrainStorageId, Guid? GrainStorageUnitId, decimal QuantityTons);

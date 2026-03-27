@@ -1052,6 +1052,7 @@ const en: Translations = {
     transferHistory: 'Transfer history',
     fromStorage: 'From storage',
     toStorage: 'To storage',
+    storagePlacements: 'Storage Placements',
   },
   grainStorages: {
     title: 'Grain Storages',

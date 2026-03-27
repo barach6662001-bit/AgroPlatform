@@ -19,7 +19,6 @@ public class CreateGrainBatchHandler : IRequestHandler<CreateGrainBatchCommand, 
     {
         var batch = new GrainBatch
         {
-            GrainStorageId = request.GrainStorageId,
             GrainType = request.GrainType,
             QuantityTons = request.InitialQuantityTons,
             InitialQuantityTons = request.InitialQuantityTons,
@@ -34,6 +33,15 @@ public class CreateGrainBatchHandler : IRequestHandler<CreateGrainBatchCommand, 
         };
 
         _context.GrainBatches.Add(batch);
+
+        // Create the initial placement representing where the grain is stored on receipt.
+        _context.GrainBatchPlacements.Add(new GrainBatchPlacement
+        {
+            GrainBatchId = batch.Id,
+            GrainStorageId = request.GrainStorageId,
+            QuantityTons = request.InitialQuantityTons,
+        });
+
         await _context.SaveChangesAsync(cancellationToken);
 
         if (request.SourceFieldId.HasValue)

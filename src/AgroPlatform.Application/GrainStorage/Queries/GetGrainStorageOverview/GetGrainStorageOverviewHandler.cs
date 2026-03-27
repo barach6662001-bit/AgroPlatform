@@ -49,28 +49,28 @@ public class GetGrainStorageOverviewHandler
 
         var storageIds = storages.Select(s => s.Id).ToList();
 
-        // --- Load all active batches in one query ---
-        var batches = await _context.GrainBatches
-            .Where(b => storageIds.Contains(b.GrainStorageId) && b.QuantityTons > 0)
-            .Select(b => new GrainBatchSummaryDto
-            {
-                Id = b.Id,
-                GrainType = b.GrainType,
-                QuantityTons = b.QuantityTons,
-                InitialQuantityTons = b.InitialQuantityTons,
-                OwnershipType = b.OwnershipType,
-                OwnerName = b.OwnerName,
-                ReceivedDate = b.ReceivedDate,
-                MoisturePercent = b.MoisturePercent,
-                SourceFieldName = b.SourceFieldId != null ? b.SourceField!.Name : null,
-                ContractNumber = b.ContractNumber,
-                GrainStorageId = b.GrainStorageId,
-            })
+        // --- Load all active placements for these storages ---
+        var placements = await _context.GrainBatchPlacements
+            .Where(p => storageIds.Contains(p.GrainStorageId) && p.GrainBatch.QuantityTons > 0)
+            .Include(p => p.GrainBatch).ThenInclude(b => b.SourceField)
             .ToListAsync(cancellationToken);
 
-        var batchesByStorage = batches
-            .GroupBy(b => b.GrainStorageId)
-            .ToDictionary(g => g.Key, g => g.ToList());
+        var batchesByStorage = placements
+            .GroupBy(p => p.GrainStorageId)
+            .ToDictionary(g => g.Key, g => g.Select(p => new GrainBatchSummaryDto
+            {
+                Id = p.GrainBatch.Id,
+                GrainStorageId = p.GrainStorageId,
+                GrainType = p.GrainBatch.GrainType,
+                QuantityTons = p.QuantityTons,
+                InitialQuantityTons = p.GrainBatch.InitialQuantityTons,
+                OwnershipType = p.GrainBatch.OwnershipType,
+                OwnerName = p.GrainBatch.OwnerName,
+                ReceivedDate = p.GrainBatch.ReceivedDate,
+                MoisturePercent = p.GrainBatch.MoisturePercent,
+                SourceFieldName = p.GrainBatch.SourceFieldId != null ? p.GrainBatch.SourceField?.Name : null,
+                ContractNumber = p.GrainBatch.ContractNumber,
+            }).ToList());
 
         // --- Assemble result ---
         var result = new List<GrainStorageOverviewDto>(storages.Count);

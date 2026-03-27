@@ -16,5 +16,5 @@ public class GrainStorage : AuditableEntity
     public bool IsActive { get; set; } = true;
     public string? Notes { get; set; }
 
-    public ICollection<GrainBatch> GrainBatches { get; set; } = new List<GrainBatch>();
+    public ICollection<GrainBatchPlacement> Placements { get; set; } = new List<GrainBatchPlacement>();
 }

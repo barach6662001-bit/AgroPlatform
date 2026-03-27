@@ -3,6 +3,7 @@ using System;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroPlatform.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260326162508_AddGrainBatchPlacements")]
+    partial class AddGrainBatchPlacements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -360,9 +363,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("SaleId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -377,10 +377,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasIndex("AgroOperationId");
 
                     b.HasIndex("FieldId");
-
-                    b.HasIndex("SaleId")
-                        .IsUnique()
-                        .HasFilter("\"SaleId\" IS NOT NULL");
 
                     b.HasIndex("TenantId", "Category");
 
@@ -1531,9 +1527,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("GrainBatchId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GrainTransferId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -1575,8 +1568,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GrainBatchId");
-
-                    b.HasIndex("GrainTransferId");
 
                     b.ToTable("GrainMovements");
                 });
@@ -1645,61 +1636,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasFilter("\"Code\" IS NOT NULL AND \"IsDeleted\" = false");
 
                     b.ToTable("GrainStorages");
-                });
-
-            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainTransfer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<decimal>("QuantityTons")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<Guid>("SourceBatchId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TargetBatchId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("TransferDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SourceBatchId");
-
-                    b.HasIndex("TargetBatchId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("GrainTransfers");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainType", b =>
@@ -2381,9 +2317,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("FieldId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("GrainMovementId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -2425,9 +2358,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FieldId");
-
-                    b.HasIndex("GrainMovementId")
-                        .HasFilter("\"GrainMovementId\" IS NOT NULL");
 
                     b.HasIndex("TenantId", "Date");
 
@@ -3183,16 +3113,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("AgroPlatform.Domain.Sales.Sale", "Sale")
-                        .WithMany()
-                        .HasForeignKey("SaleId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("AgroOperation");
 
                     b.Navigation("Field");
-
-                    b.Navigation("Sale");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Fields.CropRotationPlan", b =>
@@ -3382,33 +3305,7 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainTransfer", "GrainTransfer")
-                        .WithMany()
-                        .HasForeignKey("GrainTransferId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("GrainBatch");
-
-                    b.Navigation("GrainTransfer");
-                });
-
-            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainTransfer", b =>
-                {
-                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainBatch", "SourceBatch")
-                        .WithMany()
-                        .HasForeignKey("SourceBatchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainBatch", "TargetBatch")
-                        .WithMany()
-                        .HasForeignKey("TargetBatchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("SourceBatch");
-
-                    b.Navigation("TargetBatch");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.HR.SalaryPayment", b =>
@@ -3486,14 +3383,7 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainMovement", "GrainMovement")
-                        .WithMany()
-                        .HasForeignKey("GrainMovementId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("Field");
-
-                    b.Navigation("GrainMovement");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Warehouses.Batch", b =>

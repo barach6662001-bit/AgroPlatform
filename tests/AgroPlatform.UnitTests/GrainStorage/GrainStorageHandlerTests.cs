@@ -82,7 +82,6 @@ public class GrainStorageHandlerTests
         var context = CreateDbContext();
         var batch = new GrainBatch
         {
-            GrainStorageId = Guid.NewGuid(),
             GrainType = "Corn",
             QuantityTons = 100m,
             InitialQuantityTons = 100m,
@@ -106,7 +105,6 @@ public class GrainStorageHandlerTests
         var context = CreateDbContext();
         var batch = new GrainBatch
         {
-            GrainStorageId = Guid.NewGuid(),
             GrainType = "Barley",
             QuantityTons = 200m,
             InitialQuantityTons = 200m,
@@ -131,7 +129,6 @@ public class GrainStorageHandlerTests
         var context = CreateDbContext();
         var batch = new GrainBatch
         {
-            GrainStorageId = Guid.NewGuid(),
             GrainType = "Wheat",
             QuantityTons = 300m,
             InitialQuantityTons = 300m,
@@ -176,7 +173,6 @@ public class GrainStorageHandlerTests
 
         var batch = new GrainBatch
         {
-            GrainStorageId = storage1.Id,
             GrainType = "Wheat",
             QuantityTons = 400m,
             InitialQuantityTons = 400m,
@@ -228,7 +224,10 @@ public class GrainStorageHandlerTests
         var newBatch = await ((TestDbContext)context).GrainBatches.FindAsync(result.CreatedBatches[0].NewBatchId);
         newBatch.Should().NotBeNull();
         newBatch!.GrainType.Should().Be("Wheat");
-        newBatch.GrainStorageId.Should().Be(storage2.Id);
+        var newBatchPlacement = await ((TestDbContext)context).GrainBatchPlacements
+            .FirstOrDefaultAsync(p => p.GrainBatchId == newBatch.Id);
+        newBatchPlacement.Should().NotBeNull();
+        newBatchPlacement!.GrainStorageId.Should().Be(storage2.Id);
         newBatch.QuantityTons.Should().Be(100m);
         newBatch.Notes.Should().Be("test split");
     }
@@ -270,7 +269,6 @@ public class GrainStorageHandlerTests
 
         var batch = new GrainBatch
         {
-            GrainStorageId = Guid.NewGuid(),
             GrainType = "Corn",
             QuantityTons = 300m,
             InitialQuantityTons = 300m,
@@ -339,7 +337,6 @@ public class GrainStorageHandlerTests
 
         var batch = new GrainBatch
         {
-            GrainStorageId = Guid.NewGuid(),
             GrainType = "Barley",
             QuantityTons = 100m,
             InitialQuantityTons = 100m,
@@ -365,7 +362,6 @@ public class GrainStorageHandlerTests
         var context = CreateDbContext();
         var batch = new GrainBatch
         {
-            GrainStorageId = Guid.NewGuid(),
             GrainType = "Sunflower",
             QuantityTons = 200m,
             InitialQuantityTons = 200m,
@@ -408,7 +404,6 @@ public class GrainStorageHandlerTests
 
         var source = new GrainBatch
         {
-            GrainStorageId = storageId1,
             GrainType = "Wheat",
             QuantityTons = 200m,
             InitialQuantityTons = 200m,
@@ -416,7 +411,6 @@ public class GrainStorageHandlerTests
         };
         var target = new GrainBatch
         {
-            GrainStorageId = storageId2,
             GrainType = "Wheat",
             QuantityTons = 50m,
             InitialQuantityTons = 50m,
@@ -532,7 +526,6 @@ public class GrainStorageHandlerTests
         context.GrainStorages.Add(new Domain.GrainStorage.GrainStorage { Id = targetStorageId, Name = "Target Storage", IsActive = true });
         var source = new GrainBatch
         {
-            GrainStorageId = storageId,
             GrainType = "Corn",
             QuantityTons = 100m,
             InitialQuantityTons = 100m,
@@ -548,8 +541,10 @@ public class GrainStorageHandlerTests
         var updatedSource = await ((TestDbContext)context).GrainBatches.FindAsync(source.Id);
         updatedSource!.QuantityTons.Should().Be(40m); // 100 - 60
 
-        var newBatch = await ((TestDbContext)context).GrainBatches
-            .FirstOrDefaultAsync(b => b.GrainStorageId == targetStorageId);
+        var newBatchPlacement = await ((TestDbContext)context).GrainBatchPlacements
+            .FirstOrDefaultAsync(p => p.GrainStorageId == targetStorageId);
+        newBatchPlacement.Should().NotBeNull();
+        var newBatch = await ((TestDbContext)context).GrainBatches.FindAsync(newBatchPlacement!.GrainBatchId);
         newBatch.Should().NotBeNull();
         newBatch!.GrainType.Should().Be("Corn");
         newBatch.QuantityTons.Should().Be(60m);
