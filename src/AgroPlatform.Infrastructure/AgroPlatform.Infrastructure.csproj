@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <!-- Pin transitive package to fix HIGH vulnerability GHSA-8g4q-xg66-9fp4 -->
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="10.0.5" />
   </ItemGroup>
 
   <ItemGroup>
