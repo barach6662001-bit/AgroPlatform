@@ -7,6 +7,8 @@ using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Warehouses;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using GrainStorageEntity = AgroPlatform.Domain.GrainStorage.GrainStorage;
+using AgroPlatform.Domain.GrainStorage;
 
 namespace AgroPlatform.Application.Tenants.Commands.SeedDemoData;
 
@@ -77,6 +79,76 @@ public class SeedDemoDataHandler : IRequestHandler<SeedDemoDataCommand>
             new Employee { FirstName = "Марія", LastName = "Шевченко", Position = "Бухгалтер", SalaryType = "Hourly", HourlyRate = 180, Department = "Бухгалтерія", HireDate = hireDate },
         };
         _context.Employees.AddRange(employees);
+
+        // === GRAIN STORAGES ===
+        var receivedDate = new DateTime(2025, 10, 15, 0, 0, 0, DateTimeKind.Utc);
+        var grainStorageMain = new GrainStorageEntity
+        {
+            Name = "Елеватор Центральний",
+            Code = "ELV-01",
+            Location = "с. Центральне, вул. Елеваторна 1",
+            StorageType = "Елеватор",
+            CapacityTons = 5000,
+            IsActive = true,
+            Notes = "Головний елеватор господарства",
+        };
+        var grainStorageAux = new GrainStorageEntity
+        {
+            Name = "Амбар №2",
+            Code = "AMB-02",
+            Location = "с. Центральне, вул. Польова 12",
+            StorageType = "Амбар",
+            CapacityTons = 1500,
+            IsActive = true,
+        };
+        _context.GrainStorages.AddRange(grainStorageMain, grainStorageAux);
+        await _context.SaveChangesAsync(ct);
+
+        // === GRAIN BATCHES (demo receipts) ===
+        var wheatBatch = new GrainBatch
+        {
+            GrainType = "Пшениця",
+            QuantityTons = 320.5m,
+            InitialQuantityTons = 320.5m,
+            OwnershipType = GrainOwnershipType.Own,
+            ReceivedDate = receivedDate,
+            MoisturePercent = 12.5m,
+            Notes = "Врожай 2025",
+        };
+        var cornBatch = new GrainBatch
+        {
+            GrainType = "Кукурудза",
+            QuantityTons = 185.0m,
+            InitialQuantityTons = 185.0m,
+            OwnershipType = GrainOwnershipType.Own,
+            ReceivedDate = receivedDate.AddDays(5),
+            MoisturePercent = 14.2m,
+        };
+        var sunflowerBatch = new GrainBatch
+        {
+            GrainType = "Соняшник",
+            QuantityTons = 95.0m,
+            InitialQuantityTons = 95.0m,
+            OwnershipType = GrainOwnershipType.Own,
+            ReceivedDate = receivedDate.AddDays(10),
+            MoisturePercent = 8.1m,
+        };
+        _context.GrainBatches.AddRange(wheatBatch, cornBatch, sunflowerBatch);
+        await _context.SaveChangesAsync(ct);
+
+        // === PLACEMENTS ===
+        _context.GrainBatchPlacements.AddRange(
+            new GrainBatchPlacement { GrainBatchId = wheatBatch.Id, GrainStorageId = grainStorageMain.Id, QuantityTons = wheatBatch.QuantityTons },
+            new GrainBatchPlacement { GrainBatchId = cornBatch.Id, GrainStorageId = grainStorageMain.Id, QuantityTons = cornBatch.QuantityTons },
+            new GrainBatchPlacement { GrainBatchId = sunflowerBatch.Id, GrainStorageId = grainStorageAux.Id, QuantityTons = sunflowerBatch.QuantityTons }
+        );
+
+        // === RECEIPT MOVEMENTS ===
+        _context.GrainMovements.AddRange(
+            new GrainMovement { GrainBatchId = wheatBatch.Id, MovementType = GrainMovementType.Receipt, QuantityTons = wheatBatch.InitialQuantityTons, MovementDate = wheatBatch.ReceivedDate, TargetStorageId = grainStorageMain.Id },
+            new GrainMovement { GrainBatchId = cornBatch.Id, MovementType = GrainMovementType.Receipt, QuantityTons = cornBatch.InitialQuantityTons, MovementDate = cornBatch.ReceivedDate, TargetStorageId = grainStorageMain.Id },
+            new GrainMovement { GrainBatchId = sunflowerBatch.Id, MovementType = GrainMovementType.Receipt, QuantityTons = sunflowerBatch.InitialQuantityTons, MovementDate = sunflowerBatch.ReceivedDate, TargetStorageId = grainStorageAux.Id }
+        );
 
         await _context.SaveChangesAsync(ct);
     }
