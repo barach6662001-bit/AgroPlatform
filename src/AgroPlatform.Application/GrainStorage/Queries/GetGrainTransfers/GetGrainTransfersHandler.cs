@@ -17,8 +17,8 @@ public class GetGrainTransfersHandler : IRequestHandler<GetGrainTransfersQuery, 
     public async Task<IReadOnlyList<GrainTransferDto>> Handle(GetGrainTransfersQuery request, CancellationToken cancellationToken)
     {
         var transfers = await _context.GrainTransfers
-            .Include(t => t.SourceBatch).ThenInclude(b => b.GrainStorage)
-            .Include(t => t.TargetBatch).ThenInclude(b => b.GrainStorage)
+            .Include(t => t.SourceBatch).ThenInclude(b => b.Placements).ThenInclude(p => p.GrainStorage)
+            .Include(t => t.TargetBatch).ThenInclude(b => b.Placements).ThenInclude(p => p.GrainStorage)
             .Where(t => t.SourceBatchId == request.BatchId || t.TargetBatchId == request.BatchId)
             .OrderByDescending(t => t.TransferDate)
             .ToListAsync(cancellationToken);
@@ -28,10 +28,10 @@ public class GetGrainTransfersHandler : IRequestHandler<GetGrainTransfersQuery, 
             Id = t.Id,
             SourceBatchId = t.SourceBatchId,
             SourceGrainType = t.SourceBatch.GrainType,
-            SourceStorageName = t.SourceBatch.GrainStorage?.Name ?? string.Empty,
+            SourceStorageName = t.SourceBatch.Placements.FirstOrDefault()?.GrainStorage?.Name ?? string.Empty,
             TargetBatchId = t.TargetBatchId,
             TargetGrainType = t.TargetBatch.GrainType,
-            TargetStorageName = t.TargetBatch.GrainStorage?.Name ?? string.Empty,
+            TargetStorageName = t.TargetBatch.Placements.FirstOrDefault()?.GrainStorage?.Name ?? string.Empty,
             QuantityTons = t.QuantityTons,
             TransferDate = t.TransferDate,
             Notes = t.Notes,

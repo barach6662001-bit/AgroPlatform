@@ -64,7 +64,6 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Sp
 
             var newBatch = new GrainBatch
             {
-                GrainStorageId = target.TargetStorageId,
                 GrainType = sourceBatch.GrainType,
                 QuantityTons = target.QuantityTons,
                 InitialQuantityTons = target.QuantityTons,
@@ -79,6 +78,12 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Sp
             };
 
             _context.GrainBatches.Add(newBatch);
+            _context.GrainBatchPlacements.Add(new GrainBatchPlacement
+            {
+                GrainBatchId = newBatch.Id,
+                GrainStorageId = target.TargetStorageId,
+                QuantityTons = target.QuantityTons,
+            });
 
             // EF Core assigns the Id immediately upon Add; add the inbound movement now
             _context.GrainMovements.Add(new GrainMovement
