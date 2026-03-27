@@ -1,3 +1,4 @@
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.GrainStorage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,7 +13,8 @@ public class GrainMovementConfiguration : IEntityTypeConfiguration<GrainMovement
 
         builder.Property(m => m.MovementType)
             .IsRequired()
-            .HasMaxLength(10);
+            .HasMaxLength(20)
+            .HasConversion<string>();
 
         builder.Property(m => m.QuantityTons)
             .HasPrecision(18, 4);
@@ -23,10 +25,28 @@ public class GrainMovementConfiguration : IEntityTypeConfiguration<GrainMovement
         builder.Property(m => m.TotalRevenue)
             .HasPrecision(18, 2);
 
-        builder.HasOne(m => m.GrainTransfer)
+        builder.Property(m => m.Reason)
+            .HasMaxLength(500);
+
+        builder.Property(m => m.Notes)
+            .HasMaxLength(1000);
+
+        builder.Property(m => m.BuyerName)
+            .HasMaxLength(200);
+
+        builder.HasOne(m => m.SourceStorage)
             .WithMany()
-            .HasForeignKey(m => m.GrainTransferId)
-            .OnDelete(DeleteBehavior.SetNull)
-            .IsRequired(false);
+            .HasForeignKey(m => m.SourceStorageId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(m => m.TargetStorage)
+            .WithMany()
+            .HasForeignKey(m => m.TargetStorageId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(m => m.OperationId)
+            .HasFilter("\"OperationId\" IS NOT NULL");
+
+        builder.HasIndex(m => new { m.GrainBatchId, m.MovementDate });
     }
 }

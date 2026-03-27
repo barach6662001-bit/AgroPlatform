@@ -1,27 +1,54 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Common.Models;
 using AgroPlatform.Application.GrainStorage.DTOs;
+using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AgroPlatform.Application.GrainStorage.Queries.GetGrainMovements;
+namespace AgroPlatform.Application.GrainStorage.Queries.GetGrainLedger;
 
-public class GetGrainMovementsHandler : IRequestHandler<GetGrainMovementsQuery, List<GrainMovementDto>>
+public class GetGrainLedgerHandler : IRequestHandler<GetGrainLedgerQuery, PaginatedResult<GrainMovementDto>>
 {
     private readonly IAppDbContext _context;
 
-    public GetGrainMovementsHandler(IAppDbContext context)
+    public GetGrainLedgerHandler(IAppDbContext context)
     {
         _context = context;
     }
 
-    public async Task<List<GrainMovementDto>> Handle(GetGrainMovementsQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<GrainMovementDto>> Handle(GetGrainLedgerQuery request, CancellationToken cancellationToken)
     {
-        return await _context.GrainMovements
-            .Where(m => m.GrainBatchId == request.BatchId)
+        var query = _context.GrainMovements
             .Include(m => m.GrainBatch).ThenInclude(b => b.Placements).ThenInclude(p => p.GrainStorage)
             .Include(m => m.SourceStorage)
             .Include(m => m.TargetStorage)
+            .AsQueryable();
+
+        if (request.StorageId.HasValue)
+            query = query.Where(m => m.GrainBatch.Placements.Any(p => p.GrainStorageId == request.StorageId.Value));
+
+        if (request.BatchId.HasValue)
+            query = query.Where(m => m.GrainBatchId == request.BatchId.Value);
+
+        if (!string.IsNullOrWhiteSpace(request.MovementType) &&
+            Enum.TryParse<GrainMovementType>(request.MovementType, ignoreCase: true, out var type))
+        {
+            query = query.Where(m => m.MovementType == type);
+        }
+
+        if (request.DateFrom.HasValue)
+            query = query.Where(m => m.MovementDate >= request.DateFrom.Value);
+
+        if (request.DateTo.HasValue)
+            query = query.Where(m => m.MovementDate <= request.DateTo.Value);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
             .OrderByDescending(m => m.MovementDate)
+            .ThenByDescending(m => m.CreatedAtUtc)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(m => new GrainMovementDto
             {
                 Id = m.Id,
@@ -47,5 +74,13 @@ public class GetGrainMovementsHandler : IRequestHandler<GetGrainMovementsQuery, 
                 CreatedAtUtc = m.CreatedAtUtc,
             })
             .ToListAsync(cancellationToken);
+
+        return new PaginatedResult<GrainMovementDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize,
+        };
     }
 }
