@@ -46,7 +46,8 @@ public class GetSalesHandler : IRequestHandler<GetSalesQuery, PaginatedResult<Sa
                 TotalAmount = s.TotalAmount,
                 Currency = s.Currency,
                 FieldId = s.FieldId,
-                Notes = s.Notes
+                Notes = s.Notes,
+                GrainMovementId = s.GrainMovementId
             })
             .ToListAsync(cancellationToken);
 

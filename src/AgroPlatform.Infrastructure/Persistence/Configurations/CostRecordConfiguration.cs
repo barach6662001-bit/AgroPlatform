@@ -1,5 +1,6 @@
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Enums;
+using AgroPlatform.Domain.Sales;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -40,10 +41,16 @@ public class CostRecordConfiguration : IEntityTypeConfiguration<CostRecord>
             .HasForeignKey(c => c.AgroOperationId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(c => c.Sale)
+            .WithMany()
+            .HasForeignKey(c => c.SaleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasQueryFilter(c => !c.IsDeleted);
 
         builder.HasIndex(c => new { c.TenantId, c.Date });
         builder.HasIndex(c => new { c.TenantId, c.Category });
         builder.HasIndex(c => new { c.TenantId, c.FieldId });
+        builder.HasIndex(c => c.SaleId).IsUnique().HasFilter("\"SaleId\" IS NOT NULL");
     }
 }

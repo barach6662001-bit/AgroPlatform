@@ -13,4 +13,5 @@ public class SaleDto
     public string Currency { get; set; } = "UAH";
     public Guid? FieldId { get; set; }
     public string? Notes { get; set; }
+    public Guid? GrainMovementId { get; set; }
 }
