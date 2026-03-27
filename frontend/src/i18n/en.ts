@@ -50,6 +50,8 @@ const en: Translations = {
     cropRotationAdvisor: 'Crop Rotation Advisor',
     salaryFuelAnalytics: 'Salary & Fuel',
     auditLog: 'Audit Log',
+    permissions: 'Permissions',
+    apiKeys: 'API Keys',
   },
   common: {
     cancel: 'Cancel',
@@ -294,7 +296,7 @@ const en: Translations = {
     ndviLegendStress: 'Stress',
     ndviLegendModerate: 'Moderate',
     ndviLegendHealthy: 'Healthy',
-    ndviPlaceholderNote: 'Showing placeholder image (Sentinel Hub not configured)',
+    ndviPlaceholderNote: 'Integration not configured — configure Sentinel Hub to enable real satellite imagery',
     ndviProblemZoneDetected: 'Problem NDVI zone detected',
     ndviProblemZoneBody: 'Stress detected in {{percent}}% of image pixels',
     ndviDateSliderLabel: 'Snapshot date',
@@ -1277,6 +1279,10 @@ const en: Translations = {
   farmSwitcher: {
     loadError: 'Failed to load farms',
     placeholder: 'Select farm',
+  },
+  permissions: {
+    title: 'Permissions Matrix',
+    staticRolesNotice: 'Permissions are currently managed via static role-based configuration. Changes in this table do not affect authorization. Contact an administrator to modify roles.',
   },
 };
 

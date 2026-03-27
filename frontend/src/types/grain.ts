@@ -25,7 +25,6 @@ export interface GrainStorageDto {
 
 export interface GrainBatchDto {
   id: string;
-  grainStorageId: string;
   grainType: string;
   quantityTons: number;
   initialQuantityTons: number;
@@ -38,6 +37,7 @@ export interface GrainBatchDto {
   sourceFieldName?: string;
   moisturePercent?: number;
   notes?: string;
+  placements?: GrainBatchPlacementDto[];
 }
 
 export interface GrainMovementDto {

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Spin, message, Checkbox, Space, Input, Typography } from 'antd';
+import { Table, Button, Spin, message, Checkbox, Space, Input, Typography, Alert } from 'antd';
 import { SaveOutlined, ReloadOutlined } from '@ant-design/icons';
 import { getPermissions, updatePermissions, type PermissionDto, type UpdatePermissionDto } from '../../api/permissions';
+import { useTranslation } from '../../i18n';
 
 export default function PermissionsPage() {
+  const { t } = useTranslation();
   const [roleId, setRoleId] = useState('');
   const [roleName, setRoleName] = useState('');
   const [permissions, setPermissions] = useState<PermissionDto[]>([]);
@@ -142,7 +144,13 @@ export default function PermissionsPage() {
     <Spin spinning={loading}>
       <div style={{ marginBottom: 16 }}>
         <Space direction="vertical" size={8} style={{ width: '100%' }}>
-          <Typography.Title level={4} style={{ margin: 0 }}>Permissions Matrix</Typography.Title>
+          <Typography.Title level={4} style={{ margin: 0 }}>{t.permissions.title}</Typography.Title>
+          <Alert
+            type="info"
+            showIcon
+            message={t.permissions.staticRolesNotice}
+            style={{ marginBottom: 12 }}
+          />
           <Space>
             <Input
               placeholder="Role ID (GUID)"

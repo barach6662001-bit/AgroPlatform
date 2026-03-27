@@ -18,6 +18,8 @@ public class GrainBatch : AuditableEntity
     public decimal? MoisturePercent { get; set; }
     public string? Notes { get; set; }
 
+    public byte[] RowVersion { get; set; } = [];
+
     public ICollection<GrainMovement> Movements { get; set; } = new List<GrainMovement>();
     public ICollection<GrainBatchPlacement> Placements { get; set; } = new List<GrainBatchPlacement>();
     public Field? SourceField { get; set; }

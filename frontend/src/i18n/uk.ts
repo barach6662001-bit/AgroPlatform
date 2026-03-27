@@ -48,6 +48,8 @@ const uk = {
     cropRotationAdvisor: 'Поради по сівозміні',
     salaryFuelAnalytics: 'Зарплата та паливо',
     auditLog: 'Журнал аудиту',
+    permissions: 'Дозволи',
+    apiKeys: 'API ключі',
   },
   common: {
     cancel: 'Скасувати',
@@ -292,7 +294,7 @@ const uk = {
     ndviLegendStress: 'Стрес',
     ndviLegendModerate: 'Помірно',
     ndviLegendHealthy: 'Здорово',
-    ndviPlaceholderNote: 'Відображено тестове зображення (Sentinel Hub не налаштовано)',
+    ndviPlaceholderNote: 'Інтеграція не налаштована — налаштуйте Sentinel Hub для отримання реальних супутникових знімків',
     ndviProblemZoneDetected: 'Виявлено проблемну NDVI-зону',
     ndviProblemZoneBody: 'Стрес виявлено на {{percent}}% пікселів зображення',
     ndviDateSliderLabel: 'Дата знімку',
@@ -1275,6 +1277,10 @@ const uk = {
   farmSwitcher: {
     loadError: 'Не вдалося завантажити список ферм',
     placeholder: 'Оберіть ферму',
+  },
+  permissions: {
+    title: 'Матриця дозволів',
+    staticRolesNotice: 'Дозволи наразі керуються на основі статичних ролей. Зміни в цій таблиці не впливають на авторизацію. Для змін ролей зверніться до адміністратора.',
   },
 } as const;
 

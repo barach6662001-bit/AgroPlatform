@@ -265,7 +265,7 @@ export default function FieldNdviTab({ fieldId }: Props) {
         {ndvi.date}
       </Typography.Text>
 
-      {availableDates.length > 1 && (
+      {availableDates.length > 1 && ndvi.configured && (
         <div style={{ marginTop: 16, padding: '0 8px' }}>
           <Typography.Text strong style={{ fontSize: 13 }}>
             {t.fields.ndviDateSliderLabel}

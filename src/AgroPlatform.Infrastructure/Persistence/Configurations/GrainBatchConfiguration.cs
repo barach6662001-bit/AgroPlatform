@@ -41,5 +41,8 @@ public class GrainBatchConfiguration : IEntityTypeConfiguration<GrainBatch>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(b => b.TenantId);
+
+        builder.Property(b => b.RowVersion)
+            .IsRowVersion();
     }
 }

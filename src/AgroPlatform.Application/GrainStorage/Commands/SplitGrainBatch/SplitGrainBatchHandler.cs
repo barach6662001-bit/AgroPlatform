@@ -18,6 +18,8 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
 
     public async Task<Guid> Handle(SplitGrainBatchCommand request, CancellationToken cancellationToken)
     {
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+
         var source = await _context.GrainBatches
             .Include(b => b.Placements)
             .FirstOrDefaultAsync(b => b.Id == request.SourceBatchId, cancellationToken)
@@ -98,6 +100,7 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
         source.QuantityTons -= request.SplitQuantityTons;
 
         await _context.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return newBatch.Id;
     }

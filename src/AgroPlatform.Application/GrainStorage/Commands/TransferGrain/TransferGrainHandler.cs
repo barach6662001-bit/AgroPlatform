@@ -68,6 +68,31 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
         source.QuantityTons -= request.QuantityTons;
         target.QuantityTons += request.QuantityTons;
 
+        // Update source placement quantity
+        var sourcePlacement = source.Placements.FirstOrDefault();
+        if (sourcePlacement != null)
+            sourcePlacement.QuantityTons -= request.QuantityTons;
+
+        // Upsert target placement quantity
+        if (targetStorageId.HasValue)
+        {
+            var targetPlacement = target.Placements
+                .FirstOrDefault(p => p.GrainStorageId == targetStorageId.Value);
+            if (targetPlacement != null)
+            {
+                targetPlacement.QuantityTons += request.QuantityTons;
+            }
+            else
+            {
+                _context.GrainBatchPlacements.Add(new GrainBatchPlacement
+                {
+                    GrainBatchId = target.Id,
+                    GrainStorageId = targetStorageId.Value,
+                    QuantityTons = request.QuantityTons,
+                });
+            }
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return operationId;
