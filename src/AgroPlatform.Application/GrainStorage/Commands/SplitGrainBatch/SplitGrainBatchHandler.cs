@@ -32,6 +32,8 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
         var movementDate = request.MovementDate ?? DateTime.UtcNow;
         var operationId = Guid.NewGuid();
 
+        await using var tx = await _context.Database.BeginTransactionAsync(cancellationToken);
+
         // Create the new (split-off) batch
         var newBatch = new GrainBatch
         {
@@ -98,6 +100,8 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
         source.QuantityTons -= request.SplitQuantityTons;
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await tx.CommitAsync(cancellationToken);
 
         return newBatch.Id;
     }

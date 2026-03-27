@@ -40,6 +40,8 @@ public class GrainBatchConfiguration : IEntityTypeConfiguration<GrainBatch>
             .HasForeignKey(m => m.GrainBatchId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(b => b.RowVersion).IsRowVersion();
+
         builder.HasIndex(b => b.TenantId);
     }
 }

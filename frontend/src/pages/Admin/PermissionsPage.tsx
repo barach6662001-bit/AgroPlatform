@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Spin, message, Checkbox, Space, Input, Typography } from 'antd';
+import { Table, Button, Spin, message, Checkbox, Space, Input, Typography, Alert } from 'antd';
 import { SaveOutlined, ReloadOutlined } from '@ant-design/icons';
 import { getPermissions, updatePermissions, type PermissionDto, type UpdatePermissionDto } from '../../api/permissions';
+import { useTranslation } from '../../i18n';
 
 export default function PermissionsPage() {
+  const { t } = useTranslation();
   const [roleId, setRoleId] = useState('');
   const [roleName, setRoleName] = useState('');
   const [permissions, setPermissions] = useState<PermissionDto[]>([]);
@@ -19,7 +21,7 @@ export default function PermissionsPage() {
       setPermissions(data);
       setChanges({});
     } catch (err) {
-      message.error('Failed to load permissions');
+      message.error(t.permissionsPage.loadError);
     } finally {
       setLoading(false);
     }
@@ -49,17 +51,17 @@ export default function PermissionsPage() {
 
   const handleSave = async () => {
     if (Object.keys(changes).length === 0) {
-      message.info('No changes to save');
+      message.info(t.permissionsPage.noChanges);
       return;
     }
 
     setSaving(true);
     try {
       await updatePermissions(roleId, Object.values(changes));
-      message.success('Permissions updated');
+      message.success(t.permissionsPage.saveSuccess);
       await loadPermissions();
     } catch (err) {
-      message.error('Failed to save permissions');
+      message.error(t.permissionsPage.saveError);
     } finally {
       setSaving(false);
     }
@@ -67,13 +69,13 @@ export default function PermissionsPage() {
 
   const columns = [
     {
-      title: 'Module',
+      title: t.permissionsPage.moduleColumn,
       dataIndex: 'module',
       key: 'module',
       width: 150,
     },
     {
-      title: 'Read',
+      title: t.permissionsPage.readColumn,
       key: 'canRead',
       width: 80,
       align: 'center' as const,
@@ -89,7 +91,7 @@ export default function PermissionsPage() {
       },
     },
     {
-      title: 'Create',
+      title: t.permissionsPage.createColumn,
       key: 'canCreate',
       width: 80,
       align: 'center' as const,
@@ -105,7 +107,7 @@ export default function PermissionsPage() {
       },
     },
     {
-      title: 'Update',
+      title: t.permissionsPage.updateColumn,
       key: 'canUpdate',
       width: 80,
       align: 'center' as const,
@@ -121,7 +123,7 @@ export default function PermissionsPage() {
       },
     },
     {
-      title: 'Delete',
+      title: t.permissionsPage.deleteColumn,
       key: 'canDelete',
       width: 80,
       align: 'center' as const,
@@ -140,26 +142,33 @@ export default function PermissionsPage() {
 
   return (
     <Spin spinning={loading}>
+      <Alert
+        type="warning"
+        showIcon
+        message={t.permissionsPage.auditNoteTitle}
+        description={t.permissionsPage.auditNoteMessage}
+        style={{ marginBottom: 16 }}
+      />
       <div style={{ marginBottom: 16 }}>
         <Space direction="vertical" size={8} style={{ width: '100%' }}>
-          <Typography.Title level={4} style={{ margin: 0 }}>Permissions Matrix</Typography.Title>
+          <Typography.Title level={4} style={{ margin: 0 }}>{t.permissionsPage.title}</Typography.Title>
           <Space>
             <Input
-              placeholder="Role ID (GUID)"
+              placeholder={t.permissionsPage.roleIdPlaceholder}
               value={roleId}
               onChange={(e) => setRoleId(e.target.value)}
               style={{ width: 380 }}
             />
             <Input
-              placeholder="Role name (optional)"
+              placeholder={t.permissionsPage.roleNamePlaceholder}
               value={roleName}
               onChange={(e) => setRoleName(e.target.value)}
               style={{ width: 220 }}
             />
-            <Button icon={<ReloadOutlined />} onClick={loadPermissions} disabled={!roleId || saving}>Load</Button>
+            <Button icon={<ReloadOutlined />} onClick={loadPermissions} disabled={!roleId || saving}>{t.permissionsPage.loadButton}</Button>
           </Space>
         </Space>
-        <h3>{roleName || roleId || 'Select role'}</h3>
+        <h3>{roleName || roleId || t.permissionsPage.selectRole}</h3>
         <Space>
           <Button
             type="primary"
@@ -168,18 +177,18 @@ export default function PermissionsPage() {
             loading={saving}
             disabled={!roleId || Object.keys(changes).length === 0}
           >
-            Save
+            {t.permissionsPage.saveButton}
           </Button>
           <Button
             icon={<ReloadOutlined />}
             onClick={loadPermissions}
             disabled={!roleId || saving}
           >
-            Reset
+            {t.permissionsPage.resetButton}
           </Button>
           {Object.keys(changes).length > 0 && (
             <span style={{ color: 'var(--text-secondary)' }}>
-              {Object.keys(changes).length} changes
+              {t.permissionsPage.changesCount.replace('{count}', String(Object.keys(changes).length))}
             </span>
           )}
         </Space>

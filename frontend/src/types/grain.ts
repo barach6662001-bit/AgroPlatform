@@ -25,7 +25,6 @@ export interface GrainStorageDto {
 
 export interface GrainBatchDto {
   id: string;
-  grainStorageId: string;
   grainType: string;
   quantityTons: number;
   initialQuantityTons: number;
