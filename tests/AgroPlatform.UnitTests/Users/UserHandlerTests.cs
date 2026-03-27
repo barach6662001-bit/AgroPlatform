@@ -2,7 +2,6 @@ using AgroPlatform.Application.Auth.Commands.Login;
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.Users.Commands.UpdateUserRole;
-using AgroPlatform.Application.Users.Queries.GetPermissions;
 using AgroPlatform.Application.Users.Queries.GetUsers;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Users;
@@ -141,14 +140,14 @@ public class UserHandlerTests
     }
 
     [Fact]
-    public async Task PermissionMatrix_ManagerRole_HasFullAccessToEconomicsModule()
+    public async Task PermissionEntity_CanStoreAndRetrieve()
     {
         var context = CreateDbContext();
-        var managerRoleId = Guid.NewGuid();
+        var roleId = Guid.NewGuid();
 
         context.Permissions.Add(new Permission
         {
-            RoleId = managerRoleId,
+            RoleId = roleId,
             Module = "Economics",
             CanRead = true,
             CanCreate = true,
@@ -157,8 +156,9 @@ public class UserHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new GetPermissionsHandler(context);
-        var result = await handler.Handle(new GetPermissionsQuery(managerRoleId), CancellationToken.None);
+        var result = await ((TestDbContext)context).Permissions
+            .Where(p => p.RoleId == roleId)
+            .ToListAsync();
 
         result.Should().HaveCount(1);
         var perm = result[0];
@@ -170,35 +170,7 @@ public class UserHandlerTests
     }
 
     [Fact]
-    public async Task PermissionMatrix_ViewerRole_HasReadOnlyAccessToFieldsModule()
-    {
-        var context = CreateDbContext();
-        var viewerRoleId = Guid.NewGuid();
-
-        context.Permissions.Add(new Permission
-        {
-            RoleId = viewerRoleId,
-            Module = "Fields",
-            CanRead = true,
-            CanCreate = false,
-            CanUpdate = false,
-            CanDelete = false,
-        });
-        await context.SaveChangesAsync();
-
-        var handler = new GetPermissionsHandler(context);
-        var result = await handler.Handle(new GetPermissionsQuery(viewerRoleId), CancellationToken.None);
-
-        result.Should().HaveCount(1);
-        var perm = result[0];
-        perm.CanRead.Should().BeTrue();
-        perm.CanCreate.Should().BeFalse();
-        perm.CanUpdate.Should().BeFalse();
-        perm.CanDelete.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task PermissionMatrix_QueryByRoleId_ReturnsOnlyThatRolesPermissions()
+    public async Task PermissionEntity_FiltersByRoleId()
     {
         var context = CreateDbContext();
         var adminRoleId = Guid.NewGuid();
@@ -224,10 +196,10 @@ public class UserHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new GetPermissionsHandler(context);
-
-        var adminPerms = await handler.Handle(new GetPermissionsQuery(adminRoleId), CancellationToken.None);
-        var operatorPerms = await handler.Handle(new GetPermissionsQuery(operatorRoleId), CancellationToken.None);
+        var adminPerms = await ((TestDbContext)context).Permissions
+            .Where(p => p.RoleId == adminRoleId).ToListAsync();
+        var operatorPerms = await ((TestDbContext)context).Permissions
+            .Where(p => p.RoleId == operatorRoleId).ToListAsync();
 
         adminPerms.Should().HaveCount(1).And.AllSatisfy(p => p.CanDelete.Should().BeTrue());
         operatorPerms.Should().HaveCount(1).And.AllSatisfy(p => p.CanDelete.Should().BeFalse());

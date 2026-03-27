@@ -15,8 +15,15 @@ export const getFieldNdvi = (fieldId: string, date?: string) =>
 
 export const getFieldNdviDates = (fieldId: string) =>
   apiClient
-    .get<string[]>(`/api/satellite/dates/${fieldId}`)
-    .then((r) => r.data);
+    .get<{ configured: boolean; dates: string[] } | string[]>(`/api/satellite/dates/${fieldId}`)
+    .then((r) => {
+      const data = r.data;
+      // Backend returns { configured, dates } — extract dates array
+      if (data && typeof data === 'object' && 'dates' in data) {
+        return (data as { dates: string[] }).dates;
+      }
+      return data as string[];
+    });
 
 export interface NdviDetectProblemRequest {
   date: string;

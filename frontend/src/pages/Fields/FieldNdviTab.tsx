@@ -174,6 +174,20 @@ export default function FieldNdviTab({ fieldId }: Props) {
     );
   }
 
+  // When Sentinel Hub is not configured, show degraded state instead of
+  // a functional-looking placeholder map.
+  if (!ndvi.configured) {
+    return (
+      <Alert
+        type="warning"
+        showIcon
+        message={t.fields.ndviNotConfiguredTitle}
+        description={t.fields.ndviNotConfiguredDescription}
+        style={{ margin: 16 }}
+      />
+    );
+  }
+
   // Leaflet expects [[minLat, minLon], [maxLat, maxLon]]
   const leafletBounds: LatLngBoundsExpression = [
     [ndvi.bounds[1], ndvi.bounds[0]],
@@ -182,16 +196,6 @@ export default function FieldNdviTab({ fieldId }: Props) {
 
   return (
     <div>
-      {!ndvi.configured && (
-        <Alert
-          type="warning"
-          showIcon
-          message={t.fields.ndviPlaceholderNote}
-          style={{ margin: '0 0 12px 0' }}
-          closable
-        />
-      )}
-
       {problemDetected && (
         <Alert
           type="error"

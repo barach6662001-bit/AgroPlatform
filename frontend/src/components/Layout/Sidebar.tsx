@@ -74,7 +74,6 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       ? [
           { key: '/settings/users' },
           { key: '/settings/audit' },
-          { key: '/admin/permissions' },
           { key: '/admin/api-keys' },
         ]
       : []),
@@ -137,7 +136,6 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
             children: [
               { key: '/settings/users', label: t.nav.users, style: { padding: '4px 8px' } },
               { key: '/settings/audit', label: t.nav.auditLog, style: { padding: '4px 8px' } },
-              { key: '/admin/permissions', label: t.nav.permissions, style: { padding: '4px 8px' } },
               { key: '/admin/api-keys', label: t.nav.apiKeys, style: { padding: '4px 8px' } },
             ],
           },

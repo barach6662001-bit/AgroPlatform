@@ -77,6 +77,10 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         db.Database.EnsureCreated();
 
+        // Re-run seeding after EnsureCreated (initial seeding in Program.cs
+        // runs before tables exist when using EnsureCreated instead of MigrateAsync)
+        DataSeeder.SeedAsync(host.Services).GetAwaiter().GetResult();
+
         db.Tenants.Add(new Tenant
         {
             Id = TenantId,
