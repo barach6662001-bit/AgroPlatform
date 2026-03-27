@@ -165,6 +165,8 @@ public class UserHandlerTests
         perm.Module.Should().Be("Economics");
         perm.CanRead.Should().BeTrue();
         perm.CanCreate.Should().BeTrue();
+        perm.CanUpdate.Should().BeTrue();
+        perm.CanDelete.Should().BeTrue();
     }
 
     [Fact]
