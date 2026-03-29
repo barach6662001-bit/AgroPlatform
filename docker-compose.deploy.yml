@@ -1,0 +1,9 @@
+# docker-compose.deploy.yml — uses pre-built images from GHCR
+services:
+  api:
+    image: ghcr.io/barach6662001-bit/agroplatform-api:latest
+    build: !reset null
+
+  frontend:
+    image: ghcr.io/barach6662001-bit/agroplatform-frontend:latest
+    build: !reset null

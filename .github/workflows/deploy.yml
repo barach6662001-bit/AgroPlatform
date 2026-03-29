@@ -1,62 +1,79 @@
 name: Deploy to Production
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Image tag to deploy (default: latest)'
-        required: false
-        default: 'latest'
+
+env:
+  REGISTRY: ghcr.io
+  API_IMAGE: ghcr.io/${{ github.repository_owner }}/agroplatform-api
+  FRONTEND_IMAGE: ghcr.io/${{ github.repository_owner }}/agroplatform-frontend
 
 jobs:
-  validate:
-    uses: ./.github/workflows/validate-secrets.yml
-    secrets: inherit
-    permissions: {}
-
-  deploy:
-    needs: validate
+  build-api:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    environment: production
+      packages: write
     steps:
       - uses: actions/checkout@v6
-
-      - name: Generate deployment .env
-        env:
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          JWT_KEY: ${{ secrets.JWT_KEY }}
-          DOMAIN: ${{ secrets.DOMAIN }}
-          EMAIL: ${{ secrets.EMAIL }}
-          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
-        run: |
-          cat > .env.production << EOF
-          POSTGRES_DB=agroplatform_db
-          POSTGRES_USER=agroplatform
-          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-          JWT_KEY=${JWT_KEY}
-          JWT_ISSUER=AgroPlatform
-          JWT_AUDIENCE=AgroPlatform
-          CORS_ORIGIN=${CORS_ORIGIN}
-          AUTO_MIGRATE=true
-          DOMAIN=${DOMAIN}
-          EMAIL=${EMAIL}
-          EOF
-
-          echo "✅ Production .env file generated"
-          echo ""
-          echo "=== Deployment Instructions ==="
-          echo "1. Copy .env.production to your server"
-          echo "2. Rename to .env"
-          echo "3. Run: docker compose -f docker-compose.yml -f docker-compose.prod.yml pull"
-          echo "4. Run: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d"
-          echo ""
-          echo "Image tag: ${{ github.event.inputs.version }}"
-
-      - name: Upload .env as artifact (encrypted)
-        uses: actions/upload-artifact@v7
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
         with:
-          name: production-env
-          path: .env.production
-          retention-days: 1
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push API
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: src/AgroPlatform.Api/Dockerfile
+          push: true
+          tags: |
+            ${{ env.API_IMAGE }}:latest
+            ${{ env.API_IMAGE }}:${{ github.sha }}
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v7
+        with:
+          context: ./frontend
+          file: frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.FRONTEND_IMAGE }}:latest
+            ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+
+  deploy:
+    needs: [build-api, build-frontend]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: root
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /opt/agroplatform
+            git pull origin main
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+            docker pull ghcr.io/${{ github.repository_owner }}/agroplatform-api:latest
+            docker pull ghcr.io/${{ github.repository_owner }}/agroplatform-frontend:latest
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.deploy.yml up -d
+            docker image prune -f
+            echo "Deployed: ${{ github.sha }}"
