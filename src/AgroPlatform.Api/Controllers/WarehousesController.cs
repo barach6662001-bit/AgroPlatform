@@ -122,16 +122,16 @@ public class WarehousesController : ControllerBase
     }
 
     /// <summary>Records a stock issue (outgoing dispatch) from a warehouse.</summary>
-    /// <param name="command">Issue data.</param>
+    /// <param name="command">Issue data. If BatchId is omitted, batches are auto-selected using FEFO/FIFO strategy.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>The ID of the created stock movement record.</returns>
+    /// <returns>Issue result with details of each batch deducted.</returns>
     [HttpPost("issue")]
     [Authorize(Policy = Permissions.Inventory.Manage)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> IssueStock([FromBody] IssueStockCommand command, CancellationToken cancellationToken)
     {
-        var id = await _sender.Send(command, cancellationToken);
-        return CreatedAtAction(nameof(GetWarehouses), new { }, new { id });
+        var result = await _sender.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetWarehouses), new { }, result);
     }
 
     /// <summary>Transfers stock between two warehouses.</summary>

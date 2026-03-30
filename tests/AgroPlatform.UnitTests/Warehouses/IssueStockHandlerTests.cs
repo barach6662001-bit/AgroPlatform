@@ -54,10 +54,11 @@ public class IssueStockHandlerTests
         var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null, null, null);
 
         // Act
-        var moveId = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        moveId.Should().NotBeEmpty();
+        result.IssuedBatches.Should().NotBeEmpty();
+        result.IssuedBatches[0].StockMoveId.Should().NotBeEmpty();
 
         var updatedBalance = await ((TestDbContext)context).StockBalances
             .FirstOrDefaultAsync(b => b.WarehouseId == warehouse.Id && b.ItemId == item.Id);
