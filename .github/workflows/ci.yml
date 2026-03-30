@@ -161,8 +161,17 @@ jobs:
       - name: Build Docker images
         run: docker compose build
 
-      - name: Start services
-        run: docker compose up -d
+      - name: Start postgres and API
+        run: |
+          docker compose up -d postgres
+          echo "Waiting for postgres to be healthy..."
+          for i in $(seq 1 12); do
+            STATUS=$(docker compose ps postgres --format '{{.Health}}' 2>/dev/null || echo "unknown")
+            if [ "$STATUS" = "healthy" ]; then echo "✅ Postgres healthy"; break; fi
+            if [ "$i" -eq 12 ]; then echo "::error::Postgres failed to become healthy"; exit 1; fi
+            sleep 5
+          done
+          docker compose up -d --no-deps api
 
       - name: Wait for API health check
         run: |
@@ -176,6 +185,13 @@ jobs:
             fi
             if [ "$i" -eq 30 ]; then
               echo "::error::API failed to become healthy within 5 minutes"
+              docker compose logs api
+              exit 1
+            fi
+            # Show API logs if container is not running at all
+            RUNNING=$(docker compose ps api --format '{{.State}}' 2>/dev/null || echo "unknown")
+            if [ "$RUNNING" != "running" ] && [ "$RUNNING" != "unknown" ]; then
+              echo "::error::API container is not running (state=$RUNNING), dumping logs:"
               docker compose logs api
               exit 1
             fi
@@ -195,6 +211,8 @@ jobs:
 
       - name: Verify frontend responds
         run: |
+          docker compose up -d --no-deps frontend || true
+          sleep 5
           FRONTEND_STATUS=$(docker compose ps frontend --format '{{.Status}}' 2>/dev/null || echo "unknown")
           echo "Frontend status: $FRONTEND_STATUS"
           if echo "$FRONTEND_STATUS" | grep -qi "up"; then
