@@ -72,6 +72,7 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
     public DbSet<FuelTank> FuelTanks => Set<FuelTank>();
     public DbSet<FuelTransaction> FuelTransactions => Set<FuelTransaction>();
+    public DbSet<FuelNorm> FuelNorms => Set<FuelNorm>();
     public DbSet<GrainStorageEntities.GrainStorage> GrainStorages => Set<GrainStorageEntities.GrainStorage>();
     public DbSet<GrainStorageEntities.GrainType> GrainTypes => Set<GrainStorageEntities.GrainType>();
     public DbSet<GrainStorageEntities.GrainBatch> GrainBatches => Set<GrainStorageEntities.GrainBatch>();

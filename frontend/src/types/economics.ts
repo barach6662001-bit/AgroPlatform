@@ -7,9 +7,17 @@ export interface FieldPnlDto {
   costsByCategory: Record<string, number>;
   costPerHectare: number;
   actualYieldPerHectare?: number;
+  actualYieldTons?: number;
+  /** Direct revenue from Sales table (preferred). */
+  actualSalesRevenue: number;
+  /** Revenue from CostRecords with negative Amount (legacy). */
+  actualCostRecordRevenue: number;
+  /** Best available revenue: Sales > CostRecords > Estimated. */
   estimatedRevenue?: number;
   netProfit?: number;
   revenuePerHectare?: number;
+  /** "Sales" | "CostRecords" | "Estimated" | "None" */
+  revenueSource: string;
 }
 
 export interface BreakEvenDto {

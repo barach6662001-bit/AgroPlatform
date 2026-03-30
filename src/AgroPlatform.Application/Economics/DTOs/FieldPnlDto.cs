@@ -17,16 +17,35 @@ public class FieldPnlDto
     /// <summary>Cost per hectare (TotalCosts / AreaHectares).</summary>
     public decimal CostPerHectare { get; set; }
 
-    /// <summary>Actual yield (t/ha) from FieldCropHistory for the requested year (null if not recorded).</summary>
+    /// <summary>Actual yield (t/ha) from FieldHarvests/FieldCropHistory for the requested year.</summary>
     public decimal? ActualYieldPerHectare { get; set; }
 
-    /// <summary>Estimated revenue = ActualYieldPerHectare * AreaHectares * EstimatedPricePerTonne.
-    /// Null if yield data missing or price not provided.</summary>
+    /// <summary>Total yield in tonnes for the year (YieldPerHa × AreaHa).</summary>
+    public decimal? ActualYieldTons { get; set; }
+
+    /// <summary>
+    /// Direct revenue from the Sales table where Sale.FieldId matches this field and Sale.Date is in the year.
+    /// This is real, booked revenue — preferred over estimates.
+    /// </summary>
+    public decimal ActualSalesRevenue { get; set; }
+
+    /// <summary>
+    /// Revenue captured via CostRecords with negative Amount (legacy revenue records).
+    /// </summary>
+    public decimal ActualCostRecordRevenue { get; set; }
+
+    /// <summary>
+    /// Best available revenue: ActualSalesRevenue if > 0, else ActualCostRecordRevenue if > 0,
+    /// else EstimatedRevenue (yield × price). Null if no revenue data.
+    /// </summary>
     public decimal? EstimatedRevenue { get; set; }
 
-    /// <summary>Estimated net profit = EstimatedRevenue - TotalCosts. Null if revenue unknown.</summary>
+    /// <summary>Net profit = BestRevenue - TotalCosts. Null if revenue unknown.</summary>
     public decimal? NetProfit { get; set; }
 
-    /// <summary>Revenue per hectare = EstimatedRevenue / AreaHectares. Null if revenue unknown.</summary>
+    /// <summary>Revenue per hectare. Null if revenue unknown.</summary>
     public decimal? RevenuePerHectare { get; set; }
+
+    /// <summary>Source of the revenue figure: "Sales", "CostRecords", "Estimated", or "None".</summary>
+    public string RevenueSource { get; set; } = "None";
 }

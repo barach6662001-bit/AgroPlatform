@@ -42,14 +42,14 @@ export default function FieldPnl() {
     return best;
   }, null);
 
-  const fieldsWithMargin = data.filter((d) => d.estimatedRevenue != null && d.estimatedRevenue > 0);
+  const fieldsWithRevenue = data.filter((d) => d.estimatedRevenue != null && d.estimatedRevenue > 0);
   const avgMargin =
-    fieldsWithMargin.length === 0
+    fieldsWithRevenue.length === 0
       ? null
-      : fieldsWithMargin.reduce((s, d) => {
+      : fieldsWithRevenue.reduce((s, d) => {
           const m = ((d.netProfit ?? 0) / (d.estimatedRevenue ?? 1)) * 100;
           return s + m;
-        }, 0) / fieldsWithMargin.length;
+        }, 0) / fieldsWithRevenue.length;
 
   const chartData = data.map((d) => ({
     name: d.fieldName,
@@ -102,13 +102,13 @@ export default function FieldPnl() {
     },
     {
       title: t.economics.revenue,
-      dataIndex: 'estimatedRevenue',
-      key: 'estimatedRevenue',
+      key: 'revenue',
       sorter: (a: FieldPnlDto, b: FieldPnlDto) =>
         (a.estimatedRevenue ?? -1) - (b.estimatedRevenue ?? -1),
-      render: (v: number | undefined) => {
-        if (v == null) return <span style={{ color: '#8B949E' }}>—</span>;
-        if (pricePerTonne) {
+      render: (_: unknown, r: FieldPnlDto) => {
+        const v = r.estimatedRevenue;
+        if (v == null || v === 0) return <span style={{ color: '#8B949E' }}>—</span>;
+        if (r.revenueSource === 'Estimated') {
           return (
             <span>
               <span style={{ color: '#8B949E', fontSize: 11, marginRight: 4 }}>{t.economics.estimatedRevenueLabel}</span>
@@ -140,7 +140,7 @@ export default function FieldPnl() {
       title: t.economics.margin,
       key: 'margin',
       render: (_: unknown, r: FieldPnlDto) => {
-        if (r.estimatedRevenue == null || r.estimatedRevenue === 0)
+        if (r.estimatedRevenue == null || r.estimatedRevenue === 0 || r.revenueSource === 'None')
           return <span style={{ color: '#8B949E' }}>—</span>;
         const margin = ((r.netProfit ?? 0) / r.estimatedRevenue) * 100;
         const color = margin >= 0 ? '#3fb950' : '#f85149';

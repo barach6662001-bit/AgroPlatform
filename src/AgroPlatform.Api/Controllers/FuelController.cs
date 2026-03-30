@@ -1,6 +1,9 @@
 using AgroPlatform.Application.Fuel.Commands.CreateFuelIssue;
 using AgroPlatform.Application.Fuel.Commands.CreateFuelSupply;
 using AgroPlatform.Application.Fuel.Commands.CreateFuelTank;
+using AgroPlatform.Application.Fuel.Commands.UpsertFuelNorm;
+using AgroPlatform.Application.Fuel.Queries.GetFuelConsumptionComparison;
+using AgroPlatform.Application.Fuel.Queries.GetFuelNorms;
 using AgroPlatform.Application.Fuel.Queries.GetFuelTanks;
 using AgroPlatform.Application.Fuel.Queries.GetFuelTransactions;
 using AgroPlatform.Domain.Authorization;
@@ -81,6 +84,38 @@ public class FuelController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var result = await _sender.Send(new GetFuelTransactionsQuery(tankId, dateFrom, dateTo, machineId, page, pageSize), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns all configured fuel consumption norms.</summary>
+    [HttpGet("norms")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFuelNorms(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetFuelNormsQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates or updates the fuel norm for a machine-type × operation-type combination.</summary>
+    [HttpPut("norms")]
+    [Authorize(Policy = Permissions.Fuel.Manage)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpsertFuelNorm([FromBody] UpsertFuelNormCommand command, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(command, cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Compares actual fuel consumption against configured norms for a given period.</summary>
+    [HttpGet("consumption-comparison")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetConsumptionComparison(
+        [FromQuery] DateTime? dateFrom,
+        [FromQuery] DateTime? dateTo,
+        [FromQuery] Guid? fieldId,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new GetFuelConsumptionComparisonQuery(dateFrom, dateTo, fieldId), cancellationToken);
         return Ok(result);
     }
 }
