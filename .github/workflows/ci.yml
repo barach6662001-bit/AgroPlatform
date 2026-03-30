@@ -213,7 +213,10 @@ jobs:
 
       - name: Verify API responds
         run: |
-          HTTP_CODE=$(docker compose exec api wget -qO- -S http://localhost:8080/health/live 2>&1 | grep "HTTP/" | tail -1 | awk '{print $2}')
+          HTTP_CODE=$(docker compose exec api wget -qO- -S http://localhost:8080/health/live 2>&1 | grep -oP 'HTTP/\S+\s+\K\d{3}' | tail -1)
+          if [ -z "$HTTP_CODE" ]; then
+            HTTP_CODE=$(docker compose exec api wget --spider -S http://localhost:8080/health/live 2>&1 | grep -oP '\d{3}' | head -1)
+          fi
           echo "Health endpoint returned: $HTTP_CODE"
           if [ "$HTTP_CODE" != "200" ]; then
             echo "::error::Health endpoint returned $HTTP_CODE instead of 200"

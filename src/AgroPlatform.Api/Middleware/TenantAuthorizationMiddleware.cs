@@ -20,10 +20,12 @@ namespace AgroPlatform.Api.Middleware;
 public class TenantAuthorizationMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<TenantAuthorizationMiddleware> _logger;
 
-    public TenantAuthorizationMiddleware(RequestDelegate next)
+    public TenantAuthorizationMiddleware(RequestDelegate next, ILogger<TenantAuthorizationMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -39,7 +41,19 @@ public class TenantAuthorizationMiddleware
                 var roleClaim = user.FindFirstValue(ClaimTypes.Role);
                 var isAdmin = roleClaim is "Administrator" or "Admin";
 
-                if (!isAdmin)
+                if (isAdmin)
+                {
+                    // Admins bypass tenant cross-check but should still have a tenant context
+                    // for write operations to prevent accidentally operating without tenant scope.
+                    if (!context.Items.ContainsKey("TenantId") || context.Items["TenantId"] is not Guid)
+                    {
+                        _logger.LogWarning(
+                            "Admin request to {Path} is proceeding without a resolved TenantId in context. " +
+                            "Ensure X-Tenant-Id header is provided for tenant-scoped operations.",
+                            context.Request.Path);
+                    }
+                }
+                else
                 {
                     var jwtTenantIdStr = user.FindFirstValue("TenantId");
 

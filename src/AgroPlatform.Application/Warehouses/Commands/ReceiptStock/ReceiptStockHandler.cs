@@ -93,7 +93,15 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
 
         await _stockBalance.IncreaseBalance(request.WarehouseId, request.ItemId, batchId, request.Quantity, request.UnitCode, cancellationToken);
 
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("A concurrent update was detected on the stock balance. Please retry the operation.");
+        }
+
         if (tx is not null)
         {
             await tx.CommitAsync(cancellationToken);
