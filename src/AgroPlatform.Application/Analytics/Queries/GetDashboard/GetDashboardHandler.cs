@@ -80,8 +80,20 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
 
         // ── Economics ─────────────────────────────────────────────────────
         var cutoff = DateTime.UtcNow.AddMonths(-12);
+        var now = DateTime.UtcNow;
+        var monthStart = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var monthEnd = monthStart.AddMonths(1);
 
         dto.TotalCosts = await _context.CostRecords.SumAsync(c => c.Amount, cancellationToken);
+        dto.TotalRevenue = await _context.Sales.SumAsync(s => (decimal?)s.TotalAmount, cancellationToken) ?? 0m;
+        dto.MonthlyExpenses = await _context.CostRecords
+            .Where(c => c.Amount > 0 && c.Date >= monthStart && c.Date < monthEnd)
+            .SumAsync(c => (decimal?)c.Amount, cancellationToken) ?? 0m;
+        dto.MonthlyRevenue = await _context.Sales
+            .Where(s => s.Date >= monthStart && s.Date < monthEnd)
+            .SumAsync(s => (decimal?)s.TotalAmount, cancellationToken) ?? 0m;
+        dto.MonthlyProfit = dto.MonthlyRevenue - dto.MonthlyExpenses;
+
         dto.CostsByCategory = (await _context.CostRecords
             .GroupBy(c => c.Category)
             .Select(g => new { Category = g.Key, Total = g.Sum(c => c.Amount) })
