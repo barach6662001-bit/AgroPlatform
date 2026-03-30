@@ -72,6 +72,10 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
 
+    // Global reference data — no tenant query filter applied
+    public DbSet<UnitOfMeasure> UnitsOfMeasure => Set<UnitOfMeasure>();
+    public DbSet<UnitConversionRule> UnitConversionRules => Set<UnitConversionRule>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

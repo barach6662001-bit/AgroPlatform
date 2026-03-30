@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         services.AddScoped<IStockBalanceService, StockBalanceService>();
+        services.AddScoped<IUnitConversionService, UnitConversionService>();
 
         return services;
     }
