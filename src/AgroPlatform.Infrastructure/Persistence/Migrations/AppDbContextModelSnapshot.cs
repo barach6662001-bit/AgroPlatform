@@ -2609,6 +2609,25 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Authorization.RolePermission", b =>
+                {
+                    b.Property<string>("RoleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PolicyName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsGranted")
+                        .HasDefaultValue(true)
+                        .HasColumnType("boolean");
+
+                    b.HasKey("RoleName", "PolicyName");
+
+                    b.ToTable("RolePermissions");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Users.Permission", b =>
                 {
                     b.Property<Guid>("Id")
