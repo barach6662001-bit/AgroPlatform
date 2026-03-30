@@ -50,8 +50,7 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
         var warehouse = await _context.Warehouses.FindAsync(new object[] { request.WarehouseId }, cancellationToken)
             ?? throw new NotFoundException(nameof(Warehouse), request.WarehouseId);
 
-        if (!warehouse.IsActive)
-            throw new ConflictException($"Warehouse '{warehouse.Name}' is not active.");
+        warehouse.EnsureActive();
 
         var item = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);
