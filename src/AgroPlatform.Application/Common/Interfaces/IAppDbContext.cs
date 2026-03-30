@@ -71,6 +71,13 @@ public interface IAppDbContext
     // Immutable stock ledger
     DbSet<StockLedgerEntry> StockLedgerEntries { get; }
 
+    // Item categories reference
+    DbSet<ItemCategory> ItemCategories { get; }
+
+    // Inventory sessions
+    DbSet<InventorySession> InventorySessions { get; }
+    DbSet<InventorySessionLine> InventorySessionLines { get; }
+
     // Global reference data — not tenant-scoped
     DbSet<UnitOfMeasure> UnitsOfMeasure { get; }
     DbSet<UnitConversionRule> UnitConversionRules { get; }

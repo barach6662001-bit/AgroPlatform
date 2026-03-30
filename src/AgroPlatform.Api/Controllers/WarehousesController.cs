@@ -1,11 +1,13 @@
 using AgroPlatform.Application.Warehouses.Commands.CreateWarehouse;
 using AgroPlatform.Application.Warehouses.Commands.CreateWarehouseItem;
+using AgroPlatform.Application.Warehouses.Commands.CreateItemCategory;
 using AgroPlatform.Application.Warehouses.Commands.InventoryAdjust;
 using AgroPlatform.Application.Warehouses.Commands.UpdateWarehouseItem;
 using AgroPlatform.Application.Warehouses.Commands.IssueStock;
 using AgroPlatform.Application.Warehouses.Commands.ReceiptStock;
 using AgroPlatform.Application.Warehouses.Commands.TransferStock;
 using AgroPlatform.Application.Warehouses.Queries.GetBalance;
+using AgroPlatform.Application.Warehouses.Queries.GetItemCategories;
 using AgroPlatform.Application.Warehouses.Queries.GetMoveHistory;
 using AgroPlatform.Application.Warehouses.Queries.GetWarehouses;
 using AgroPlatform.Application.Warehouses.Queries.GetWarehouseItems;
@@ -208,5 +210,24 @@ public class WarehousesController : ControllerBase
     {
         var result = await _sender.Send(new ExportBalancesQuery(warehouseId), cancellationToken);
         return File(result.Content, result.ContentType, result.FileName);
+    }
+
+    /// <summary>Returns all item categories for the current tenant.</summary>
+    [HttpGet("item-categories")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetItemCategories(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetItemCategoriesQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Creates a new item category.</summary>
+    [HttpPost("item-categories")]
+    [Authorize(Policy = Permissions.Warehouses.Manage)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateItemCategory([FromBody] CreateItemCategoryCommand command, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetItemCategories), new { }, new { id });
     }
 }

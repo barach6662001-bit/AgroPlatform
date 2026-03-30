@@ -88,6 +88,7 @@ public static class DataSeeder
         var logger       = scope.ServiceProvider.GetRequiredService<ILogger<AppDbContext>>();
         await SeedGrainTypesAsync(context, logger);
         await SeedRolePermissionsAsync(context, logger);
+        await SeedItemCategoriesAsync(context, logger);
         await SeedDemoAsync(scope.ServiceProvider, context, logger);
     }
 
@@ -180,6 +181,37 @@ public static class DataSeeder
         catch (Exception ex)
         {
             logger.LogError(ex, "Error seeding role permissions.");
+        }
+    }
+
+    private static async Task SeedItemCategoriesAsync(AppDbContext context, ILogger logger)
+    {
+        try
+        {
+            if (await context.ItemCategories.IgnoreQueryFilters().AnyAsync())
+                return;
+
+            logger.LogInformation("Seeding default item categories…");
+
+            var now = DateTime.UtcNow;
+            var categories = new[]
+            {
+                new Domain.Warehouses.ItemCategory { Name = "Насіння",  Code = "Seeds",       TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "Добрива",  Code = "Fertilizers", TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "ЗЗР",      Code = "Pesticides",  TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "ПММ",      Code = "Fuel",        TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "Запчастини", Code = "SpareParts", TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "Хімікати", Code = "Chemicals",   TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "Інше",     Code = "Other",       TenantId = DemoTenantId, CreatedAtUtc = now },
+            };
+
+            context.ItemCategories.AddRange(categories);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded {Count} item categories.", categories.Length);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error seeding item categories.");
         }
     }
 

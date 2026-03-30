@@ -31,5 +31,10 @@ public class WarehouseItemConfiguration : IEntityTypeConfiguration<WarehouseItem
 
         builder.Property(i => i.PurchasePrice)
             .HasPrecision(18, 4);
+
+        builder.HasOne(i => i.ItemCategory)
+            .WithMany(c => c.Items)
+            .HasForeignKey(i => i.CategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

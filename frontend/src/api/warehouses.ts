@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import type { WarehouseDto, WarehouseItemDto, BalanceDto, StockMoveDto } from '../types/warehouse';
+import type { WarehouseDto, WarehouseItemDto, BalanceDto, StockMoveDto, ItemCategoryDto, InventorySessionDto, InventorySessionDetailDto } from '../types/warehouse';
 import type { PaginatedResult } from '../types/common';
 
 export const getWarehouses = (params?: { page?: number; pageSize?: number; type?: number }) =>
@@ -71,3 +71,30 @@ export const getStockMovements = (params?: {
   pageSize?: number;
 }) =>
   apiClient.get<PaginatedResult<StockMoveDto>>('/api/warehouses/moves', { params }).then((r) => r.data);
+
+export const getItemCategories = () =>
+  apiClient.get<ItemCategoryDto[]>('/api/warehouses/item-categories').then((r) => r.data);
+
+export const createItemCategory = (data: { name: string; code?: string; parentId?: string }) =>
+  apiClient.post<{ id: string }>('/api/warehouses/item-categories', data).then((r) => r.data);
+
+export const getInventorySessions = (params?: { warehouseId?: string; page?: number; pageSize?: number }) =>
+  apiClient.get<PaginatedResult<InventorySessionDto>>('/api/inventory-sessions', { params }).then((r) => r.data);
+
+export const getInventorySessionById = (id: string) =>
+  apiClient.get<InventorySessionDetailDto>(`/api/inventory-sessions/${id}`).then((r) => r.data);
+
+export const startInventorySession = (data: { warehouseId: string; notes?: string }) =>
+  apiClient.post<{ id: string }>('/api/inventory-sessions', data).then((r) => r.data);
+
+export const recordInventoryCount = (sessionId: string, data: { itemId: string; batchId?: string; actualQuantity: number; note?: string }) =>
+  apiClient.post<void>(`/api/inventory-sessions/${sessionId}/count`, data).then((r) => r.data);
+
+export const submitInventorySession = (id: string) =>
+  apiClient.post<void>(`/api/inventory-sessions/${id}/submit`).then((r) => r.data);
+
+export const approveInventorySession = (id: string) =>
+  apiClient.post<void>(`/api/inventory-sessions/${id}/approve`).then((r) => r.data);
+
+export const completeInventorySession = (id: string) =>
+  apiClient.post<void>(`/api/inventory-sessions/${id}/complete`).then((r) => r.data);
