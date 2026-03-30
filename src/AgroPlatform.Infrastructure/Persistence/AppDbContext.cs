@@ -77,6 +77,13 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     // Immutable stock ledger
     public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
 
+    // Item categories
+    public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
+
+    // Inventory sessions
+    public DbSet<InventorySession> InventorySessions => Set<InventorySession>();
+    public DbSet<InventorySessionLine> InventorySessionLines => Set<InventorySessionLine>();
+
     // Global reference data — no tenant query filter applied
     public DbSet<UnitOfMeasure> UnitsOfMeasure => Set<UnitOfMeasure>();
     public DbSet<UnitConversionRule> UnitConversionRules => Set<UnitConversionRule>();
@@ -133,5 +140,8 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<AuditEntry>().HasQueryFilter(a => a.TenantId == _tenantId);
         builder.Entity<ApiKey>().HasQueryFilter(k => !k.IsDeleted && k.TenantId == _tenantId);
         builder.Entity<StockLedgerEntry>().HasQueryFilter(e => e.TenantId == _tenantId);
+        builder.Entity<ItemCategory>().HasQueryFilter(c => !c.IsDeleted && c.TenantId == _tenantId);
+        builder.Entity<InventorySession>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
+        builder.Entity<InventorySessionLine>().HasQueryFilter(l => !l.IsDeleted && l.TenantId == _tenantId);
     }
 }

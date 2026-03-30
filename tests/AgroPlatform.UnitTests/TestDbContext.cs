@@ -88,6 +88,9 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
     public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
+    public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
+    public DbSet<InventorySession> InventorySessions => Set<InventorySession>();
+    public DbSet<InventorySessionLine> InventorySessionLines => Set<InventorySessionLine>();
     public DbSet<UnitOfMeasure> UnitsOfMeasure => Set<UnitOfMeasure>();
     public DbSet<UnitConversionRule> UnitConversionRules => Set<UnitConversionRule>();
 }

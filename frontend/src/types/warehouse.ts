@@ -6,6 +6,42 @@ export interface WarehouseDto {
   type: number;
 }
 
+export interface ItemCategoryDto {
+  id: string;
+  name: string;
+  code?: string;
+  parentId?: string;
+}
+
+export interface InventorySessionDto {
+  id: string;
+  warehouseId: string;
+  warehouseName: string;
+  status: number;
+  notes?: string;
+  createdAtUtc: string;
+  completedAtUtc?: string;
+  totalLines: number;
+  countedLines: number;
+}
+
+export interface InventorySessionLineDto {
+  id: string;
+  itemId: string;
+  itemName: string;
+  itemCode: string;
+  batchId?: string;
+  expectedQuantityBase: number;
+  actualQuantityBase?: number;
+  baseUnit: string;
+  isCountRecorded: boolean;
+  note?: string;
+}
+
+export interface InventorySessionDetailDto extends InventorySessionDto {
+  lines: InventorySessionLineDto[];
+}
+
 export interface WarehouseItemDto {
   id: string;
   name: string;

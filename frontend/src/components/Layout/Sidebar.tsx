@@ -27,6 +27,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/warehouses', label: t.nav.warehouses, style: { padding: '4px 8px' } },
     { key: '/warehouses/items', label: t.nav.materials, style: { padding: '4px 8px' } },
     { key: '/warehouses/movements', label: t.nav.movements, style: { padding: '4px 8px' } },
+    { key: '/warehouses/inventory', label: t.nav.inventory, style: { padding: '4px 8px' } },
   ];
 
   const financeChildren = [
