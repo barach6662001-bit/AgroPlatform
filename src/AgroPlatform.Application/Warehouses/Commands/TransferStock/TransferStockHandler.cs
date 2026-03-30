@@ -94,7 +94,15 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
         await _stockBalance.DecreaseBalance(request.SourceWarehouseId, request.ItemId, request.BatchId, request.Quantity, cancellationToken);
         await _stockBalance.IncreaseBalance(request.DestinationWarehouseId, request.ItemId, request.BatchId, request.Quantity, request.UnitCode, cancellationToken);
 
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("A concurrent update was detected on the stock balance. Please retry the operation.");
+        }
+
         if (tx is not null)
         {
             await tx.CommitAsync(cancellationToken);

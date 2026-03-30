@@ -70,7 +70,15 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
 
         await _stockBalance.SetBalance(request.WarehouseId, request.ItemId, request.BatchId, request.ActualQuantity, request.UnitCode, cancellationToken);
 
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("A concurrent update was detected on the stock balance. Please retry the operation.");
+        }
+
         if (tx is not null)
         {
             await tx.CommitAsync(cancellationToken);
