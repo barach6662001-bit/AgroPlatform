@@ -27,6 +27,10 @@ public class DashboardDto
 
     // Economics summary
     public decimal TotalCosts { get; set; }
+    public decimal TotalRevenue { get; set; }
+    public decimal MonthlyExpenses { get; set; }
+    public decimal MonthlyRevenue { get; set; }
+    public decimal MonthlyProfit { get; set; }
     public Dictionary<string, decimal> CostsByCategory { get; set; } = new();
     public List<MonthlyCostTrendDto> CostTrend { get; set; } = new();
 }

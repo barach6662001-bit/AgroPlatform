@@ -30,7 +30,7 @@ services:
         condition: service_healthy
     environment:
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-agroplatform_db};Username=${POSTGRES_USER:-agroplatform};Password=${POSTGRES_PASSWORD:-agroplatform_dev}"
-      JwtSettings__Key: "${JWT_KEY:-change-me-super-secret-key-minimum-32-characters!!}"
+      JwtSettings__Key: "${JWT_KEY}"
       JwtSettings__Issuer: "${JWT_ISSUER:-AgroPlatform}"
       JwtSettings__Audience: "${JWT_AUDIENCE:-AgroPlatform}"
       Cors__AllowedOrigins__0: "${CORS_ORIGIN:-http://localhost:3000}"

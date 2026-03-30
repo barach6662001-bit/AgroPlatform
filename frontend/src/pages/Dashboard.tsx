@@ -65,14 +65,9 @@ export default function Dashboard() {
   }));
 
   // ── Monthly KPIs ──────────────────────────────────────────────────────────
-  const now = dayjs();
-  const currentMonthTrend = data.costTrend.find(
-    (tr) => tr.year === now.year() && tr.month === now.month() + 1,
-  );
-  const monthlyExpenses = currentMonthTrend?.totalAmount ?? 0;
-  // Revenue model not yet implemented; placeholder until a revenue entity is added.
-  const monthlyRevenue = 0;
-  const monthlyProfit = monthlyRevenue - monthlyExpenses;
+  const monthlyExpenses = data.monthlyExpenses;
+  const monthlyRevenue = data.monthlyRevenue;
+  const monthlyProfit = data.monthlyProfit;
 
   // ── Notification icon ─────────────────────────────────────────────────────
   const notifIcon = (type: string) => {

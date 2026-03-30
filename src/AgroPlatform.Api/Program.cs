@@ -34,6 +34,33 @@ try
     builder.Host.UseSerilog((context, services, configuration) =>
         configuration.ReadFrom.Configuration(context.Configuration));
 
+    // ── JWT key fail-fast validation ──────────────────────────────────────────
+    // In non-Development environments the application refuses to start without a
+    // properly configured JWT signing key.  In Development a warning is emitted
+    // so local dev workflows are not blocked, but the insecure default is flagged.
+    var jwtKeyForValidation = builder.Configuration["JwtSettings:Key"];
+    const string insecureDefaultKey = "change-me-super-secret-key-minimum-32-characters!!";
+    var jwtKeyIsInsecure = string.IsNullOrWhiteSpace(jwtKeyForValidation)
+        || jwtKeyForValidation.Equals(insecureDefaultKey, StringComparison.Ordinal)
+        || jwtKeyForValidation.Length < 32;
+
+    if (jwtKeyIsInsecure)
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            Log.Warning(
+                "SECURITY WARNING: JwtSettings:Key is missing or uses the insecure default value. " +
+                "Set a strong random secret of at least 32 characters before deploying to production.");
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                "JwtSettings:Key is not configured or uses the insecure default value. " +
+                "The application cannot start in a non-Development environment without a secure JWT signing key. " +
+                "Set the JWT_KEY environment variable to a strong random secret of at least 32 characters.");
+        }
+    }
+
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
         {

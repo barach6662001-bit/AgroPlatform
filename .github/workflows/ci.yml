@@ -196,6 +196,13 @@ jobs:
               docker compose logs api
               exit 1
             fi
+            # Show API logs if container is not running at all
+            RUNNING=$(docker compose ps api --format '{{.State}}' 2>/dev/null || echo "unknown")
+            if [ "$RUNNING" != "running" ] && [ "$RUNNING" != "unknown" ]; then
+              echo "::error::API container is not running (state=$RUNNING), dumping logs:"
+              docker compose logs api
+              exit 1
+            fi
             sleep 10
           done
 
@@ -212,6 +219,8 @@ jobs:
 
       - name: Verify frontend responds
         run: |
+          docker compose up -d --no-deps frontend || true
+          sleep 5
           FRONTEND_STATUS=$(docker compose ps frontend --format '{{.Status}}' 2>/dev/null || echo "unknown")
           echo "Frontend status: $FRONTEND_STATUS"
           if echo "$FRONTEND_STATUS" | grep -qi "up"; then

@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Exceptions;
+using AgroPlatform.Application.Common.Extensions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.GrainStorage;
@@ -18,6 +19,9 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
 
     public async Task<Guid> Handle(TransferGrainCommand request, CancellationToken cancellationToken)
     {
+        await using var tx = await _context.Database
+            .BeginRepeatableReadTransactionIfSupportedAsync(cancellationToken);
+
         var source = await _context.GrainBatches
             .Include(b => b.Placements)
             .FirstOrDefaultAsync(b => b.Id == request.SourceBatchId, cancellationToken)
@@ -92,6 +96,9 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (tx is not null)
+            await tx.CommitAsync(cancellationToken);
 
         return operationId;
     }
