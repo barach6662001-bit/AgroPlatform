@@ -14,12 +14,18 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
     private readonly IAppDbContext _context;
     private readonly IDateTimeService _dateTime;
     private readonly IStockBalanceService _stockBalance;
+    private readonly IUnitConversionService _unitConversion;
 
-    public IssueStockHandler(IAppDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance)
+    public IssueStockHandler(
+        IAppDbContext context,
+        IDateTimeService dateTime,
+        IStockBalanceService stockBalance,
+        IUnitConversionService unitConversion)
     {
         _context = context;
         _dateTime = dateTime;
         _stockBalance = stockBalance;
+        _unitConversion = unitConversion;
     }
 
     public async Task<Guid> Handle(IssueStockCommand request, CancellationToken cancellationToken)
@@ -51,6 +57,10 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
         var item = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);
 
+        // Convert requested quantity to item's base unit for balance accounting.
+        var quantityBase = await _unitConversion.ConvertAsync(
+            request.Quantity, request.UnitCode, item.BaseUnit, cancellationToken);
+
         var totalCost = item.PurchasePrice.HasValue
             ? item.PurchasePrice.Value * request.Quantity
             : (decimal?)null;
@@ -61,9 +71,9 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
             ItemId = request.ItemId,
             BatchId = request.BatchId,
             MoveType = StockMoveType.Issue,
-            Quantity = request.Quantity,
-            UnitCode = request.UnitCode,
-            QuantityBase = request.Quantity,
+            Quantity = request.Quantity,   // original requested quantity
+            UnitCode = request.UnitCode,   // original requested unit
+            QuantityBase = quantityBase,   // converted to item base unit
             Note = request.Note,
             ClientOperationId = request.ClientOperationId,
             TotalCost = totalCost
@@ -71,7 +81,7 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
 
         _context.StockMoves.Add(move);
 
-        await _stockBalance.DecreaseBalance(request.WarehouseId, request.ItemId, request.BatchId, request.Quantity, cancellationToken);
+        await _stockBalance.DecreaseBalance(request.WarehouseId, request.ItemId, request.BatchId, quantityBase, cancellationToken);
 
         // Auto-create cost record for manual stock issue
         if (totalCost.HasValue && totalCost.Value > 0)

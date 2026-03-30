@@ -3041,6 +3041,57 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("WarehouseItems");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.UnitOfMeasure", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("UnitsOfMeasure");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.UnitConversionRule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Factor")
+                        .HasPrecision(22, 10)
+                        .HasColumnType("numeric(22,10)");
+
+                    b.Property<string>("FromUnit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ToUnit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ToUnit");
+
+                    b.HasIndex("FromUnit", "ToUnit")
+                        .IsUnique();
+
+                    b.ToTable("UnitConversionRules");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -3624,6 +3675,25 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Warehouse");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.UnitConversionRule", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Warehouses.UnitOfMeasure", "From")
+                        .WithMany("FromRules")
+                        .HasForeignKey("FromUnit")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AgroPlatform.Domain.Warehouses.UnitOfMeasure", "To")
+                        .WithMany("ToRules")
+                        .HasForeignKey("ToUnit")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("From");
+
+                    b.Navigation("To");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -3750,6 +3820,13 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Balances");
 
                     b.Navigation("StockMoves");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.UnitOfMeasure", b =>
+                {
+                    b.Navigation("FromRules");
+
+                    b.Navigation("ToRules");
                 });
 #pragma warning restore 612, 618
         }

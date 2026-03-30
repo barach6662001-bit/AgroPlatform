@@ -12,7 +12,7 @@ namespace AgroPlatform.UnitTests.Warehouses;
 
 public class InventoryAdjustHandlerTests
 {
-    private static (TestDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance) CreateDependencies()
+    private static (TestDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance, IUnitConversionService unitConversion) CreateDependencies()
     {
         var options = new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -21,14 +21,17 @@ public class InventoryAdjustHandlerTests
         var dateTime = Substitute.For<IDateTimeService>();
         dateTime.UtcNow.Returns(DateTime.UtcNow);
         var stockBalance = new StockBalanceService(context, dateTime);
-        return (context, dateTime, stockBalance);
+        var unitConversion = Substitute.For<IUnitConversionService>();
+        unitConversion.ConvertAsync(Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.ArgAt<decimal>(0));
+        return (context, dateTime, stockBalance, unitConversion);
     }
 
     [Fact]
     public async Task InventoryAdjust_PositiveDifference_CreatesInventoryPlusMoveAndUpdatesBalance()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
         var warehouse = new Warehouse { Name = "Main", IsActive = true };
         var item = new WarehouseItem { Name = "Wheat", Code = "INV001", Category = "Grain", BaseUnit = "kg" };
@@ -45,7 +48,7 @@ public class InventoryAdjustHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance);
+        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion);
         var command = new InventoryAdjustCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null);
 
         // Act
@@ -57,7 +60,8 @@ public class InventoryAdjustHandlerTests
 
         var move = await context.StockMoves.FindAsync(result.MoveId!.Value);
         move!.MoveType.Should().Be(StockMoveType.InventoryPlus);
-        move.Quantity.Should().Be(20m);
+        move.Quantity.Should().Be(100m);
+        move.QuantityBase.Should().Be(20m);
 
         var balance = await context.StockBalances.FirstOrDefaultAsync(b => b.WarehouseId == warehouse.Id && b.ItemId == item.Id);
         balance!.BalanceBase.Should().Be(100m);
@@ -67,7 +71,7 @@ public class InventoryAdjustHandlerTests
     public async Task InventoryAdjust_NegativeDifference_CreatesInventoryMinusMoveAndUpdatesBalance()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
         var warehouse = new Warehouse { Name = "Main", IsActive = true };
         var item = new WarehouseItem { Name = "Wheat", Code = "INV002", Category = "Grain", BaseUnit = "kg" };
@@ -84,7 +88,7 @@ public class InventoryAdjustHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance);
+        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion);
         var command = new InventoryAdjustCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null);
 
         // Act
@@ -96,7 +100,8 @@ public class InventoryAdjustHandlerTests
 
         var move = await context.StockMoves.FindAsync(result.MoveId!.Value);
         move!.MoveType.Should().Be(StockMoveType.InventoryMinus);
-        move.Quantity.Should().Be(20m);
+        move.Quantity.Should().Be(100m);
+        move.QuantityBase.Should().Be(20m);
 
         var balance = await context.StockBalances.FirstOrDefaultAsync(b => b.WarehouseId == warehouse.Id && b.ItemId == item.Id);
         balance!.BalanceBase.Should().Be(100m);
@@ -106,7 +111,7 @@ public class InventoryAdjustHandlerTests
     public async Task InventoryAdjust_NoDifference_ReturnsNullMoveId()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
         var warehouse = new Warehouse { Name = "Main", IsActive = true };
         var item = new WarehouseItem { Name = "Wheat", Code = "INV003", Category = "Grain", BaseUnit = "kg" };
@@ -123,7 +128,7 @@ public class InventoryAdjustHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance);
+        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion);
         var command = new InventoryAdjustCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null);
 
         // Act
@@ -141,9 +146,9 @@ public class InventoryAdjustHandlerTests
     public async Task InventoryAdjust_WarehouseNotFound_ThrowsNotFoundException()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
-        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance);
+        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion);
         var command = new InventoryAdjustCommand(Guid.NewGuid(), Guid.NewGuid(), null, 100m, "kg", null, null);
 
         // Act

@@ -11,7 +11,7 @@ namespace AgroPlatform.UnitTests.Warehouses;
 
 public class ReceiptStockHandlerTests
 {
-    private static (TestDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance) CreateDependencies()
+    private static (TestDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance, IUnitConversionService unitConversion) CreateDependencies()
     {
         var options = new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -20,14 +20,17 @@ public class ReceiptStockHandlerTests
         var dateTime = Substitute.For<IDateTimeService>();
         dateTime.UtcNow.Returns(DateTime.UtcNow);
         var stockBalance = new StockBalanceService(context, dateTime);
-        return (context, dateTime, stockBalance);
+        var unitConversion = Substitute.For<IUnitConversionService>();
+        unitConversion.ConvertAsync(Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.ArgAt<decimal>(0));
+        return (context, dateTime, stockBalance, unitConversion);
     }
 
     [Fact]
     public async Task Handle_ValidReceipt_CreatesStockMoveAndBalance()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
         var warehouse = new Warehouse { Name = "Main", IsActive = true };
         var item = new WarehouseItem { Name = "Wheat", Code = "WHT001", Category = "Grain", BaseUnit = "kg" };
@@ -35,7 +38,7 @@ public class ReceiptStockHandlerTests
         context.WarehouseItems.Add(item);
         await context.SaveChangesAsync();
 
-        var handler = new ReceiptStockHandler(context, dateTime, stockBalance);
+        var handler = new ReceiptStockHandler(context, dateTime, stockBalance, unitConversion);
         var command = new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, null, null, null, null, null, null);
 
         // Act
@@ -58,7 +61,7 @@ public class ReceiptStockHandlerTests
     public async Task Handle_SecondReceipt_IncrementsBalance()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
         var warehouse = new Warehouse { Name = "Main", IsActive = true };
         var item = new WarehouseItem { Name = "Wheat", Code = "WHT002", Category = "Grain", BaseUnit = "kg" };
@@ -66,7 +69,7 @@ public class ReceiptStockHandlerTests
         context.WarehouseItems.Add(item);
         await context.SaveChangesAsync();
 
-        var handler = new ReceiptStockHandler(context, dateTime, stockBalance);
+        var handler = new ReceiptStockHandler(context, dateTime, stockBalance, unitConversion);
 
         // Act
         await handler.Handle(new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, null, null, null, null, null, null), CancellationToken.None);
@@ -82,7 +85,7 @@ public class ReceiptStockHandlerTests
     public async Task Handle_IdempotentRequest_ReturnsSameMoveId()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
         var warehouse = new Warehouse { Name = "Main", IsActive = true };
         var item = new WarehouseItem { Name = "Wheat", Code = "WHT003", Category = "Grain", BaseUnit = "kg" };
@@ -90,7 +93,7 @@ public class ReceiptStockHandlerTests
         context.WarehouseItems.Add(item);
         await context.SaveChangesAsync();
 
-        var handler = new ReceiptStockHandler(context, dateTime, stockBalance);
+        var handler = new ReceiptStockHandler(context, dateTime, stockBalance, unitConversion);
         var clientOpId = "op-123";
 
         // Act
@@ -105,8 +108,8 @@ public class ReceiptStockHandlerTests
     public async Task Handle_WarehouseNotFound_ThrowsNotFoundException()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
-        var handler = new ReceiptStockHandler(context, dateTime, stockBalance);
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
+        var handler = new ReceiptStockHandler(context, dateTime, stockBalance, unitConversion);
         var command = new ReceiptStockCommand(Guid.NewGuid(), Guid.NewGuid(), null, 10m, "kg", null, null, null, null, null, null, null, null);
 
         // Act
@@ -120,7 +123,7 @@ public class ReceiptStockHandlerTests
     public async Task Handle_InactiveWarehouse_ThrowsConflictException()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
         var warehouse = new Warehouse { Name = "Inactive", IsActive = false };
         var item = new WarehouseItem { Name = "Wheat", Code = "WHT004", Category = "Grain", BaseUnit = "kg" };
@@ -128,7 +131,7 @@ public class ReceiptStockHandlerTests
         context.WarehouseItems.Add(item);
         await context.SaveChangesAsync();
 
-        var handler = new ReceiptStockHandler(context, dateTime, stockBalance);
+        var handler = new ReceiptStockHandler(context, dateTime, stockBalance, unitConversion);
         var command = new ReceiptStockCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null, null, null, null, null, null, null);
 
         // Act

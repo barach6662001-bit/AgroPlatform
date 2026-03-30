@@ -13,12 +13,18 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
     private readonly IAppDbContext _context;
     private readonly IDateTimeService _dateTime;
     private readonly IStockBalanceService _stockBalance;
+    private readonly IUnitConversionService _unitConversion;
 
-    public TransferStockHandler(IAppDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance)
+    public TransferStockHandler(
+        IAppDbContext context,
+        IDateTimeService dateTime,
+        IStockBalanceService stockBalance,
+        IUnitConversionService unitConversion)
     {
         _context = context;
         _dateTime = dateTime;
         _stockBalance = stockBalance;
+        _unitConversion = unitConversion;
     }
 
     public async Task<Guid> Handle(TransferStockCommand request, CancellationToken cancellationToken)
@@ -56,8 +62,12 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
         if (!destWarehouse.IsActive)
             throw new ConflictException($"Destination warehouse '{destWarehouse.Name}' is not active.");
 
-        _ = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
+        var item = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);
+
+        // Convert requested quantity to item's base unit for balance accounting.
+        var quantityBase = await _unitConversion.ConvertAsync(
+            request.Quantity, request.UnitCode, item.BaseUnit, cancellationToken);
 
         var operationId = Guid.NewGuid();
 
@@ -68,9 +78,9 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
             BatchId = request.BatchId,
             OperationId = operationId,
             MoveType = StockMoveType.TransferOut,
-            Quantity = request.Quantity,
-            UnitCode = request.UnitCode,
-            QuantityBase = request.Quantity,
+            Quantity = request.Quantity,   // original requested quantity
+            UnitCode = request.UnitCode,   // original requested unit
+            QuantityBase = quantityBase,   // converted to item base unit
             Note = request.Note,
             ClientOperationId = request.ClientOperationId
         };
@@ -82,17 +92,17 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
             BatchId = request.BatchId,
             OperationId = operationId,
             MoveType = StockMoveType.TransferIn,
-            Quantity = request.Quantity,
-            UnitCode = request.UnitCode,
-            QuantityBase = request.Quantity,
+            Quantity = request.Quantity,   // original requested quantity
+            UnitCode = request.UnitCode,   // original requested unit
+            QuantityBase = quantityBase,   // converted to item base unit
             Note = request.Note
         };
 
         _context.StockMoves.Add(transferOut);
         _context.StockMoves.Add(transferIn);
 
-        await _stockBalance.DecreaseBalance(request.SourceWarehouseId, request.ItemId, request.BatchId, request.Quantity, cancellationToken);
-        await _stockBalance.IncreaseBalance(request.DestinationWarehouseId, request.ItemId, request.BatchId, request.Quantity, request.UnitCode, cancellationToken);
+        await _stockBalance.DecreaseBalance(request.SourceWarehouseId, request.ItemId, request.BatchId, quantityBase, cancellationToken);
+        await _stockBalance.IncreaseBalance(request.DestinationWarehouseId, request.ItemId, request.BatchId, quantityBase, item.BaseUnit, cancellationToken);
 
         try
         {
