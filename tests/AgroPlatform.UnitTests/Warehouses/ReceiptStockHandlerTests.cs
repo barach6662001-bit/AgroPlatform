@@ -138,6 +138,6 @@ public class ReceiptStockHandlerTests
         var act = () => handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<ConflictException>();
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*not active*");
     }
 }
