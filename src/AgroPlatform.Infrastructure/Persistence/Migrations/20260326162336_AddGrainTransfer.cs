@@ -81,8 +81,7 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 table: "GrainMovements",
                 column: "GrainTransferId",
                 principalTable: "GrainTransfers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
