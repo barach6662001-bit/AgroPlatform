@@ -1,9 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace AgroPlatform.Domain.Authorization;
 
 /// <summary>
 /// Global reference entity mapping role names to the permission policy names they are granted.
 /// Not tenant-scoped — applies across the entire system.
 /// </summary>
+[PrimaryKey(nameof(RoleName), nameof(PolicyName))]
 public class RolePermission
 {
     /// <summary>Role name (e.g., "Admin", "Manager"). Composite PK with PolicyName.</summary>
