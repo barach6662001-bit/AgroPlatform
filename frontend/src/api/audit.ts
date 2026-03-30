@@ -13,6 +13,7 @@ export interface AuditEntryDto {
   action: string;
   oldValues?: string;
   newValues?: string;
+  affectedColumns?: string[];
   ipAddress?: string;
   notes?: string;
 }
@@ -54,10 +55,11 @@ export async function getAuditLog(
       entityType: item.entityType,
       entityId: item.entityId,
       action: item.action,
-      oldValues: item.metadata,
-      newValues: undefined,
+      oldValues: item.oldValues,
+      newValues: item.newValues,
+      affectedColumns: item.affectedColumns,
       ipAddress: undefined,
-      notes: undefined,
+      notes: item.notes,
     })),
     total: data.totalCount ?? 0,
     pageNumber: data.page ?? pageNumber,

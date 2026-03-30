@@ -48,7 +48,8 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
                 options.AddInterceptors(
                     sp.GetRequiredService<AuditableEntityInterceptor>(),
                     sp.GetRequiredService<SoftDeleteInterceptor>(),
-                    sp.GetRequiredService<TenantInterceptor>());
+                    sp.GetRequiredService<TenantInterceptor>(),
+                    sp.GetRequiredService<AuditInterceptor>());
             });
 
             // Disable rate limiting in tests

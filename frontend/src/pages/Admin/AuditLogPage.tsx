@@ -30,6 +30,18 @@ export default function AuditLogPage() {
     loadAuditLog();
   }, [entityType, pageNumber, pageSize]);
 
+  const parseValue = (value?: string) => {
+    if (!value) {
+      return null;
+    }
+
+    try {
+      return JSON.stringify(JSON.parse(value), null, 2);
+    } catch {
+      return value;
+    }
+  };
+
   const columns = [
     {
       title: 'Timestamp',
@@ -178,8 +190,25 @@ export default function AuditLogPage() {
                       label: 'Old Values',
                       children: (
                         <pre style={{ backgroundColor: 'var(--bg-muted)', padding: 12, borderRadius: 4, overflow: 'auto' }}>
-                          {JSON.stringify(JSON.parse(selectedEntry.oldValues), null, 2)}
+                          {parseValue(selectedEntry.oldValues)}
                         </pre>
+                      ),
+                    },
+                  ]
+                : []),
+              ...(selectedEntry.affectedColumns && selectedEntry.affectedColumns.length > 0
+                ? [
+                    {
+                      key: 'affectedColumns',
+                      label: 'Affected Columns',
+                      children: (
+                        <Space wrap>
+                          {selectedEntry.affectedColumns.map((column) => (
+                            <span key={column} style={{ padding: '2px 8px', backgroundColor: 'var(--bg-muted)', borderRadius: 999 }}>
+                              {column}
+                            </span>
+                          ))}
+                        </Space>
                       ),
                     },
                   ]
@@ -191,7 +220,7 @@ export default function AuditLogPage() {
                       label: 'New Values',
                       children: (
                         <pre style={{ backgroundColor: 'var(--bg-muted)', padding: 12, borderRadius: 4, overflow: 'auto' }}>
-                          {JSON.stringify(JSON.parse(selectedEntry.newValues), null, 2)}
+                          {parseValue(selectedEntry.newValues)}
                         </pre>
                       ),
                     },

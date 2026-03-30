@@ -31,6 +31,9 @@ public class AuditEntryConfiguration : IEntityTypeConfiguration<AuditEntry>
         builder.Property(a => a.NewValues)
             .HasColumnType("text");
 
+        builder.Property(a => a.AffectedColumns)
+            .HasColumnType("text");
+
         builder.Property(a => a.Notes)
             .HasColumnType("text");
 

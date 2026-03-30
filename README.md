@@ -209,6 +209,7 @@ npm run dev
 | `Cors__AllowedOrigins__0` | Дозволений CORS origin | `http://localhost:3000` |
 | `Swagger__Enabled` | Увімкнути Swagger поза Development | `false` |
 | `AUTO_MIGRATE` | Автоматично застосовувати міграції при старті | `false` |
+| `AttachmentStorage__RootPath` | Кореневий каталог для локального зберігання вкладень | `App_Data/attachments` |
 | `RateLimiting__ReadPermitLimit` | Ліміт GET-запитів / вікно | `100` |
 | `RateLimiting__WritePermitLimit` | Ліміт POST/PUT/DELETE / вікно | `30` |
 
