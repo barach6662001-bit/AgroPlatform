@@ -12,4 +12,4 @@ public record IssueStockCommand(
     Guid? AgroOperationId,
     string? Note,
     string? ClientOperationId
-) : IRequest<Guid>;
+) : IRequest<IssueStockResultDto>;
