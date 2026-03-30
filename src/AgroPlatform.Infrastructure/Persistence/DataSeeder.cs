@@ -1,4 +1,5 @@
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Enums;
@@ -86,6 +87,7 @@ public static class DataSeeder
         var context      = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var logger       = scope.ServiceProvider.GetRequiredService<ILogger<AppDbContext>>();
         await SeedGrainTypesAsync(context, logger);
+        await SeedRolePermissionsAsync(context, logger);
         await SeedDemoAsync(scope.ServiceProvider, context, logger);
     }
 
@@ -109,6 +111,75 @@ public static class DataSeeder
         catch (Exception ex)
         {
             logger.LogError(ex, "Error seeding default grain types.");
+        }
+    }
+
+    private static async Task SeedRolePermissionsAsync(AppDbContext context, ILogger logger)
+    {
+        try
+        {
+            // Belt-and-suspenders: migration InsertData runs the primary seed.
+            // This only fires if the table is empty (e.g., manual-migration environments).
+            if (await context.RolePermissions.AnyAsync())
+                return;
+
+            logger.LogInformation("Seeding default role permissions…");
+
+            var grants = new (string Role, string Policy)[]
+            {
+                ("Admin", "Warehouses.Manage"),
+                ("Admin", "Inventory.Manage"),
+                ("Admin", "Machinery.Manage"),
+                ("Admin", "Fields.Manage"),
+                ("Admin", "Economics.Manage"),
+                ("Admin", "HR.Manage"),
+                ("Admin", "GrainStorage.Manage"),
+                ("Admin", "Fuel.Manage"),
+                ("Admin", "Sales.Manage"),
+                ("Admin", "Admin.Manage"),
+
+                ("Manager", "Warehouses.Manage"),
+                ("Manager", "Inventory.Manage"),
+                ("Manager", "Machinery.Manage"),
+                ("Manager", "Fields.Manage"),
+                ("Manager", "Economics.Manage"),
+                ("Manager", "HR.Manage"),
+                ("Manager", "GrainStorage.Manage"),
+                ("Manager", "Fuel.Manage"),
+                ("Manager", "Sales.Manage"),
+
+                ("Agronomist", "Fields.Manage"),
+
+                ("Storekeeper", "Warehouses.Manage"),
+                ("Storekeeper", "Inventory.Manage"),
+                ("Storekeeper", "GrainStorage.Manage"),
+                ("Storekeeper", "Fuel.Manage"),
+
+                ("Director", "Economics.Manage"),
+                ("Director", "Sales.Manage"),
+
+                ("Operator", "Warehouses.Manage"),
+                ("Operator", "Inventory.Manage"),
+                ("Operator", "Fields.Manage"),
+
+                // Viewer: no manage grants — no rows
+                // Administrator: normalizes to Admin at runtime — no rows needed
+            };
+
+            context.RolePermissions.AddRange(grants.Select(g =>
+                new RolePermission
+                {
+                    RoleName   = g.Role,
+                    PolicyName = g.Policy,
+                    IsGranted  = true
+                }));
+
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded {Count} role permission grants.", grants.Length);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error seeding role permissions.");
         }
     }
 

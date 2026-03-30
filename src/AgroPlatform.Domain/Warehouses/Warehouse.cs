@@ -11,4 +11,11 @@ public class Warehouse : AuditableEntity
 
     public ICollection<StockMove> StockMoves { get; set; } = new List<StockMove>();
     public ICollection<StockBalance> Balances { get; set; } = new List<StockBalance>();
+
+    /// <summary>Throws if the warehouse is not active.</summary>
+    public void EnsureActive()
+    {
+        if (!IsActive)
+            throw new InvalidOperationException($"Warehouse '{Name}' is not active.");
+    }
 }

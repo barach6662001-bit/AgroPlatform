@@ -24,9 +24,7 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
             .FirstOrDefaultAsync(b => b.Id == request.SourceBatchId, cancellationToken)
             ?? throw new NotFoundException(nameof(GrainBatch), request.SourceBatchId);
 
-        if (source.QuantityTons < request.SplitQuantityTons)
-            throw new InvalidOperationException(
-                $"Insufficient quantity in source batch: available {source.QuantityTons:F4} t, requested {request.SplitQuantityTons:F4} t.");
+        source.ReduceQuantity(request.SplitQuantityTons); // guard: throws if insufficient quantity
 
         var sourceStorageId = source.Placements.FirstOrDefault()?.GrainStorageId;
         var targetStorageId = request.TargetStorageId ?? sourceStorageId;
@@ -103,7 +101,7 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
             Notes = request.Notes,
         });
 
-        source.QuantityTons -= request.SplitQuantityTons;
+        // source quantity already reduced above via ReduceQuantity
 
         await _context.SaveChangesAsync(cancellationToken);
 

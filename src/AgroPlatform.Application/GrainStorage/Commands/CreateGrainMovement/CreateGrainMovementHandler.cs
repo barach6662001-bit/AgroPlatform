@@ -43,15 +43,15 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
             // Adjustment quantity may be signed; positive = increase, negative = decrease
             var signed = request.QuantityTons;
             movement.QuantityTons = Math.Abs(signed);
-            batch.QuantityTons += signed;
+            batch.Adjust(signed);
         }
         else if (isIncoming)
         {
-            batch.QuantityTons += movement.QuantityTons;
+            batch.IncreaseQuantity(movement.QuantityTons);
         }
         else if (isOutgoing)
         {
-            batch.QuantityTons -= movement.QuantityTons;
+            batch.ReduceQuantity(movement.QuantityTons);
         }
 
         if (request.MovementType == GrainMovementType.SaleDispatch && request.PricePerTon.HasValue)

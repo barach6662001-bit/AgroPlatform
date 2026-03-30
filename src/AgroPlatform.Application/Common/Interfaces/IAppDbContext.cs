@@ -1,4 +1,5 @@
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
@@ -63,6 +64,7 @@ public interface IAppDbContext
     DbSet<Sale> Sales { get; }
     DbSet<AppUser> Users { get; }
     DbSet<Permission> Permissions { get; }
+    DbSet<RolePermission> RolePermissions { get; }
     DbSet<AuditEntry> AuditEntries { get; }
     DbSet<ApiKey> ApiKeys { get; }
 
