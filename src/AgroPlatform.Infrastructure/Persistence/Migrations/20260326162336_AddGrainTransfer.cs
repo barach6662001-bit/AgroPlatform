@@ -72,16 +72,17 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 table: "GrainTransfers",
                 column: "TenantId");
 
-            // Idempotent FK creation: drop-if-exists then re-add to handle any environment
-            // (CI fresh DB, partial previous run, or legacy schema without ON DELETE SET NULL).
-            migrationBuilder.Sql(@"
-ALTER TABLE ""GrainMovements""
-    DROP CONSTRAINT IF EXISTS ""FK_GrainMovements_GrainTransfers_GrainTransferId"";
-ALTER TABLE ""GrainMovements""
-    ADD CONSTRAINT ""FK_GrainMovements_GrainTransfers_GrainTransferId""
-    FOREIGN KEY (""GrainTransferId"") REFERENCES ""GrainTransfers"" (""Id"")
-    ON DELETE SET NULL;
-");
+            // Ensure no pre-existing constraint before adding (handles CI environments
+            // where pgdata volume may retain state from a previous failed migration run).
+            migrationBuilder.Sql(@"ALTER TABLE ""GrainMovements"" DROP CONSTRAINT IF EXISTS ""FK_GrainMovements_GrainTransfers_GrainTransferId"";");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_GrainMovements_GrainTransfers_GrainTransferId",
+                table: "GrainMovements",
+                column: "GrainTransferId",
+                principalTable: "GrainTransfers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.SetNull);
         }
 
         /// <inheritdoc />
