@@ -32,9 +32,7 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
             .FirstOrDefaultAsync(b => b.Id == request.TargetBatchId, cancellationToken)
             ?? throw new NotFoundException(nameof(GrainBatch), request.TargetBatchId);
 
-        if (source.QuantityTons < request.QuantityTons)
-            throw new InvalidOperationException(
-                $"Insufficient quantity in source batch: available {source.QuantityTons:F4} t, requested {request.QuantityTons:F4} t.");
+        source.ReduceQuantity(request.QuantityTons); // guard: throws if insufficient quantity
 
         var sourceStorageId = source.Placements.FirstOrDefault()?.GrainStorageId;
         var targetStorageId = target.Placements.FirstOrDefault()?.GrainStorageId;
@@ -69,8 +67,8 @@ public class TransferGrainHandler : IRequestHandler<TransferGrainCommand, Guid>
             Notes = request.Notes,
         });
 
-        source.QuantityTons -= request.QuantityTons;
-        target.QuantityTons += request.QuantityTons;
+        // quantity already reduced on source above; increase target
+        target.IncreaseQuantity(request.QuantityTons);
 
         // Update source placement
         if (sourceStorageId.HasValue)

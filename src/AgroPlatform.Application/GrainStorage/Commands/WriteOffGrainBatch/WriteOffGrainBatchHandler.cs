@@ -22,10 +22,6 @@ public class WriteOffGrainBatchHandler : IRequestHandler<WriteOffGrainBatchComma
             .FirstOrDefaultAsync(b => b.Id == request.BatchId, cancellationToken)
             ?? throw new NotFoundException(nameof(GrainBatch), request.BatchId);
 
-        if (batch.QuantityTons < request.QuantityTons)
-            throw new InvalidOperationException(
-                $"Insufficient quantity in batch: available {batch.QuantityTons:F4} t, requested {request.QuantityTons:F4} t.");
-
         var movement = new GrainMovement
         {
             GrainBatchId = batch.Id,
@@ -37,7 +33,7 @@ public class WriteOffGrainBatchHandler : IRequestHandler<WriteOffGrainBatchComma
         };
 
         _context.GrainMovements.Add(movement);
-        batch.QuantityTons -= request.QuantityTons;
+        batch.ReduceQuantity(request.QuantityTons);
 
         await _context.SaveChangesAsync(cancellationToken);
         return movement.Id;

@@ -53,14 +53,12 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
         var sourceWarehouse = await _context.Warehouses.FindAsync(new object[] { request.SourceWarehouseId }, cancellationToken)
             ?? throw new NotFoundException(nameof(Warehouse), request.SourceWarehouseId);
 
-        if (!sourceWarehouse.IsActive)
-            throw new ConflictException($"Source warehouse '{sourceWarehouse.Name}' is not active.");
+        sourceWarehouse.EnsureActive();
 
         var destWarehouse = await _context.Warehouses.FindAsync(new object[] { request.DestinationWarehouseId }, cancellationToken)
             ?? throw new NotFoundException(nameof(Warehouse), request.DestinationWarehouseId);
 
-        if (!destWarehouse.IsActive)
-            throw new ConflictException($"Destination warehouse '{destWarehouse.Name}' is not active.");
+        destWarehouse.EnsureActive();
 
         var item = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);

@@ -25,4 +25,34 @@ public class GrainBatch : AuditableEntity
     public ICollection<GrainMovement> Movements { get; set; } = new List<GrainMovement>();
     public ICollection<GrainBatchPlacement> Placements { get; set; } = new List<GrainBatchPlacement>();
     public Field? SourceField { get; set; }
+
+    /// <summary>Decreases QuantityTons and raises <see cref="StockMovedEvent"/>. Throws if insufficient stock.</summary>
+    public void ReduceQuantity(decimal tons)
+    {
+        if (tons <= 0) throw new ArgumentException("Amount must be positive.", nameof(tons));
+        if (QuantityTons < tons)
+            throw new InvalidOperationException(
+                $"Insufficient quantity in batch: available {QuantityTons:F4} t, requested {tons:F4} t.");
+        QuantityTons -= tons;
+        AddDomainEvent(new StockMovedEvent(Id, -tons));
+    }
+
+    /// <summary>Increases QuantityTons and raises <see cref="StockMovedEvent"/>.</summary>
+    public void IncreaseQuantity(decimal tons)
+    {
+        if (tons <= 0) throw new ArgumentException("Amount must be positive.", nameof(tons));
+        QuantityTons += tons;
+        AddDomainEvent(new StockMovedEvent(Id, tons));
+    }
+
+    /// <summary>Applies a signed adjustment (positive = increase, negative = decrease) and raises <see cref="StockMovedEvent"/>.</summary>
+    public void Adjust(decimal delta)
+    {
+        var newQty = QuantityTons + delta;
+        if (newQty < 0)
+            throw new InvalidOperationException(
+                $"Adjustment would result in negative quantity: {newQty:F4} t.");
+        QuantityTons = newQty;
+        AddDomainEvent(new StockMovedEvent(Id, delta));
+    }
 }

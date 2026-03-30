@@ -23,6 +23,7 @@ public class TestDbContext : DbContext, IAppDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Ignore<DomainEvent>();
 
         modelBuilder.Entity<UnitOfMeasure>(e =>
         {
