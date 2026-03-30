@@ -2929,6 +2929,92 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("StockMoves");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.StockLedgerEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AgroOperationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BaseUnit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<decimal>("BalanceAfterBase")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<Guid?>("BatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DocumentRef")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid?>("FieldId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("MoveType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid?>("OperationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal>("QuantityBase")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<Guid?>("StockMoveId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("TotalCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("UnitCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OperationId")
+                        .HasFilter("\"OperationId\" IS NOT NULL");
+
+                    b.HasIndex("StockMoveId")
+                        .HasFilter("\"StockMoveId\" IS NOT NULL");
+
+                    b.HasIndex("WarehouseId", "ItemId", "CreatedAtUtc");
+
+                    b.ToTable("StockLedgerEntries");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Warehouses.Warehouse", b =>
                 {
                     b.Property<Guid>("Id")

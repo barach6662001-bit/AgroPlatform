@@ -100,7 +100,25 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
 
         _context.StockMoves.Add(move);
 
-        await _stockBalance.IncreaseBalance(request.WarehouseId, request.ItemId, batchId, quantityBase, item.BaseUnit, cancellationToken);
+        var balanceAfter = await _stockBalance.IncreaseBalance(request.WarehouseId, request.ItemId, batchId, quantityBase, item.BaseUnit, cancellationToken);
+
+        _context.StockLedgerEntries.Add(new StockLedgerEntry
+        {
+            WarehouseId     = request.WarehouseId,
+            ItemId          = request.ItemId,
+            BatchId         = batchId,
+            StockMoveId     = move.Id,
+            DocumentRef     = request.ClientOperationId,
+            MoveType        = StockMoveType.Receipt,
+            Quantity        = request.Quantity,
+            UnitCode        = request.UnitCode,
+            QuantityBase    = quantityBase,           // positive — stock in
+            BaseUnit        = item.BaseUnit,
+            BalanceAfterBase = balanceAfter,
+            TotalCost       = move.TotalCost,
+            Note            = request.Note,
+            CreatedAtUtc    = _dateTime.UtcNow,
+        });
 
         try
         {

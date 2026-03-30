@@ -74,6 +74,9 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
 
+    // Immutable stock ledger
+    public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
+
     // Global reference data — no tenant query filter applied
     public DbSet<UnitOfMeasure> UnitsOfMeasure => Set<UnitOfMeasure>();
     public DbSet<UnitConversionRule> UnitConversionRules => Set<UnitConversionRule>();
@@ -129,5 +132,6 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<FieldInspection>().HasQueryFilter(i => !i.IsDeleted && i.TenantId == _tenantId);
         builder.Entity<AuditEntry>().HasQueryFilter(a => a.TenantId == _tenantId);
         builder.Entity<ApiKey>().HasQueryFilter(k => !k.IsDeleted && k.TenantId == _tenantId);
+        builder.Entity<StockLedgerEntry>().HasQueryFilter(e => e.TenantId == _tenantId);
     }
 }

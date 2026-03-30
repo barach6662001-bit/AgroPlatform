@@ -68,6 +68,9 @@ public interface IAppDbContext
     DbSet<AuditEntry> AuditEntries { get; }
     DbSet<ApiKey> ApiKeys { get; }
 
+    // Immutable stock ledger
+    DbSet<StockLedgerEntry> StockLedgerEntries { get; }
+
     // Global reference data — not tenant-scoped
     DbSet<UnitOfMeasure> UnitsOfMeasure { get; }
     DbSet<UnitConversionRule> UnitConversionRules { get; }

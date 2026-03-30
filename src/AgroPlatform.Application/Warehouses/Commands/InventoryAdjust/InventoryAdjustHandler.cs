@@ -78,7 +78,29 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
             moveId = move.Id;
         }
 
-        await _stockBalance.SetBalance(request.WarehouseId, request.ItemId, request.BatchId, actualBase, item.BaseUnit, cancellationToken);
+        var balanceAfter = await _stockBalance.SetBalance(request.WarehouseId, request.ItemId, request.BatchId, actualBase, item.BaseUnit, cancellationToken);
+
+        if (difference != 0)
+        {
+            // Write one signed ledger entry per adjustment (positive = inventory surplus, negative = shrinkage)
+            var moveType = difference > 0 ? StockMoveType.InventoryPlus : StockMoveType.InventoryMinus;
+            _context.StockLedgerEntries.Add(new StockLedgerEntry
+            {
+                WarehouseId      = request.WarehouseId,
+                ItemId           = request.ItemId,
+                BatchId          = request.BatchId,
+                StockMoveId      = moveId,
+                DocumentRef      = request.ClientOperationId,
+                MoveType         = moveType,
+                Quantity         = request.ActualQuantity,    // stated physical count
+                UnitCode         = request.UnitCode,
+                QuantityBase     = difference,                // signed delta in base unit
+                BaseUnit         = item.BaseUnit,
+                BalanceAfterBase = balanceAfter,
+                Note             = request.Note,
+                CreatedAtUtc     = _dateTime.UtcNow,
+            });
+        }
 
         try
         {
