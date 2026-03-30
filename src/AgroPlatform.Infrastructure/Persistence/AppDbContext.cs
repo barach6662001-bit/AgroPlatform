@@ -59,6 +59,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
     public DbSet<FuelTank> FuelTanks => Set<FuelTank>();
     public DbSet<FuelTransaction> FuelTransactions => Set<FuelTransaction>();
+    public DbSet<FuelNorm> FuelNorms => Set<FuelNorm>();
     public DbSet<GrainStorage> GrainStorages => Set<GrainStorage>();
     public DbSet<GrainType> GrainTypes => Set<GrainType>();
     public DbSet<GrainBatch> GrainBatches => Set<GrainBatch>();
@@ -125,6 +126,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<LeasePayment>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
         builder.Entity<FuelTank>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
         builder.Entity<FuelTransaction>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
+        builder.Entity<FuelNorm>().HasQueryFilter(n => !n.IsDeleted && n.TenantId == _tenantId);
         builder.Entity<GrainStorage>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
         builder.Entity<GrainType>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
         builder.Entity<GrainBatch>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);

@@ -509,6 +509,23 @@ public class FieldsController : ControllerBase
         var result = await _sender.Send(new GetRotationAdviceQuery(years), cancellationToken);
         return Ok(result);
     }
+
+    // ─── Traceability ─────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns the full traceability chain for a field:
+    /// warehouse inputs → agro operations → harvests → grain batches → sales.
+    /// </summary>
+    [HttpGet("{fieldId:guid}/traceability")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetTraceability(Guid fieldId, [FromQuery] int? year, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new Application.Fields.Queries.GetFieldTraceability.GetFieldTraceabilityQuery(fieldId, year),
+            cancellationToken);
+        return Ok(result);
+    }
 }
 
 /// <summary>Request body for updating a field's GeoJSON geometry.</summary>

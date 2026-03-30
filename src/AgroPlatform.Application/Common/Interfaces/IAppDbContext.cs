@@ -61,6 +61,7 @@ public interface IAppDbContext
     DbSet<SalaryPayment> SalaryPayments { get; }
     DbSet<FuelTank> FuelTanks { get; }
     DbSet<FuelTransaction> FuelTransactions { get; }
+    DbSet<FuelNorm> FuelNorms { get; }
     DbSet<Sale> Sales { get; }
     DbSet<AppUser> Users { get; }
     DbSet<Permission> Permissions { get; }

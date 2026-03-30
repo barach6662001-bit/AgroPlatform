@@ -107,10 +107,16 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
         {
             var costCategory = item.Category switch
             {
+                // English names
                 "Fertilizers" => CostCategory.Fertilizer,
                 "Seeds" => CostCategory.Seeds,
                 "Pesticides" => CostCategory.Pesticide,
                 "Fuel" => CostCategory.Fuel,
+                // Ukrainian names (seeded by DataSeeder)
+                "Добрива" => CostCategory.Fertilizer,
+                "Насіння" => CostCategory.Seeds,
+                "ЗЗР" => CostCategory.Pesticide,
+                "ПММ" => CostCategory.Fuel,
                 _ => CostCategory.Other
             };
 
