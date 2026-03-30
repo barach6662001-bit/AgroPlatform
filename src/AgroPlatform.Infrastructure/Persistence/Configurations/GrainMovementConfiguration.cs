@@ -44,6 +44,11 @@ public class GrainMovementConfiguration : IEntityTypeConfiguration<GrainMovement
             .HasForeignKey(m => m.TargetStorageId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        builder.HasOne(m => m.GrainTransfer)
+            .WithMany()
+            .HasForeignKey(m => m.GrainTransferId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasIndex(m => m.OperationId)
             .HasFilter("\"OperationId\" IS NOT NULL");
 
