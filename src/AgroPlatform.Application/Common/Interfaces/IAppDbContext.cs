@@ -66,5 +66,9 @@ public interface IAppDbContext
     DbSet<AuditEntry> AuditEntries { get; }
     DbSet<ApiKey> ApiKeys { get; }
 
+    // Global reference data — not tenant-scoped
+    DbSet<UnitOfMeasure> UnitsOfMeasure { get; }
+    DbSet<UnitConversionRule> UnitConversionRules { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
