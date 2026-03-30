@@ -43,7 +43,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
                 options.AddInterceptors(
                     sp.GetRequiredService<AuditableEntityInterceptor>(),
                     sp.GetRequiredService<SoftDeleteInterceptor>(),
-                    sp.GetRequiredService<TenantInterceptor>());
+                    sp.GetRequiredService<TenantInterceptor>(),
+                    sp.GetRequiredService<AuditInterceptor>());
             });
 
             // Disable rate limiting in tests

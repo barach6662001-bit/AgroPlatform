@@ -5,5 +5,9 @@ export interface AuditLogDto {
   entityType: string;
   entityId: string;
   timestamp: string;
+  oldValues?: string;
+  newValues?: string;
+  affectedColumns: string[];
+  notes?: string;
   metadata?: string;
 }

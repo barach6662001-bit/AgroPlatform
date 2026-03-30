@@ -57,6 +57,41 @@ title: API Reference
 
 ---
 
+## 🧾 Аудит
+
+| Метод | URL | Описание |
+|-------|-----|----------|
+| GET | `/api/audit` | Журнал изменений с `oldValues`, `newValues` и `affectedColumns` |
+
+Для записей `Updated` API возвращает дифф по изменённым полям:
+- `oldValues` — JSON объекта со значениями до изменения
+- `newValues` — JSON объекта со значениями после изменения
+- `affectedColumns` — JSON-массив имён полей, попавших в audit diff
+
+---
+
+## 📎 Вложения
+
+| Метод | URL | Описание |
+|-------|-----|----------|
+| POST | `/api/attachments` | Загрузить вложение для сущности (`multipart/form-data`) |
+| GET | `/api/attachments?entityType=Field&entityId={id}` | Получить список вложений сущности |
+| GET | `/api/attachments/{id}/download` | Скачать файл вложения |
+
+Структура `multipart/form-data` для загрузки:
+- `entityType` — тип сущности, например `Field`
+- `entityId` — идентификатор сущности
+- `file` — бинарное содержимое файла
+- `description` — необязательное описание
+
+Файлы хранятся в локальной файловой системе вне базы данных. Корневой путь задаётся через `AttachmentStorage__RootPath`. Если параметр не задан, используется каталог `App_Data/attachments` внутри директории приложения.
+
+Относительный путь строится по шаблону:
+
+`{tenantId}/{entityType}/{entityId}/{attachmentId}.{ext}`
+
+---
+
 ## ⚙️ Агрооперации
 
 | Метод | URL | Описание |

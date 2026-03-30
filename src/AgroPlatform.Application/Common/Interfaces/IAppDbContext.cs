@@ -67,6 +67,7 @@ public interface IAppDbContext
     DbSet<Permission> Permissions { get; }
     DbSet<RolePermission> RolePermissions { get; }
     DbSet<AuditEntry> AuditEntries { get; }
+    DbSet<Attachment> Attachments { get; }
     DbSet<ApiKey> ApiKeys { get; }
 
     // Immutable stock ledger

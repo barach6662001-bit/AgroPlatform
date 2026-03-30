@@ -2,12 +2,25 @@ using System.Text.Json;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace AgroPlatform.Infrastructure.Persistence.Interceptors;
 
 public class AuditInterceptor : SaveChangesInterceptor
 {
+    private static readonly HashSet<string> _ignoredPropertyNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "CreatedAtUtc",
+        "CreatedBy",
+        "UpdatedAtUtc",
+        "UpdatedBy",
+        "DeletedAtUtc",
+        "TenantId",
+        "IsDeleted",
+        "RowVersion",
+    };
+
     private static readonly HashSet<string> _trackedEntities = new(StringComparer.OrdinalIgnoreCase)
     {
         "StockMove",
@@ -24,6 +37,7 @@ public class AuditInterceptor : SaveChangesInterceptor
         "GrainStorage",
         "Sale",
         "FuelTransaction",
+        "Attachment",
     };
 
     private readonly ICurrentUserService _currentUserService;
@@ -94,7 +108,7 @@ public class AuditInterceptor : SaveChangesInterceptor
                 }
             }
 
-            var (oldValues, newValues, notes) = BuildAuditPayload(entry, action);
+            var (oldValues, newValues, affectedColumns, notes) = BuildAuditPayload(entry, action);
 
             auditEntries.Add(new AuditEntry
             {
@@ -107,6 +121,7 @@ public class AuditInterceptor : SaveChangesInterceptor
                 CreatedAtUtc = now,
                 OldValues = oldValues,
                 NewValues = newValues,
+                AffectedColumns = affectedColumns,
                 Notes = notes,
             });
         }
@@ -117,7 +132,7 @@ public class AuditInterceptor : SaveChangesInterceptor
         }
     }
 
-    private static (string? OldValues, string? NewValues, string? Notes) BuildAuditPayload(
+    private static (string? OldValues, string? NewValues, string? AffectedColumns, string? Notes) BuildAuditPayload(
         Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry,
         string action)
     {
@@ -125,33 +140,39 @@ public class AuditInterceptor : SaveChangesInterceptor
         {
             if (action == "Created")
             {
-                var newData = entry.Properties
-                    .Where(p => !p.Metadata.IsPrimaryKey())
+                var createdProperties = entry.Properties
+                    .Where(ShouldTrackProperty)
+                    .ToList();
+
+                var newData = createdProperties
                     .ToDictionary(
                         p => p.Metadata.Name,
                         p => (object?)p.CurrentValue);
 
-                return (null, JsonSerializer.Serialize(newData), null);
+                return (null, JsonSerializer.Serialize(newData), SerializeAffectedColumns(createdProperties), null);
             }
 
             if (action == "Deleted")
             {
-                var oldData = entry.Properties
-                    .Where(p => !p.Metadata.IsPrimaryKey())
+                var deletedProperties = entry.Properties
+                    .Where(ShouldTrackProperty)
+                    .ToList();
+
+                var oldData = deletedProperties
                     .ToDictionary(
                         p => p.Metadata.Name,
                         p => (object?)p.OriginalValue);
 
-                return (JsonSerializer.Serialize(oldData), null, null);
+                return (JsonSerializer.Serialize(oldData), null, SerializeAffectedColumns(deletedProperties), null);
             }
 
             var changed = entry.Properties
-                .Where(p => p.IsModified && !p.Metadata.IsPrimaryKey())
+                .Where(p => p.IsModified && ShouldTrackProperty(p))
                 .ToList();
 
             if (changed.Count == 0)
             {
-                return (null, null, "No modified fields captured");
+                return (null, null, null, "No modified fields captured");
             }
 
             var oldValues = changed.ToDictionary(
@@ -162,11 +183,27 @@ public class AuditInterceptor : SaveChangesInterceptor
                 p => p.Metadata.Name,
                 p => (object?)p.CurrentValue);
 
-            return (JsonSerializer.Serialize(oldValues), JsonSerializer.Serialize(newValues), null);
+            return (
+                JsonSerializer.Serialize(oldValues),
+                JsonSerializer.Serialize(newValues),
+                SerializeAffectedColumns(changed),
+                null);
         }
         catch
         {
-            return (null, null, "Failed to serialize audit payload");
+            return (null, null, null, "Failed to serialize audit payload");
         }
+    }
+
+    private static bool ShouldTrackProperty(PropertyEntry property)
+    {
+        return !property.Metadata.IsPrimaryKey()
+            && !property.Metadata.IsShadowProperty()
+            && !_ignoredPropertyNames.Contains(property.Metadata.Name);
+    }
+
+    private static string SerializeAffectedColumns(IEnumerable<PropertyEntry> properties)
+    {
+        return JsonSerializer.Serialize(properties.Select(p => p.Metadata.Name).Distinct().OrderBy(name => name));
     }
 }

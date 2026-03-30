@@ -87,6 +87,7 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
+    public DbSet<Attachment> Attachments => Set<Attachment>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
     public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
     public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();

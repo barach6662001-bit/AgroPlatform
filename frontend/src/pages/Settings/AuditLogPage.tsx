@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Table, Select, DatePicker, Input, Button, Row, Col, message, Tag, Space, Tooltip } from 'antd';
+import { Table, Select, DatePicker, Input, Button, Row, Col, message, Tag, Space, Drawer, Typography } from 'antd';
 import { SearchOutlined, ReloadOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getAuditLogs } from '../../api/audit';
@@ -24,10 +24,42 @@ const ENTITY_TYPES = [
 
 const ACTIONS = ['Created', 'Updated', 'Deleted'];
 
+function parseAuditPayload(value?: string): Record<string, unknown> {
+  if (!value) {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as Record<string, unknown>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+function formatAuditValue(value: unknown): string {
+  if (value === null || value === undefined) {
+    return '—';
+  }
+
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
+  return JSON.stringify(value, null, 2);
+}
+
 export default function AuditLogPage() {
   const { t } = useTranslation();
   const [data, setData] = useState<PaginatedResult<AuditLogDto> | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState<AuditLogDto | null>(null);
 
   const [userFilter, setUserFilter] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState<string | undefined>();
@@ -53,6 +85,25 @@ export default function AuditLogPage() {
   }, [userFilter, entityTypeFilter, actionFilter, dateRange, page, t.auditLog.loadError]);
 
   useEffect(() => { load(); }, [load]);
+
+  const diffRows = (() => {
+    if (!selectedEntry) {
+      return [] as Array<{ key: string; field: string; before: string; after: string }>;
+    }
+
+    const oldValues = parseAuditPayload(selectedEntry.oldValues);
+    const newValues = parseAuditPayload(selectedEntry.newValues);
+    const keys = (selectedEntry.affectedColumns?.length ?? 0) > 0
+      ? selectedEntry.affectedColumns
+      : Array.from(new Set([...Object.keys(oldValues), ...Object.keys(newValues)])).sort();
+
+    return keys.map((key) => ({
+      key,
+      field: key,
+      before: formatAuditValue(oldValues[key]),
+      after: formatAuditValue(newValues[key]),
+    }));
+  })();
 
   const columns = [
     {
@@ -96,24 +147,32 @@ export default function AuditLogPage() {
       ),
     },
     {
-      title: t.auditLog.metadata,
-      dataIndex: 'metadata',
-      key: 'metadata',
-      render: (v?: string) =>
-        v ? (
-          <Tooltip
-            title={
-              <pre style={{ maxWidth: 400, maxHeight: 200, overflow: 'auto', fontSize: 11 }}>
-                {(() => { try { return JSON.stringify(JSON.parse(v), null, 2); } catch { return v; } })()}
-              </pre>
-            }
-            overlayStyle={{ maxWidth: 450 }}
-          >
-            <Button type="link" size="small" icon={<InfoCircleOutlined />}>
-              {t.auditLog.view}
-            </Button>
-          </Tooltip>
+      title: t.auditLog.affectedColumns,
+      dataIndex: 'affectedColumns',
+      key: 'affectedColumns',
+      render: (values?: string[]) =>
+        values && values.length > 0 ? (
+          <Space size={[4, 4]} wrap>
+            {values.map((value) => (
+              <Tag key={value}>{value}</Tag>
+            ))}
+          </Space>
         ) : '—',
+    },
+    {
+      title: t.auditLog.changes,
+      key: 'changes',
+      width: 120,
+      render: (_: unknown, record: AuditLogDto) => (
+        <Button
+          type="link"
+          size="small"
+          icon={<InfoCircleOutlined />}
+          onClick={() => setSelectedEntry(record)}
+        >
+          {t.auditLog.view}
+        </Button>
+      ),
     },
   ];
 
@@ -184,6 +243,81 @@ export default function AuditLogPage() {
         scroll={{ x: 900 }}
         size="small"
       />
+
+      <Drawer
+        title={t.auditLog.changes}
+        open={!!selectedEntry}
+        width={760}
+        onClose={() => setSelectedEntry(null)}
+      >
+        {selectedEntry && (
+          <Space direction="vertical" size={16} style={{ width: '100%' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16 }}>
+              <div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.auditLog.timestamp}</div>
+                <div>{dayjs(selectedEntry.timestamp).format('DD.MM.YYYY HH:mm:ss')}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.auditLog.user}</div>
+                <div>{selectedEntry.userId ?? '—'}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.auditLog.entityType}</div>
+                <div>{selectedEntry.entityType}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.auditLog.action}</div>
+                <div>{selectedEntry.action}</div>
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.auditLog.entityId}</div>
+                <Typography.Text code copyable>
+                  {selectedEntry.entityId}
+                </Typography.Text>
+              </div>
+            </div>
+
+            <Table
+              rowKey="key"
+              size="small"
+              pagination={false}
+              dataSource={diffRows}
+              locale={{ emptyText: selectedEntry.notes ?? t.auditLog.noDetails }}
+              columns={[
+                {
+                  title: t.auditLog.affectedColumns,
+                  dataIndex: 'field',
+                  key: 'field',
+                  width: 220,
+                },
+                {
+                  title: t.auditLog.before,
+                  dataIndex: 'before',
+                  key: 'before',
+                  render: (value: string) => (
+                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{value}</pre>
+                  ),
+                },
+                {
+                  title: t.auditLog.after,
+                  dataIndex: 'after',
+                  key: 'after',
+                  render: (value: string) => (
+                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{value}</pre>
+                  ),
+                },
+              ]}
+            />
+
+            {selectedEntry.notes ? (
+              <div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: 12, marginBottom: 4 }}>{t.auditLog.notes}</div>
+                <Typography.Text>{selectedEntry.notes}</Typography.Text>
+              </div>
+            ) : null}
+          </Space>
+        )}
+      </Drawer>
     </div>
   );
 }

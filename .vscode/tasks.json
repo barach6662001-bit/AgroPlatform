@@ -78,6 +78,136 @@
           "reveal": "always",
           "panel": "new"
         }
+      },
+      {
+        "type": "shell",
+        "label": "git-sync-main-create-phase3-branch",
+        "command": "git fetch origin main && git checkout main && git pull --ff-only origin main && git checkout -B phase3-audit-attachments",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "dotnet-build-root",
+        "command": "dotnet build",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "frontend-tsc-noemit",
+        "command": "cd frontend && npx tsc --noEmit",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "ef-add-phase3-migration",
+        "command": "dotnet ef migrations add AddAuditDiffsAndAttachments --project src/AgroPlatform.Infrastructure --startup-project src/AgroPlatform.Api --output-dir Persistence/Migrations",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "git-commit-push-phase3",
+        "command": "git add -A && git commit -m 'feat: add audit diffs and attachments' && git push -u origin phase3-audit-attachments",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "gh-create-phase3-pr",
+        "command": "gh pr create --base main --head phase3-audit-attachments --title \"Phase 3A: enrich audit history with before/after values and add attachment support\" --body $'## Summary\n- add structured audit diffs with explicit oldValues, newValues and affectedColumns in the API and UI\n- add a tenant-scoped Attachment entity with upload/list/download endpoints\n- store files on the local filesystem under a structured tenant/entity path rooted at AttachmentStorage:RootPath or the app App_Data/attachments fallback\n\n## Implementation notes\n- audit diffs are captured in the EF save interceptor from modified properties and exposed as before/after payloads plus affected column names\n- attachments are stored outside the database and linked by relative storage path per tenant, entity type and entity id'",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "gh-view-phase3-pr",
+        "command": "gh pr view phase3-audit-attachments --json number,url,state,mergeStateStatus,headRefName,baseRefName",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "gh-watch-phase3-pr-checks",
+        "command": "gh pr checks phase3-audit-attachments --watch",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "gh-auto-merge-phase3-pr",
+        "command": "gh pr merge phase3-audit-attachments --auto --squash",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "git-show-head-snapshot-top",
+        "command": "git show HEAD:src/AgroPlatform.Infrastructure/Persistence/Migrations/AppDbContextModelSnapshot.cs | sed -n '1,80p'",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
       }
   ]
 }
