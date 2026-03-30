@@ -72,21 +72,15 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 table: "GrainTransfers",
                 column: "TenantId");
 
-            // Use idempotent SQL to guard against CI/fresh-install environments where
-            // the FK may have been created by a previous partial run or EF Core convention.
+            // Idempotent FK creation: drop-if-exists then re-add to handle any environment
+            // (CI fresh DB, partial previous run, or legacy schema without ON DELETE SET NULL).
             migrationBuilder.Sql(@"
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint
-        WHERE conname = 'FK_GrainMovements_GrainTransfers_GrainTransferId'
-    ) THEN
-        ALTER TABLE ""GrainMovements""
-        ADD CONSTRAINT ""FK_GrainMovements_GrainTransfers_GrainTransferId""
-        FOREIGN KEY (""GrainTransferId"") REFERENCES ""GrainTransfers"" (""Id"")
-        ON DELETE SET NULL;
-    END IF;
-END $$;
+ALTER TABLE ""GrainMovements""
+    DROP CONSTRAINT IF EXISTS ""FK_GrainMovements_GrainTransfers_GrainTransferId"";
+ALTER TABLE ""GrainMovements""
+    ADD CONSTRAINT ""FK_GrainMovements_GrainTransfers_GrainTransferId""
+    FOREIGN KEY (""GrainTransferId"") REFERENCES ""GrainTransfers"" (""Id"")
+    ON DELETE SET NULL;
 ");
         }
 
