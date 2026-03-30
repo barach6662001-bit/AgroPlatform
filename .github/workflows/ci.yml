@@ -154,14 +154,14 @@ jobs:
       contents: read
     needs: [build-and-test, frontend-build-and-test]
     env:
-      JWT_KEY: "ci-smoke-test-jwt-key-32-characters-ok!!"
+      JWT_KEY: ${{ secrets.JWT_KEY || 'ci-smoke-test-jwt-key-32-characters-ok!!' }}
     steps:
       - uses: actions/checkout@v6
 
       - name: Build Docker images
-        run: docker compose build
+        run: docker compose build --no-cache
 
-      - name: Start postgres and API
+      - name: Start postgres
         run: |
           docker compose up -d postgres
           echo "Waiting for postgres to be healthy..."
@@ -171,27 +171,40 @@ jobs:
             if [ "$i" -eq 12 ]; then echo "::error::Postgres failed to become healthy"; exit 1; fi
             sleep 5
           done
+
+      - name: Start API
+        run: |
           docker compose up -d --no-deps api
+          echo "Waiting for API container to be running..."
+          for i in $(seq 1 6); do
+            STATE=$(docker compose ps api --format '{{.State}}' 2>/dev/null || echo "unknown")
+            if [ "$STATE" = "running" ]; then echo "✅ API container is running"; break; fi
+            if [ "$STATE" = "exited" ] || [ "$STATE" = "dead" ]; then
+              echo "::error::API container exited immediately (state=$STATE). Dumping logs:"
+              docker compose logs api
+              exit 1
+            fi
+            sleep 2
+          done
 
       - name: Wait for API health check
         run: |
           echo "Waiting for API to become healthy..."
           for i in $(seq 1 30); do
             STATUS=$(docker compose ps api --format '{{.Health}}' 2>/dev/null || echo "unknown")
-            echo "  Attempt $i/30: status=$STATUS"
+            STATE=$(docker compose ps api --format '{{.State}}' 2>/dev/null || echo "unknown")
+            echo "  Attempt $i/30: health=$STATUS state=$STATE"
             if [ "$STATUS" = "healthy" ]; then
               echo "✅ API is healthy"
               break
             fi
-            if [ "$i" -eq 30 ]; then
-              echo "::error::API failed to become healthy within 5 minutes"
+            if [ "$STATE" != "running" ] && [ "$i" -gt 1 ]; then
+              echo "::error::API container stopped (state=$STATE). Dumping logs:"
               docker compose logs api
               exit 1
             fi
-            # Show API logs if container is not running at all
-            RUNNING=$(docker compose ps api --format '{{.State}}' 2>/dev/null || echo "unknown")
-            if [ "$RUNNING" != "running" ] && [ "$RUNNING" != "unknown" ]; then
-              echo "::error::API container is not running (state=$RUNNING), dumping logs:"
+            if [ "$i" -eq 30 ]; then
+              echo "::error::API failed to become healthy within 5 minutes"
               docker compose logs api
               exit 1
             fi
@@ -209,19 +222,18 @@ jobs:
           fi
           echo "✅ API health endpoint responds 200"
 
-      - name: Verify frontend responds
+      - name: Start frontend
         run: |
-          docker compose up -d --no-deps frontend || true
+          docker compose up -d --no-deps frontend
           sleep 5
-          FRONTEND_STATUS=$(docker compose ps frontend --format '{{.Status}}' 2>/dev/null || echo "unknown")
-          echo "Frontend status: $FRONTEND_STATUS"
-          if echo "$FRONTEND_STATUS" | grep -qi "up"; then
-            echo "✅ Frontend container is running"
-          else
-            echo "::error::Frontend container is not running"
+          FRONTEND_STATUS=$(docker compose ps frontend --format '{{.State}}' 2>/dev/null || echo "unknown")
+          echo "Frontend state: $FRONTEND_STATUS"
+          if [ "$FRONTEND_STATUS" != "running" ]; then
+            echo "::error::Frontend container is not running (state=$FRONTEND_STATUS)"
             docker compose logs frontend
             exit 1
           fi
+          echo "✅ Frontend container is running"
 
       - name: Cleanup
         if: always()
