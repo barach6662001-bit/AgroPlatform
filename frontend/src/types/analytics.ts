@@ -50,6 +50,10 @@ export interface DashboardDto {
   totalHoursWorked: number;
   totalFuelConsumed: number;
   totalCosts: number;
+  totalRevenue: number;
+  monthlyExpenses: number;
+  monthlyRevenue: number;
+  monthlyProfit: number;
   costsByCategory: Record<string, number>;
   costTrend: MonthlyCostTrendDto[];
 }
