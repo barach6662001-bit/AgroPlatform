@@ -81,6 +81,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Ignore<DomainEvent>();
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         // Combined tenant + soft-delete query filters (overrides individual configs)
