@@ -33,7 +33,7 @@ public class AdjustGrainBatchHandler : IRequestHandler<AdjustGrainBatchCommand, 
         };
 
         _context.GrainMovements.Add(movement);
-        batch.QuantityTons += request.AdjustmentTons;
+        batch.Adjust(request.AdjustmentTons);
 
         await _context.SaveChangesAsync(cancellationToken);
         return movement.Id;
