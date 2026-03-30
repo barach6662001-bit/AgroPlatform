@@ -101,8 +101,44 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
         _context.StockMoves.Add(transferOut);
         _context.StockMoves.Add(transferIn);
 
-        await _stockBalance.DecreaseBalance(request.SourceWarehouseId, request.ItemId, request.BatchId, quantityBase, cancellationToken);
-        await _stockBalance.IncreaseBalance(request.DestinationWarehouseId, request.ItemId, request.BatchId, quantityBase, item.BaseUnit, cancellationToken);
+        var sourceBalanceAfter = await _stockBalance.DecreaseBalance(request.SourceWarehouseId, request.ItemId, request.BatchId, quantityBase, cancellationToken);
+        var destBalanceAfter   = await _stockBalance.IncreaseBalance(request.DestinationWarehouseId, request.ItemId, request.BatchId, quantityBase, item.BaseUnit, cancellationToken);
+
+        var now = _dateTime.UtcNow;
+        _context.StockLedgerEntries.Add(new StockLedgerEntry
+        {
+            WarehouseId      = request.SourceWarehouseId,
+            ItemId           = request.ItemId,
+            BatchId          = request.BatchId,
+            StockMoveId      = transferOut.Id,
+            OperationId      = operationId,
+            DocumentRef      = request.ClientOperationId,
+            MoveType         = StockMoveType.TransferOut,
+            Quantity         = request.Quantity,
+            UnitCode         = request.UnitCode,
+            QuantityBase     = -quantityBase,         // negative — leaving source
+            BaseUnit         = item.BaseUnit,
+            BalanceAfterBase = sourceBalanceAfter,
+            Note             = request.Note,
+            CreatedAtUtc     = now,
+        });
+        _context.StockLedgerEntries.Add(new StockLedgerEntry
+        {
+            WarehouseId      = request.DestinationWarehouseId,
+            ItemId           = request.ItemId,
+            BatchId          = request.BatchId,
+            StockMoveId      = transferIn.Id,
+            OperationId      = operationId,
+            DocumentRef      = request.ClientOperationId,
+            MoveType         = StockMoveType.TransferIn,
+            Quantity         = request.Quantity,
+            UnitCode         = request.UnitCode,
+            QuantityBase     = quantityBase,          // positive — entering destination
+            BaseUnit         = item.BaseUnit,
+            BalanceAfterBase = destBalanceAfter,
+            Note             = request.Note,
+            CreatedAtUtc     = now,
+        });
 
         try
         {

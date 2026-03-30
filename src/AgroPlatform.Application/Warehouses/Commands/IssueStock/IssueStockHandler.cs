@@ -81,7 +81,27 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, Guid>
 
         _context.StockMoves.Add(move);
 
-        await _stockBalance.DecreaseBalance(request.WarehouseId, request.ItemId, request.BatchId, quantityBase, cancellationToken);
+        var balanceAfter = await _stockBalance.DecreaseBalance(request.WarehouseId, request.ItemId, request.BatchId, quantityBase, cancellationToken);
+
+        _context.StockLedgerEntries.Add(new StockLedgerEntry
+        {
+            WarehouseId      = request.WarehouseId,
+            ItemId           = request.ItemId,
+            BatchId          = request.BatchId,
+            StockMoveId      = move.Id,
+            DocumentRef      = request.ClientOperationId,
+            MoveType         = StockMoveType.Issue,
+            Quantity         = request.Quantity,
+            UnitCode         = request.UnitCode,
+            QuantityBase     = -quantityBase,         // negative — stock out
+            BaseUnit         = item.BaseUnit,
+            BalanceAfterBase = balanceAfter,
+            AgroOperationId  = request.AgroOperationId,
+            FieldId          = request.FieldId,
+            TotalCost        = move.TotalCost,
+            Note             = request.Note,
+            CreatedAtUtc     = _dateTime.UtcNow,
+        });
 
         // Auto-create cost record for manual stock issue
         if (totalCost.HasValue && totalCost.Value > 0)
