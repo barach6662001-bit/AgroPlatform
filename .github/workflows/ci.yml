@@ -154,7 +154,7 @@ jobs:
       contents: read
     needs: [build-and-test, frontend-build-and-test]
     env:
-      JWT_KEY: ${{ secrets.JWT_KEY }}
+      JWT_KEY: ${{ secrets.JWT_KEY || 'ci-smoke-test-jwt-key-32-characters-ok!!' }}
     steps:
       - uses: actions/checkout@v6
 
