@@ -22,12 +22,13 @@ import {
 } from 'recharts';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import type { NotificationDto } from '../api/notifications';
 import type { FieldDto } from '../types/field';
 import PageHeader from '../components/PageHeader';
 import WeatherWidget from '../components/WeatherWidget';
 import { useTranslation } from '../i18n';
+import { useAuthStore } from '../stores/authStore';
 import { useDashboardQuery, useDashboardNotificationsQuery, useDashboardFieldsQuery } from '../hooks/useDashboardQuery';
 
 dayjs.extend(relativeTime);
@@ -40,6 +41,11 @@ const { Text } = Typography;
 export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const role = useAuthStore((s) => s.role);
+
+  if (role === 'SuperAdmin') {
+    return <Navigate to="/superadmin/companies" replace />;
+  }
 
   const { data, isLoading: dashLoading, isError: dashError } = useDashboardQuery();
   const { data: notificationsData, isLoading: notifsLoading } = useDashboardNotificationsQuery();
