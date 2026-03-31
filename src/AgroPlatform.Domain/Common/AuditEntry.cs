@@ -38,6 +38,12 @@ public class AuditEntry
     public string? NewValues { get; set; }
 
     /// <summary>
+    /// JSON array of property names affected by the change.
+    /// Format: ["Field1", "Field2"]
+    /// </summary>
+    public string? AffectedColumns { get; set; }
+
+    /// <summary>
     /// Optional IP address of requester.
     /// </summary>
     public string? IpAddress { get; set; }

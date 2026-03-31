@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
@@ -58,6 +59,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
     public DbSet<FuelTank> FuelTanks => Set<FuelTank>();
     public DbSet<FuelTransaction> FuelTransactions => Set<FuelTransaction>();
+    public DbSet<FuelNorm> FuelNorms => Set<FuelNorm>();
     public DbSet<GrainStorage> GrainStorages => Set<GrainStorage>();
     public DbSet<GrainType> GrainTypes => Set<GrainType>();
     public DbSet<GrainBatch> GrainBatches => Set<GrainBatch>();
@@ -69,12 +71,29 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<SalaryPayment> SalaryPayments => Set<SalaryPayment>();
     public DbSet<Sale> Sales => Set<Sale>();
     public DbSet<Permission> Permissions => Set<Permission>();
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
+    public DbSet<Attachment> Attachments => Set<Attachment>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
+
+    // Immutable stock ledger
+    public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
+
+    // Item categories
+    public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
+
+    // Inventory sessions
+    public DbSet<InventorySession> InventorySessions => Set<InventorySession>();
+    public DbSet<InventorySessionLine> InventorySessionLines => Set<InventorySessionLine>();
+
+    // Global reference data — no tenant query filter applied
+    public DbSet<UnitOfMeasure> UnitsOfMeasure => Set<UnitOfMeasure>();
+    public DbSet<UnitConversionRule> UnitConversionRules => Set<UnitConversionRule>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Ignore<DomainEvent>();
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         // Combined tenant + soft-delete query filters (overrides individual configs)
@@ -108,6 +127,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<LeasePayment>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
         builder.Entity<FuelTank>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
         builder.Entity<FuelTransaction>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
+        builder.Entity<FuelNorm>().HasQueryFilter(n => !n.IsDeleted && n.TenantId == _tenantId);
         builder.Entity<GrainStorage>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
         builder.Entity<GrainType>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
         builder.Entity<GrainBatch>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
@@ -121,6 +141,11 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<Permission>().HasQueryFilter(p => !p.IsDeleted);
         builder.Entity<FieldInspection>().HasQueryFilter(i => !i.IsDeleted && i.TenantId == _tenantId);
         builder.Entity<AuditEntry>().HasQueryFilter(a => a.TenantId == _tenantId);
+        builder.Entity<Attachment>().HasQueryFilter(a => !a.IsDeleted && a.TenantId == _tenantId);
         builder.Entity<ApiKey>().HasQueryFilter(k => !k.IsDeleted && k.TenantId == _tenantId);
+        builder.Entity<StockLedgerEntry>().HasQueryFilter(e => e.TenantId == _tenantId);
+        builder.Entity<ItemCategory>().HasQueryFilter(c => !c.IsDeleted && c.TenantId == _tenantId);
+        builder.Entity<InventorySession>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
+        builder.Entity<InventorySessionLine>().HasQueryFilter(l => !l.IsDeleted && l.TenantId == _tenantId);
     }
 }

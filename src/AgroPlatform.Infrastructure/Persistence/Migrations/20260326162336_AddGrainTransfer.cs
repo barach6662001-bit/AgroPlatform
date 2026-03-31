@@ -72,21 +72,33 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 table: "GrainTransfers",
                 column: "TenantId");
 
+            // Ensure no pre-existing constraint before adding (handles CI environments
+            // where pgdata volume may retain state from a previous failed migration run).
+            migrationBuilder.Sql(@"ALTER TABLE ""GrainMovements"" DROP CONSTRAINT IF EXISTS ""FK_GrainMovements_GrainTransfers_GrainTransferId"";");
+
             migrationBuilder.AddForeignKey(
                 name: "FK_GrainMovements_GrainTransfers_GrainTransferId",
                 table: "GrainMovements",
                 column: "GrainTransferId",
                 principalTable: "GrainTransfers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_GrainMovements_GrainTransfers_GrainTransferId",
-                table: "GrainMovements");
+            migrationBuilder.Sql(@"
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'FK_GrainMovements_GrainTransfers_GrainTransferId'
+    ) THEN
+        ALTER TABLE ""GrainMovements""
+        DROP CONSTRAINT ""FK_GrainMovements_GrainTransfers_GrainTransferId"";
+    END IF;
+END $$;
+");
 
             migrationBuilder.DropTable(
                 name: "GrainTransfers");

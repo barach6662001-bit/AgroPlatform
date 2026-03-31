@@ -16,7 +16,7 @@ public class StockBalanceService : IStockBalanceService
         _dateTime = dateTime;
     }
 
-    public async Task IncreaseBalance(Guid warehouseId, Guid itemId, Guid? batchId, decimal quantity, string baseUnit, CancellationToken cancellationToken)
+    public async Task<decimal> IncreaseBalance(Guid warehouseId, Guid itemId, Guid? batchId, decimal quantity, string baseUnit, CancellationToken cancellationToken)
     {
         var balance = await FindBalance(warehouseId, itemId, batchId, cancellationToken);
 
@@ -40,9 +40,11 @@ public class StockBalanceService : IStockBalanceService
             balance.LastUpdatedUtc = _dateTime.UtcNow;
             balance.RowVersion = NewRowVersionToken();
         }
+
+        return balance.BalanceBase;
     }
 
-    public async Task DecreaseBalance(Guid warehouseId, Guid itemId, Guid? batchId, decimal quantity, CancellationToken cancellationToken)
+    public async Task<decimal> DecreaseBalance(Guid warehouseId, Guid itemId, Guid? batchId, decimal quantity, CancellationToken cancellationToken)
     {
         var balance = await FindBalance(warehouseId, itemId, batchId, cancellationToken);
 
@@ -52,9 +54,11 @@ public class StockBalanceService : IStockBalanceService
         balance.BalanceBase -= quantity;
         balance.LastUpdatedUtc = _dateTime.UtcNow;
         balance.RowVersion = NewRowVersionToken();
+
+        return balance.BalanceBase;
     }
 
-    public async Task SetBalance(Guid warehouseId, Guid itemId, Guid? batchId, decimal quantity, string baseUnit, CancellationToken cancellationToken)
+    public async Task<decimal> SetBalance(Guid warehouseId, Guid itemId, Guid? batchId, decimal quantity, string baseUnit, CancellationToken cancellationToken)
     {
         var balance = await FindBalance(warehouseId, itemId, batchId, cancellationToken);
 
@@ -78,6 +82,8 @@ public class StockBalanceService : IStockBalanceService
             balance.LastUpdatedUtc = _dateTime.UtcNow;
             balance.RowVersion = NewRowVersionToken();
         }
+
+        return balance.BalanceBase;
     }
 
     private Task<StockBalance?> FindBalance(Guid warehouseId, Guid itemId, Guid? batchId, CancellationToken cancellationToken)

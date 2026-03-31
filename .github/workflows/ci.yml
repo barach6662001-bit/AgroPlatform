@@ -153,24 +153,55 @@ jobs:
     permissions:
       contents: read
     needs: [build-and-test, frontend-build-and-test]
+    env:
+      JWT_KEY: ${{ secrets.JWT_KEY || 'ci-smoke-test-jwt-key-32-characters-ok!!' }}
     steps:
       - uses: actions/checkout@v6
 
       - name: Build Docker images
-        run: docker compose build
+        run: docker compose build --no-cache
 
-      - name: Start services
-        run: docker compose up -d
+      - name: Start postgres
+        run: |
+          docker compose up -d postgres
+          echo "Waiting for postgres to be healthy..."
+          for i in $(seq 1 12); do
+            STATUS=$(docker compose ps postgres --format '{{.Health}}' 2>/dev/null || echo "unknown")
+            if [ "$STATUS" = "healthy" ]; then echo "✅ Postgres healthy"; break; fi
+            if [ "$i" -eq 12 ]; then echo "::error::Postgres failed to become healthy"; exit 1; fi
+            sleep 5
+          done
+
+      - name: Start API
+        run: |
+          docker compose up -d --no-deps api
+          echo "Waiting for API container to be running..."
+          for i in $(seq 1 6); do
+            STATE=$(docker compose ps api --format '{{.State}}' 2>/dev/null || echo "unknown")
+            if [ "$STATE" = "running" ]; then echo "✅ API container is running"; break; fi
+            if [ "$STATE" = "exited" ] || [ "$STATE" = "dead" ]; then
+              echo "::error::API container exited immediately (state=$STATE). Dumping logs:"
+              docker compose logs api
+              exit 1
+            fi
+            sleep 2
+          done
 
       - name: Wait for API health check
         run: |
           echo "Waiting for API to become healthy..."
           for i in $(seq 1 30); do
             STATUS=$(docker compose ps api --format '{{.Health}}' 2>/dev/null || echo "unknown")
-            echo "  Attempt $i/30: status=$STATUS"
+            STATE=$(docker compose ps api --format '{{.State}}' 2>/dev/null || echo "unknown")
+            echo "  Attempt $i/30: health=$STATUS state=$STATE"
             if [ "$STATUS" = "healthy" ]; then
               echo "✅ API is healthy"
               break
+            fi
+            if [ "$STATE" != "running" ] && [ "$i" -gt 1 ]; then
+              echo "::error::API container stopped (state=$STATE). Dumping logs:"
+              docker compose logs api
+              exit 1
             fi
             if [ "$i" -eq 30 ]; then
               echo "::error::API failed to become healthy within 5 minutes"
@@ -182,7 +213,10 @@ jobs:
 
       - name: Verify API responds
         run: |
-          HTTP_CODE=$(docker compose exec api wget -qO- -S http://localhost:8080/health/live 2>&1 | grep "HTTP/" | tail -1 | awk '{print $2}')
+          HTTP_CODE=$(docker compose exec api wget -qO- -S http://localhost:8080/health/live 2>&1 | grep -oP 'HTTP/\S+\s+\K\d{3}' | tail -1)
+          if [ -z "$HTTP_CODE" ]; then
+            HTTP_CODE=$(docker compose exec api wget --spider -S http://localhost:8080/health/live 2>&1 | grep -oP '\d{3}' | head -1)
+          fi
           echo "Health endpoint returned: $HTTP_CODE"
           if [ "$HTTP_CODE" != "200" ]; then
             echo "::error::Health endpoint returned $HTTP_CODE instead of 200"
@@ -191,17 +225,18 @@ jobs:
           fi
           echo "✅ API health endpoint responds 200"
 
-      - name: Verify frontend responds
+      - name: Start frontend
         run: |
-          FRONTEND_STATUS=$(docker compose ps frontend --format '{{.Status}}' 2>/dev/null || echo "unknown")
-          echo "Frontend status: $FRONTEND_STATUS"
-          if echo "$FRONTEND_STATUS" | grep -qi "up"; then
-            echo "✅ Frontend container is running"
-          else
-            echo "::error::Frontend container is not running"
+          docker compose up -d --no-deps frontend
+          sleep 5
+          FRONTEND_STATUS=$(docker compose ps frontend --format '{{.State}}' 2>/dev/null || echo "unknown")
+          echo "Frontend state: $FRONTEND_STATUS"
+          if [ "$FRONTEND_STATUS" != "running" ]; then
+            echo "::error::Frontend container is not running (state=$FRONTEND_STATUS)"
             docker compose logs frontend
             exit 1
           fi
+          echo "✅ Frontend container is running"
 
       - name: Cleanup
         if: always()

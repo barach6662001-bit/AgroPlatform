@@ -11,7 +11,7 @@ namespace AgroPlatform.UnitTests.Warehouses;
 
 public class IssueStockHandlerTests
 {
-    private static (IAppDbContext context, IStockBalanceService stockBalance) CreateDependencies()
+    private static (IAppDbContext context, IStockBalanceService stockBalance, IUnitConversionService unitConversion) CreateDependencies()
     {
         var options = new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -20,14 +20,17 @@ public class IssueStockHandlerTests
         var dateTime = Substitute.For<IDateTimeService>();
         dateTime.UtcNow.Returns(DateTime.UtcNow);
         var stockBalance = new StockBalanceService(context, dateTime);
-        return (context, stockBalance);
+        var unitConversion = Substitute.For<IUnitConversionService>();
+        unitConversion.ConvertAsync(Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.ArgAt<decimal>(0));
+        return (context, stockBalance, unitConversion);
     }
 
     [Fact]
     public async Task Handle_SufficientBalance_CreatesIssueAndDecreasesBalance()
     {
         // Arrange
-        var (context, stockBalance) = CreateDependencies();
+        var (context, stockBalance, unitConversion) = CreateDependencies();
         var dateTime = Substitute.For<IDateTimeService>();
         dateTime.UtcNow.Returns(DateTime.UtcNow);
 
@@ -47,14 +50,15 @@ public class IssueStockHandlerTests
         context.StockBalances.Add(balance);
         await context.SaveChangesAsync();
 
-        var handler = new IssueStockHandler(context, dateTime, stockBalance);
+        var handler = new IssueStockHandler(context, dateTime, stockBalance, unitConversion);
         var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null, null, null);
 
         // Act
-        var moveId = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        moveId.Should().NotBeEmpty();
+        result.IssuedBatches.Should().NotBeEmpty();
+        result.IssuedBatches[0].StockMoveId.Should().NotBeEmpty();
 
         var updatedBalance = await ((TestDbContext)context).StockBalances
             .FirstOrDefaultAsync(b => b.WarehouseId == warehouse.Id && b.ItemId == item.Id);
@@ -65,7 +69,7 @@ public class IssueStockHandlerTests
     public async Task Handle_InsufficientBalance_ThrowsConflictException()
     {
         // Arrange
-        var (context, stockBalance) = CreateDependencies();
+        var (context, stockBalance, unitConversion) = CreateDependencies();
         var dateTime = Substitute.For<IDateTimeService>();
         dateTime.UtcNow.Returns(DateTime.UtcNow);
 
@@ -85,7 +89,7 @@ public class IssueStockHandlerTests
         context.StockBalances.Add(balance);
         await context.SaveChangesAsync();
 
-        var handler = new IssueStockHandler(context, dateTime, stockBalance);
+        var handler = new IssueStockHandler(context, dateTime, stockBalance, unitConversion);
         var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null, null, null);
 
         // Act
@@ -99,7 +103,7 @@ public class IssueStockHandlerTests
     public async Task Handle_NoBalance_ThrowsConflictException()
     {
         // Arrange
-        var (context, stockBalance) = CreateDependencies();
+        var (context, stockBalance, unitConversion) = CreateDependencies();
         var dateTime = Substitute.For<IDateTimeService>();
         dateTime.UtcNow.Returns(DateTime.UtcNow);
 
@@ -109,7 +113,7 @@ public class IssueStockHandlerTests
         context.WarehouseItems.Add(item);
         await context.SaveChangesAsync();
 
-        var handler = new IssueStockHandler(context, dateTime, stockBalance);
+        var handler = new IssueStockHandler(context, dateTime, stockBalance, unitConversion);
         var command = new IssueStockCommand(warehouse.Id, item.Id, null, 10m, "kg", null, null, null, null);
 
         // Act

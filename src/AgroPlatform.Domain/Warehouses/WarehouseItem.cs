@@ -11,4 +11,8 @@ public class WarehouseItem : AuditableEntity
     public string? Description { get; set; }
     public decimal? MinimumQuantity { get; set; }
     public decimal? PurchasePrice { get; set; }
+
+    /// <summary>Optional FK to the ItemCategories reference table (TASK-015).</summary>
+    public Guid? CategoryId { get; set; }
+    public ItemCategory? ItemCategory { get; set; }
 }

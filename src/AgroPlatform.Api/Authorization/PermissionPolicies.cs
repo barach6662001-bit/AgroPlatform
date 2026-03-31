@@ -69,14 +69,8 @@ public static class PermissionPolicies
             options.AddPolicy(Permissions.Warehouses.View,
                 policy => policy.RequireAuthenticatedUser());
 
-            options.AddPolicy(Permissions.Warehouses.Manage,
-                policy => policy.RequireRole(WarehouseManagers));
-
             options.AddPolicy(Permissions.Inventory.View,
                 policy => policy.RequireAuthenticatedUser());
-
-            options.AddPolicy(Permissions.Inventory.Manage,
-                policy => policy.RequireRole(InventoryManagers));
 
             options.AddPolicy(Permissions.Analytics.View,
                 policy => policy.RequireAuthenticatedUser());
@@ -84,11 +78,17 @@ public static class PermissionPolicies
             options.AddPolicy(Permissions.Machinery.View,
                 policy => policy.RequireAuthenticatedUser());
 
-            options.AddPolicy(Permissions.Machinery.Manage,
-                policy => policy.RequireRole(MachineryManagers));
-
             options.AddPolicy(Permissions.Fields.View,
                 policy => policy.RequireAuthenticatedUser());
+
+            options.AddPolicy(Permissions.Warehouses.Manage,
+                policy => policy.RequireRole(WarehouseManagers));
+
+            options.AddPolicy(Permissions.Inventory.Manage,
+                policy => policy.RequireRole(InventoryManagers));
+
+            options.AddPolicy(Permissions.Machinery.Manage,
+                policy => policy.RequireRole(MachineryManagers));
 
             options.AddPolicy(Permissions.Fields.Manage,
                 policy => policy.RequireRole(FieldManagers));

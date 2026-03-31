@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<SoftDeleteInterceptor>();
         services.AddScoped<TenantInterceptor>();
         services.AddScoped<AuditInterceptor>();
+        services.AddScoped<DomainEventInterceptor>();
 
         services.AddDbContext<AppDbContext>((sp, options) =>
         {
@@ -36,7 +37,8 @@ public static class DependencyInjection
                 sp.GetRequiredService<AuditableEntityInterceptor>(),
                 sp.GetRequiredService<SoftDeleteInterceptor>(),
                 sp.GetRequiredService<TenantInterceptor>(),
-                sp.GetRequiredService<AuditInterceptor>()
+                sp.GetRequiredService<AuditInterceptor>(),
+                sp.GetRequiredService<DomainEventInterceptor>()
             );
         });
 
@@ -46,6 +48,7 @@ public static class DependencyInjection
         services.AddScoped<ITenantService, TenantService>();
         services.AddSingleton<IDateTimeService, DateTimeService>();
         services.AddSingleton<INotificationService, NotificationService>();
+        services.AddSingleton<IAttachmentStorage, LocalAttachmentStorage>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
 
         services.AddIdentity<AppUser, IdentityRole>(options =>

@@ -13,12 +13,18 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
     private readonly IAppDbContext _context;
     private readonly IDateTimeService _dateTime;
     private readonly IStockBalanceService _stockBalance;
+    private readonly IUnitConversionService _unitConversion;
 
-    public InventoryAdjustHandler(IAppDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance)
+    public InventoryAdjustHandler(
+        IAppDbContext context,
+        IDateTimeService dateTime,
+        IStockBalanceService stockBalance,
+        IUnitConversionService unitConversion)
     {
         _context = context;
         _dateTime = dateTime;
         _stockBalance = stockBalance;
+        _unitConversion = unitConversion;
     }
 
     public async Task<InventoryAdjustResultDto> Handle(InventoryAdjustCommand request, CancellationToken cancellationToken)
@@ -31,8 +37,12 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
         if (!warehouse.IsActive)
             throw new ConflictException($"Warehouse '{warehouse.Name}' is not active.");
 
-        _ = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
+        var item = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);
+
+        // Convert the stated actual quantity to the item's base unit for balance accounting.
+        var actualBase = await _unitConversion.ConvertAsync(
+            request.ActualQuantity, request.UnitCode, item.BaseUnit, cancellationToken);
 
         var currentBalance = await _context.StockBalances
             .FirstOrDefaultAsync(b =>
@@ -41,15 +51,15 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
                 b.BatchId == request.BatchId,
                 cancellationToken);
 
-        var currentQty = currentBalance?.BalanceBase ?? 0m;
-        var difference = request.ActualQuantity - currentQty;
+        var currentQty = currentBalance?.BalanceBase ?? 0m;  // always in base unit
+        var difference = actualBase - currentQty;
 
         Guid? moveId = null;
 
         if (difference != 0)
         {
             var moveType = difference > 0 ? StockMoveType.InventoryPlus : StockMoveType.InventoryMinus;
-            var adjustQty = Math.Abs(difference);
+            var adjustQty = Math.Abs(difference);  // in base unit
 
             var move = new StockMove
             {
@@ -57,9 +67,9 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
                 ItemId = request.ItemId,
                 BatchId = request.BatchId,
                 MoveType = moveType,
-                Quantity = adjustQty,
-                UnitCode = request.UnitCode,
-                QuantityBase = adjustQty,
+                Quantity = request.ActualQuantity, // original stated count
+                UnitCode = request.UnitCode,       // original stated unit
+                QuantityBase = adjustQty,          // delta in base unit
                 Note = request.Note,
                 ClientOperationId = request.ClientOperationId
             };
@@ -68,9 +78,39 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
             moveId = move.Id;
         }
 
-        await _stockBalance.SetBalance(request.WarehouseId, request.ItemId, request.BatchId, request.ActualQuantity, request.UnitCode, cancellationToken);
+        var balanceAfter = await _stockBalance.SetBalance(request.WarehouseId, request.ItemId, request.BatchId, actualBase, item.BaseUnit, cancellationToken);
 
-        await _context.SaveChangesAsync(cancellationToken);
+        if (difference != 0)
+        {
+            // Write one signed ledger entry per adjustment (positive = inventory surplus, negative = shrinkage)
+            var moveType = difference > 0 ? StockMoveType.InventoryPlus : StockMoveType.InventoryMinus;
+            _context.StockLedgerEntries.Add(new StockLedgerEntry
+            {
+                WarehouseId      = request.WarehouseId,
+                ItemId           = request.ItemId,
+                BatchId          = request.BatchId,
+                StockMoveId      = moveId,
+                DocumentRef      = request.ClientOperationId,
+                MoveType         = moveType,
+                Quantity         = request.ActualQuantity,    // stated physical count
+                UnitCode         = request.UnitCode,
+                QuantityBase     = difference,                // signed delta in base unit
+                BaseUnit         = item.BaseUnit,
+                BalanceAfterBase = balanceAfter,
+                Note             = request.Note,
+                CreatedAtUtc     = _dateTime.UtcNow,
+            });
+        }
+
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("A concurrent update was detected on the stock balance. Please retry the operation.");
+        }
+
         if (tx is not null)
         {
             await tx.CommitAsync(cancellationToken);

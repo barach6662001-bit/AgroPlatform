@@ -12,10 +12,12 @@ namespace AgroPlatform.Api.Middleware;
 public class TenantAuthorizationMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<TenantAuthorizationMiddleware> _logger;
 
-    public TenantAuthorizationMiddleware(RequestDelegate next)
+    public TenantAuthorizationMiddleware(RequestDelegate next, ILogger<TenantAuthorizationMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)

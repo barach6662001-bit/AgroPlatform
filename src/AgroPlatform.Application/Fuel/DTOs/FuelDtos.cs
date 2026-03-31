@@ -1,5 +1,30 @@
 namespace AgroPlatform.Application.Fuel.DTOs;
 
+public class FuelNormDto
+{
+    public Guid Id { get; set; }
+    public string MachineType { get; set; } = string.Empty;
+    public string OperationType { get; set; } = string.Empty;
+    public decimal? NormLitersPerHa { get; set; }
+    public decimal? NormLitersPerHour { get; set; }
+    public string? Notes { get; set; }
+}
+
+public class FuelConsumptionComparisonDto
+{
+    public Guid? MachineId { get; set; }
+    public string? MachineName { get; set; }
+    public string MachineType { get; set; } = string.Empty;
+    public string OperationType { get; set; } = string.Empty;
+    public decimal ActualLiters { get; set; }
+    public decimal? AreaHa { get; set; }
+    public decimal? NormLitersPerHa { get; set; }
+    public decimal? ExpectedLiters { get; set; }
+    public decimal? DeviationLiters { get; set; }
+    /// <summary>Positive = over-consumption, negative = under-consumption.</summary>
+    public decimal? DeviationPercent { get; set; }
+}
+
 public class FuelTankDto
 {
     public Guid Id { get; set; }

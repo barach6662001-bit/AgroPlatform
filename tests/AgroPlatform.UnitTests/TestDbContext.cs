@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
@@ -18,6 +19,26 @@ namespace AgroPlatform.UnitTests;
 public class TestDbContext : DbContext, IAppDbContext
 {
     public TestDbContext(DbContextOptions<TestDbContext> options) : base(options) { }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Ignore<DomainEvent>();
+
+        modelBuilder.Entity<UnitOfMeasure>(e =>
+        {
+            e.HasKey(u => u.Code);
+            e.Property(u => u.Code).HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<UnitConversionRule>(e =>
+        {
+            e.HasKey(r => r.Id);
+            e.HasIndex(r => new { r.FromUnit, r.ToUnit }).IsUnique();
+            e.HasOne(r => r.From).WithMany(u => u.FromRules).HasForeignKey(r => r.FromUnit);
+            e.HasOne(r => r.To).WithMany(u => u.ToRules).HasForeignKey(r => r.ToUnit);
+        });
+    }
 
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
     public DbSet<WarehouseItem> WarehouseItems => Set<WarehouseItem>();
@@ -51,6 +72,7 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<LeasePayment> LeasePayments => Set<LeasePayment>();
     public DbSet<FuelTank> FuelTanks => Set<FuelTank>();
     public DbSet<FuelTransaction> FuelTransactions => Set<FuelTransaction>();
+    public DbSet<FuelNorm> FuelNorms => Set<FuelNorm>();
     public DbSet<GrainStorageEntities.GrainStorage> GrainStorages => Set<GrainStorageEntities.GrainStorage>();
     public DbSet<GrainStorageEntities.GrainType> GrainTypes => Set<GrainStorageEntities.GrainType>();
     public DbSet<GrainStorageEntities.GrainBatch> GrainBatches => Set<GrainStorageEntities.GrainBatch>();
@@ -63,6 +85,14 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<Sale> Sales => Set<Sale>();
     public DbSet<AppUser> Users => Set<AppUser>();
     public DbSet<Permission> Permissions => Set<Permission>();
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
+    public DbSet<Attachment> Attachments => Set<Attachment>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
+    public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
+    public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
+    public DbSet<InventorySession> InventorySessions => Set<InventorySession>();
+    public DbSet<InventorySessionLine> InventorySessionLines => Set<InventorySessionLine>();
+    public DbSet<UnitOfMeasure> UnitsOfMeasure => Set<UnitOfMeasure>();
+    public DbSet<UnitConversionRule> UnitConversionRules => Set<UnitConversionRule>();
 }

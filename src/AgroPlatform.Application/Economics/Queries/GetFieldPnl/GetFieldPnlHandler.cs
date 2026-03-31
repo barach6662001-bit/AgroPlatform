@@ -62,6 +62,19 @@ public class GetFieldPnlHandler : IRequestHandler<GetFieldPnlQuery, IReadOnlyLis
 
         var yieldHistory = harvestYields.Concat(fallbackYields).ToList();
 
+        // Load direct sales revenue by field for the year
+        var salesByField = await _context.Sales
+            .Where(s => !s.IsDeleted
+                        && s.FieldId.HasValue
+                        && fieldIds.Contains(s.FieldId!.Value)
+                        && s.Date >= yearStart
+                        && s.Date <= yearEnd)
+            .GroupBy(s => s.FieldId!.Value)
+            .Select(g => new { FieldId = g.Key, TotalRevenue = g.Sum(s => s.TotalAmount) })
+            .ToListAsync(cancellationToken);
+
+        var salesRevenueMap = salesByField.ToDictionary(x => x.FieldId, x => x.TotalRevenue);
+
         // Build result
         var result = new List<FieldPnlDto>(fields.Count);
 
@@ -69,10 +82,9 @@ public class GetFieldPnlHandler : IRequestHandler<GetFieldPnlQuery, IReadOnlyLis
         {
             var fieldCosts = costRecords.Where(c => c.FieldId == field.Id).ToList();
 
-            // Separate expenses (positive) and revenue (negative amounts)
+            // Separate expenses (positive) and cost-record revenue (negative amounts)
             var expenses = fieldCosts.Where(c => c.Amount > 0).Sum(c => c.Amount);
-            var actualRevenue = fieldCosts.Where(c => c.Amount < 0).Sum(c => Math.Abs(c.Amount));
-            var totalCosts = expenses; // Only positive costs
+            var costRecordRevenue = fieldCosts.Where(c => c.Amount < 0).Sum(c => Math.Abs(c.Amount));
 
             var costsByCategory = fieldCosts
                 .Where(c => c.Amount > 0)
@@ -81,26 +93,45 @@ public class GetFieldPnlHandler : IRequestHandler<GetFieldPnlQuery, IReadOnlyLis
 
             var yieldRecord = yieldHistory.FirstOrDefault(h => h.FieldId == field.Id);
             var yieldPerHectare = yieldRecord?.YieldPerHectare;
+            var actualYieldTons = yieldPerHectare.HasValue && field.AreaHectares > 0
+                ? Math.Round(yieldPerHectare.Value * field.AreaHectares, 2)
+                : (decimal?)null;
 
-            decimal? estimatedRevenue = null;
-            decimal? netProfit = null;
-            decimal? revenuePerHectare = null;
-
+            // Estimated revenue from yield × price
+            decimal? yieldEstimatedRevenue = null;
             if (yieldPerHectare.HasValue && request.EstimatedPricePerTonne.HasValue && field.AreaHectares > 0)
+                yieldEstimatedRevenue = Math.Round(yieldPerHectare.Value * field.AreaHectares * request.EstimatedPricePerTonne.Value, 2);
+
+            // Revenue priority: Sales > CostRecord negatives > Estimated
+            salesRevenueMap.TryGetValue(field.Id, out var salesRevenue);
+            string revenueSource;
+            decimal? bestRevenue;
+
+            if (salesRevenue > 0)
             {
-                estimatedRevenue = Math.Round(yieldPerHectare.Value * field.AreaHectares * request.EstimatedPricePerTonne.Value, 2);
-                netProfit = Math.Round(estimatedRevenue.Value - expenses, 2);
-                revenuePerHectare = Math.Round(estimatedRevenue.Value / field.AreaHectares, 2);
+                bestRevenue = salesRevenue;
+                revenueSource = "Sales";
+            }
+            else if (costRecordRevenue > 0)
+            {
+                bestRevenue = costRecordRevenue;
+                revenueSource = "CostRecords";
+            }
+            else if (yieldEstimatedRevenue.HasValue)
+            {
+                bestRevenue = yieldEstimatedRevenue;
+                revenueSource = "Estimated";
+            }
+            else
+            {
+                bestRevenue = null;
+                revenueSource = "None";
             }
 
-            // Use actual revenue from grain sales if available, otherwise estimate
-            decimal? finalRevenue = actualRevenue > 0 ? actualRevenue : estimatedRevenue;
-            decimal? finalNetProfit = finalRevenue.HasValue
-                ? Math.Round(finalRevenue.Value - expenses, 2)
-                : netProfit;
-            decimal? finalRevenuePerHa = finalRevenue.HasValue && field.AreaHectares > 0
-                ? Math.Round(finalRevenue.Value / field.AreaHectares, 2)
-                : revenuePerHectare;
+            decimal? finalNetProfit = bestRevenue.HasValue ? Math.Round(bestRevenue.Value - expenses, 2) : (decimal?)null;
+            decimal? finalRevenuePerHa = bestRevenue.HasValue && field.AreaHectares > 0
+                ? Math.Round(bestRevenue.Value / field.AreaHectares, 2)
+                : (decimal?)null;
 
             result.Add(new FieldPnlDto
             {
@@ -112,9 +143,13 @@ public class GetFieldPnlHandler : IRequestHandler<GetFieldPnlQuery, IReadOnlyLis
                 CostsByCategory = costsByCategory,
                 CostPerHectare = field.AreaHectares > 0 ? Math.Round(expenses / field.AreaHectares, 2) : 0,
                 ActualYieldPerHectare = yieldPerHectare,
-                EstimatedRevenue = finalRevenue,
+                ActualYieldTons = actualYieldTons,
+                ActualSalesRevenue = salesRevenue,
+                ActualCostRecordRevenue = costRecordRevenue,
+                EstimatedRevenue = bestRevenue,
                 NetProfit = finalNetProfit,
                 RevenuePerHectare = finalRevenuePerHa,
+                RevenueSource = revenueSource,
             });
         }
 

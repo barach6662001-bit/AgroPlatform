@@ -4,9 +4,9 @@ import { Table, Select, Space, message, Tag, Button, Modal, Form, InputNumber, D
 import { PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import apiClient from '../../api/axios';
-import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue, createWarehouseItem, createTransfer, updateWarehouseItem } from '../../api/warehouses';
+import { getBalances, getWarehouses, getWarehouseItems, createReceipt, createIssue, createWarehouseItem, createTransfer, updateWarehouseItem, getItemCategories } from '../../api/warehouses';
 import { getFields } from '../../api/fields';
-import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
+import type { BalanceDto, WarehouseDto, WarehouseItemDto, ItemCategoryDto } from '../../types/warehouse';
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
@@ -22,6 +22,7 @@ export default function WarehouseItems() {
   const [warehouses, setWarehouses] = useState<WarehouseDto[]>([]);
   const [items, setItems] = useState<WarehouseItemDto[]>([]);
   const [fields, setFields] = useState<FieldDto[]>([]);
+  const [categories, setCategories] = useState<ItemCategoryDto[]>([]);
   const [selectedWarehouse, setSelectedWarehouse] = useState<string | undefined>(initialWarehouse);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -71,6 +72,7 @@ export default function WarehouseItems() {
 
   useEffect(() => {
     getFields({ pageSize: 200 }).then((r) => setFields(r.items)).catch(() => {});
+    getItemCategories().then(setCategories).catch(() => {});
   }, []);
 
   useEffect(() => { loadBalances(selectedWarehouse, page, pageSize); }, [page, pageSize]);
@@ -421,13 +423,12 @@ export default function WarehouseItems() {
             <Input />
           </Form.Item>
           <Form.Item name="category" label={t.warehouses.category} rules={[{ required: true, message: t.common.required }]}>
-            <Select options={[
-              { value: 'Seeds', label: t.warehouses.categorySeeds },
-              { value: 'Fertilizers', label: t.warehouses.categoryFertilizers },
-              { value: 'Fuel', label: t.warehouses.categoryFuel },
-              { value: 'Pesticides', label: t.warehouses.categoryPesticides },
-              { value: 'Other', label: t.warehouses.categoryOther },
-            ]} />
+            <Select
+              showSearch
+              optionFilterProp="label"
+              options={categories.map(c => ({ value: c.name, label: c.name }))}
+              placeholder={t.warehouses.selectCategory}
+            />
           </Form.Item>
           <Form.Item name="baseUnit" label={t.warehouses.baseUnit} rules={[{ required: true, message: t.common.required }]}>
             <Select options={[
@@ -495,13 +496,12 @@ export default function WarehouseItems() {
             <Input />
           </Form.Item>
           <Form.Item name="category" label={t.warehouses.category} rules={[{ required: true, message: t.common.required }]}>
-            <Select options={[
-              { value: 'Seeds', label: t.warehouses.categorySeeds },
-              { value: 'Fertilizers', label: t.warehouses.categoryFertilizers },
-              { value: 'Fuel', label: t.warehouses.categoryFuel },
-              { value: 'Pesticides', label: t.warehouses.categoryPesticides },
-              { value: 'Other', label: t.warehouses.categoryOther },
-            ]} />
+            <Select
+              showSearch
+              optionFilterProp="label"
+              options={categories.map(c => ({ value: c.name, label: c.name }))}
+              placeholder={t.warehouses.selectCategory}
+            />
           </Form.Item>
           <Form.Item name="baseUnit" label={t.warehouses.baseUnit} rules={[{ required: true, message: t.common.required }]}>
             <Select options={[

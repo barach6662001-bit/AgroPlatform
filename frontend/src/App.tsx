@@ -21,6 +21,7 @@ import CropRotationAdvisor from './pages/Fields/CropRotationAdvisor';
 import WarehousesList from './pages/Warehouses/WarehousesList';
 import WarehouseItems from './pages/Warehouses/WarehouseItems';
 import StockMovements from './pages/Warehouses/StockMovements';
+import InventorySessions from './pages/Warehouses/InventorySessions';
 import StoragePage from './pages/GrainStorage/StoragePage';
 import OperationsList from './pages/Operations/OperationsList';
 import OperationDetail from './pages/Operations/OperationDetail';
@@ -93,6 +94,7 @@ export default function App() {
             <Route path="/warehouses" element={<WarehousesList />} />
             <Route path="/warehouses/items" element={<WarehouseItems />} />
             <Route path="/warehouses/movements" element={<StockMovements />} />
+            <Route path="/warehouses/inventory" element={<InventorySessions />} />
             <Route path="/storage" element={<StoragePage />} />
             <Route path="/grain" element={<Navigate to="/storage" replace />} />
             <Route path="/grain-storages" element={<Navigate to="/storage" replace />} />

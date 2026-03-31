@@ -13,12 +13,18 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
     private readonly IAppDbContext _context;
     private readonly IDateTimeService _dateTime;
     private readonly IStockBalanceService _stockBalance;
+    private readonly IUnitConversionService _unitConversion;
 
-    public ReceiptStockHandler(IAppDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance)
+    public ReceiptStockHandler(
+        IAppDbContext context,
+        IDateTimeService dateTime,
+        IStockBalanceService stockBalance,
+        IUnitConversionService unitConversion)
     {
         _context = context;
         _dateTime = dateTime;
         _stockBalance = stockBalance;
+        _unitConversion = unitConversion;
     }
 
     public async Task<Guid> Handle(ReceiptStockCommand request, CancellationToken cancellationToken)
@@ -44,8 +50,7 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
         var warehouse = await _context.Warehouses.FindAsync(new object[] { request.WarehouseId }, cancellationToken)
             ?? throw new NotFoundException(nameof(Warehouse), request.WarehouseId);
 
-        if (!warehouse.IsActive)
-            throw new ConflictException($"Warehouse '{warehouse.Name}' is not active.");
+        warehouse.EnsureActive();
 
         var item = await _context.WarehouseItems.FindAsync(new object[] { request.ItemId }, cancellationToken)
             ?? throw new NotFoundException(nameof(WarehouseItem), request.ItemId);
@@ -73,15 +78,19 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
             batchId = batch.Id;
         }
 
+        // Convert requested quantity to item's base unit for balance accounting.
+        var quantityBase = await _unitConversion.ConvertAsync(
+            request.Quantity, request.UnitCode, item.BaseUnit, cancellationToken);
+
         var move = new StockMove
         {
             WarehouseId = request.WarehouseId,
             ItemId = request.ItemId,
             BatchId = batchId,
             MoveType = StockMoveType.Receipt,
-            Quantity = request.Quantity,
-            UnitCode = request.UnitCode,
-            QuantityBase = request.Quantity,
+            Quantity = request.Quantity,      // original requested quantity
+            UnitCode = request.UnitCode,      // original requested unit
+            QuantityBase = quantityBase,      // converted to item base unit
             Note = request.Note,
             ClientOperationId = request.ClientOperationId,
             TotalCost = request.PricePerUnit.HasValue
@@ -91,9 +100,35 @@ public class ReceiptStockHandler : IRequestHandler<ReceiptStockCommand, Guid>
 
         _context.StockMoves.Add(move);
 
-        await _stockBalance.IncreaseBalance(request.WarehouseId, request.ItemId, batchId, request.Quantity, request.UnitCode, cancellationToken);
+        var balanceAfter = await _stockBalance.IncreaseBalance(request.WarehouseId, request.ItemId, batchId, quantityBase, item.BaseUnit, cancellationToken);
 
-        await _context.SaveChangesAsync(cancellationToken);
+        _context.StockLedgerEntries.Add(new StockLedgerEntry
+        {
+            WarehouseId     = request.WarehouseId,
+            ItemId          = request.ItemId,
+            BatchId         = batchId,
+            StockMoveId     = move.Id,
+            DocumentRef     = request.ClientOperationId,
+            MoveType        = StockMoveType.Receipt,
+            Quantity        = request.Quantity,
+            UnitCode        = request.UnitCode,
+            QuantityBase    = quantityBase,           // positive — stock in
+            BaseUnit        = item.BaseUnit,
+            BalanceAfterBase = balanceAfter,
+            TotalCost       = move.TotalCost,
+            Note            = request.Note,
+            CreatedAtUtc    = _dateTime.UtcNow,
+        });
+
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("A concurrent update was detected on the stock balance. Please retry the operation.");
+        }
+
         if (tx is not null)
         {
             await tx.CommitAsync(cancellationToken);

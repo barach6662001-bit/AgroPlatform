@@ -1,4 +1,5 @@
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Fields;
@@ -60,11 +61,28 @@ public interface IAppDbContext
     DbSet<SalaryPayment> SalaryPayments { get; }
     DbSet<FuelTank> FuelTanks { get; }
     DbSet<FuelTransaction> FuelTransactions { get; }
+    DbSet<FuelNorm> FuelNorms { get; }
     DbSet<Sale> Sales { get; }
     DbSet<AppUser> Users { get; }
     DbSet<Permission> Permissions { get; }
+    DbSet<RolePermission> RolePermissions { get; }
     DbSet<AuditEntry> AuditEntries { get; }
+    DbSet<Attachment> Attachments { get; }
     DbSet<ApiKey> ApiKeys { get; }
+
+    // Immutable stock ledger
+    DbSet<StockLedgerEntry> StockLedgerEntries { get; }
+
+    // Item categories reference
+    DbSet<ItemCategory> ItemCategories { get; }
+
+    // Inventory sessions
+    DbSet<InventorySession> InventorySessions { get; }
+    DbSet<InventorySessionLine> InventorySessionLines { get; }
+
+    // Global reference data — not tenant-scoped
+    DbSet<UnitOfMeasure> UnitsOfMeasure { get; }
+    DbSet<UnitConversionRule> UnitConversionRules { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

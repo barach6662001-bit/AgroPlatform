@@ -12,7 +12,7 @@ namespace AgroPlatform.UnitTests.Warehouses;
 
 public class TransferStockHandlerTests
 {
-    private static (TestDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance) CreateDependencies()
+    private static (TestDbContext context, IDateTimeService dateTime, IStockBalanceService stockBalance, IUnitConversionService unitConversion) CreateDependencies()
     {
         var options = new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -21,14 +21,17 @@ public class TransferStockHandlerTests
         var dateTime = Substitute.For<IDateTimeService>();
         dateTime.UtcNow.Returns(DateTime.UtcNow);
         var stockBalance = new StockBalanceService(context, dateTime);
-        return (context, dateTime, stockBalance);
+        var unitConversion = Substitute.For<IUnitConversionService>();
+        unitConversion.ConvertAsync(Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.ArgAt<decimal>(0));
+        return (context, dateTime, stockBalance, unitConversion);
     }
 
     [Fact]
     public async Task TransferStock_ValidRequest_CreatesTwoMoves()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
         var source = new Warehouse { Name = "Source", IsActive = true };
         var dest = new Warehouse { Name = "Dest", IsActive = true };
@@ -47,7 +50,7 @@ public class TransferStockHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new TransferStockHandler(context, dateTime, stockBalance);
+        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion);
         var command = new TransferStockCommand(source.Id, dest.Id, item.Id, null, 60m, "kg", null, null);
 
         // Act
@@ -72,7 +75,7 @@ public class TransferStockHandlerTests
     public async Task TransferStock_InsufficientBalance_ThrowsException()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
         var source = new Warehouse { Name = "Source", IsActive = true };
         var dest = new Warehouse { Name = "Dest", IsActive = true };
@@ -91,7 +94,7 @@ public class TransferStockHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new TransferStockHandler(context, dateTime, stockBalance);
+        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion);
         var command = new TransferStockCommand(source.Id, dest.Id, item.Id, null, 50m, "kg", null, null);
 
         // Act
@@ -105,9 +108,9 @@ public class TransferStockHandlerTests
     public async Task TransferStock_SourceWarehouseNotFound_ThrowsNotFoundException()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
-        var handler = new TransferStockHandler(context, dateTime, stockBalance);
+        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion);
         var command = new TransferStockCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), null, 10m, "kg", null, null);
 
         // Act
@@ -121,10 +124,10 @@ public class TransferStockHandlerTests
     public async Task TransferStock_SameWarehouse_ThrowsConflictException()
     {
         // Arrange
-        var (context, dateTime, stockBalance) = CreateDependencies();
+        var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
         var sameId = Guid.NewGuid();
 
-        var handler = new TransferStockHandler(context, dateTime, stockBalance);
+        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion);
         var command = new TransferStockCommand(sameId, sameId, Guid.NewGuid(), null, 10m, "kg", null, null);
 
         // Act
