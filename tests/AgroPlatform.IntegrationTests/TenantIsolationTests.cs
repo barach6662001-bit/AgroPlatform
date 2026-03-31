@@ -158,20 +158,22 @@ public class TenantIsolationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// An admin user IS allowed to use any X-Tenant-Id header value so they can manage
+    /// A SuperAdmin user IS allowed to use any X-Tenant-Id header value so they can manage
     /// multiple farms without being blocked by TenantAuthorizationMiddleware.
     /// </summary>
     [Fact]
-    public async Task AdminUser_CanAccessAnyTenant_Via_XTenantIdHeader()
+    public async Task SuperAdminUser_CanAccessAnyTenant_Via_XTenantIdHeader()
     {
-        // Arrange: admin user whose JWT TenantId is Tenant A but uses Tenant B header
-        // (the default TestAuthHandler sets Role=Administrator, so CreateTenantBClient is sufficient)
-        var adminClientB = CreateTenantBClient();
+        // Arrange: SuperAdmin user whose JWT TenantId is Tenant A but uses Tenant B header.
+        // Phase 0: only SuperAdmin bypasses the tenant cross-check in TenantAuthorizationMiddleware.
+        var superAdminClientB = Factory.CreateClient();
+        superAdminClientB.DefaultRequestHeaders.Add("X-Tenant-Id", TenantBId.ToString());
+        superAdminClientB.DefaultRequestHeaders.Add("X-Test-Role", "SuperAdmin");
 
-        // Act: admin reads Tenant B warehouses — should succeed (no data, but 200 OK)
-        var response = await adminClientB.GetAsync("/api/warehouses");
+        // Act: SuperAdmin reads Tenant B warehouses — should succeed (no data, but 200 OK)
+        var response = await superAdminClientB.GetAsync("/api/warehouses");
 
-        // Assert: admin request is not blocked
+        // Assert: SuperAdmin request is not blocked
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }
