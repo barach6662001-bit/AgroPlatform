@@ -64,6 +64,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/warehouses/items', label: t.nav.materials, style: { padding: '4px 8px' } },
     { key: '/warehouses/movements', label: t.nav.movements, style: { padding: '4px 8px' } },
     { key: '/warehouses/inventory', label: t.nav.inventory, style: { padding: '4px 8px' } },
+    { key: '/warehouses/import', label: t.nav.import, style: { padding: '4px 8px' } },
   ];
 
   const financeChildren = [
@@ -105,12 +106,15 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/warehouses' },
     ...analyticsChildren,
     ...storageChildren,
+    { key: '/warehouses/import' },
     ...financeChildren,
     ...hrChildren,
     ...(isAdmin
       ? [
           { key: '/settings/users' },
           { key: '/admin/role-permissions' },
+          { key: '/admin/approvals' },
+          { key: '/admin/approval-rules' },
           { key: '/settings/audit' },
           { key: '/admin/api-keys' },
         ]
@@ -180,6 +184,8 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
             children: [
               { key: '/settings/users', label: t.nav.users, style: { padding: '4px 8px' } },
               { key: '/admin/role-permissions', label: t.nav.rolePermissions, style: { padding: '4px 8px' } },
+              { key: '/admin/approvals', label: t.nav.approvals, style: { padding: '4px 8px' } },
+              { key: '/admin/approval-rules', label: t.nav.approvalRules, style: { padding: '4px 8px' } },
               { key: '/settings/audit', label: t.nav.auditLog, style: { padding: '4px 8px' } },
               { key: '/admin/api-keys', label: t.nav.apiKeys, style: { padding: '4px 8px' } },
             ],

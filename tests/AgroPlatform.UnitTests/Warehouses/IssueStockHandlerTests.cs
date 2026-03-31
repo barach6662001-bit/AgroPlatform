@@ -50,7 +50,11 @@ public class IssueStockHandlerTests
         context.StockBalances.Add(balance);
         await context.SaveChangesAsync();
 
-        var handler = new IssueStockHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new IssueStockHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null, null, null);
 
         // Act
@@ -89,7 +93,11 @@ public class IssueStockHandlerTests
         context.StockBalances.Add(balance);
         await context.SaveChangesAsync();
 
-        var handler = new IssueStockHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new IssueStockHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new IssueStockCommand(warehouse.Id, item.Id, null, 50m, "kg", null, null, null, null);
 
         // Act
@@ -113,7 +121,11 @@ public class IssueStockHandlerTests
         context.WarehouseItems.Add(item);
         await context.SaveChangesAsync();
 
-        var handler = new IssueStockHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new IssueStockHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new IssueStockCommand(warehouse.Id, item.Id, null, 10m, "kg", null, null, null, null);
 
         // Act

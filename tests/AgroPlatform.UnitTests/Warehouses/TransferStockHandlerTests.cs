@@ -50,7 +50,11 @@ public class TransferStockHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new TransferStockCommand(source.Id, dest.Id, item.Id, null, 60m, "kg", null, null);
 
         // Act
@@ -94,7 +98,11 @@ public class TransferStockHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new TransferStockCommand(source.Id, dest.Id, item.Id, null, 50m, "kg", null, null);
 
         // Act
@@ -110,7 +118,11 @@ public class TransferStockHandlerTests
         // Arrange
         var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
-        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new TransferStockCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), null, 10m, "kg", null, null);
 
         // Act
@@ -127,7 +139,11 @@ public class TransferStockHandlerTests
         var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
         var sameId = Guid.NewGuid();
 
-        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new TransferStockHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new TransferStockCommand(sameId, sameId, Guid.NewGuid(), null, 10m, "kg", null, null);
 
         // Act

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Extensions;
 using AgroPlatform.Application.Common.Interfaces;
@@ -14,23 +15,42 @@ public class TransferStockHandler : IRequestHandler<TransferStockCommand, Guid>
     private readonly IDateTimeService _dateTime;
     private readonly IStockBalanceService _stockBalance;
     private readonly IUnitConversionService _unitConversion;
+    private readonly IApprovalService _approvalService;
+    private readonly ICurrentUserService _currentUser;
 
     public TransferStockHandler(
         IAppDbContext context,
         IDateTimeService dateTime,
         IStockBalanceService stockBalance,
-        IUnitConversionService unitConversion)
+        IUnitConversionService unitConversion,
+        IApprovalService approvalService,
+        ICurrentUserService currentUser)
     {
         _context = context;
         _dateTime = dateTime;
         _stockBalance = stockBalance;
         _unitConversion = unitConversion;
+        _approvalService = approvalService;
+        _currentUser = currentUser;
     }
 
     public async Task<Guid> Handle(TransferStockCommand request, CancellationToken cancellationToken)
     {
         if (request.SourceWarehouseId == request.DestinationWarehouseId)
             throw new ConflictException("Source and destination warehouses must be different.");
+
+        // Check approval rules before proceeding
+        var (requiresApproval, approvalRequestId) = await _approvalService.CheckAndCreateIfRequired(
+            ApprovalActionType.TransferStock,
+            "WarehouseItem",
+            request.ItemId,
+            request.Quantity,
+            JsonSerializer.Serialize(request),
+            _currentUser.UserId,
+            cancellationToken);
+
+        if (requiresApproval)
+            throw new ApprovalRequiredException(approvalRequestId!.Value);
 
         await using var tx = await _context.Database.BeginRepeatableReadTransactionIfSupportedAsync(cancellationToken);
 

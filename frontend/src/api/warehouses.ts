@@ -98,3 +98,25 @@ export const approveInventorySession = (id: string) =>
 
 export const completeInventorySession = (id: string) =>
   apiClient.post<void>(`/api/inventory-sessions/${id}/complete`).then((r) => r.data);
+
+// ── Import ──────────────────────────────────────────────────────────────────
+export interface ImportPreviewRow {
+  rowNumber: number;
+  name: string;
+  code: string;
+  category: string;
+  baseUnit: string;
+  isValid: boolean;
+  error?: string;
+}
+
+export const uploadImportFile = (file: File) => {
+  const form = new FormData();
+  form.append('file', file);
+  return apiClient.post<ImportPreviewRow[]>('/api/warehouses/items/import', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }).then((r) => r.data);
+};
+
+export const confirmImport = (rows: ImportPreviewRow[]) =>
+  apiClient.post<{ created: number }>('/api/warehouses/items/import/confirm', { rows }).then((r) => r.data);

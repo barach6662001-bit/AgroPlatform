@@ -46,6 +46,8 @@ import UsersPage from './pages/Settings/UsersPage';
 import AdminAuditLogPage from './pages/Admin/AuditLogPage';
 import ApiKeysPage from './pages/Admin/ApiKeysPage';
 import RolePermissionsPage from './pages/Admin/RolePermissionsPage';
+import PendingApprovalsPage from './pages/Admin/PendingApprovalsPage';
+import ApprovalRulesPage from './pages/Admin/ApprovalRulesPage';
 import SettingsAuditLogPage from './pages/Settings/AuditLogPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
@@ -55,6 +57,8 @@ import FuelStation from './pages/Fuel/FuelStation';
 import SalesList from './pages/Sales/SalesList';
 import RevenueAnalytics from './pages/Sales/RevenueAnalytics';
 import SalaryFuelAnalytics from './pages/Analytics/SalaryFuelAnalytics';
+import ImportItemsPage from './pages/Warehouses/ImportItemsPage';
+import OnboardingWizard from './pages/Onboarding/OnboardingWizard';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -96,6 +100,8 @@ export default function App() {
             <Route path="/warehouses/items" element={<WarehouseItems />} />
             <Route path="/warehouses/movements" element={<StockMovements />} />
             <Route path="/warehouses/inventory" element={<InventorySessions />} />
+            <Route path="/warehouses/import" element={<ImportItemsPage />} />
+            <Route path="/onboarding" element={<OnboardingWizard />} />
             <Route path="/storage" element={<StoragePage />} />
             <Route path="/grain" element={<Navigate to="/storage" replace />} />
             <Route path="/grain-storages" element={<Navigate to="/storage" replace />} />
@@ -128,6 +134,8 @@ export default function App() {
             <Route path="/admin/audit" element={<AdminAuditLogPage />} />
             <Route path="/admin/api-keys" element={<ApiKeysPage />} />
             <Route path="/admin/role-permissions" element={<RolePermissionsPage />} />
+            <Route path="/admin/approvals" element={<PendingApprovalsPage />} />
+            <Route path="/admin/approval-rules" element={<ApprovalRulesPage />} />
             <Route path="/settings/audit" element={<SettingsAuditLogPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />

@@ -1,4 +1,5 @@
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Approval;
 using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
@@ -68,6 +69,10 @@ public interface IAppDbContext
     DbSet<AuditEntry> AuditEntries { get; }
     DbSet<Attachment> Attachments { get; }
     DbSet<ApiKey> ApiKeys { get; }
+
+    // Approval workflow
+    DbSet<ApprovalRule> ApprovalRules { get; }
+    DbSet<ApprovalRequest> ApprovalRequests { get; }
 
     // Immutable stock ledger
     DbSet<StockLedgerEntry> StockLedgerEntries { get; }
