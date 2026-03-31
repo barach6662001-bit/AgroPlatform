@@ -43,10 +43,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const role = useAuthStore((s) => s.role);
 
-  if (role === 'SuperAdmin') {
-    return <Navigate to="/superadmin/companies" replace />;
-  }
-
   const { data, isLoading: dashLoading, isError: dashError } = useDashboardQuery();
   const { data: notificationsData, isLoading: notifsLoading } = useDashboardNotificationsQuery();
   const { data: fieldsData, isLoading: fieldsLoading } = useDashboardFieldsQuery();
@@ -60,6 +56,10 @@ export default function Dashboard() {
       message.error(t.dashboard.loadError);
     }
   }, [dashError, t.dashboard.loadError]);
+
+  if (role === 'SuperAdmin') {
+    return <Navigate to="/superadmin/companies" replace />;
+  }
 
   if (loading) return <TableSkeleton rows={8} />;
   if (!data) return null;
