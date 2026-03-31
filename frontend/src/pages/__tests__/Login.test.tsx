@@ -28,8 +28,8 @@ describe('Login page', () => {
     expect(screen.getByRole('button', { name: /login|увійти/i })).toBeInTheDocument();
   });
 
-  it('renders a link to the registration page', () => {
+  it('does not render a registration link (closed platform)', () => {
     renderLogin();
-    expect(screen.getByRole('link')).toBeInTheDocument();
+    expect(screen.queryByRole('link')).toBeNull();
   });
 });

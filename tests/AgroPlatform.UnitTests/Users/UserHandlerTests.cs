@@ -32,7 +32,7 @@ public class UserHandlerTests
         {
             Id = Guid.NewGuid().ToString(),
             TenantId = tenantId,
-            Role = UserRole.Agronomist,
+            Role = UserRole.Viewer,
         };
         var currentUser = new FakeCurrentUserService { TenantId = tenantId };
 
@@ -73,8 +73,8 @@ public class UserHandlerTests
         var users = new List<AppUser>
         {
             new AppUser { Id = Guid.NewGuid().ToString(), TenantId = tenantId, FirstName = "Alice", LastName = "Smith", Role = UserRole.Manager, IsActive = true, Email = "alice@test.com" },
-            new AppUser { Id = Guid.NewGuid().ToString(), TenantId = tenantId, FirstName = "Bob", LastName = "Jones", Role = UserRole.Agronomist, IsActive = true, Email = "bob@test.com" },
-            new AppUser { Id = Guid.NewGuid().ToString(), TenantId = otherTenantId, FirstName = "Charlie", LastName = "Brown", Role = UserRole.Director, IsActive = true, Email = "charlie@test.com" },
+            new AppUser { Id = Guid.NewGuid().ToString(), TenantId = tenantId, FirstName = "Bob", LastName = "Jones", Role = UserRole.Viewer, IsActive = true, Email = "bob@test.com" },
+            new AppUser { Id = Guid.NewGuid().ToString(), TenantId = otherTenantId, FirstName = "Charlie", LastName = "Brown", Role = UserRole.Accountant, IsActive = true, Email = "charlie@test.com" },
         };
 
         var userManager = CreateUserManager();
@@ -115,7 +115,7 @@ public class UserHandlerTests
             Email = "inactive@test.com",
             TenantId = Guid.NewGuid(),
             IsActive = false,
-            Role = UserRole.Agronomist,
+            Role = UserRole.Viewer,
         };
 
         userManager.FindByEmailAsync(user.Email).Returns(user);
