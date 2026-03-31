@@ -51,6 +51,7 @@ const en: Translations = {
     salaryFuelAnalytics: 'Salary & Fuel',
     auditLog: 'Audit Log',
     apiKeys: 'API Keys',
+    rolePermissions: 'Role Permissions',
     inventory: 'Inventory',
     superAdmin: 'Administration',
     companies: 'Companies',
@@ -1384,6 +1385,15 @@ const en: Translations = {
   farmSwitcher: {
     loadError: 'Failed to load farms',
     placeholder: 'Select farm',
+  },
+  rolePermissions: {
+    title: 'Role Permissions Management',
+    subtitle: 'Permission matrix for each role',
+    policy: 'Permission',
+    save: 'Save Changes',
+    saveSuccess: 'Role permissions updated',
+    saveError: 'Failed to save permissions',
+    loadError: 'Failed to load permissions',
   },
 };
 

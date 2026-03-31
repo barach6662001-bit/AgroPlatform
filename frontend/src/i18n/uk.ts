@@ -50,6 +50,7 @@ const uk = {
     auditLog: 'Журнал аудиту',
     inventory: 'Інвентаризація',
     apiKeys: 'API-ключі',
+    rolePermissions: 'Права ролей',
     superAdmin: 'Адміністрування',
     companies: 'Компанії',
   },
@@ -1382,6 +1383,15 @@ const uk = {
   farmSwitcher: {
     loadError: 'Не вдалося завантажити список ферм',
     placeholder: 'Оберіть ферму',
+  },
+  rolePermissions: {
+    title: 'Управління правами ролей',
+    subtitle: 'Матриця дозволів для кожної ролі',
+    policy: 'Дозвіл',
+    save: 'Зберегти зміни',
+    saveSuccess: 'Права ролей оновлено',
+    saveError: 'Помилка збереження прав',
+    loadError: 'Помилка завантаження прав',
   },
 } as const;
 

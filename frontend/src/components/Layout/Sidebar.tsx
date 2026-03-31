@@ -110,6 +110,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     ...(isAdmin
       ? [
           { key: '/settings/users' },
+          { key: '/admin/role-permissions' },
           { key: '/settings/audit' },
           { key: '/admin/api-keys' },
         ]
@@ -178,6 +179,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
             style: { padding: '4px 8px' },
             children: [
               { key: '/settings/users', label: t.nav.users, style: { padding: '4px 8px' } },
+              { key: '/admin/role-permissions', label: t.nav.rolePermissions, style: { padding: '4px 8px' } },
               { key: '/settings/audit', label: t.nav.auditLog, style: { padding: '4px 8px' } },
               { key: '/admin/api-keys', label: t.nav.apiKeys, style: { padding: '4px 8px' } },
             ],
