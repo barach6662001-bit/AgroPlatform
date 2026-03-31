@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Menu } from 'antd';
 import {
   DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined, CarOutlined,
@@ -8,6 +9,29 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 
+const routeToGroup: Array<[string, string]> = [
+  ['/fields/rotation-advisor', 'fields-group'],
+  ['/fields/leases', 'finance-group'],
+  ['/fields', 'fields-group'],
+  ['/warehouses', 'storage-group'],
+  ['/economics', 'finance-group'],
+  ['/hr', 'hr-group'],
+  ['/analytics', 'analytics-group'],
+  ['/sales/analytics', 'analytics-group'],
+  ['/settings', 'settings-group'],
+  ['/admin', 'settings-group'],
+  ['/superadmin', 'superadmin-group'],
+];
+
+function getGroupForPath(pathname: string): string | null {
+  for (const [prefix, group] of routeToGroup) {
+    if (pathname === prefix || pathname.startsWith(prefix + '/')) {
+      return group;
+    }
+  }
+  return null;
+}
+
 interface SidebarProps {
   collapsed?: boolean;
 }
@@ -17,6 +41,18 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const location = useLocation();
   const { t } = useTranslation();
   const { isAdmin, isSuperAdmin } = useRole();
+
+  const [openKeys, setOpenKeys] = useState<string[]>(() => {
+    const group = getGroupForPath(location.pathname);
+    return group ? [group] : [];
+  });
+
+  useEffect(() => {
+    const group = getGroupForPath(location.pathname);
+    if (group && !openKeys.includes(group)) {
+      setOpenKeys((prev) => [...prev, group]);
+    }
+  }, [location.pathname]);
 
   const fieldsChildren = [
     { key: '/fields', label: t.nav.fields, style: { padding: '4px 8px' } },
@@ -99,6 +135,14 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/machinery', label: t.nav.machinery, icon: <CarOutlined />, style: { padding: '4px 8px' } },
     { type: 'divider' as const },
     {
+      key: 'hr-group',
+      label: t.nav.hr,
+      icon: <TeamOutlined />,
+      style: { padding: '4px 8px' },
+      children: hrChildren,
+    },
+    { type: 'divider' as const },
+    {
       key: 'storage-group',
       label: t.nav.storage,
       icon: <InboxOutlined />,
@@ -115,13 +159,6 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       icon: <DollarOutlined />,
       style: { padding: '4px 8px' },
       children: financeChildren,
-    },
-    {
-      key: 'hr-group',
-      label: t.nav.hr,
-      icon: <TeamOutlined />,
-      style: { padding: '4px 8px' },
-      children: hrChildren,
     },
     { type: 'divider' as const },
     {
@@ -175,8 +212,6 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
           (item.key !== '/' && location.pathname.startsWith(item.key))
       )?.key ?? '/';
 
-  const openKeys = ['fields-group', 'storage-group', 'finance-group', 'hr-group', 'analytics-group', ...(isAdmin ? ['settings-group'] : []), ...(isSuperAdmin ? ['superadmin-group'] : [])];
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>
       <Menu
@@ -184,7 +219,8 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
         mode="inline"
         inlineCollapsed={collapsed}
         selectedKeys={[selectedKey]}
-        defaultOpenKeys={openKeys}
+        openKeys={openKeys}
+        onOpenChange={(keys) => setOpenKeys(keys as string[])}
         items={menuItems}
         onClick={({ key }) => {
           if (!groupKeys.has(key)) navigate(key);
