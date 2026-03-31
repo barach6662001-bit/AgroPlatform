@@ -70,10 +70,18 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /opt/agroplatform
+            git checkout -- .
             git pull origin main
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
-            docker pull ghcr.io/${{ github.repository_owner }}/agroplatform-api:latest
-            docker pull ghcr.io/${{ github.repository_owner }}/agroplatform-frontend:latest
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.deploy.yml pull
             docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.deploy.yml up -d
             docker image prune -f
+            echo "Waiting for API health check..."
+            for i in $(seq 1 30); do
+              if curl -sf http://localhost:8080/health/live > /dev/null 2>&1; then
+                echo "API is healthy after ${i}s"
+                break
+              fi
+              sleep 1
+            done
             echo "Deployed: ${{ github.sha }}"

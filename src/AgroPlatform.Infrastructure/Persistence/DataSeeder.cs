@@ -385,11 +385,11 @@ public static class DataSeeder
 
             // 10. Harvest records
             context.FieldHarvests.AddRange(
-                new FieldHarvest { FieldId = F1, Year = year - 1, CropName = "Пшениця озима", TotalTons = 255.0m,  YieldTonsPerHa = 6.0m,  MoisturePercent = 13.5m, PricePerTon = 7200.0m,  TotalRevenue = 1836000.0m, HarvestDate = new DateTime(year - 1, 7, 20), TenantId = DemoTenantId, CreatedAtUtc = now },
-                new FieldHarvest { FieldId = F2, Year = year - 1, CropName = "Соняшник",      TotalTons = 106.4m,  YieldTonsPerHa = 2.8m,  MoisturePercent = 8.0m,  PricePerTon = 18500.0m, TotalRevenue = 1968400.0m, HarvestDate = new DateTime(year - 1, 9, 10), TenantId = DemoTenantId, CreatedAtUtc = now },
-                new FieldHarvest { FieldId = F3, Year = year - 1, CropName = "Кукурудза",     TotalTons = 440.0m,  YieldTonsPerHa = 8.0m,  MoisturePercent = 14.0m, PricePerTon = 5800.0m,  TotalRevenue = 2552000.0m, HarvestDate = new DateTime(year - 1, 10, 5), TenantId = DemoTenantId, CreatedAtUtc = now },
-                new FieldHarvest { FieldId = F4, Year = year - 1, CropName = "Ячмінь ярий",  TotalTons = 338.0m,  YieldTonsPerHa = 5.2m,  MoisturePercent = 12.5m, PricePerTon = 5500.0m,  TotalRevenue = 1859000.0m, HarvestDate = new DateTime(year - 1, 7, 10), TenantId = DemoTenantId, CreatedAtUtc = now },
-                new FieldHarvest { FieldId = F6, Year = year - 1, CropName = "Соя",           TotalTons = 194.4m,  YieldTonsPerHa = 2.7m,  MoisturePercent = 12.0m, PricePerTon = 14000.0m, TotalRevenue = 2721600.0m, HarvestDate = new DateTime(year - 1, 10, 1), TenantId = DemoTenantId, CreatedAtUtc = now }
+                new FieldHarvest { FieldId = F1, Year = year - 1, CropName = "Пшениця озима", TotalTons = 255.0m,  YieldTonsPerHa = 6.0m,  MoisturePercent = 13.5m, PricePerTon = 7200.0m,  TotalRevenue = 1836000.0m, HarvestDate = new DateTime(year - 1, 7, 20, 0, 0, 0, DateTimeKind.Utc), TenantId = DemoTenantId, CreatedAtUtc = now },
+                new FieldHarvest { FieldId = F2, Year = year - 1, CropName = "Соняшник",      TotalTons = 106.4m,  YieldTonsPerHa = 2.8m,  MoisturePercent = 8.0m,  PricePerTon = 18500.0m, TotalRevenue = 1968400.0m, HarvestDate = new DateTime(year - 1, 9, 10, 0, 0, 0, DateTimeKind.Utc), TenantId = DemoTenantId, CreatedAtUtc = now },
+                new FieldHarvest { FieldId = F3, Year = year - 1, CropName = "Кукурудза",     TotalTons = 440.0m,  YieldTonsPerHa = 8.0m,  MoisturePercent = 14.0m, PricePerTon = 5800.0m,  TotalRevenue = 2552000.0m, HarvestDate = new DateTime(year - 1, 10, 5, 0, 0, 0, DateTimeKind.Utc), TenantId = DemoTenantId, CreatedAtUtc = now },
+                new FieldHarvest { FieldId = F4, Year = year - 1, CropName = "Ячмінь ярий",  TotalTons = 338.0m,  YieldTonsPerHa = 5.2m,  MoisturePercent = 12.5m, PricePerTon = 5500.0m,  TotalRevenue = 1859000.0m, HarvestDate = new DateTime(year - 1, 7, 10, 0, 0, 0, DateTimeKind.Utc), TenantId = DemoTenantId, CreatedAtUtc = now },
+                new FieldHarvest { FieldId = F6, Year = year - 1, CropName = "Соя",           TotalTons = 194.4m,  YieldTonsPerHa = 2.7m,  MoisturePercent = 12.0m, PricePerTon = 14000.0m, TotalRevenue = 2721600.0m, HarvestDate = new DateTime(year - 1, 10, 1, 0, 0, 0, DateTimeKind.Utc), TenantId = DemoTenantId, CreatedAtUtc = now }
             );
 
             // 11. Machinery
@@ -502,10 +502,10 @@ public static class DataSeeder
 
             // 20. Employees
             context.Employees.AddRange(
-                new Employee { Id = Emp1, FirstName = "Петро",  LastName = "Харченко", Position = "Тракторист",      Department = "МТС",        HireDate = new DateTime(2020, 3, 1),  SalaryType = "Hourly",    HourlyRate = 180.0m, IsActive = true, TenantId = DemoTenantId, CreatedAtUtc = now },
-                new Employee { Id = Emp2, FirstName = "Іван",   LastName = "Бойко",    Position = "Комбайнер",        Department = "МТС",        HireDate = new DateTime(2018, 6, 1),  SalaryType = "Hourly",    HourlyRate = 220.0m, IsActive = true, TenantId = DemoTenantId, CreatedAtUtc = now },
-                new Employee { Id = Emp3, FirstName = "Микола", LastName = "Кравець",  Position = "Агроном-захисник", Department = "Агрослужба", HireDate = new DateTime(2021, 4, 15), SalaryType = "Piecework", PieceworkRate = 120.0m, IsActive = true, TenantId = DemoTenantId, CreatedAtUtc = now },
-                new Employee { Id = Emp4, FirstName = "Тетяна", LastName = "Бондар",   Position = "Комірник",         Department = "Склад",      HireDate = new DateTime(2019, 9, 1),  SalaryType = "Hourly",    HourlyRate = 150.0m, IsActive = true, TenantId = DemoTenantId, CreatedAtUtc = now }
+                new Employee { Id = Emp1, FirstName = "Петро",  LastName = "Харченко", Position = "Тракторист",      Department = "МТС",        HireDate = new DateTime(2020, 3, 1, 0, 0, 0, DateTimeKind.Utc),  SalaryType = "Hourly",    HourlyRate = 180.0m, IsActive = true, TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Employee { Id = Emp2, FirstName = "Іван",   LastName = "Бойко",    Position = "Комбайнер",        Department = "МТС",        HireDate = new DateTime(2018, 6, 1, 0, 0, 0, DateTimeKind.Utc),  SalaryType = "Hourly",    HourlyRate = 220.0m, IsActive = true, TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Employee { Id = Emp3, FirstName = "Микола", LastName = "Кравець",  Position = "Агроном-захисник", Department = "Агрослужба", HireDate = new DateTime(2021, 4, 15, 0, 0, 0, DateTimeKind.Utc), SalaryType = "Piecework", PieceworkRate = 120.0m, IsActive = true, TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Employee { Id = Emp4, FirstName = "Тетяна", LastName = "Бондар",   Position = "Комірник",         Department = "Склад",      HireDate = new DateTime(2019, 9, 1, 0, 0, 0, DateTimeKind.Utc),  SalaryType = "Hourly",    HourlyRate = 150.0m, IsActive = true, TenantId = DemoTenantId, CreatedAtUtc = now }
             );
             context.WorkLogs.AddRange(
                 new WorkLog { EmployeeId = Emp1, WorkDate = D(45), HoursWorked = 12.5m, WorkDescription = "Сівба Захід-1",        FieldId = F1, OperationId = Op_Seeding1, AccruedAmount = 2250.0m, IsPaid = true,  TenantId = DemoTenantId, CreatedAtUtc = now },
