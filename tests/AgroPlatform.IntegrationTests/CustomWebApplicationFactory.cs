@@ -82,6 +82,11 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         db.Database.EnsureCreated();
 
+        // Re-run seeding after EnsureCreated (initial seeding in Program.cs
+        // runs before tables exist when using EnsureCreated instead of MigrateAsync)
+        var config = host.Services.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+        DataSeeder.SeedAsync(host.Services, config).GetAwaiter().GetResult();
+
         db.Tenants.Add(new Tenant
         {
             Id = TenantId,
@@ -123,7 +128,9 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
         var tenantId = Request.Headers.TryGetValue("X-Test-Tenant-Id", out var testTenantId)
             ? testTenantId.ToString()
-            : TestTenantId.ToString();
+            : Request.Headers.TryGetValue("X-Tenant-Id", out var headerTenantId)
+                ? headerTenantId.ToString()
+                : TestTenantId.ToString();
 
         var claims = new[]
         {

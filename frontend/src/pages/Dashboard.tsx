@@ -61,6 +61,10 @@ export default function Dashboard() {
     }
   }, [dashError, t.dashboard.loadError]);
 
+  if (role === 'SuperAdmin') {
+    return <Navigate to="/superadmin/companies" replace />;
+  }
+
   if (loading) return <TableSkeleton rows={8} />;
   if (!data) return null;
 
