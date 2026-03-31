@@ -11,7 +11,7 @@ import { useRole } from '../../hooks/useRole';
 
 const { Text } = Typography;
 
-const ROLES = ['Administrator', 'Manager', 'Agronomist', 'Storekeeper', 'Director'];
+const ROLES = ['CompanyAdmin', 'Manager', 'WarehouseOperator', 'Accountant', 'Viewer'];
 
 export default function UsersPage() {
   const [users, setUsers] = useState<UserDto[]>([]);

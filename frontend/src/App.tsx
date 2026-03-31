@@ -10,8 +10,10 @@ import AppLayout from './components/Layout/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import Login from './pages/Login';
-import Register from './pages/Register';
+import ChangePassword from './pages/ChangePassword';
 import Dashboard from './pages/Dashboard';
+import CompaniesPage from './pages/SuperAdmin/CompaniesPage';
+import CompanyUsersPage from './pages/SuperAdmin/CompanyUsersPage';
 import FieldsList from './pages/Fields/FieldsList';
 import FieldDetail from './pages/Fields/FieldDetail';
 import LeasePage from './pages/Fields/LeasePage';
@@ -68,8 +70,12 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
           <Route path="/access-denied" element={<AccessDenied />} />
+          <Route path="/change-password" element={
+            <ProtectedRoute>
+              <ChangePassword />
+            </ProtectedRoute>
+          } />
           <Route
             element={
               <ProtectedRoute>
@@ -78,6 +84,8 @@ export default function App() {
             }
           >
             <Route path="/" element={<Dashboard />} />
+            <Route path="/superadmin/companies" element={<CompaniesPage />} />
+            <Route path="/superadmin/companies/:id/users" element={<CompanyUsersPage />} />
             <Route path="/fields" element={<FieldsList />} />
             <Route path="/fields/leases" element={<LeasePage />} />
             <Route path="/fields/rotation-advisor" element={<CropRotationAdvisor />} />

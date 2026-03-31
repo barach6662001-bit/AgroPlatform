@@ -20,7 +20,7 @@ public class GetTenantsHandler : IRequestHandler<GetTenantsQuery, List<TenantDto
 
     public async Task<List<TenantDto>> Handle(GetTenantsQuery request, CancellationToken cancellationToken)
     {
-        if (_currentUser.IsInRole(UserRole.Administrator))
+        if (_currentUser.IsSuperAdmin || _currentUser.IsInRole(UserRole.CompanyAdmin))
         {
             return await _db.Tenants
                 .Where(t => t.IsActive)

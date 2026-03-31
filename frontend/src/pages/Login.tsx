@@ -1,6 +1,6 @@
 import { Form, Input, Button, Dropdown, message, Alert } from 'antd';
 import { UserOutlined, LockOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
 import { useTranslation, languages } from '../i18n';
@@ -16,9 +16,9 @@ export default function Login() {
   const onFinish = async (values: { email: string; password: string }) => {
     try {
       const data = await login(values);
-      setAuth(data.token, data.email, data.role, data.tenantId);
+      setAuth(data.token, data.email, data.role, data.tenantId, data.requirePasswordChange, data.firstName, data.lastName);
       message.success(t.auth.welcomeMessage);
-      navigate('/');
+      navigate(data.requirePasswordChange ? '/change-password' : '/');
     } catch {
       message.error(t.auth.loginError);
     }
@@ -246,9 +246,9 @@ export default function Login() {
                   onClick={async () => {
                     try {
                       const data = await login({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
-                      setAuth(data.token, data.email, data.role, data.tenantId);
+                      setAuth(data.token, data.email, data.role, data.tenantId, data.requirePasswordChange, data.firstName, data.lastName);
                       message.success('Вітаємо в демо!');
-                      navigate('/');
+                      navigate(data.requirePasswordChange ? '/change-password' : '/');
                     } catch {
                       message.error('Demo login failed. Make sure the server is running.');
                     }
@@ -287,8 +287,8 @@ export default function Login() {
                 {t.auth.login}
               </Button>
             </Form.Item>
-            <div style={{ textAlign: 'center' }}>
-              <Link to="/register" style={{ color: 'var(--text-tertiary)', fontSize: 13 }}>{t.auth.register}</Link>
+            <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-tertiary)' }}>
+              AgroTech Platform
             </div>
           </Form>
         </div>

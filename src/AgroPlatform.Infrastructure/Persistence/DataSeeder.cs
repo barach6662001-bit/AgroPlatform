@@ -13,6 +13,7 @@ using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -80,13 +81,61 @@ public static class DataSeeder
         "Соняшник", "Соя", "Ріпак", "Горох", "Жито", "Овес"
     ];
 
-    public static async Task SeedAsync(IServiceProvider services)
+    public static async Task SeedAsync(IServiceProvider services, IConfiguration configuration)
     {
         using var scope  = services.CreateScope();
         var context      = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var logger       = scope.ServiceProvider.GetRequiredService<ILogger<AppDbContext>>();
         await SeedGrainTypesAsync(context, logger);
+        await SeedRolePermissionsAsync(context, logger);
+        await SeedItemCategoriesAsync(context, logger);
+        await SeedSuperAdminAsync(scope.ServiceProvider, configuration, logger);
         await SeedDemoAsync(scope.ServiceProvider, context, logger);
+    }
+
+    private static async Task SeedSuperAdminAsync(IServiceProvider sp, IConfiguration configuration, ILogger logger)
+    {
+        try
+        {
+            var email    = configuration["SuperAdmin:Email"];
+            var password = configuration["SuperAdmin:Password"];
+
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                logger.LogWarning("SuperAdmin credentials not configured. Skipping SuperAdmin seed.");
+                return;
+            }
+
+            var userManager = sp.GetRequiredService<UserManager<AppUser>>();
+
+            if (await userManager.FindByEmailAsync(email) is not null)
+                return;
+
+            logger.LogInformation("Seeding SuperAdmin user: {Email}", email);
+
+            var superAdmin = new AppUser
+            {
+                UserName              = email,
+                Email                 = email,
+                FirstName             = "Super",
+                LastName              = "Admin",
+                Role                  = UserRole.SuperAdmin,
+                TenantId              = Guid.Empty,
+                IsActive              = true,
+                RequirePasswordChange = false,
+            };
+
+            var result = await userManager.CreateAsync(superAdmin, password);
+            if (!result.Succeeded)
+                logger.LogWarning("Could not create SuperAdmin: {Errors}",
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+            else
+                logger.LogInformation("SuperAdmin seeded successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error seeding SuperAdmin.");
+        }
     }
 
     private static async Task SeedGrainTypesAsync(AppDbContext context, ILogger logger)
@@ -109,6 +158,91 @@ public static class DataSeeder
         catch (Exception ex)
         {
             logger.LogError(ex, "Error seeding default grain types.");
+        }
+    }
+
+    private static async Task SeedRolePermissionsAsync(AppDbContext context, ILogger logger)
+    {
+        try
+        {
+            // Belt-and-suspenders: migration InsertData runs the primary seed.
+            // This only fires if the table is empty (e.g., manual-migration environments).
+            if (await context.RolePermissions.AnyAsync())
+                return;
+
+            logger.LogInformation("Seeding default role permissions…");
+
+            var allManage = new[]
+            {
+                "Warehouses.Manage", "Inventory.Manage", "Machinery.Manage", "Fields.Manage",
+                "Economics.Manage", "HR.Manage", "GrainStorage.Manage", "Fuel.Manage",
+                "Sales.Manage", "Admin.Manage"
+            };
+
+            var grants = new List<(string Role, string Policy)>();
+
+            foreach (var policy in allManage)
+            {
+                grants.Add(("SuperAdmin",    policy));
+                grants.Add(("CompanyAdmin",  policy));
+            }
+
+            foreach (var policy in allManage.Where(p => p != "Admin.Manage"))
+                grants.Add(("Manager", policy));
+
+            foreach (var policy in new[] { "Warehouses.Manage", "Inventory.Manage", "GrainStorage.Manage", "Fuel.Manage" })
+                grants.Add(("WarehouseOperator", policy));
+
+            foreach (var policy in new[] { "Economics.Manage", "Sales.Manage", "HR.Manage" })
+                grants.Add(("Accountant", policy));
+
+            // Viewer: no manage grants — no rows
+
+            context.RolePermissions.AddRange(grants.Select(g =>
+                new RolePermission
+                {
+                    RoleName   = g.Role,
+                    PolicyName = g.Policy,
+                    IsGranted  = true
+                }));
+
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded {Count} role permission grants.", grants.Length);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error seeding role permissions.");
+        }
+    }
+
+    private static async Task SeedItemCategoriesAsync(AppDbContext context, ILogger logger)
+    {
+        try
+        {
+            if (await context.ItemCategories.IgnoreQueryFilters().AnyAsync())
+                return;
+
+            logger.LogInformation("Seeding default item categories…");
+
+            var now = DateTime.UtcNow;
+            var categories = new[]
+            {
+                new Domain.Warehouses.ItemCategory { Name = "Насіння",  Code = "Seeds",       TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "Добрива",  Code = "Fertilizers", TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "ЗЗР",      Code = "Pesticides",  TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "ПММ",      Code = "Fuel",        TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "Запчастини", Code = "SpareParts", TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "Хімікати", Code = "Chemicals",   TenantId = DemoTenantId, CreatedAtUtc = now },
+                new Domain.Warehouses.ItemCategory { Name = "Інше",     Code = "Other",       TenantId = DemoTenantId, CreatedAtUtc = now },
+            };
+
+            context.ItemCategories.AddRange(categories);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded {Count} item categories.", categories.Length);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error seeding item categories.");
         }
     }
 
@@ -138,7 +272,8 @@ public static class DataSeeder
             {
                 UserName = DemoEmail, Email = DemoEmail,
                 FirstName = "Олексій", LastName = "Коваленко",
-                Role = UserRole.Administrator, TenantId = DemoTenantId, IsActive = true
+                Role = UserRole.CompanyAdmin, TenantId = DemoTenantId, IsActive = true,
+                RequirePasswordChange = false
             };
             var createResult = await userManager.CreateAsync(demoUser, DemoPassword);
             if (!createResult.Succeeded)
@@ -152,14 +287,16 @@ public static class DataSeeder
             {
                 UserName = "agro@agro.local", Email = "agro@agro.local",
                 FirstName = "Ірина", LastName = "Мельник",
-                Role = UserRole.Agronomist, TenantId = DemoTenantId, IsActive = true
+                Role = UserRole.Manager, TenantId = DemoTenantId, IsActive = true,
+                RequirePasswordChange = false
             }, "AgroPass1");
 
             await userManager.CreateAsync(new AppUser
             {
                 UserName = "manager@agro.local", Email = "manager@agro.local",
                 FirstName = "Василь", LastName = "Сидоренко",
-                Role = UserRole.Manager, TenantId = DemoTenantId, IsActive = true
+                Role = UserRole.Manager, TenantId = DemoTenantId, IsActive = true,
+                RequirePasswordChange = false
             }, "ManagerPass1");
 
             // 3. Warehouses (materials only — Type=0)

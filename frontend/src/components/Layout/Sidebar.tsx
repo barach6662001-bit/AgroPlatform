@@ -16,7 +16,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  const { isAdmin } = useRole();
+  const { isAdmin, isSuperAdmin } = useRole();
 
   const fieldsChildren = [
     { key: '/fields', label: t.nav.fields, style: { padding: '4px 8px' } },
@@ -75,6 +75,11 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
           { key: '/settings/users' },
           { key: '/settings/audit' },
           { key: '/admin/api-keys' },
+        ]
+      : []),
+    ...(isSuperAdmin
+      ? [
+          { key: '/superadmin/companies' },
         ]
       : []),
   ];
@@ -141,9 +146,23 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
           },
         ]
       : []),
+    ...(isSuperAdmin
+      ? [
+          { type: 'divider' as const },
+          {
+            key: 'superadmin-group',
+            label: t.nav.superAdmin,
+            icon: <SettingOutlined />,
+            style: { padding: '4px 8px' },
+            children: [
+              { key: '/superadmin/companies', label: t.nav.companies, style: { padding: '4px 8px' } },
+            ],
+          },
+        ]
+      : []),
   ];
 
-  const groupKeys = new Set(['fields-group', 'storage-group', 'finance-group', 'hr-group', 'analytics-group', 'settings-group']);
+  const groupKeys = new Set(['fields-group', 'storage-group', 'finance-group', 'hr-group', 'analytics-group', 'settings-group', 'superadmin-group']);
 
   const selectedKey =
     allLeafItems
@@ -155,7 +174,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
           (item.key !== '/' && location.pathname.startsWith(item.key))
       )?.key ?? '/';
 
-  const openKeys = ['fields-group', 'storage-group', 'finance-group', 'hr-group', 'analytics-group', ...(isAdmin ? ['settings-group'] : [])];
+  const openKeys = ['fields-group', 'storage-group', 'finance-group', 'hr-group', 'analytics-group', ...(isAdmin ? ['settings-group'] : []), ...(isSuperAdmin ? ['superadmin-group'] : [])];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>

@@ -5,68 +5,62 @@ using Microsoft.Extensions.DependencyInjection;
 namespace AgroPlatform.Api.Authorization;
 
 /// <summary>
-/// Registers role-permission policies that map simplified roles (Admin / Manager / Operator / Viewer)
-/// and legacy roles (Administrator / Manager / Agronomist / Storekeeper / Director) to module operations.
+/// Registers role-permission policies.
 ///
-/// Permission matrix:
-/// ┌──────────────┬───────────────────┬───────────────────┬──────────────┬───────────────────┬───────────────────┬───────────────────┬───────────────┬───────────────────┬───────────────────┬───────────────────┐
-/// │ Role         │ Warehouses.Manage │ Inventory.Manage  │ Analytics.View│ Machinery.Manage │ Fields.Manage     │ Economics.Manage  │ HR.Manage     │ GrainStorage.Manage│ Fuel.Manage      │ Sales.Manage      │
-/// ├──────────────┼───────────────────┼───────────────────┼──────────────┼───────────────────┼───────────────────┼───────────────────┼───────────────┼───────────────────┼───────────────────┼───────────────────┤
-/// │ Administrator│       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓          │        ✓          │        ✓          │
-/// │ Manager      │       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓          │        ✓          │        ✓          │
-/// │ Agronomist   │       ✗           │        ✗          │      ✓       │        ✗          │        ✓          │        ✗          │       ✗       │        ✗          │        ✗          │        ✗          │
-/// │ Storekeeper  │       ✓           │        ✓          │      ✓       │        ✗          │        ✗          │        ✗          │       ✗       │        ✓          │        ✓          │        ✗          │
-/// │ Director     │       ✗           │        ✗          │      ✓       │        ✗          │        ✗          │        ✓          │       ✗       │        ✗          │        ✗          │        ✓          │
-/// │ Admin        │       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓          │        ✓          │        ✓          │
-/// │ Operator     │       ✓           │        ✓          │      ✓       │        ✗          │        ✓          │        ✗          │       ✗       │        ✗          │        ✗          │        ✗          │
-/// │ Viewer       │       ✗           │        ✗          │      ✓       │        ✗          │        ✗          │        ✗          │       ✗       │        ✗          │        ✗          │        ✗          │
-/// └──────────────┴───────────────────┴───────────────────┴──────────────┴───────────────────┴───────────────────┴───────────────────┴───────────────┴───────────────────┴───────────────────┴───────────────────┘
+/// New role matrix (Phase 0 refactoring):
+/// ┌──────────────────┬───────────────────┬───────────────────┬──────────────┬───────────────────┬───────────────────┬───────────────────┬───────────────┬─────────────────────┬───────────────────┬───────────────────┐
+/// │ Role             │ Warehouses.Manage │ Inventory.Manage  │ Analytics.View│ Machinery.Manage │ Fields.Manage     │ Economics.Manage  │ HR.Manage     │ GrainStorage.Manage │ Fuel.Manage       │ Sales.Manage      │
+/// ├──────────────────┼───────────────────┼───────────────────┼──────────────┼───────────────────┼───────────────────┼───────────────────┼───────────────┼─────────────────────┼───────────────────┼───────────────────┤
+/// │ SuperAdmin       │       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓            │        ✓          │        ✓          │
+/// │ CompanyAdmin     │       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓            │        ✓          │        ✓          │
+/// │ Manager          │       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓            │        ✓          │        ✓          │
+/// │ WarehouseOperator│       ✓           │        ✓          │      ✓       │        ✗          │        ✗          │        ✗          │       ✗       │        ✓            │        ✓          │        ✗          │
+/// │ Accountant       │       ✗           │        ✗          │      ✓       │        ✗          │        ✗          │        ✓          │       ✓       │        ✗            │        ✗          │        ✓          │
+/// │ Viewer           │       ✗           │        ✗          │      ✓       │        ✗          │        ✗          │        ✗          │       ✗       │        ✗            │        ✗          │        ✗          │
+/// └──────────────────┴───────────────────┴───────────────────┴──────────────┴───────────────────┴───────────────────┴───────────────────┴───────────────┴─────────────────────┴───────────────────┴───────────────────┘
 /// </summary>
 public static class PermissionPolicies
 {
-    // Roles allowed to manage (create / update / delete) warehouses and stock items
+    private static readonly string[] AllManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager",
+         // Legacy role names kept for backward compatibility
+         "Administrator", "Admin"];
+
     private static readonly string[] WarehouseManagers =
-        ["Administrator", "Manager", "Storekeeper", "Admin", "Operator"];
+        ["SuperAdmin", "CompanyAdmin", "Manager", "WarehouseOperator",
+         "Administrator", "Admin", "Storekeeper", "Operator"];
 
-    // Roles allowed to manage (create / update / delete) inventory movements and adjustments
     private static readonly string[] InventoryManagers =
-        ["Administrator", "Manager", "Storekeeper", "Admin", "Operator"];
+        ["SuperAdmin", "CompanyAdmin", "Manager", "WarehouseOperator",
+         "Administrator", "Admin", "Storekeeper", "Operator"];
 
-    // All authenticated roles can view analytics
-    private static readonly string[] AnalyticsViewers =
-        ["Administrator", "Manager", "Agronomist", "Storekeeper", "Director", "Admin", "Operator", "Viewer"];
-
-    // Roles allowed to manage (create / update / delete) machinery records
     private static readonly string[] MachineryManagers =
-        ["Administrator", "Manager", "Admin"];
+        ["SuperAdmin", "CompanyAdmin", "Manager",
+         "Administrator", "Admin"];
 
-    // Roles allowed to manage (create / update / delete) field records
     private static readonly string[] FieldManagers =
-        ["Administrator", "Manager", "Agronomist", "Admin", "Operator"];
+        ["SuperAdmin", "CompanyAdmin", "Manager",
+         "Administrator", "Admin", "Agronomist", "Operator"];
 
-    // Roles allowed to manage economics (cost records, budgets)
     private static readonly string[] EconomicsManagers =
-        ["Administrator", "Manager", "Director", "Admin"];
+        ["SuperAdmin", "CompanyAdmin", "Manager", "Accountant",
+         "Administrator", "Admin", "Director"];
 
-    // Roles allowed to manage HR (employees, work logs, salary payments)
     private static readonly string[] HRManagers =
-        ["Administrator", "Manager", "Admin"];
+        ["SuperAdmin", "CompanyAdmin", "Manager", "Accountant",
+         "Administrator", "Admin"];
 
-    // Roles allowed to manage grain storage (batches, movements, grain types)
     private static readonly string[] GrainStorageManagers =
-        ["Administrator", "Manager", "Storekeeper", "Admin"];
+        ["SuperAdmin", "CompanyAdmin", "Manager", "WarehouseOperator",
+         "Administrator", "Admin", "Storekeeper"];
 
-    // Roles allowed to manage fuel supply and issue transactions (tank creation uses Machinery.Manage)
     private static readonly string[] FuelManagers =
-        ["Administrator", "Manager", "Storekeeper", "Admin"];
+        ["SuperAdmin", "CompanyAdmin", "Manager", "WarehouseOperator",
+         "Administrator", "Admin", "Storekeeper"];
 
-    // Roles allowed to manage sales
     private static readonly string[] SalesManagers =
-        ["Administrator", "Manager", "Director", "Admin"];
-
-    // Administrator-only: system management (users, permissions, audit, tenant config)
-    private static readonly string[] AdminOnly =
-        ["Administrator"];
+        ["SuperAdmin", "CompanyAdmin", "Manager", "Accountant",
+         "Administrator", "Admin", "Director"];
 
     public static IServiceCollection AddPermissionPolicies(this IServiceCollection services)
     {
@@ -115,7 +109,11 @@ public static class PermissionPolicies
                 policy => policy.RequireRole(SalesManagers));
 
             options.AddPolicy(Permissions.Admin.Manage,
-                policy => policy.RequireRole(AdminOnly));
+                policy => policy.RequireRole(AllManagers));
+
+            // Platform-level policy — only SuperAdmin role is granted this
+            options.AddPolicy(Permissions.Platform.SuperAdmin,
+                policy => policy.RequireRole("SuperAdmin"));
         });
 
         return services;
