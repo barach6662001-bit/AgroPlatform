@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Select, Card, Typography, Alert, Space, Spin } from 'antd';
-import { getBalances, getWarehouses, getWarehouseItems } from '../../api/warehouses';
-import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
-import type { PaginatedResult } from '../../types/common';
-import { useTranslation } from '../../i18n';
+import { getBalances, getWarehouses, getWarehouseItems } from '../api/warehouses';
+import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../types/warehouse';
+import type { PaginatedResult } from '../types/common';
+import { useTranslation } from '../i18n';
 
 const { Text, Title } = Typography;
 

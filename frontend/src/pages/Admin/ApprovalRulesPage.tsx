@@ -121,7 +121,7 @@ export default function ApprovalRulesPage() {
       render: (_: unknown, record: ApprovalRuleDto) => (
         <Space>
           <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(record)} />
-          <Popconfirm title={t.common.deleteConfirm} onConfirm={() => handleDelete(record.id)}>
+          <Popconfirm title={t.common.confirm} onConfirm={() => handleDelete(record.id)}>
             <Button size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
