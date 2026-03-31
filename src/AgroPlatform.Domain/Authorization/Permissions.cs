@@ -64,4 +64,9 @@ public static class Permissions
     {
         public const string Manage = "Admin.Manage";
     }
+
+    public static class Platform
+    {
+        public const string SuperAdmin = "Platform.SuperAdmin";
+    }
 }

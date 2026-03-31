@@ -9,4 +9,5 @@ public interface ICurrentUserService
     Guid TenantId { get; }
     UserRole? Role { get; }
     bool IsInRole(UserRole role);
+    bool IsSuperAdmin { get; }
 }

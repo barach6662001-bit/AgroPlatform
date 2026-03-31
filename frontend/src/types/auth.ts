@@ -4,6 +4,9 @@ export interface AuthResponse {
   role: string;
   expiresAt: string;
   tenantId: string;
+  requirePasswordChange: boolean;
+  firstName?: string;
+  lastName?: string;
 }
 
 export interface LoginRequest {
@@ -11,10 +14,7 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  role: string;
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }

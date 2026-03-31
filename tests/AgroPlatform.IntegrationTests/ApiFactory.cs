@@ -80,7 +80,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         // Re-run seeding after EnsureCreated (initial seeding in Program.cs
         // runs before tables exist when using EnsureCreated instead of MigrateAsync)
-        DataSeeder.SeedAsync(host.Services).GetAwaiter().GetResult();
+        var config = host.Services.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+        DataSeeder.SeedAsync(host.Services, config).GetAwaiter().GetResult();
 
         db.Tenants.Add(new Tenant
         {

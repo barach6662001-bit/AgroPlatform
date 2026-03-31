@@ -240,7 +240,7 @@ try
     }
 
     // Seeding always runs (idempotent) — seeds grain types + demo user/data on first boot
-    await DataSeeder.SeedAsync(app.Services);
+    await DataSeeder.SeedAsync(app.Services, app.Configuration);
 
     app.UseMiddleware<ExceptionHandlingMiddleware>();
     app.UseMiddleware<SecurityHeadersMiddleware>();

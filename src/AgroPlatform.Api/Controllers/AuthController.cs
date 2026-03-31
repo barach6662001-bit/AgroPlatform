@@ -1,5 +1,5 @@
+using AgroPlatform.Application.Auth.Commands.ChangePassword;
 using AgroPlatform.Application.Auth.Commands.Login;
-using AgroPlatform.Application.Auth.Commands.Register;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,13 +8,12 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace AgroPlatform.Api.Controllers;
 
 /// <summary>
-/// Handles user registration and authentication.
+/// Handles user authentication and password management.
 /// Returns a JWT Bearer token that must be supplied in the <c>Authorization</c> header
 /// for all protected endpoints.
 /// </summary>
 [ApiController]
 [Route("api/auth")]
-[AllowAnonymous]
 [Produces("application/json")]
 public class AuthController : ControllerBase
 {
@@ -26,26 +25,24 @@ public class AuthController : ControllerBase
         _sender = sender;
     }
 
-    /// <summary>Registers a new user account.</summary>
-    /// <param name="command">Registration data (email, password, tenant ID).</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>A JWT token response on success.</returns>
-    [HttpPost("register")]
+    /// <summary>Authenticates an existing user and returns a JWT token.</summary>
+    [HttpPost("login")]
+    [AllowAnonymous]
+    [EnableRateLimiting("auth-login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Register([FromBody] RegisterCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken cancellationToken)
     {
         var result = await _sender.Send(command, cancellationToken);
         return Ok(result);
     }
 
-    /// <summary>Authenticates an existing user and returns a JWT token.</summary>
-    /// <param name="command">Login credentials (email, password).</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>A JWT token response on success.</returns>
-    [HttpPost("login")]
-    [EnableRateLimiting("auth-login")]
+    /// <summary>Changes the current user's password. Returns a new JWT token.</summary>
+    [HttpPost("change-password")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command, CancellationToken cancellationToken)
     {
         var result = await _sender.Send(command, cancellationToken);
         return Ok(result);

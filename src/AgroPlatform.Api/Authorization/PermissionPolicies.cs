@@ -5,44 +5,67 @@ using Microsoft.Extensions.DependencyInjection;
 namespace AgroPlatform.Api.Authorization;
 
 /// <summary>
-/// Registers authorization policies backed by the DB-driven RBAC system.
+/// Registers role-permission policies.
 ///
-/// Authorization flow per manage policy:
-///   1. Admin override  — roles normalizing to "Admin" (including legacy "Administrator") succeed
-///      immediately without any DB hit (see <see cref="PermissionAuthorizationHandler"/>).
-///   2. DB permission   — the <c>RolePermissions</c> table is queried; results cached 5 minutes.
-///   3. Hardcoded fallback — when DB has no rows for the role, the compile-time matrix in
-///      <see cref="HardcodedPermissionFallback"/> is used.
-///
-/// Permission matrix (for reference):
-/// ┌──────────────┬───────────────────┬───────────────────┬──────────────┬───────────────────┬───────────────────┬───────────────────┬───────────────┬───────────────────┬───────────────────┬───────────────────┐
-/// │ Role         │ Warehouses.Manage │ Inventory.Manage  │ Analytics.View│ Machinery.Manage │ Fields.Manage     │ Economics.Manage  │ HR.Manage     │ GrainStorage.Manage│ Fuel.Manage      │ Sales.Manage      │
-/// ├──────────────┼───────────────────┼───────────────────┼──────────────┼───────────────────┼───────────────────┼───────────────────┼───────────────┼───────────────────┼───────────────────┼───────────────────┤
-/// │ Admin        │       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓          │        ✓          │        ✓          │
-/// │ Administrator│  (→ Admin via normalization)                                                                                                                                                                    │
-/// │ Manager      │       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓          │        ✓          │        ✓          │
-/// │ Agronomist   │       ✗           │        ✗          │      ✓       │        ✗          │        ✓          │        ✗          │       ✗       │        ✗          │        ✗          │        ✗          │
-/// │ Storekeeper  │       ✓           │        ✓          │      ✓       │        ✗          │        ✗          │        ✗          │       ✗       │        ✓          │        ✓          │        ✗          │
-/// │ Director     │       ✗           │        ✗          │      ✓       │        ✗          │        ✗          │        ✓          │       ✗       │        ✗          │        ✗          │        ✓          │
-/// │ Operator     │       ✓           │        ✓          │      ✓       │        ✗          │        ✓          │        ✗          │       ✗       │        ✗          │        ✗          │        ✗          │
-/// │ Viewer       │       ✗           │        ✗          │      ✓       │        ✗          │        ✗          │        ✗          │       ✗       │        ✗          │        ✗          │        ✗          │
-/// └──────────────┴───────────────────┴───────────────────┴──────────────┴───────────────────┴───────────────────┴───────────────────┴───────────────┴───────────────────┴───────────────────┴───────────────────┘
+/// New role matrix (Phase 0 refactoring):
+/// ┌──────────────────┬───────────────────┬───────────────────┬──────────────┬───────────────────┬───────────────────┬───────────────────┬───────────────┬─────────────────────┬───────────────────┬───────────────────┐
+/// │ Role             │ Warehouses.Manage │ Inventory.Manage  │ Analytics.View│ Machinery.Manage │ Fields.Manage     │ Economics.Manage  │ HR.Manage     │ GrainStorage.Manage │ Fuel.Manage       │ Sales.Manage      │
+/// ├──────────────────┼───────────────────┼───────────────────┼──────────────┼───────────────────┼───────────────────┼───────────────────┼───────────────┼─────────────────────┼───────────────────┼───────────────────┤
+/// │ SuperAdmin       │       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓            │        ✓          │        ✓          │
+/// │ CompanyAdmin     │       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓            │        ✓          │        ✓          │
+/// │ Manager          │       ✓           │        ✓          │      ✓       │        ✓          │        ✓          │        ✓          │       ✓       │        ✓            │        ✓          │        ✓          │
+/// │ WarehouseOperator│       ✓           │        ✓          │      ✓       │        ✗          │        ✗          │        ✗          │       ✗       │        ✓            │        ✓          │        ✗          │
+/// │ Accountant       │       ✗           │        ✗          │      ✓       │        ✗          │        ✗          │        ✓          │       ✓       │        ✗            │        ✗          │        ✓          │
+/// │ Viewer           │       ✗           │        ✗          │      ✓       │        ✗          │        ✗          │        ✗          │       ✗       │        ✗            │        ✗          │        ✗          │
+/// └──────────────────┴───────────────────┴───────────────────┴──────────────┴───────────────────┴───────────────────┴───────────────────┴───────────────┴─────────────────────┴───────────────────┴───────────────────┘
 /// </summary>
 public static class PermissionPolicies
 {
+    private static readonly string[] AllManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager",
+         // Legacy role names kept for backward compatibility
+         "Administrator", "Admin"];
+
+    private static readonly string[] WarehouseManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager", "WarehouseOperator",
+         "Administrator", "Admin", "Storekeeper", "Operator"];
+
+    private static readonly string[] InventoryManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager", "WarehouseOperator",
+         "Administrator", "Admin", "Storekeeper", "Operator"];
+
+    private static readonly string[] MachineryManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager",
+         "Administrator", "Admin"];
+
+    private static readonly string[] FieldManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager",
+         "Administrator", "Admin", "Agronomist", "Operator"];
+
+    private static readonly string[] EconomicsManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager", "Accountant",
+         "Administrator", "Admin", "Director"];
+
+    private static readonly string[] HRManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager", "Accountant",
+         "Administrator", "Admin"];
+
+    private static readonly string[] GrainStorageManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager", "WarehouseOperator",
+         "Administrator", "Admin", "Storekeeper"];
+
+    private static readonly string[] FuelManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager", "WarehouseOperator",
+         "Administrator", "Admin", "Storekeeper"];
+
+    private static readonly string[] SalesManagers =
+        ["SuperAdmin", "CompanyAdmin", "Manager", "Accountant",
+         "Administrator", "Admin", "Director"];
+
     public static IServiceCollection AddPermissionPolicies(this IServiceCollection services)
     {
-        // IMemoryCache is required by PermissionAuthorizationHandler
-        services.AddMemoryCache();
-
-        // Register DB-driven permission handler as singleton (safe: uses IServiceScopeFactory + IMemoryCache)
-        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
-
         services.AddAuthorization(options =>
         {
-            // ── View policies ─────────────────────────────────────────────────────────────
-            // All authenticated users can view these modules regardless of role.
-
             options.AddPolicy(Permissions.Warehouses.View,
                 policy => policy.RequireAuthenticatedUser());
 
@@ -58,38 +81,39 @@ public static class PermissionPolicies
             options.AddPolicy(Permissions.Fields.View,
                 policy => policy.RequireAuthenticatedUser());
 
-            // ── Manage policies ───────────────────────────────────────────────────────────
-            // Evaluated by PermissionAuthorizationHandler (Admin override → DB → fallback).
-
             options.AddPolicy(Permissions.Warehouses.Manage,
-                policy => policy.AddRequirements(new PermissionRequirement(Permissions.Warehouses.Manage)));
+                policy => policy.RequireRole(WarehouseManagers));
 
             options.AddPolicy(Permissions.Inventory.Manage,
-                policy => policy.AddRequirements(new PermissionRequirement(Permissions.Inventory.Manage)));
+                policy => policy.RequireRole(InventoryManagers));
 
             options.AddPolicy(Permissions.Machinery.Manage,
-                policy => policy.AddRequirements(new PermissionRequirement(Permissions.Machinery.Manage)));
+                policy => policy.RequireRole(MachineryManagers));
 
             options.AddPolicy(Permissions.Fields.Manage,
-                policy => policy.AddRequirements(new PermissionRequirement(Permissions.Fields.Manage)));
+                policy => policy.RequireRole(FieldManagers));
 
             options.AddPolicy(Permissions.Economics.Manage,
-                policy => policy.AddRequirements(new PermissionRequirement(Permissions.Economics.Manage)));
+                policy => policy.RequireRole(EconomicsManagers));
 
             options.AddPolicy(Permissions.HR.Manage,
-                policy => policy.AddRequirements(new PermissionRequirement(Permissions.HR.Manage)));
+                policy => policy.RequireRole(HRManagers));
 
             options.AddPolicy(Permissions.GrainStorage.Manage,
-                policy => policy.AddRequirements(new PermissionRequirement(Permissions.GrainStorage.Manage)));
+                policy => policy.RequireRole(GrainStorageManagers));
 
             options.AddPolicy(Permissions.Fuel.Manage,
-                policy => policy.AddRequirements(new PermissionRequirement(Permissions.Fuel.Manage)));
+                policy => policy.RequireRole(FuelManagers));
 
             options.AddPolicy(Permissions.Sales.Manage,
-                policy => policy.AddRequirements(new PermissionRequirement(Permissions.Sales.Manage)));
+                policy => policy.RequireRole(SalesManagers));
 
             options.AddPolicy(Permissions.Admin.Manage,
-                policy => policy.AddRequirements(new PermissionRequirement(Permissions.Admin.Manage)));
+                policy => policy.RequireRole(AllManagers));
+
+            // Platform-level policy — only SuperAdmin role is granted this
+            options.AddPolicy(Permissions.Platform.SuperAdmin,
+                policy => policy.RequireRole("SuperAdmin"));
         });
 
         return services;

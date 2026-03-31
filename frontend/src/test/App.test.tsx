@@ -30,6 +30,9 @@ describe('App', () => {
       email: null,
       role: null,
       tenantId: null,
+      requirePasswordChange: false,
+      firstName: null,
+      lastName: null,
       isAuthenticated: false,
     });
   });

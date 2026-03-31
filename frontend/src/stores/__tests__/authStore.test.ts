@@ -8,6 +8,9 @@ describe('authStore', () => {
       email: null,
       role: null,
       tenantId: null,
+      requirePasswordChange: false,
+      firstName: null,
+      lastName: null,
       isAuthenticated: false,
     });
   });
@@ -18,22 +21,26 @@ describe('authStore', () => {
     expect(state.email).toBeNull();
     expect(state.role).toBeNull();
     expect(state.tenantId).toBeNull();
+    expect(state.requirePasswordChange).toBe(false);
     expect(state.isAuthenticated).toBe(false);
   });
 
-  it('setAuth sets token, email, role, tenantId and marks authenticated', () => {
+  it('setAuth sets all fields and marks authenticated', () => {
     const { setAuth } = useAuthStore.getState();
-    setAuth('tok123', 'user@example.com', 'Admin', 'tenant-1');
+    setAuth('tok123', 'user@example.com', 'CompanyAdmin', 'tenant-1', false, 'John', 'Doe');
     const state = useAuthStore.getState();
     expect(state.token).toBe('tok123');
     expect(state.email).toBe('user@example.com');
-    expect(state.role).toBe('Admin');
+    expect(state.role).toBe('CompanyAdmin');
     expect(state.tenantId).toBe('tenant-1');
+    expect(state.requirePasswordChange).toBe(false);
+    expect(state.firstName).toBe('John');
+    expect(state.lastName).toBe('Doe');
     expect(state.isAuthenticated).toBe(true);
   });
 
   it('setTenantId updates only tenantId', () => {
-    useAuthStore.setState({ token: 'tok', email: 'a@b.com', role: 'User', tenantId: 'old', isAuthenticated: true });
+    useAuthStore.setState({ token: 'tok', email: 'a@b.com', role: 'CompanyAdmin', tenantId: 'old', isAuthenticated: true });
     const { setTenantId } = useAuthStore.getState();
     setTenantId('new-tenant');
     const state = useAuthStore.getState();
@@ -43,7 +50,7 @@ describe('authStore', () => {
   });
 
   it('logout resets state to unauthenticated', () => {
-    useAuthStore.setState({ token: 'tok', email: 'a@b.com', role: 'Admin', tenantId: 't1', isAuthenticated: true });
+    useAuthStore.setState({ token: 'tok', email: 'a@b.com', role: 'CompanyAdmin', tenantId: 't1', isAuthenticated: true });
     const { logout } = useAuthStore.getState();
     logout();
     const state = useAuthStore.getState();
@@ -51,6 +58,7 @@ describe('authStore', () => {
     expect(state.email).toBeNull();
     expect(state.role).toBeNull();
     expect(state.tenantId).toBeNull();
+    expect(state.requirePasswordChange).toBe(false);
     expect(state.isAuthenticated).toBe(false);
   });
 });

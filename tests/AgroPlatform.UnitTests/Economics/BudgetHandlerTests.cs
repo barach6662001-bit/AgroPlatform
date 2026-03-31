@@ -18,6 +18,7 @@ public class BudgetHandlerTests
         public Guid TenantId { get; } = Guid.NewGuid();
         public UserRole? Role => null;
         public bool IsInRole(UserRole role) => false;
+        public bool IsSuperAdmin => false;
     }
 
     private static IAppDbContext CreateDbContext()

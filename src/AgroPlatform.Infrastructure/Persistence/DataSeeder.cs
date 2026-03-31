@@ -14,6 +14,7 @@ using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -81,7 +82,7 @@ public static class DataSeeder
         "Соняшник", "Соя", "Ріпак", "Горох", "Жито", "Овес"
     ];
 
-    public static async Task SeedAsync(IServiceProvider services)
+    public static async Task SeedAsync(IServiceProvider services, IConfiguration configuration)
     {
         using var scope  = services.CreateScope();
         var context      = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -89,7 +90,53 @@ public static class DataSeeder
         await SeedGrainTypesAsync(context, logger);
         await SeedRolePermissionsAsync(context, logger);
         await SeedItemCategoriesAsync(context, logger);
+        await SeedSuperAdminAsync(scope.ServiceProvider, configuration, logger);
         await SeedDemoAsync(scope.ServiceProvider, context, logger);
+    }
+
+    private static async Task SeedSuperAdminAsync(IServiceProvider sp, IConfiguration configuration, ILogger logger)
+    {
+        try
+        {
+            var email    = configuration["SuperAdmin:Email"];
+            var password = configuration["SuperAdmin:Password"];
+
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                logger.LogWarning("SuperAdmin credentials not configured. Skipping SuperAdmin seed.");
+                return;
+            }
+
+            var userManager = sp.GetRequiredService<UserManager<AppUser>>();
+
+            if (await userManager.FindByEmailAsync(email) is not null)
+                return;
+
+            logger.LogInformation("Seeding SuperAdmin user: {Email}", email);
+
+            var superAdmin = new AppUser
+            {
+                UserName              = email,
+                Email                 = email,
+                FirstName             = "Super",
+                LastName              = "Admin",
+                Role                  = UserRole.SuperAdmin,
+                TenantId              = Guid.Empty,
+                IsActive              = true,
+                RequirePasswordChange = false,
+            };
+
+            var result = await userManager.CreateAsync(superAdmin, password);
+            if (!result.Succeeded)
+                logger.LogWarning("Could not create SuperAdmin: {Errors}",
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+            else
+                logger.LogInformation("SuperAdmin seeded successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error seeding SuperAdmin.");
+        }
     }
 
     private static async Task SeedGrainTypesAsync(AppDbContext context, ILogger logger)
@@ -126,46 +173,31 @@ public static class DataSeeder
 
             logger.LogInformation("Seeding default role permissions…");
 
-            var grants = new (string Role, string Policy)[]
+            var allManage = new[]
             {
-                ("Admin", "Warehouses.Manage"),
-                ("Admin", "Inventory.Manage"),
-                ("Admin", "Machinery.Manage"),
-                ("Admin", "Fields.Manage"),
-                ("Admin", "Economics.Manage"),
-                ("Admin", "HR.Manage"),
-                ("Admin", "GrainStorage.Manage"),
-                ("Admin", "Fuel.Manage"),
-                ("Admin", "Sales.Manage"),
-                ("Admin", "Admin.Manage"),
-
-                ("Manager", "Warehouses.Manage"),
-                ("Manager", "Inventory.Manage"),
-                ("Manager", "Machinery.Manage"),
-                ("Manager", "Fields.Manage"),
-                ("Manager", "Economics.Manage"),
-                ("Manager", "HR.Manage"),
-                ("Manager", "GrainStorage.Manage"),
-                ("Manager", "Fuel.Manage"),
-                ("Manager", "Sales.Manage"),
-
-                ("Agronomist", "Fields.Manage"),
-
-                ("Storekeeper", "Warehouses.Manage"),
-                ("Storekeeper", "Inventory.Manage"),
-                ("Storekeeper", "GrainStorage.Manage"),
-                ("Storekeeper", "Fuel.Manage"),
-
-                ("Director", "Economics.Manage"),
-                ("Director", "Sales.Manage"),
-
-                ("Operator", "Warehouses.Manage"),
-                ("Operator", "Inventory.Manage"),
-                ("Operator", "Fields.Manage"),
-
-                // Viewer: no manage grants — no rows
-                // Administrator: normalizes to Admin at runtime — no rows needed
+                "Warehouses.Manage", "Inventory.Manage", "Machinery.Manage", "Fields.Manage",
+                "Economics.Manage", "HR.Manage", "GrainStorage.Manage", "Fuel.Manage",
+                "Sales.Manage", "Admin.Manage"
             };
+
+            var grants = new List<(string Role, string Policy)>();
+
+            foreach (var policy in allManage)
+            {
+                grants.Add(("SuperAdmin",    policy));
+                grants.Add(("CompanyAdmin",  policy));
+            }
+
+            foreach (var policy in allManage.Where(p => p != "Admin.Manage"))
+                grants.Add(("Manager", policy));
+
+            foreach (var policy in new[] { "Warehouses.Manage", "Inventory.Manage", "GrainStorage.Manage", "Fuel.Manage" })
+                grants.Add(("WarehouseOperator", policy));
+
+            foreach (var policy in new[] { "Economics.Manage", "Sales.Manage", "HR.Manage" })
+                grants.Add(("Accountant", policy));
+
+            // Viewer: no manage grants — no rows
 
             context.RolePermissions.AddRange(grants.Select(g =>
                 new RolePermission
@@ -176,7 +208,7 @@ public static class DataSeeder
                 }));
 
             await context.SaveChangesAsync();
-            logger.LogInformation("Seeded {Count} role permission grants.", grants.Length);
+            logger.LogInformation("Seeded {Count} role permission grants.", grants.Count);
         }
         catch (Exception ex)
         {
@@ -241,7 +273,8 @@ public static class DataSeeder
             {
                 UserName = DemoEmail, Email = DemoEmail,
                 FirstName = "Олексій", LastName = "Коваленко",
-                Role = UserRole.Administrator, TenantId = DemoTenantId, IsActive = true
+                Role = UserRole.CompanyAdmin, TenantId = DemoTenantId, IsActive = true,
+                RequirePasswordChange = false
             };
             var createResult = await userManager.CreateAsync(demoUser, DemoPassword);
             if (!createResult.Succeeded)
@@ -255,14 +288,16 @@ public static class DataSeeder
             {
                 UserName = "agro@agro.local", Email = "agro@agro.local",
                 FirstName = "Ірина", LastName = "Мельник",
-                Role = UserRole.Agronomist, TenantId = DemoTenantId, IsActive = true
+                Role = UserRole.Manager, TenantId = DemoTenantId, IsActive = true,
+                RequirePasswordChange = false
             }, "AgroPass1");
 
             await userManager.CreateAsync(new AppUser
             {
                 UserName = "manager@agro.local", Email = "manager@agro.local",
                 FirstName = "Василь", LastName = "Сидоренко",
-                Role = UserRole.Manager, TenantId = DemoTenantId, IsActive = true
+                Role = UserRole.Manager, TenantId = DemoTenantId, IsActive = true,
+                RequirePasswordChange = false
             }, "ManagerPass1");
 
             // 3. Warehouses (materials only — Type=0)

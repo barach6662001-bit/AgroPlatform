@@ -50,4 +50,6 @@ public class CurrentUserService : ICurrentUserService
     }
 
     public bool IsInRole(UserRole role) => Role == role;
+
+    public bool IsSuperAdmin => Role == UserRole.SuperAdmin;
 }

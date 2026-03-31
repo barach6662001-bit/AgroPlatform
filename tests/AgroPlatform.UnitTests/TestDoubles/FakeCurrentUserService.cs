@@ -11,4 +11,6 @@ public class FakeCurrentUserService : ICurrentUserService
     public UserRole? Role { get; set; }
 
     public bool IsInRole(UserRole role) => Role == role;
+
+    public bool IsSuperAdmin => Role == UserRole.SuperAdmin;
 }

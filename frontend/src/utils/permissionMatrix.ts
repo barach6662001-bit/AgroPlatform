@@ -1,50 +1,38 @@
 import type { AppRole } from '../hooks/useRole';
 
-/**
- * Defines which roles have access to each module action.
- *
- * Permission matrix:
- * ┌──────────────┬───────────────────┬───────────────────┬───────────────┬───────────────────┬───────────────────┬──────────────────────┐
- * │ Role         │ warehouses.manage │ inventory.manage  │ analytics.view│ machinery.manage  │ fields.manage     │ grain-storage.manage │
- * ├──────────────┼───────────────────┼───────────────────┼───────────────┼───────────────────┼───────────────────┼──────────────────────┤
- * │ Admin        │        ✓          │        ✓          │       ✓       │        ✓          │        ✓          │          ✓           │
- * │ Manager      │        ✓          │        ✓          │       ✓       │        ✓          │        ✓          │          ✓           │
- * │ Operator     │        ✓          │        ✓          │       ✓       │        ✗          │        ✓          │          ✗           │
- * │ Viewer       │        ✗          │        ✗          │       ✓       │        ✗          │        ✗          │          ✗           │
- * ├──────────────┼───────────────────┼───────────────────┼───────────────┼───────────────────┼───────────────────┼──────────────────────┤
- * │ Administrator│        ✓          │        ✓          │       ✓       │        ✓          │        ✓          │          ✓           │
- * │ Agronomist   │        ✗          │        ✗          │       ✓       │        ✗          │        ✓          │          ✗           │
- * │ Storekeeper  │        ✓          │        ✓          │       ✓       │        ✗          │        ✗          │          ✓           │
- * │ Director     │        ✗          │        ✗          │       ✓       │        ✗          │        ✗          │          ✗           │
- * └──────────────┴───────────────────┴───────────────────┴───────────────┴───────────────────┴───────────────────┴──────────────────────┘
- */
 export type AppModule = 'warehouses' | 'inventory' | 'analytics' | 'machinery' | 'fields' | 'grain-storage';
 export type AppAction = 'view' | 'manage';
 
+const ALL_ROLES: AppRole[] = [
+  'SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator', 'Accountant', 'Viewer',
+  // Legacy
+  'Administrator', 'Agronomist', 'Storekeeper', 'Director', 'Admin', 'Operator',
+];
+
 const permissionMatrix: Record<AppModule, Record<AppAction, AppRole[]>> = {
   warehouses: {
-    view:   ['Administrator', 'Manager', 'Agronomist', 'Storekeeper', 'Director', 'Admin', 'Operator', 'Viewer'],
-    manage: ['Administrator', 'Manager', 'Storekeeper', 'Admin', 'Operator'],
+    view:   ALL_ROLES,
+    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator', 'Administrator', 'Admin', 'Storekeeper', 'Operator'],
   },
   inventory: {
-    view:   ['Administrator', 'Manager', 'Agronomist', 'Storekeeper', 'Director', 'Admin', 'Operator', 'Viewer'],
-    manage: ['Administrator', 'Manager', 'Storekeeper', 'Admin', 'Operator'],
+    view:   ALL_ROLES,
+    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator', 'Administrator', 'Admin', 'Storekeeper', 'Operator'],
   },
   analytics: {
-    view:   ['Administrator', 'Manager', 'Agronomist', 'Storekeeper', 'Director', 'Admin', 'Operator', 'Viewer'],
+    view:   ALL_ROLES,
     manage: [],
   },
   machinery: {
-    view:   ['Administrator', 'Manager', 'Agronomist', 'Storekeeper', 'Director', 'Admin', 'Operator', 'Viewer'],
-    manage: ['Administrator', 'Manager', 'Admin'],
+    view:   ALL_ROLES,
+    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'Administrator', 'Admin'],
   },
   fields: {
-    view:   ['Administrator', 'Manager', 'Agronomist', 'Storekeeper', 'Director', 'Admin', 'Operator', 'Viewer'],
-    manage: ['Administrator', 'Manager', 'Agronomist', 'Admin', 'Operator'],
+    view:   ALL_ROLES,
+    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'Administrator', 'Admin', 'Agronomist', 'Operator'],
   },
   'grain-storage': {
-    view:   ['Administrator', 'Manager', 'Agronomist', 'Storekeeper', 'Director', 'Admin', 'Operator', 'Viewer'],
-    manage: ['Administrator', 'Manager', 'Storekeeper', 'Admin'],
+    view:   ALL_ROLES,
+    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator', 'Administrator', 'Admin', 'Storekeeper'],
   },
 };
 

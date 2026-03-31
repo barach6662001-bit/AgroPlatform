@@ -21,7 +21,7 @@ public class UpdateUserRoleHandler : IRequestHandler<UpdateUserRoleCommand>
 
     public async Task Handle(UpdateUserRoleCommand request, CancellationToken cancellationToken)
     {
-        if (!Enum.TryParse<UserRole>(request.Role, out var newRole))
+        if (!Enum.TryParse<UserRole>(request.Role, out var newRole) || newRole == UserRole.SuperAdmin)
             throw new ValidationException(new[] { new ValidationFailure("Role", $"Invalid role: {request.Role}") });
 
         var user = await _userManager.FindByIdAsync(request.UserId)
@@ -30,6 +30,9 @@ public class UpdateUserRoleHandler : IRequestHandler<UpdateUserRoleCommand>
         // Ensure the user belongs to the same tenant
         if (user.TenantId != _currentUser.TenantId)
             throw new ForbiddenException("Cannot modify users from another tenant.");
+
+        if (user.Role == UserRole.SuperAdmin)
+            throw new ForbiddenException("Cannot change the role of a SuperAdmin account.");
 
         user.Role = newRole;
         await _userManager.UpdateAsync(user);

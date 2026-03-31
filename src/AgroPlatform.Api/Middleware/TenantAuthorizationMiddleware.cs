@@ -5,17 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace AgroPlatform.Api.Middleware;
 
 /// <summary>
-/// Ensures that authenticated non-admin users cannot access data belonging to a different
+/// Ensures that authenticated non-SuperAdmin users cannot access data belonging to a different
 /// tenant by spoofing the <c>X-Tenant-Id</c> header.
-///
-/// After JWT / API-key authentication has been resolved, this middleware compares the
-/// <c>TenantId</c> claim embedded in the token with the tenant resolved by
-/// <see cref="TenantMiddleware"/> (stored in <c>HttpContext.Items["TenantId"]</c>).
-/// If they differ and the caller is not an administrator, the request is rejected with
-/// <c>403 Forbidden</c>.
-///
-/// API-key-authenticated requests are skipped because <see cref="ApiKeyAuthMiddleware"/>
-/// already enforces tenant matching for API keys.
+/// SuperAdmin (TenantId = Guid.Empty) can operate across all tenants.
 /// </summary>
 public class TenantAuthorizationMiddleware
 {
@@ -34,26 +26,13 @@ public class TenantAuthorizationMiddleware
 
         if (user?.Identity?.IsAuthenticated == true)
         {
-            // API-key users are already validated by ApiKeyAuthMiddleware.
             var authType = user.FindFirstValue("auth_type");
             if (!string.Equals(authType, "ApiKey", StringComparison.OrdinalIgnoreCase))
             {
                 var roleClaim = user.FindFirstValue(ClaimTypes.Role);
-                var isAdmin = roleClaim is "Administrator" or "Admin";
 
-                if (isAdmin)
-                {
-                    // Admins bypass tenant cross-check but should still have a tenant context
-                    // for write operations to prevent accidentally operating without tenant scope.
-                    if (!context.Items.ContainsKey("TenantId") || context.Items["TenantId"] is not Guid)
-                    {
-                        _logger.LogWarning(
-                            "Admin request to {Path} is proceeding without a resolved TenantId in context. " +
-                            "Ensure X-Tenant-Id header is provided for tenant-scoped operations.",
-                            context.Request.Path);
-                    }
-                }
-                else
+                // SuperAdmin bypasses all tenant cross-checks
+                if (roleClaim != "SuperAdmin")
                 {
                     var jwtTenantIdStr = user.FindFirstValue("TenantId");
 
