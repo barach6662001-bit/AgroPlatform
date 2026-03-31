@@ -208,7 +208,7 @@ public static class DataSeeder
                 }));
 
             await context.SaveChangesAsync();
-            logger.LogInformation("Seeded {Count} role permission grants.", grants.Length);
+            logger.LogInformation("Seeded {Count} role permission grants.", grants.Count);
         }
         catch (Exception ex)
         {
