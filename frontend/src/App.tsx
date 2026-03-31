@@ -45,6 +45,7 @@ import SalaryPage from './pages/HR/SalaryPage';
 import UsersPage from './pages/Settings/UsersPage';
 import AdminAuditLogPage from './pages/Admin/AuditLogPage';
 import ApiKeysPage from './pages/Admin/ApiKeysPage';
+import RolePermissionsPage from './pages/Admin/RolePermissionsPage';
 import SettingsAuditLogPage from './pages/Settings/AuditLogPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
@@ -126,6 +127,7 @@ export default function App() {
             <Route path="/settings/users" element={<UsersPage />} />
             <Route path="/admin/audit" element={<AdminAuditLogPage />} />
             <Route path="/admin/api-keys" element={<ApiKeysPage />} />
+            <Route path="/admin/role-permissions" element={<RolePermissionsPage />} />
             <Route path="/settings/audit" element={<SettingsAuditLogPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />

@@ -64,7 +64,6 @@ public interface IAppDbContext
     DbSet<FuelNorm> FuelNorms { get; }
     DbSet<Sale> Sales { get; }
     DbSet<AppUser> Users { get; }
-    DbSet<Permission> Permissions { get; }
     DbSet<RolePermission> RolePermissions { get; }
     DbSet<AuditEntry> AuditEntries { get; }
     DbSet<Attachment> Attachments { get; }
