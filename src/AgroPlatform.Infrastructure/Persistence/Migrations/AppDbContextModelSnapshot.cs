@@ -2706,11 +2706,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("RequirePasswordChange")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -2732,6 +2727,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequirePasswordChange")
                         .HasColumnType("boolean");
 
                     b.Property<int>("Role")

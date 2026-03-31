@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroPlatform.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260321202209_AddFieldZones")]
-    partial class AddFieldZones
+    [Migration("20260331121229_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,9 +56,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -76,6 +73,11 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("PlannedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -88,6 +90,10 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FieldId", "PlannedDate");
+
+                    b.HasIndex("TenantId", "FieldId");
+
+                    b.HasIndex("TenantId", "Status");
 
                     b.ToTable("AgroOperations");
                 });
@@ -207,6 +213,147 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("AgroOperationResources");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Authorization.RolePermission", b =>
+                {
+                    b.Property<string>("RoleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PolicyName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsGranted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("RoleName", "PolicyName");
+
+                    b.ToTable("RolePermissions", (string)null);
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Common.Attachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StoragePath")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "EntityType", "EntityId", "CreatedAtUtc")
+                        .HasDatabaseName("IX_Attachments_Tenant_Entity_CreatedAtUtc");
+
+                    b.ToTable("Attachments");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Common.AuditEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("AffectedColumns")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewValues")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldValues")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_AuditEntries_TenantId");
+
+                    b.HasIndex("TenantId", "CreatedAtUtc")
+                        .HasDatabaseName("IX_AuditEntries_TenantId_CreatedAtUtc");
+
+                    b.ToTable("AuditEntries");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Economics.Budget", b =>
                 {
                     b.Property<Guid>("Id")
@@ -274,8 +421,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -304,6 +451,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid?>("SaleId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -319,7 +469,15 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("FieldId");
 
+                    b.HasIndex("SaleId")
+                        .IsUnique()
+                        .HasFilter("\"SaleId\" IS NOT NULL");
+
+                    b.HasIndex("TenantId", "Category");
+
                     b.HasIndex("TenantId", "Date");
+
+                    b.HasIndex("TenantId", "FieldId");
 
                     b.ToTable("CostRecords");
                 });
@@ -666,7 +824,76 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_FieldHarvests_TenantId");
 
+                    b.HasIndex("FieldId", "Year")
+                        .HasDatabaseName("IX_FieldHarvests_FieldId_Year");
+
                     b.ToTable("FieldHarvests");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldInspection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("InspectorName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Severity")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId")
+                        .HasDatabaseName("IX_FieldInspections_FieldId");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_FieldInspections_TenantId");
+
+                    b.ToTable("FieldInspections");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldProtection", b =>
@@ -807,6 +1034,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_FieldSeedings_TenantId");
+
+                    b.HasIndex("FieldId", "Year")
+                        .HasDatabaseName("IX_FieldSeedings_FieldId_Year");
 
                     b.ToTable("FieldSeedings");
                 });
@@ -1028,6 +1258,134 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("LeasePayments");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Fields.SoilAnalysis", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("Humus")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("numeric(10,4)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal?>("Nitrogen")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("numeric(10,4)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<decimal?>("Phosphorus")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("numeric(10,4)");
+
+                    b.Property<decimal?>("Potassium")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("numeric(10,4)");
+
+                    b.Property<DateTime>("SampleDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("ZoneId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("pH")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId")
+                        .HasDatabaseName("IX_SoilAnalyses_FieldId");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("IX_SoilAnalyses_TenantId");
+
+                    b.ToTable("SoilAnalyses");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fuel.FuelNorm", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("MachineType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<decimal?>("NormLitersPerHa")
+                        .HasPrecision(10, 3)
+                        .HasColumnType("numeric(10,3)");
+
+                    b.Property<decimal?>("NormLitersPerHour")
+                        .HasPrecision(10, 3)
+                        .HasColumnType("numeric(10,3)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("OperationType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MachineType", "OperationType", "TenantId")
+                        .IsUnique();
+
+                    b.ToTable("FuelNorms", (string)null);
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Fuel.FuelTank", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1192,9 +1550,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("DeletedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("GrainStorageId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("GrainType")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1231,6 +1586,13 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("ReceivedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasDefaultValueSql("'\\x00'::bytea");
+
                     b.Property<Guid?>("SourceFieldId")
                         .HasColumnType("uuid");
 
@@ -1245,8 +1607,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GrainStorageId");
-
                     b.HasIndex("SourceFieldId");
 
                     b.HasIndex("TenantId");
@@ -1254,14 +1614,11 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("GrainBatches");
                 });
 
-            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainMovement", b =>
+            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainBatchPlacement", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("BuyerName")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -1275,6 +1632,64 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("GrainBatchId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("GrainStorageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("GrainStorageUnitId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("QuantityTons")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GrainBatchId");
+
+                    b.HasIndex("GrainStorageId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("GrainBatchPlacements");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainMovement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BuyerName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("GrainBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("GrainTransferId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -1283,11 +1698,15 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("MovementType")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid?>("OperationId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal?>("PricePerTon")
                         .HasPrecision(18, 2)
@@ -1298,7 +1717,20 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("numeric(18,4)");
 
                     b.Property<string>("Reason")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid?>("SourceBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("SourceStorageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("TargetBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("TargetStorageId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -1315,9 +1747,139 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GrainBatchId");
+                    b.HasIndex("GrainTransferId");
+
+                    b.HasIndex("OperationId")
+                        .HasFilter("\"OperationId\" IS NOT NULL");
+
+                    b.HasIndex("SourceStorageId");
+
+                    b.HasIndex("TargetStorageId");
+
+                    b.HasIndex("GrainBatchId", "MovementDate");
 
                     b.ToTable("GrainMovements");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainStorage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("CapacityTons")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("StorageType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique()
+                        .HasFilter("\"Code\" IS NOT NULL AND \"IsDeleted\" = false");
+
+                    b.ToTable("GrainStorages");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainTransfer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<decimal>("QuantityTons")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<Guid>("SourceBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TargetBatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("TransferDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceBatchId");
+
+                    b.HasIndex("TargetBatchId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("GrainTransfers");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainType", b =>
@@ -1726,6 +2288,10 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ImeiNumber")
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
                     b.Property<string>("InventoryNumber")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1773,6 +2339,10 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ImeiNumber")
+                        .IsUnique()
+                        .HasFilter("\"ImeiNumber\" IS NOT NULL");
 
                     b.HasIndex("InventoryNumber", "TenantId")
                         .IsUnique();
@@ -1923,6 +2493,189 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Notifications.PushSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AuthKey")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.Property<string>("P256dhKey")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Endpoint")
+                        .IsUnique();
+
+                    b.ToTable("PushSubscriptions");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Sales.Sale", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BuyerName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("FieldId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("GrainMovementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<decimal>("PricePerUnit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("Product")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId");
+
+                    b.HasIndex("GrainMovementId")
+                        .HasFilter("\"GrainMovementId\" IS NOT NULL");
+
+                    b.HasIndex("TenantId", "Date");
+
+                    b.ToTable("Sales");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Users.ApiKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("KeyHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastUsedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("RateLimitPerHour")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Scopes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("WebhookEventTypes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("WebhookUrl")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApiKeys");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Users.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -1933,6 +2686,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreatedByUserId")
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -1976,6 +2732,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("RequirePasswordChange")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
@@ -2002,6 +2761,63 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Users.Permission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("CanCreate")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanDelete")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanUpdate")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastReviewedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Module")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Users.Tenant", b =>
@@ -2057,6 +2873,60 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<decimal?>("CostPerUnit")
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ReceivedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SupplierName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId", "ExpiryDate")
+                        .HasDatabaseName("IX_Batches_ItemId_ExpiryDate");
+
+                    b.ToTable("Batches");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.InventorySession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CompletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -2069,7 +2939,125 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("InventorySessions", (string)null);
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.InventorySessionLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("ActualQuantityBase")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<string>("BaseUnit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid?>("BatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("ExpectedQuantityBase")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<Guid>("InventorySessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsCountRecorded")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventorySessionId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("InventorySessionLines", (string)null);
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.ItemCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
@@ -2083,9 +3071,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemId");
+                    b.HasIndex("ParentId");
 
-                    b.ToTable("Batches");
+                    b.ToTable("ItemCategories", (string)null);
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Warehouses.StockBalance", b =>
@@ -2123,6 +3111,13 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("LastUpdatedUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bytea")
+                        .HasDefaultValueSql("'\\x00'::bytea");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -2141,10 +3136,97 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("WarehouseId", "ItemId", "BatchId")
-                        .IsUnique();
+                    b.HasIndex("WarehouseId", "ItemId", "BatchId", "TenantId")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("StockBalances");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.StockLedgerEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AgroOperationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("BalanceAfterBase")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<string>("BaseUnit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid?>("BatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DocumentRef")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid?>("FieldId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("MoveType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid?>("OperationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal>("QuantityBase")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<Guid?>("StockMoveId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("TotalCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("UnitCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OperationId")
+                        .HasFilter("\"OperationId\" IS NOT NULL");
+
+                    b.HasIndex("StockMoveId")
+                        .HasFilter("\"StockMoveId\" IS NOT NULL");
+
+                    b.HasIndex("WarehouseId", "ItemId", "CreatedAtUtc");
+
+                    b.ToTable("StockLedgerEntries", (string)null);
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Warehouses.StockMove", b =>
@@ -2226,6 +3308,57 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("StockMoves");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.UnitConversionRule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Factor")
+                        .HasPrecision(22, 10)
+                        .HasColumnType("numeric(22,10)");
+
+                    b.Property<string>("FromUnit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ToUnit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ToUnit");
+
+                    b.HasIndex("FromUnit", "ToUnit")
+                        .IsUnique();
+
+                    b.ToTable("UnitConversionRules");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.UnitOfMeasure", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("UnitsOfMeasure");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Warehouses.Warehouse", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2289,6 +3422,9 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -2331,6 +3467,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("TenantId", "Code")
                         .IsUnique();
@@ -2531,9 +3669,16 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("AgroPlatform.Domain.Sales.Sale", "Sale")
+                        .WithMany()
+                        .HasForeignKey("SaleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("AgroOperation");
 
                     b.Navigation("Field");
+
+                    b.Navigation("Sale");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Fields.CropRotationPlan", b =>
@@ -2578,6 +3723,18 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_FieldHarvests_Fields");
+
+                    b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Fields.FieldInspection", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
+                        .WithMany("Inspections")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_FieldInspections_Fields");
 
                     b.Navigation("Field");
                 });
@@ -2650,6 +3807,18 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("LandLease");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Fields.SoilAnalysis", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
+                        .WithMany("SoilAnalyses")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_SoilAnalyses_Fields");
+
+                    b.Navigation("Field");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Fuel.FuelTransaction", b =>
                 {
                     b.HasOne("AgroPlatform.Domain.Fuel.FuelTank", "FuelTank")
@@ -2672,6 +3841,25 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("SourceField");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainBatchPlacement", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainBatch", "GrainBatch")
+                        .WithMany("Placements")
+                        .HasForeignKey("GrainBatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainStorage", "GrainStorage")
+                        .WithMany("Placements")
+                        .HasForeignKey("GrainStorageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("GrainBatch");
+
+                    b.Navigation("GrainStorage");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainMovement", b =>
                 {
                     b.HasOne("AgroPlatform.Domain.GrainStorage.GrainBatch", "GrainBatch")
@@ -2680,7 +3868,47 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainTransfer", "GrainTransfer")
+                        .WithMany()
+                        .HasForeignKey("GrainTransferId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainStorage", "SourceStorage")
+                        .WithMany()
+                        .HasForeignKey("SourceStorageId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainStorage", "TargetStorage")
+                        .WithMany()
+                        .HasForeignKey("TargetStorageId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("GrainBatch");
+
+                    b.Navigation("GrainTransfer");
+
+                    b.Navigation("SourceStorage");
+
+                    b.Navigation("TargetStorage");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainTransfer", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainBatch", "SourceBatch")
+                        .WithMany()
+                        .HasForeignKey("SourceBatchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainBatch", "TargetBatch")
+                        .WithMany()
+                        .HasForeignKey("TargetBatchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SourceBatch");
+
+                    b.Navigation("TargetBatch");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.HR.SalaryPayment", b =>
@@ -2751,6 +3979,23 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Machine");
                 });
 
+            modelBuilder.Entity("AgroPlatform.Domain.Sales.Sale", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Fields.Field", "Field")
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AgroPlatform.Domain.GrainStorage.GrainMovement", "GrainMovement")
+                        .WithMany()
+                        .HasForeignKey("GrainMovementId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Field");
+
+                    b.Navigation("GrainMovement");
+                });
+
             modelBuilder.Entity("AgroPlatform.Domain.Warehouses.Batch", b =>
                 {
                     b.HasOne("AgroPlatform.Domain.Warehouses.WarehouseItem", "Item")
@@ -2760,6 +4005,46 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.InventorySession", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Warehouses.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.InventorySessionLine", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Warehouses.InventorySession", "Session")
+                        .WithMany("Lines")
+                        .HasForeignKey("InventorySessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AgroPlatform.Domain.Warehouses.WarehouseItem", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Session");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.ItemCategory", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Warehouses.ItemCategory", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Warehouses.StockBalance", b =>
@@ -2812,6 +4097,35 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.UnitConversionRule", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Warehouses.UnitOfMeasure", "From")
+                        .WithMany("FromRules")
+                        .HasForeignKey("FromUnit")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AgroPlatform.Domain.Warehouses.UnitOfMeasure", "To")
+                        .WithMany("ToRules")
+                        .HasForeignKey("ToUnit")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("From");
+
+                    b.Navigation("To");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.WarehouseItem", b =>
+                {
+                    b.HasOne("AgroPlatform.Domain.Warehouses.ItemCategory", "ItemCategory")
+                        .WithMany("Items")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ItemCategory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -2880,6 +4194,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Harvests");
 
+                    b.Navigation("Inspections");
+
                     b.Navigation("LandLeases");
 
                     b.Navigation("Operations");
@@ -2889,6 +4205,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("RotationPlans");
 
                     b.Navigation("Seedings");
+
+                    b.Navigation("SoilAnalyses");
 
                     b.Navigation("Zones");
                 });
@@ -2906,6 +4224,13 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainBatch", b =>
                 {
                     b.Navigation("Movements");
+
+                    b.Navigation("Placements");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.GrainStorage.GrainStorage", b =>
+                {
+                    b.Navigation("Placements");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.HR.Employee", b =>
@@ -2922,6 +4247,25 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("MaintenanceRecords");
 
                     b.Navigation("WorkLogs");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.InventorySession", b =>
+                {
+                    b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.ItemCategory", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("AgroPlatform.Domain.Warehouses.UnitOfMeasure", b =>
+                {
+                    b.Navigation("FromRules");
+
+                    b.Navigation("ToRules");
                 });
 
             modelBuilder.Entity("AgroPlatform.Domain.Warehouses.Warehouse", b =>
