@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Approval;
 using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
@@ -94,4 +95,6 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<InventorySessionLine> InventorySessionLines => Set<InventorySessionLine>();
     public DbSet<UnitOfMeasure> UnitsOfMeasure => Set<UnitOfMeasure>();
     public DbSet<UnitConversionRule> UnitConversionRules => Set<UnitConversionRule>();
+    public DbSet<ApprovalRule> ApprovalRules => Set<ApprovalRule>();
+    public DbSet<ApprovalRequest> ApprovalRequests => Set<ApprovalRequest>();
 }

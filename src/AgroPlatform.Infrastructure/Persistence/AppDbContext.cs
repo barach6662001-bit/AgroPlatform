@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
+using AgroPlatform.Domain.Approval;
 using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
@@ -75,6 +76,10 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<Attachment> Attachments => Set<Attachment>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
 
+    // Approval workflow
+    public DbSet<ApprovalRule> ApprovalRules => Set<ApprovalRule>();
+    public DbSet<ApprovalRequest> ApprovalRequests => Set<ApprovalRequest>();
+
     // Immutable stock ledger
     public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
 
@@ -145,5 +150,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Entity<ItemCategory>().HasQueryFilter(c => !c.IsDeleted && c.TenantId == _tenantId);
         builder.Entity<InventorySession>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
         builder.Entity<InventorySessionLine>().HasQueryFilter(l => !l.IsDeleted && l.TenantId == _tenantId);
+        builder.Entity<ApprovalRule>().HasQueryFilter(r => !r.IsDeleted && r.TenantId == _tenantId);
+        builder.Entity<ApprovalRequest>().HasQueryFilter(r => !r.IsDeleted && r.TenantId == _tenantId);
     }
 }

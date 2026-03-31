@@ -1,3 +1,4 @@
+using AgroPlatform.Application.Approval.Services;
 using AgroPlatform.Application.Common.Behaviors;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.Warehouses.Services;
@@ -24,6 +25,7 @@ public static class DependencyInjection
 
         services.AddScoped<IStockBalanceService, StockBalanceService>();
         services.AddScoped<IUnitConversionService, UnitConversionService>();
+        services.AddScoped<IApprovalService, ApprovalService>();
 
         return services;
     }

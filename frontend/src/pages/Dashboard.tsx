@@ -64,6 +64,10 @@ export default function Dashboard() {
   if (loading) return <TableSkeleton rows={8} />;
   if (!data) return null;
 
+  // ── Role-based section ordering (I06) ─────────────────────────────────────
+  const isStorekeeper = role === 'Storekeeper' || role === 'WarehouseManager';
+  const isDirector = role === 'Director' || role === 'Owner';
+
   // ── Chart data ────────────────────────────────────────────────────────────
   const costTrendData = data.costTrend.map((item) => ({
     name: `${item.year}-${String(item.month).padStart(2, '0')}`,
@@ -115,80 +119,111 @@ export default function Dashboard() {
         <WeatherWidget />
       </div>
 
-      {/* KPI Section — 4 cards */}
+      {/* KPI Section — role-ordered */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card style={CARD}>
-            <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              {t.dashboard.totalArea}
-            </Text>
-            <div style={{ fontSize: 28, fontWeight: 600, color: 'var(--text-primary)', marginTop: 4 }}>
-              {data.totalAreaHectares.toFixed(0)}{' '}
-              <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>га</span>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card style={CARD}>
-            <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              {t.dashboard.monthlyExpenses}
-            </Text>
-            <div style={{ fontSize: 28, fontWeight: 600, color: 'var(--text-primary)', marginTop: 4 }}>
-              {monthlyExpenses.toFixed(0)}{' '}
-              <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>₴</span>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card style={CARD}>
-            <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              {t.dashboard.monthlyRevenue}
-            </Text>
-            <div style={{ fontSize: 28, fontWeight: 600, color: 'var(--text-primary)', marginTop: 4 }}>
-              {monthlyRevenue.toFixed(0)}{' '}
-              <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>₴</span>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card style={CARD}>
-            <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              {t.dashboard.monthlyProfit}
-            </Text>
-            <div style={{
-              fontSize: 28, fontWeight: 600,
-              color: monthlyProfit >= 0 ? 'var(--success)' : 'var(--error)',
-              marginTop: 4,
-            }}>
-              {monthlyProfit.toFixed(0)}{' '}
-              <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>₴</span>
-            </div>
-          </Card>
-        </Col>
+        {(isDirector
+          ? [
+              { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴' },
+              { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true },
+              { label: t.dashboard.monthlyExpenses, val: monthlyExpenses, unit: '₴' },
+              { label: t.dashboard.totalArea, val: data.totalAreaHectares, unit: 'га' },
+            ]
+          : [
+              { label: t.dashboard.totalArea, val: data.totalAreaHectares, unit: 'га' },
+              { label: t.dashboard.monthlyExpenses, val: monthlyExpenses, unit: '₴' },
+              { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴' },
+              { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true },
+            ]
+        ).map((kpi, i) => (
+          <Col xs={24} sm={12} lg={6} key={i}>
+            <Card style={CARD}>
+              <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                {kpi.label}
+              </Text>
+              <div style={{
+                fontSize: 28, fontWeight: 600, marginTop: 4,
+                color: kpi.colored ? (kpi.val >= 0 ? 'var(--success)' : 'var(--error)') : 'var(--text-primary)',
+              }}>
+                {kpi.val.toFixed(0)}{' '}
+                <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{kpi.unit}</span>
+              </div>
+            </Card>
+          </Col>
+        ))}
       </Row>
 
-      {/* Quick Actions */}
+      {/* Quick Actions — role-prioritized */}
       <Row gutter={12} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} md={6}>
-          <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>
-            {t.dashboard.quickOperation}
-          </Button>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>
-            {t.dashboard.quickFuel}
-          </Button>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>
-            {t.dashboard.quickGrain}
-          </Button>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>
-            {t.dashboard.quickCost}
-          </Button>
-        </Col>
+        {isStorekeeper ? (
+          <>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<BankOutlined />} onClick={() => navigate('/warehouses')}>
+                {t.nav.warehouses}
+              </Button>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<ToolOutlined />} onClick={() => navigate('/warehouses/movements')}>
+                {t.nav.movements}
+              </Button>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>
+                {t.dashboard.quickFuel}
+              </Button>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>
+                {t.dashboard.quickCost}
+              </Button>
+            </Col>
+          </>
+        ) : isDirector ? (
+          <>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>
+                {t.dashboard.quickCost}
+              </Button>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics/pnl')}>
+                {t.nav.pnl}
+              </Button>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>
+                {t.dashboard.quickOperation}
+              </Button>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>
+                {t.dashboard.quickGrain}
+              </Button>
+            </Col>
+          </>
+        ) : (
+          <>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>
+                {t.dashboard.quickOperation}
+              </Button>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>
+                {t.dashboard.quickFuel}
+              </Button>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>
+                {t.dashboard.quickGrain}
+              </Button>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>
+                {t.dashboard.quickCost}
+              </Button>
+            </Col>
+          </>
+        )}
       </Row>
 
       {/* Alerts */}

@@ -4,6 +4,7 @@ using AgroPlatform.Infrastructure.Identity;
 using AgroPlatform.Infrastructure.Persistence;
 using AgroPlatform.Infrastructure.Persistence.Interceptors;
 using AgroPlatform.Infrastructure.Services;
+using AgroPlatform.Infrastructure.Services.BackgroundJobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +50,13 @@ public static class DependencyInjection
         services.AddSingleton<IDateTimeService, DateTimeService>();
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<IAttachmentStorage, LocalAttachmentStorage>();
+        services.AddScoped<IImportService, CsvXlsxImportService>();
+        services.AddSingleton<IEmailService, SmtpEmailService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+        // Background automation jobs
+        services.AddHostedService<FuelAnomalyJob>();
+        services.AddHostedService<LowStockAlertJob>();
 
         services.AddIdentity<AppUser, IdentityRole>(options =>
         {

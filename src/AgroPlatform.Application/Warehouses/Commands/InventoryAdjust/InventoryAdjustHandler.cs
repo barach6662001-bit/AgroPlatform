@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Extensions;
 using AgroPlatform.Application.Common.Interfaces;
@@ -14,21 +15,40 @@ public class InventoryAdjustHandler : IRequestHandler<InventoryAdjustCommand, In
     private readonly IDateTimeService _dateTime;
     private readonly IStockBalanceService _stockBalance;
     private readonly IUnitConversionService _unitConversion;
+    private readonly IApprovalService _approvalService;
+    private readonly ICurrentUserService _currentUser;
 
     public InventoryAdjustHandler(
         IAppDbContext context,
         IDateTimeService dateTime,
         IStockBalanceService stockBalance,
-        IUnitConversionService unitConversion)
+        IUnitConversionService unitConversion,
+        IApprovalService approvalService,
+        ICurrentUserService currentUser)
     {
         _context = context;
         _dateTime = dateTime;
         _stockBalance = stockBalance;
         _unitConversion = unitConversion;
+        _approvalService = approvalService;
+        _currentUser = currentUser;
     }
 
     public async Task<InventoryAdjustResultDto> Handle(InventoryAdjustCommand request, CancellationToken cancellationToken)
     {
+        // Check approval rules before proceeding
+        var (requiresApproval, approvalRequestId) = await _approvalService.CheckAndCreateIfRequired(
+            ApprovalActionType.InventoryAdjust,
+            "WarehouseItem",
+            request.ItemId,
+            request.ActualQuantity,
+            JsonSerializer.Serialize(request),
+            _currentUser.UserId,
+            cancellationToken);
+
+        if (requiresApproval)
+            throw new ApprovalRequiredException(approvalRequestId!.Value);
+
         await using var tx = await _context.Database.BeginRepeatableReadTransactionIfSupportedAsync(cancellationToken);
 
         var warehouse = await _context.Warehouses.FindAsync(new object[] { request.WarehouseId }, cancellationToken)

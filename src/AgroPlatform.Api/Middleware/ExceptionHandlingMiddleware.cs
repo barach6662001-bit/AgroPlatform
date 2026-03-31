@@ -33,7 +33,8 @@ public class ExceptionHandlingMiddleware
     {
         var (statusCode, title, errors) = exception switch
         {
-            NotFoundException => (StatusCodes.Status404NotFound, "Not Found", (IDictionary<string, string[]>?)null),
+            ApprovalRequiredException => (StatusCodes.Status202Accepted, "Approval Required", (IDictionary<string, string[]>?)null),
+            NotFoundException => (StatusCodes.Status404NotFound, "Not Found", null),
             ValidationException ve => (StatusCodes.Status400BadRequest, "Validation Failed", ve.Errors),
             InsufficientBalanceException => (StatusCodes.Status422UnprocessableEntity, "Insufficient Balance", null),
             ConflictException => (StatusCodes.Status409Conflict, "Conflict", null),
@@ -64,6 +65,9 @@ public class ExceptionHandlingMiddleware
 
         if (errors != null)
             problemDetails.Extensions["errors"] = errors;
+
+        if (exception is ApprovalRequiredException approvalEx)
+            problemDetails.Extensions["approvalRequestId"] = approvalEx.ApprovalRequestId;
 
         context.Response.StatusCode = statusCode;
         context.Response.ContentType = "application/problem+json";

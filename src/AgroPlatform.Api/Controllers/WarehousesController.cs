@@ -1,6 +1,8 @@
+using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.Warehouses.Commands.CreateWarehouse;
 using AgroPlatform.Application.Warehouses.Commands.CreateWarehouseItem;
 using AgroPlatform.Application.Warehouses.Commands.CreateItemCategory;
+using AgroPlatform.Application.Warehouses.Commands.ImportItems;
 using AgroPlatform.Application.Warehouses.Commands.InventoryAdjust;
 using AgroPlatform.Application.Warehouses.Commands.UpdateWarehouseItem;
 using AgroPlatform.Application.Warehouses.Commands.IssueStock;
@@ -229,5 +231,29 @@ public class WarehousesController : ControllerBase
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetItemCategories), new { }, new { id });
+    }
+
+    /// <summary>Parses a CSV/XLSX file and returns preview rows with validation.</summary>
+    [HttpPost("items/import")]
+    [Authorize(Policy = Permissions.Warehouses.Manage)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ImportItems(IFormFile file, CancellationToken cancellationToken)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(new { error = "File is required" });
+
+        using var stream = file.OpenReadStream();
+        var result = await _sender.Send(new ParseImportCommand(stream, file.FileName), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Confirms the import and creates warehouse items.</summary>
+    [HttpPost("items/import/confirm")]
+    [Authorize(Policy = Permissions.Warehouses.Manage)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ConfirmImport([FromBody] ConfirmImportCommand command, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(command, cancellationToken);
+        return Ok(result);
     }
 }

@@ -48,7 +48,11 @@ public class InventoryAdjustHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new InventoryAdjustCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null);
 
         // Act
@@ -88,7 +92,11 @@ public class InventoryAdjustHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new InventoryAdjustCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null);
 
         // Act
@@ -128,7 +136,11 @@ public class InventoryAdjustHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new InventoryAdjustCommand(warehouse.Id, item.Id, null, 100m, "kg", null, null);
 
         // Act
@@ -148,7 +160,11 @@ public class InventoryAdjustHandlerTests
         // Arrange
         var (context, dateTime, stockBalance, unitConversion) = CreateDependencies();
 
-        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion);
+        var approvalService = Substitute.For<IApprovalService>();
+        approvalService.CheckAndCreateIfRequired(Arg.Any<Domain.Enums.ApprovalActionType>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns((false, (Guid?)null));
+        var currentUser = Substitute.For<ICurrentUserService>();
+        var handler = new InventoryAdjustHandler(context, dateTime, stockBalance, unitConversion, approvalService, currentUser);
         var command = new InventoryAdjustCommand(Guid.NewGuid(), Guid.NewGuid(), null, 100m, "kg", null, null);
 
         // Act
