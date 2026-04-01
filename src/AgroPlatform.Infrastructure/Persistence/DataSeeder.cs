@@ -109,8 +109,31 @@ public static class DataSeeder
 
             var userManager = sp.GetRequiredService<UserManager<AppUser>>();
 
-            if (await userManager.FindByEmailAsync(email) is not null)
+            var existing = await userManager.FindByEmailAsync(email);
+            if (existing is not null)
+            {
+                // Ensure SuperAdmin can always log in with configured password
+                if (!await userManager.CheckPasswordAsync(existing, password))
+                {
+                    var token = await userManager.GeneratePasswordResetTokenAsync(existing);
+                    var resetResult = await userManager.ResetPasswordAsync(existing, token, password);
+                    if (resetResult.Succeeded)
+                        logger.LogInformation("SuperAdmin password reset to match configuration.");
+                    else
+                        logger.LogWarning("Could not reset SuperAdmin password: {Errors}",
+                            string.Join(", ", resetResult.Errors.Select(e => e.Description)));
+                }
+
+                // Ensure SuperAdmin is always active
+                if (!existing.IsActive)
+                {
+                    existing.IsActive = true;
+                    await userManager.UpdateAsync(existing);
+                    logger.LogInformation("SuperAdmin re-activated.");
+                }
+
                 return;
+            }
 
             logger.LogInformation("Seeding SuperAdmin user: {Email}", email);
 

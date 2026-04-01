@@ -9,6 +9,7 @@ import {
   deactivateUser,
   activateUser,
   updateUserRole,
+  deleteUser,
   type CompanyUserDto,
   type CreateUserRequest,
 } from '../../api/companies';
@@ -62,6 +63,16 @@ export default function CompanyUsersPage() {
       load();
     } catch {
       message.error(t.superAdmin.deactivateError);
+    }
+  };
+
+  const onDeleteUser = async (userId: string) => {
+    try {
+      await deleteUser(userId);
+      message.success(t.superAdmin.userDeleted);
+      load();
+    } catch {
+      message.error(t.superAdmin.deleteError);
     }
   };
 
@@ -151,6 +162,15 @@ export default function CompanyUsersPage() {
               {t.common.activate}
             </Button>
           )}
+          <Popconfirm
+            title={t.superAdmin.deleteUserConfirm}
+            onConfirm={() => onDeleteUser(record.id)}
+            okText={t.common.confirm}
+            cancelText={t.common.cancel}
+            okButtonProps={{ danger: true }}
+          >
+            <Button size="small" danger>{t.superAdmin.deleteUser}</Button>
+          </Popconfirm>
         </Space>
       ),
     },
