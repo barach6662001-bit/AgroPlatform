@@ -1,5 +1,6 @@
 using AgroPlatform.Application.Notifications.Commands.ClearNotifications;
 using AgroPlatform.Application.Notifications.Commands.MarkNotificationRead;
+using AgroPlatform.Application.Notifications.Commands.RegisterMobilePushToken;
 using AgroPlatform.Application.Notifications.Commands.RegisterPushSubscription;
 using AgroPlatform.Application.Notifications.Queries.GetNotifications;
 using MediatR;
@@ -72,6 +73,18 @@ public class NotificationsController : ControllerBase
             cancellationToken);
         return CreatedAtAction(nameof(RegisterPushSubscription), new { id }, new { id });
     }
+
+    /// <summary>Registers or updates a mobile push token (Expo) for the current user.</summary>
+    [HttpPost("push-token")]
+    public async Task<IActionResult> RegisterMobilePushToken(
+        [FromBody] RegisterMobilePushTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(
+            new RegisterMobilePushTokenCommand(request.Token, request.Platform),
+            cancellationToken);
+        return Ok(new { id });
+    }
 }
 
 public record RegisterPushSubscriptionRequest(
@@ -79,3 +92,7 @@ public record RegisterPushSubscriptionRequest(
     string? P256dhKey,
     string? AuthKey,
     string? UserAgent);
+
+public record RegisterMobilePushTokenRequest(
+    string Token,
+    string Platform);
