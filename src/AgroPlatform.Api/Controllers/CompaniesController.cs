@@ -1,5 +1,7 @@
 using AgroPlatform.Application.Companies.Commands.ActivateUser;
 using AgroPlatform.Application.Companies.Commands.CreateCompany;
+using AgroPlatform.Application.Companies.Commands.DeleteCompany;
+using AgroPlatform.Application.Companies.Commands.DeleteUser;
 using AgroPlatform.Application.Companies.Commands.CreateUser;
 using AgroPlatform.Application.Companies.Commands.DeactivateCompany;
 using AgroPlatform.Application.Companies.Commands.DeactivateUser;
@@ -73,6 +75,17 @@ public class CompaniesController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Permanently deletes a company and all its users.</summary>
+    [HttpDelete("{id:guid}/permanent")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteCompany(Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteCompanyCommand(id), cancellationToken);
+        return NoContent();
+    }
+
     /// <summary>Returns all users belonging to a company.</summary>
     [HttpGet("{id:guid}/users")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -102,6 +115,17 @@ public class CompaniesController : ControllerBase
     public async Task<IActionResult> DeactivateUser(string userId, CancellationToken cancellationToken)
     {
         await _sender.Send(new DeactivateUserCommand(userId), cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>Permanently deletes a user.</summary>
+    [HttpDelete("users/{userId}/permanent")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> DeleteUser(string userId, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteUserCommand(userId), cancellationToken);
         return NoContent();
     }
 

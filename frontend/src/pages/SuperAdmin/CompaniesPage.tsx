@@ -8,6 +8,7 @@ import {
   createCompany,
   updateCompany,
   deactivateCompany,
+  deleteCompany,
   type CompanyDto,
   type CreateCompanyRequest,
 } from '../../api/companies';
@@ -72,6 +73,16 @@ export default function CompaniesPage() {
     }
   };
 
+  const onDeleteCompany = async (id: string) => {
+    try {
+      await deleteCompany(id);
+      message.success(t.superAdmin.companyDeleted);
+      load();
+    } catch {
+      message.error(t.superAdmin.deleteError);
+    }
+  };
+
   const columns = [
     {
       title: t.superAdmin.companyName,
@@ -130,6 +141,15 @@ export default function CompaniesPage() {
               <Button icon={<DeleteOutlined />} size="small" danger />
             </Popconfirm>
           )}
+          <Popconfirm
+            title={t.superAdmin.deleteCompanyConfirm}
+            onConfirm={() => onDeleteCompany(record.id)}
+            okText={t.common.confirm}
+            cancelText={t.common.cancel}
+            okButtonProps={{ danger: true }}
+          >
+            <Button size="small" danger>{t.superAdmin.deleteCompany}</Button>
+          </Popconfirm>
         </Space>
       ),
     },

@@ -63,5 +63,11 @@ export const deactivateUser = (userId: string) =>
 export const activateUser = (userId: string) =>
   apiClient.post(`/api/companies/users/${userId}/activate`);
 
+export const deleteUser = (userId: string) =>
+  apiClient.delete(`/api/companies/users/${userId}/permanent`);
+
 export const updateUserRole = (userId: string, role: string) =>
   apiClient.put(`/api/companies/users/${userId}/role`, { userId, role });
+
+export const deleteCompany = (id: string) =>
+  apiClient.delete(`/api/companies/${id}/permanent`);
