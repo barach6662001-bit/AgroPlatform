@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useAuthStore } from '../src/stores/authStore';
 import { usePushNotifications } from '../src/hooks/usePushNotifications';
+import { useTheme } from '../src/hooks/useTheme';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,10 +36,12 @@ function AuthGuard({ children }: { children: ReactNode }) {
 }
 
 export default function RootLayout() {
+  const { isDark } = useTheme();
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthGuard>
-        <StatusBar style="auto" />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
