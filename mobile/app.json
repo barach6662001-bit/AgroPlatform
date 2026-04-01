@@ -43,7 +43,12 @@
       ]
     ],
     "updates": {
-      "enabled": true
+      "enabled": true,
+      "url": "https://u.expo.dev/agroplatform",
+      "fallbackToCacheTimeout": 5000
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     },
     "extra": {
       "apiUrl": "https://agrotech-usa.com"
