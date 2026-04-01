@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "AgroPlatform",
+    "slug": "agroplatform",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1B5E20"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "scheme": "agroplatform",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.agroplatform.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Для сканування штрих-кодів та фото документів",
+        "NSLocationWhenInUseUsageDescription": "Для відображення поточної позиції на карті полів"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1B5E20"
+      },
+      "package": "com.agroplatform.app",
+      "versionCode": 1,
+      "permissions": ["CAMERA", "ACCESS_FINE_LOCATION", "RECEIVE_BOOT_COMPLETED", "VIBRATE"]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#1B5E20"
+        }
+      ]
+    ],
+    "updates": {
+      "enabled": true
+    },
+    "extra": {
+      "apiUrl": "https://agrotech-usa.com"
+    }
+  }
+}
