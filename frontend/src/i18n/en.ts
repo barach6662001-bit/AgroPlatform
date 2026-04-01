@@ -1499,6 +1499,21 @@ const en: Translations = {
     goToItems: 'Go to Items',
     error: 'Save error',
   },
+  landing: {
+    heroTitle: 'Farm management on a single platform',
+    heroSubtitle: 'Warehouses, fields, machinery, HR, finance — all in one place. For modern agricultural enterprises.',
+    ctaLogin: 'Sign In',
+    ctaDemo: 'Demo Mode',
+    featureWarehouses: 'Warehouse management',
+    featureWarehousesDesc: 'Receipt, issue, transfer, inventory with full audit trail.',
+    featureFields: 'Fields & crop rotation',
+    featureFieldsDesc: 'Field map, crop history, rotation plan, soil analysis.',
+    featureEconomics: 'Finance & analytics',
+    featureEconomicsDesc: 'Costs, budgets, marginality, season comparison, break-even point.',
+    featureFleet: 'Machinery & GPS',
+    featureFleetDesc: 'Equipment tracking, GPS tracks, fuel, maintenance, consumption norms.',
+    footerText: '© {year} AgroPlatform. All rights reserved.',
+  },
 };
 
 export default en;

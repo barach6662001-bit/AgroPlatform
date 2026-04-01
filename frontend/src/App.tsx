@@ -59,6 +59,7 @@ import RevenueAnalytics from './pages/Sales/RevenueAnalytics';
 import SalaryFuelAnalytics from './pages/Analytics/SalaryFuelAnalytics';
 import ImportItemsPage from './pages/Warehouses/ImportItemsPage';
 import OnboardingWizard from './pages/Onboarding/OnboardingWizard';
+import LandingPage from './pages/Landing/LandingPage';
 
 export default function App() {
   const { lang } = useTranslation();
@@ -76,6 +77,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/access-denied" element={<AccessDenied />} />
           <Route path="/change-password" element={
             <ProtectedRoute>
