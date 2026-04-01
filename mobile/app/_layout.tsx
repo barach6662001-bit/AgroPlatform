@@ -3,6 +3,7 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useAuthStore } from '../src/stores/authStore';
+import { usePushNotifications } from '../src/hooks/usePushNotifications';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,6 +18,8 @@ function AuthGuard({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
+
+  usePushNotifications();
 
   useEffect(() => {
     const inAuthGroup = segments[0] === '(auth)';

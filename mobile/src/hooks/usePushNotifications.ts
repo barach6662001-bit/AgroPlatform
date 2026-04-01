@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import apiClient from '../api/client';
 
 Notifications.setNotificationHandler({
@@ -15,6 +17,8 @@ Notifications.setNotificationHandler({
 });
 
 export function usePushNotifications() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const notificationListener = useRef<Notifications.EventSubscription | null>(null);
   const responseListener = useRef<Notifications.EventSubscription | null>(null);
 
@@ -22,18 +26,45 @@ export function usePushNotifications() {
     registerForPushNotifications();
 
     notificationListener.current = Notifications.addNotificationReceivedListener(() => {
-      // Foreground notification handler hook
+      // Invalidate notifications query so badge / list refresh
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(() => {
-      // Navigation by notification payload can be added in Phase 3
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data as Record<string, string> | undefined;
+      if (data?.entityType) {
+        navigateByEntity(router, data.entityType, data.entityId);
+      }
     });
 
     return () => {
       notificationListener.current?.remove();
       responseListener.current?.remove();
     };
-  }, []);
+  }, [router, queryClient]);
+}
+
+function navigateByEntity(
+  router: ReturnType<typeof useRouter>,
+  entityType: string,
+  entityId?: string,
+) {
+  switch (entityType) {
+    case 'Warehouse':
+      router.push(entityId ? `/warehouse/${entityId}` : '/(tabs)/warehouse');
+      break;
+    case 'GrainStorage':
+      router.push(entityId ? `/grain/${entityId}` : '/(tabs)/grain');
+      break;
+    case 'AgroOperation':
+      router.push(entityId ? `/operations/${entityId}` : '/(tabs)/operations');
+      break;
+    case 'Notification':
+      router.push('/notifications');
+      break;
+    default:
+      router.push('/notifications');
+  }
 }
 
 async function registerForPushNotifications() {
@@ -52,7 +83,7 @@ async function registerForPushNotifications() {
   const token = (await Notifications.getExpoPushTokenAsync()).data;
 
   try {
-    await apiClient.post('/notifications/push-token', {
+    await apiClient.post('/api/notifications/push-token', {
       token,
       platform: Platform.OS,
     });
