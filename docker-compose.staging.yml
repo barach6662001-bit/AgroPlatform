@@ -1,0 +1,32 @@
+# docker-compose.staging.yml — staging overrides
+# Usage: docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d
+#
+# Uses a separate database and staging-specific env vars.
+# Deploy to the staging server alongside (but isolated from) production.
+
+services:
+  postgres:
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-agroplatform_staging}
+      POSTGRES_USER: ${POSTGRES_USER:-agroplatform}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-staging_secret}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_staging:/var/lib/postgresql/data
+
+  api:
+    ports:
+      - "8081:8080"
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-agroplatform_staging};Username=${POSTGRES_USER:-agroplatform};Password=${POSTGRES_PASSWORD:-staging_secret}"
+      Cors__AllowedOrigins__0: "${CORS_ORIGIN:-https://staging.agrotech-usa.com}"
+      Swagger__Enabled: "true"
+      AUTO_MIGRATE: "true"
+
+  frontend:
+    ports:
+      - "3001:80"
+
+volumes:
+  pgdata_staging:
