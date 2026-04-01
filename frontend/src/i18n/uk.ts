@@ -1497,6 +1497,21 @@ const uk = {
     goToItems: 'До товарів',
     error: 'Помилка збереження',
   },
+  landing: {
+    heroTitle: 'Управління фермою на одній платформі',
+    heroSubtitle: 'Склади, поля, техніка, кадри, фінанси — все в одному місці. Для сучасних агропідприємств.',
+    ctaLogin: 'Увійти',
+    ctaDemo: 'Демо-режим',
+    featureWarehouses: 'Складський облік',
+    featureWarehousesDesc: 'Прихід, витрата, переміщення, інвентаризація з повним аудит-трейлом.',
+    featureFields: 'Поля та сівозміна',
+    featureFieldsDesc: 'Карта полів, історія культур, план сівозміни, аналіз ґрунту.',
+    featureEconomics: 'Фінанси та аналітика',
+    featureEconomicsDesc: 'Витрати, бюджети, маржинальність, сезонне порівняння, точка беззбитковості.',
+    featureFleet: 'Техніка та GPS',
+    featureFleetDesc: 'Облік техніки, GPS-треки, паливо, ТО, нормативи витрат.',
+    footerText: '© {year} AgroPlatform. Усі права захищено.',
+  },
 } as const;
 
 export default uk;
