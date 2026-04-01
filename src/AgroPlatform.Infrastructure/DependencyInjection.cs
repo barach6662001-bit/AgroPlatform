@@ -57,6 +57,7 @@ public static class DependencyInjection
         // Background automation jobs
         services.AddHostedService<FuelAnomalyJob>();
         services.AddHostedService<LowStockAlertJob>();
+        services.AddHostedService<DailyReportService>();
 
         services.AddIdentity<AppUser, IdentityRole>(options =>
         {
