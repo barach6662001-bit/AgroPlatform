@@ -1,4 +1,6 @@
 using AgroPlatform.Application.Admin.Commands.UpdateRolePermissions;
+using AgroPlatform.Application.Admin.Queries.GetAvailablePolicies;
+using AgroPlatform.Application.Admin.Queries.GetAvailableRoles;
 using AgroPlatform.Application.Admin.Queries.GetRolePermissions;
 using AgroPlatform.Domain.Authorization;
 using MediatR;
@@ -26,6 +28,24 @@ public class RolePermissionsController : ControllerBase
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new GetRolePermissionsQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns available role names from the UserRole enum.</summary>
+    [HttpGet("roles")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRoles(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetAvailableRolesQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Returns all available permission policy names.</summary>
+    [HttpGet("policies")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPolicies(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetAvailablePoliciesQuery(), cancellationToken);
         return Ok(result);
     }
 

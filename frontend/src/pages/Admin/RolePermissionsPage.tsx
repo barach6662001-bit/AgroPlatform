@@ -1,53 +1,25 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Table, Checkbox, Button, App, Spin } from 'antd';
+import { Table, Checkbox, Button, App, Spin, Alert } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { useTranslation } from '../../i18n';
 import {
   getRolePermissions,
+  getAvailableRoles,
+  getAvailablePolicies,
   updateRolePermissions,
   type RolePermissionDto,
   type RolePermissionItem,
 } from '../../api/rolePermissions';
 
-const ALL_POLICIES = [
-  'Warehouses.View',
-  'Warehouses.Manage',
-  'Inventory.View',
-  'Inventory.Manage',
-  'Analytics.View',
-  'Machinery.View',
-  'Machinery.Manage',
-  'Fields.View',
-  'Fields.Manage',
-  'Economics.Manage',
-  'HR.Manage',
-  'GrainStorage.Manage',
-  'Fuel.Manage',
-  'Sales.Manage',
-  'Admin.Manage',
-  'Platform.SuperAdmin',
-];
-
-const EDITABLE_ROLES = [
-  'Manager',
-  'WarehouseOperator',
-  'Accountant',
-  'Viewer',
-  'Agronomist',
-  'Storekeeper',
-  'Director',
-  'Operator',
-];
-
-const ALL_ROLES = ['SuperAdmin', 'CompanyAdmin', ...EDITABLE_ROLES];
+const PROTECTED_ROLES = ['SuperAdmin', 'CompanyAdmin'];
 
 type Matrix = Record<string, Record<string, boolean>>;
 
-function buildMatrix(data: RolePermissionDto[]): Matrix {
+function buildMatrix(data: RolePermissionDto[], roles: string[], policies: string[]): Matrix {
   const m: Matrix = {};
-  for (const role of ALL_ROLES) {
+  for (const role of roles) {
     m[role] = {};
-    for (const policy of ALL_POLICIES) {
+    for (const policy of policies) {
       m[role][policy] = false;
     }
   }
@@ -64,22 +36,32 @@ export default function RolePermissionsPage() {
   const { message } = App.useApp();
   const [matrix, setMatrix] = useState<Matrix>({});
   const [original, setOriginal] = useState<Matrix>({});
+  const [roles, setRoles] = useState<string[]>([]);
+  const [policies, setPolicies] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      const data = await getRolePermissions();
-      const m = buildMatrix(data);
+      const [data, fetchedRoles, fetchedPolicies] = await Promise.all([
+        getRolePermissions(),
+        getAvailableRoles(),
+        getAvailablePolicies(),
+      ]);
+      setRoles(fetchedRoles);
+      setPolicies(fetchedPolicies);
+      const m = buildMatrix(data, fetchedRoles, fetchedPolicies);
       setMatrix(m);
       setOriginal(JSON.parse(JSON.stringify(m)));
     } catch {
-      message.error(t.rolePermissions.loadError);
+      setError(t.rolePermissions.loadError);
     } finally {
       setLoading(false);
     }
-  }, [message, t]);
+  }, [t]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -92,8 +74,8 @@ export default function RolePermissionsPage() {
 
   const getDiff = (): RolePermissionItem[] => {
     const items: RolePermissionItem[] = [];
-    for (const role of ALL_ROLES) {
-      for (const policy of ALL_POLICIES) {
+    for (const role of roles) {
+      for (const policy of policies) {
         if (matrix[role]?.[policy] !== original[role]?.[policy]) {
           items.push({ roleName: role, policyName: policy, isGranted: !!matrix[role]?.[policy] });
         }
@@ -127,14 +109,14 @@ export default function RolePermissionsPage() {
       fixed: 'left' as const,
       width: 200,
     },
-    ...ALL_ROLES.map((role) => ({
+    ...roles.map((role) => ({
       title: role,
       dataIndex: role,
       key: role,
       width: 120,
       align: 'center' as const,
       render: (_: unknown, record: { policy: string }) => {
-        const isProtected = role === 'SuperAdmin' || role === 'CompanyAdmin';
+        const isProtected = PROTECTED_ROLES.includes(role);
         return (
           <Checkbox
             checked={!!matrix[role]?.[record.policy]}
@@ -146,7 +128,7 @@ export default function RolePermissionsPage() {
     })),
   ];
 
-  const dataSource = ALL_POLICIES.map((policy) => ({
+  const dataSource = policies.map((policy) => ({
     key: policy,
     policy,
   }));
@@ -155,6 +137,14 @@ export default function RolePermissionsPage() {
     return (
       <div style={{ padding: 24, textAlign: 'center' }}>
         <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: 24 }}>
+        <Alert type="error" message={error} showIcon />
       </div>
     );
   }

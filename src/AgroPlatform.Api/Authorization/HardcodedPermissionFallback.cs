@@ -11,8 +11,8 @@ internal static class HardcodedPermissionFallback
 {
     private static readonly Dictionary<string, HashSet<string>> _matrix = new(StringComparer.Ordinal)
     {
-        // Admin = full access (Administrator normalizes to Admin in the handler)
-        ["Admin"] =
+        // CompanyAdmin = full access
+        ["CompanyAdmin"] =
         [
             "Warehouses.Manage", "Inventory.Manage", "Machinery.Manage", "Fields.Manage",
             "Economics.Manage",  "HR.Manage",         "GrainStorage.Manage", "Fuel.Manage",
@@ -25,11 +25,9 @@ internal static class HardcodedPermissionFallback
             "Economics.Manage",  "HR.Manage",         "GrainStorage.Manage", "Fuel.Manage",
             "Sales.Manage"
         ],
-        ["Agronomist"]  = ["Fields.Manage"],
-        ["Storekeeper"] = ["Warehouses.Manage", "Inventory.Manage", "GrainStorage.Manage", "Fuel.Manage"],
-        ["Director"]    = ["Economics.Manage", "Sales.Manage"],
-        ["Operator"]    = ["Warehouses.Manage", "Inventory.Manage", "Fields.Manage"],
-        ["Viewer"]      = [],
+        ["WarehouseOperator"] = ["Warehouses.Manage", "Inventory.Manage", "GrainStorage.Manage", "Fuel.Manage"],
+        ["Accountant"]        = ["Economics.Manage", "Sales.Manage"],
+        ["Viewer"]            = [],
     };
 
     /// <summary>

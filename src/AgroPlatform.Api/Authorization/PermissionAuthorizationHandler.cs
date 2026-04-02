@@ -37,11 +37,11 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         if (string.IsNullOrEmpty(roleClaim))
             return; // API key or unauthenticated — do not succeed
 
-        // TASK-011: normalize legacy Administrator alias to primary Admin role
+        // Normalize legacy role aliases to canonical UserRole enum names
         var normalizedRole = NormalizeRole(roleClaim);
 
-        // Stage 1 — Admin override: Admin (and normalized Administrator) has all permissions
-        if (normalizedRole == "Admin")
+        // Stage 1 — Admin overrides: SuperAdmin and CompanyAdmin have all permissions
+        if (normalizedRole is "SuperAdmin" or "CompanyAdmin")
         {
             context.Succeed(requirement);
             return;
@@ -83,7 +83,13 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
                    .ToHashSet(StringComparer.Ordinal);
     }
 
-    /// <summary>Maps legacy role aliases to their normalized primary role names.</summary>
+    /// <summary>Maps legacy role aliases to their canonical UserRole enum names.</summary>
     private static string NormalizeRole(string role) =>
-        role == "Administrator" ? "Admin" : role;
+        role switch
+        {
+            "Administrator" or "Admin" => "CompanyAdmin",
+            "Storekeeper" or "Operator" => "WarehouseOperator",
+            "Director" => "Accountant",
+            _ => role,
+        };
 }
