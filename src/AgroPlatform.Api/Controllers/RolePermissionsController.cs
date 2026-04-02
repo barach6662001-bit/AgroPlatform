@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Admin.Commands.UpdateRolePermissions;
 using AgroPlatform.Application.Admin.Queries.GetAvailablePolicies;
 using AgroPlatform.Application.Admin.Queries.GetAvailableRoles;
+using AgroPlatform.Application.Admin.Queries.GetMyPermissions;
 using AgroPlatform.Application.Admin.Queries.GetRolePermissions;
 using AgroPlatform.Domain.Authorization;
 using MediatR;
@@ -56,5 +57,15 @@ public class RolePermissionsController : ControllerBase
     {
         await _sender.Send(command, cancellationToken);
         return NoContent();
+    }
+
+    /// <summary>Returns the current user's role and granted permissions.</summary>
+    [HttpGet("my")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMyPermissions(CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetMyPermissionsQuery(), cancellationToken);
+        return Ok(result);
     }
 }
