@@ -143,6 +143,13 @@ const en: Translations = {
     passwordsDoNotMatch: 'Passwords do not match',
     passwordChanged: 'Password changed successfully!',
     passwordChangeError: 'Failed to change password',
+    platformTagline: 'Agribusiness Management Platform',
+    heroHeadline: 'Complete Control Over Your Agribusiness',
+    heroDescription: 'Manage fields, equipment, warehouses, personnel, and finances in one system.',
+    loginTitle: 'Sign in to your account',
+    loginSubtitle: 'Enter your credentials',
+    copyright: '© 2026 AgroTech. All rights reserved.',
+    platformSubtitle: 'Farm Management Platform',
   },
   roles: {
     SuperAdmin: 'Super Admin',

@@ -141,6 +141,13 @@ const uk = {
     passwordsDoNotMatch: 'Паролі не збігаються',
     passwordChanged: 'Пароль успішно змінено!',
     passwordChangeError: 'Не вдалося змінити пароль',
+    platformTagline: 'Платформа управління агробізнесом',
+    heroHeadline: 'Повний контроль над вашим агробізнесом',
+    heroDescription: 'Управляйте полями, технікою, складами, персоналом та фінансами в єдиній системі.',
+    loginTitle: 'Увійти в акаунт',
+    loginSubtitle: 'Введіть ваші облікові дані',
+    copyright: '© 2026 АгроТех. Всі права захищені.',
+    platformSubtitle: 'Farm Management Platform',
   },
   roles: {
     SuperAdmin: 'Супер-адмін',
