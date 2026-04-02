@@ -8,6 +8,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { useThemeStore } from '../../stores/themeStore';
 
 const routeToGroup: Array<[string, string]> = [
   ['/fields/rotation-advisor', 'fields-group'],
@@ -41,6 +42,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const location = useLocation();
   const { t } = useTranslation();
   const { isAdmin, isSuperAdmin } = useRole();
+  const appTheme = useThemeStore((s) => s.theme);
 
   const [openKeys, setOpenKeys] = useState<string[]>(() => {
     const group = getGroupForPath(location.pathname);
@@ -223,7 +225,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>
       <Menu
-        theme="dark"
+        theme={appTheme === 'dark' ? 'dark' : 'light'}
         mode="inline"
         inlineCollapsed={collapsed}
         selectedKeys={[selectedKey]}

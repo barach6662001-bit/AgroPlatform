@@ -6,6 +6,8 @@ import enUS from 'antd/locale/en_US';
 import dayjs from 'dayjs';
 import { useTranslation } from './i18n';
 import { darkTheme } from './theme/darkTheme';
+import { lightTheme } from './theme/lightTheme';
+import { useThemeStore } from './stores/themeStore';
 import AppLayout from './components/Layout/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
@@ -63,15 +65,20 @@ import LandingPage from './pages/Landing/LandingPage';
 
 export default function App() {
   const { lang } = useTranslation();
+  const theme = useThemeStore((s) => s.theme);
 
   useEffect(() => {
     dayjs.locale(lang === 'uk' ? 'uk' : 'en');
   }, [lang]);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
   return (
     <ConfigProvider
       locale={lang === 'uk' ? ukUA : enUS}
-      theme={darkTheme}
+      theme={theme === 'dark' ? darkTheme : lightTheme}
     >
       <ErrorBoundary>
       <BrowserRouter>
