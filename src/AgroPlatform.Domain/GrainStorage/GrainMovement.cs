@@ -37,4 +37,7 @@ public class GrainMovement : AuditableEntity
     /// <summary>Links this movement to a GrainTransfer record when the movement was created by a transfer operation.</summary>
     public Guid? GrainTransferId { get; set; }
     public GrainTransfer? GrainTransfer { get; set; }
+
+    /// <summary>Client-provided idempotency key to prevent duplicate operations.</summary>
+    public string? ClientOperationId { get; set; }
 }
