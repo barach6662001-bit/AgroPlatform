@@ -15,6 +15,8 @@ using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace AgroPlatform.Infrastructure.Persistence;
 
@@ -101,58 +103,44 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
         builder.Ignore<DomainEvent>();
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
-        // Combined tenant + soft-delete query filters (overrides individual configs)
-        builder.Entity<Field>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
-        builder.Entity<FieldCropHistory>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
-        builder.Entity<CropRotationPlan>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
-        builder.Entity<FieldSeeding>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
-        builder.Entity<FieldFertilizer>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
-        builder.Entity<FieldProtection>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
-        builder.Entity<FieldHarvest>().HasQueryFilter(h => !h.IsDeleted && h.TenantId == _tenantId);
-        builder.Entity<FieldZone>().HasQueryFilter(z => !z.IsDeleted && z.TenantId == _tenantId);
-        builder.Entity<SoilAnalysis>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
-        builder.Entity<AgroOperation>().HasQueryFilter(o => !o.IsDeleted && o.TenantId == _tenantId);
-        builder.Entity<AgroOperationResource>().HasQueryFilter(r => !r.IsDeleted && r.TenantId == _tenantId);
-        builder.Entity<AgroOperationMachinery>().HasQueryFilter(m => !m.IsDeleted && m.TenantId == _tenantId);
-        builder.Entity<Machine>().HasQueryFilter(m => !m.IsDeleted && m.TenantId == _tenantId);
-        builder.Entity<MachineWorkLog>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
-        builder.Entity<FuelLog>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
-        builder.Entity<MaintenanceRecord>().HasQueryFilter(m => !m.IsDeleted && m.TenantId == _tenantId);
-        builder.Entity<CostRecord>().HasQueryFilter(c => !c.IsDeleted && c.TenantId == _tenantId);
-        builder.Entity<Budget>().HasQueryFilter(b => !b.IsDeleted && b.TenantId == _tenantId);
-        builder.Entity<GpsTrack>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
-        builder.Entity<Warehouse>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
-        builder.Entity<WarehouseItem>().HasQueryFilter(i => !i.IsDeleted && i.TenantId == _tenantId);
-        builder.Entity<StockMove>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
-        builder.Entity<StockBalance>().HasQueryFilter(sb => !sb.IsDeleted && sb.TenantId == _tenantId);
-        builder.Entity<Batch>().HasQueryFilter(b => !b.IsDeleted && b.TenantId == _tenantId);
-        builder.Entity<Notification>().HasQueryFilter(n => n.TenantId == _tenantId);
-        builder.Entity<PushSubscription>().HasQueryFilter(p => p.TenantId == _tenantId);
-        builder.Entity<MobilePushToken>().HasQueryFilter(t => !t.IsDeleted && t.TenantId == _tenantId);
-        builder.Entity<LandLease>().HasQueryFilter(l => !l.IsDeleted && l.TenantId == _tenantId);
-        builder.Entity<LeasePayment>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
-        builder.Entity<FuelTank>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
-        builder.Entity<FuelTransaction>().HasQueryFilter(f => !f.IsDeleted && f.TenantId == _tenantId);
-        builder.Entity<FuelNorm>().HasQueryFilter(n => !n.IsDeleted && n.TenantId == _tenantId);
-        builder.Entity<GrainStorage>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
-        builder.Entity<GrainType>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
-        builder.Entity<GrainBatch>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
-        builder.Entity<GrainMovement>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
-        builder.Entity<GrainTransfer>().HasQueryFilter(g => !g.IsDeleted && g.TenantId == _tenantId);
-        builder.Entity<GrainBatchPlacement>().HasQueryFilter(p => !p.IsDeleted && p.TenantId == _tenantId);
-        builder.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == _tenantId);
-        builder.Entity<WorkLog>().HasQueryFilter(w => !w.IsDeleted && w.TenantId == _tenantId);
-        builder.Entity<SalaryPayment>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
-        builder.Entity<Sale>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
-        builder.Entity<FieldInspection>().HasQueryFilter(i => !i.IsDeleted && i.TenantId == _tenantId);
-        builder.Entity<AuditEntry>().HasQueryFilter(a => a.TenantId == _tenantId);
-        builder.Entity<Attachment>().HasQueryFilter(a => !a.IsDeleted && a.TenantId == _tenantId);
-        builder.Entity<ApiKey>().HasQueryFilter(k => !k.IsDeleted && k.TenantId == _tenantId);
-        builder.Entity<StockLedgerEntry>().HasQueryFilter(e => e.TenantId == _tenantId);
-        builder.Entity<ItemCategory>().HasQueryFilter(c => !c.IsDeleted && c.TenantId == _tenantId);
-        builder.Entity<InventorySession>().HasQueryFilter(s => !s.IsDeleted && s.TenantId == _tenantId);
-        builder.Entity<InventorySessionLine>().HasQueryFilter(l => !l.IsDeleted && l.TenantId == _tenantId);
-        builder.Entity<ApprovalRule>().HasQueryFilter(r => !r.IsDeleted && r.TenantId == _tenantId);
-        builder.Entity<ApprovalRequest>().HasQueryFilter(r => !r.IsDeleted && r.TenantId == _tenantId);
+        ApplyTenantQueryFilters(builder);
+    }
+
+    private void ApplyTenantQueryFilters(ModelBuilder builder)
+    {
+        var tenantIdField = typeof(AppDbContext)
+            .GetField("_tenantId", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var contextExpr = Expression.Constant(this);
+        var tenantIdAccessExpr = Expression.Field(contextExpr, tenantIdField);
+
+        foreach (var entityType in builder.Model.GetEntityTypes())
+        {
+            var clrType = entityType.ClrType;
+            var isTenant = typeof(ITenantEntity).IsAssignableFrom(clrType);
+            var isSoftDeletable = typeof(ISoftDeletable).IsAssignableFrom(clrType);
+
+            // AuditEntry has TenantId but does not implement ITenantEntity
+            var isAuditEntry = clrType == typeof(AuditEntry);
+
+            if (!isTenant && !isAuditEntry)
+                continue;
+
+            var parameter = Expression.Parameter(clrType, "e");
+
+            // Tenant filter: e.TenantId == _tenantId
+            var tenantIdProp = Expression.Property(parameter, "TenantId");
+            Expression filter = Expression.Equal(tenantIdProp, tenantIdAccessExpr);
+
+            // Soft-delete filter: !e.IsDeleted
+            if (isSoftDeletable)
+            {
+                var isDeletedProp = Expression.Property(parameter, nameof(ISoftDeletable.IsDeleted));
+                var notDeleted = Expression.Not(isDeletedProp);
+                filter = Expression.AndAlso(notDeleted, filter);
+            }
+
+            var lambda = Expression.Lambda(filter, parameter);
+            builder.Entity(clrType).HasQueryFilter(lambda);
+        }
     }
 }
