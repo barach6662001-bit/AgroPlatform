@@ -7,20 +7,18 @@ import { useAuthStore } from '../../stores/authStore';
 
 export default function ProfilePage() {
   const { t, lang, setLang } = useTranslation();
-  const { isAdmin, isManager, isAgronomist, isStorekeeper, isDirector } = useRole();
+  const { isAdmin, isManager, isWarehouseOperator, isAccountant } = useRole();
   const { token, email: storedEmail } = useAuthStore();
 
   // Derive current role string from the hook flags
   const roleKey = isAdmin
-    ? 'Administrator'
+    ? 'CompanyAdmin'
     : isManager
     ? 'Manager'
-    : isAgronomist
-    ? 'Agronomist'
-    : isStorekeeper
-    ? 'Storekeeper'
-    : isDirector
-    ? 'Director'
+    : isWarehouseOperator
+    ? 'WarehouseOperator'
+    : isAccountant
+    ? 'Accountant'
     : 'Unknown';
 
   // Decode additional claims (firstName, lastName) from JWT; use store email as primary source

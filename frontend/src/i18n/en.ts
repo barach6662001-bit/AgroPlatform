@@ -161,13 +161,6 @@ const en: Translations = {
     WarehouseOperator: 'Warehouse Operator',
     Accountant: 'Accountant',
     Viewer: 'Viewer',
-    // Legacy — kept for compatibility
-    Administrator: 'Administrator',
-    Agronomist: 'Agronomist',
-    Storekeeper: 'Storekeeper',
-    Director: 'Director',
-    Admin: 'Admin',
-    Operator: 'Operator',
   },
   superAdmin: {
     companiesTitle: 'Companies',

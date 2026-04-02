@@ -19,7 +19,7 @@ describe('RoleGuard', () => {
     useAuthStore.setState({
       token: 'tok',
       email: 'a@b.com',
-      role: 'Storekeeper',
+      role: 'Viewer',
       tenantId: 't1',
       isAuthenticated: true,
     });
@@ -30,7 +30,7 @@ describe('RoleGuard', () => {
           <Route
             path="/economics"
             element={
-              <RoleGuard allowedRoles={['Administrator', 'Manager', 'Director']}>
+              <RoleGuard allowedRoles={['CompanyAdmin', 'Manager', 'Accountant']}>
                 <div>Economics Page</div>
               </RoleGuard>
             }
@@ -48,7 +48,7 @@ describe('RoleGuard', () => {
     useAuthStore.setState({
       token: 'tok',
       email: 'a@b.com',
-      role: 'Administrator',
+      role: 'CompanyAdmin',
       tenantId: 't1',
       isAuthenticated: true,
     });
@@ -59,7 +59,7 @@ describe('RoleGuard', () => {
           <Route
             path="/economics"
             element={
-              <RoleGuard allowedRoles={['Administrator', 'Manager', 'Director']}>
+              <RoleGuard allowedRoles={['CompanyAdmin', 'Manager', 'Accountant']}>
                 <div>Economics Page</div>
               </RoleGuard>
             }
@@ -77,7 +77,7 @@ describe('RoleGuard', () => {
     useAuthStore.setState({
       token: 'tok',
       email: 'a@b.com',
-      role: 'Agronomist',
+      role: 'Viewer',
       tenantId: 't1',
       isAuthenticated: true,
     });
@@ -85,7 +85,7 @@ describe('RoleGuard', () => {
     render(
       <MemoryRouter>
         <RoleGuard
-          allowedRoles={['Administrator', 'Manager']}
+          allowedRoles={['CompanyAdmin', 'Manager']}
           fallback={<div>No Access</div>}
         >
           <div>Protected Content</div>

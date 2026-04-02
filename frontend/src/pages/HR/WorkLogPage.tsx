@@ -30,7 +30,7 @@ export default function WorkLogPage() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const { hasRole } = useRole();
-  const canWrite = hasRole(['Administrator', 'Manager']);
+  const canWrite = hasRole(['CompanyAdmin', 'Manager']);
 
   const monthOptions = Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,

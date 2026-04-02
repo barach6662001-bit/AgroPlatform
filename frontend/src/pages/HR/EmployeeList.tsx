@@ -24,7 +24,7 @@ export default function EmployeeList() {
   const [editingEmployee, setEditingEmployee] = useState<EmployeeDto | null>(null);
   const { t } = useTranslation();
   const { hasRole } = useRole();
-  const canWrite = hasRole(['Administrator', 'Manager']);
+  const canWrite = hasRole(['CompanyAdmin', 'Manager']);
 
   const load = () => {
     setLoading(true);

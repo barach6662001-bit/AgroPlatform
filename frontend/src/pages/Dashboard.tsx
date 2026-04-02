@@ -69,8 +69,8 @@ export default function Dashboard() {
   if (loading) return <TableSkeleton rows={8} />;
   if (!data) return null;
 
-  const isStorekeeper = role === 'Storekeeper' || role === 'WarehouseManager';
-  const isDirector = role === 'Director' || role === 'Owner';
+  const isStorekeeper = role === 'WarehouseOperator';
+  const isDirector = role === 'Accountant';
 
   const costTrendData = data.costTrend.map((item) => ({
     name: `${item.year}-${String(item.month).padStart(2, '0')}`,

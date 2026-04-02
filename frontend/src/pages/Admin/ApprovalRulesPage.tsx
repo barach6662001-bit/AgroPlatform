@@ -20,8 +20,8 @@ const ACTION_TYPE_OPTIONS = [
 const ROLE_OPTIONS = [
   'CompanyAdmin',
   'Manager',
-  'Director',
-  'Agronomist',
+  'Accountant',
+  'WarehouseOperator',
 ];
 
 export default function ApprovalRulesPage() {

@@ -159,13 +159,6 @@ const uk = {
     WarehouseOperator: 'Оператор складу',
     Accountant: 'Бухгалтер',
     Viewer: 'Спостерігач',
-    // Legacy — kept for compatibility
-    Administrator: 'Адміністратор',
-    Agronomist: 'Агроном',
-    Storekeeper: 'Комірник',
-    Director: 'Директор',
-    Admin: 'Адмін',
-    Operator: 'Оператор',
   },
   superAdmin: {
     companiesTitle: 'Компанії',

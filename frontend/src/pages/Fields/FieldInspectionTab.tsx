@@ -21,7 +21,7 @@ const severityColor: Record<string, string> = {
 export default function FieldInspectionTab({ fieldId }: Props) {
   const { t } = useTranslation();
   const { hasRole } = useRole();
-  const canWrite = hasRole(['Administrator', 'Manager', 'Agronomist']);
+  const canWrite = hasRole(['CompanyAdmin', 'Manager']);
   const [data, setData] = useState<FieldInspectionDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);

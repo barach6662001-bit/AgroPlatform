@@ -38,7 +38,7 @@ export default function SalesList() {
   const { t } = useTranslation();
   const { hasRole } = useRole();
 
-  const canWrite = hasRole(['Administrator', 'Manager', 'Director']);
+  const canWrite = hasRole(['CompanyAdmin', 'Manager', 'Accountant']);
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);

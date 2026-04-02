@@ -5,18 +5,16 @@ export type AppAction = 'view' | 'manage';
 
 const ALL_ROLES: AppRole[] = [
   'SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator', 'Accountant', 'Viewer',
-  // Legacy
-  'Administrator', 'Agronomist', 'Storekeeper', 'Director', 'Admin', 'Operator',
 ];
 
 const permissionMatrix: Record<AppModule, Record<AppAction, AppRole[]>> = {
   warehouses: {
     view:   ALL_ROLES,
-    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator', 'Administrator', 'Admin', 'Storekeeper', 'Operator'],
+    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator'],
   },
   inventory: {
     view:   ALL_ROLES,
-    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator', 'Administrator', 'Admin', 'Storekeeper', 'Operator'],
+    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator'],
   },
   analytics: {
     view:   ALL_ROLES,
@@ -24,15 +22,15 @@ const permissionMatrix: Record<AppModule, Record<AppAction, AppRole[]>> = {
   },
   machinery: {
     view:   ALL_ROLES,
-    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'Administrator', 'Admin'],
+    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager'],
   },
   fields: {
     view:   ALL_ROLES,
-    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'Administrator', 'Admin', 'Agronomist', 'Operator'],
+    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager'],
   },
   'grain-storage': {
     view:   ALL_ROLES,
-    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator', 'Administrator', 'Admin', 'Storekeeper'],
+    manage: ['SuperAdmin', 'CompanyAdmin', 'Manager', 'WarehouseOperator'],
   },
 };
 
