@@ -1,6 +1,6 @@
 import { Button, Dropdown } from 'antd';
-import { LogoutOutlined, MenuOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons';
-import { useState, useEffect, useRef } from 'react';
+import { LogoutOutlined, MenuOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SunOutlined, MoonOutlined, SearchOutlined } from '@ant-design/icons';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import Sidebar from './Sidebar';
@@ -9,6 +9,7 @@ import NotificationBell from './NotificationBell';
 import FarmSwitcher from './FarmSwitcher';
 import OfflineIndicator from '../OfflineIndicator';
 import Logo from '../Logo';
+import CommandPalette from '../CommandPalette';
 import { useAuthStore } from '../../stores/authStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useTranslation, languages } from '../../i18n';
@@ -19,6 +20,7 @@ const TABLET_BREAKPOINT = 1024;
 
 export default function AppLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth < TABLET_BREAKPOINT);
   const { email, role, logout, tenantId } = useAuthStore();
@@ -56,6 +58,19 @@ export default function AppLayout() {
     logout();
     navigate('/login');
   };
+
+  const openSearch = useCallback(() => setSearchOpen(true), []);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   const currentLang = languages.find(l => l.code === lang);
   const langMenuItems = languages.map(lang => ({
@@ -149,6 +164,14 @@ export default function AppLayout() {
           )}
 
           <div className={s.flex_center}>
+            <Button
+              type="text"
+              icon={<SearchOutlined />}
+              onClick={openSearch}
+              className={s.padded2}
+            >
+              {!isMobile && <span className={s.text13}>{t.search.trigger} <kbd style={{ opacity: 0.5, fontSize: 11 }}>⌘K</kbd></span>}
+            </Button>
             <FarmSwitcher />
             <OfflineIndicator />
             <Dropdown
@@ -195,6 +218,7 @@ export default function AppLayout() {
       </div>
 
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 }

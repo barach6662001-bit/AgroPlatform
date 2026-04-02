@@ -1525,6 +1525,19 @@ const en: Translations = {
     featureFleetDesc: 'Equipment tracking, GPS tracks, fuel, maintenance, consumption norms.',
     footerText: '© {year} AgroPlatform. All rights reserved.',
   },
+  search: {
+    placeholder: 'Search across the system...',
+    noResults: 'Nothing found',
+    hint: 'Type at least 2 characters to search',
+    trigger: 'Search',
+    typeField: 'Field',
+    typeWarehouse: 'Warehouse',
+    typeMachine: 'Machine',
+    typeEmployee: 'Employee',
+    typeGrainStorage: 'Grain storage',
+    typeFuelTank: 'Fuel tank',
+    typeSale: 'Sale',
+  },
 };
 
 export default en;
