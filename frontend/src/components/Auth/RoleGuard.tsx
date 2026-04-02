@@ -16,7 +16,7 @@ interface RoleGuardProps {
  * Guards a section of the UI by role or by module permission.
  *
  * Usage — role-based (legacy):
- *   <RoleGuard allowedRoles={['Administrator', 'Admin']}>...</RoleGuard>
+ *   <RoleGuard allowedRoles={['CompanyAdmin', 'Manager']}>...</RoleGuard>
  *
  * Usage — permission-based:
  *   <RoleGuard module="fields" action="manage">...</RoleGuard>

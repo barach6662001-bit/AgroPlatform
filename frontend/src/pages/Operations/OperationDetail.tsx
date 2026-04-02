@@ -58,7 +58,7 @@ export default function OperationDetail() {
 
   const { t, lang } = useTranslation();
   const { hasRole } = useRole();
-  const canEdit = hasRole(['Administrator', 'Manager', 'Agronomist']);
+  const canEdit = hasRole(['CompanyAdmin', 'Manager']);
 
   const load = () => {
     if (!id) return;

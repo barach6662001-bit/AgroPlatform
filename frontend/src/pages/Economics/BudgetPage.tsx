@@ -26,7 +26,7 @@ export default function BudgetPage() {
   const [pendingAmounts, setPendingAmounts] = useState<Record<string, number | null>>({});
   const { t } = useTranslation();
   const { hasRole } = useRole();
-  const canEdit = hasRole(['Administrator', 'Manager', 'Director']);
+  const canEdit = hasRole(['CompanyAdmin', 'Accountant']);
 
   const load = () => {
     setLoading(true);

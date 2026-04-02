@@ -47,8 +47,8 @@ export default function CostRecords() {
   const { hasRole } = useRole();
   const isOnline = useOnlineStatus();
 
-  const canCreate = hasRole(['Administrator', 'Manager']);
-  const canDelete = hasRole(['Administrator', 'Manager']);
+  const canCreate = hasRole(['CompanyAdmin', 'Manager', 'Accountant']);
+  const canDelete = hasRole(['CompanyAdmin', 'Manager', 'Accountant']);
 
   const currentYear = new Date().getFullYear();
 
