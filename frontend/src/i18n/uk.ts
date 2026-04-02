@@ -1523,6 +1523,19 @@ const uk = {
     featureFleetDesc: 'Облік техніки, GPS-треки, паливо, ТО, нормативи витрат.',
     footerText: '© {year} AgroPlatform. Усі права захищено.',
   },
+  search: {
+    placeholder: 'Пошук по всій системі...',
+    noResults: 'Нічого не знайдено',
+    hint: 'Введіть мінімум 2 символи для пошуку',
+    trigger: 'Пошук',
+    typeField: 'Поле',
+    typeWarehouse: 'Склад',
+    typeMachine: 'Техніка',
+    typeEmployee: 'Працівник',
+    typeGrainStorage: 'Зерносховище',
+    typeFuelTank: 'Паливний бак',
+    typeSale: 'Продаж',
+  },
 } as const;
 
 export default uk;
