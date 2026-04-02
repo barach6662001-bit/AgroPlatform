@@ -187,7 +187,7 @@ export default function UsersPage() {
           {languages.map((language) => (
             <Radio.Button key={language.code} value={language.code}
               style={{ marginRight: 8, marginBottom: 8 }}>
-              <span style={{ marginRight: 6 }}>{language.flag}</span>
+              <img src={language.flag} alt={language.shortLabel} style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2, marginRight: 6 }} />
               {language.label}
             </Radio.Button>
           ))}

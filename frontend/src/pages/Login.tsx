@@ -27,7 +27,7 @@ export default function Login() {
     key: l.code,
     label: (
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 20, lineHeight: 1 }}>{l.flag}</span>
+        <img src={l.flag} alt={l.shortLabel} style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2 }} />
         <span>{l.label}</span>
       </div>
     ),
@@ -179,9 +179,7 @@ export default function Login() {
             }}
           >
             <Button type="text" style={{ color: 'var(--text-secondary)', padding: '4px 8px' }}>
-              <span style={{ fontSize: 20, lineHeight: 1, marginRight: 4 }}>
-                {currentLang?.flag}
-              </span>
+              <img src={currentLang?.flag} alt={currentLang?.shortLabel} style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2, marginRight: 4 }} />
               <span style={{ fontSize: 13, fontWeight: 500 }}>
                 {currentLang?.shortLabel}
               </span>
