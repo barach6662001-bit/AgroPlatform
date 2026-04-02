@@ -258,6 +258,10 @@ const uk = {
     monthlyExpenses: 'Витрати за місяць',
     monthlyRevenue: 'Дохід за місяць',
     monthlyProfit: 'Прибуток',
+    recentOperations: 'Останні операції',
+    alerts: 'Сповіщення',
+    totalMachines: 'Техніка',
+    activeCount: 'активно',
     welcome: 'Вітаємо в AgroTech!',
   },
   operationTypes: {

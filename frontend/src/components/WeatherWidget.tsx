@@ -49,8 +49,8 @@ export default function WeatherWidget() {
   return (
     <Card
       size="small"
-      style={{ background: '#161B22', border: '1px solid #30363D', minWidth: 200 }}
-      bodyStyle={{ padding: '10px 14px' }}
+      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', minWidth: 220, borderRadius: 10 }}
+      styles={{ body: { padding: '10px 14px' } }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {icon ? (
@@ -60,17 +60,18 @@ export default function WeatherWidget() {
             style={{ width: 40, height: 40 }}
           />
         ) : (
-          <CloudOutlined style={{ fontSize: 32, color: '#8b949e' }} />
+          <CloudOutlined style={{ fontSize: 32, color: 'var(--text-tertiary)' }} />
         )}
         <div>
-          <div style={{ color: '#e6edf3', fontWeight: 700, fontSize: 22, lineHeight: 1 }}>
+          <div style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: 22, lineHeight: 1 }}>
             {Math.round(data.main.temp)}°C
           </div>
-          <Text style={{ color: '#8b949e', fontSize: 12 }}>{desc}</Text>
+          <Text style={{ color: 'var(--text-tertiary)', fontSize: 12 }}>{desc}</Text>
         </div>
-        <div style={{ marginLeft: 12, fontSize: 12, color: '#8b949e', lineHeight: 1.7 }}>
+        <div style={{ marginLeft: 12, fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.7 }}>
           <div>💧 {data.main.humidity}%</div>
           <div>💨 {data.wind?.speed} м/с</div>
+          <div>🌡 {Math.round(data.main.feels_like)}°C</div>
           {data.name && <div>📍 {data.name}</div>}
         </div>
       </div>

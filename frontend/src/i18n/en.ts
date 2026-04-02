@@ -260,6 +260,10 @@ const en: Translations = {
     monthlyExpenses: 'Monthly expenses',
     monthlyRevenue: 'Monthly revenue',
     monthlyProfit: 'Profit',
+    recentOperations: 'Recent Operations',
+    alerts: 'Alerts',
+    totalMachines: 'Machinery',
+    activeCount: 'active',
     welcome: 'Welcome to AgroTech!',
   },
   operationTypes: {

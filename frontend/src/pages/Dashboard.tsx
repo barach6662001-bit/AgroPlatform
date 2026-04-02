@@ -4,10 +4,6 @@ import TableSkeleton from '../components/TableSkeleton';
 import {
   ToolOutlined,
   DollarOutlined,
-  WarningOutlined,
-  CloseCircleOutlined,
-  InfoCircleOutlined,
-  ClockCircleOutlined,
   BankOutlined,
   FireOutlined,
 } from '@ant-design/icons';
@@ -25,16 +21,23 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { useNavigate, Navigate } from 'react-router-dom';
 import type { NotificationDto } from '../api/notifications';
 import type { FieldDto } from '../types/field';
+import type { AgroOperationDto } from '../types/operation';
 import PageHeader from '../components/PageHeader';
 import WeatherWidget from '../components/WeatherWidget';
+import AlertsPanel from '../components/dashboard/AlertsPanel';
+import OperationsTimeline from '../components/dashboard/OperationsTimeline';
 import { useTranslation } from '../i18n';
 import { useAuthStore } from '../stores/authStore';
-import { useDashboardQuery, useDashboardNotificationsQuery, useDashboardFieldsQuery } from '../hooks/useDashboardQuery';
+import {
+  useDashboardQuery,
+  useDashboardNotificationsQuery,
+  useDashboardFieldsQuery,
+  useDashboardOperationsQuery,
+} from '../hooks/useDashboardQuery';
 
 dayjs.extend(relativeTime);
 
 const CARD = { background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12 };
-const SECTION_GAP = { marginTop: 24 };
 
 const { Text } = Typography;
 
@@ -46,10 +49,12 @@ export default function Dashboard() {
   const { data, isLoading: dashLoading, isError: dashError } = useDashboardQuery();
   const { data: notificationsData, isLoading: notifsLoading } = useDashboardNotificationsQuery();
   const { data: fieldsData, isLoading: fieldsLoading } = useDashboardFieldsQuery();
+  const { data: operationsData, isLoading: opsLoading } = useDashboardOperationsQuery();
 
-  const loading = dashLoading || notifsLoading || fieldsLoading;
+  const loading = dashLoading || notifsLoading || fieldsLoading || opsLoading;
   const notifications: NotificationDto[] = notificationsData ?? [];
   const fields: FieldDto[] = fieldsData?.items ?? [];
+  const operations: AgroOperationDto[] = operationsData?.items ?? [];
 
   useEffect(() => {
     if (dashError) {
@@ -64,29 +69,24 @@ export default function Dashboard() {
   if (loading) return <TableSkeleton rows={8} />;
   if (!data) return null;
 
-  // ── Role-based section ordering (I06) ─────────────────────────────────────
   const isStorekeeper = role === 'Storekeeper' || role === 'WarehouseManager';
   const isDirector = role === 'Director' || role === 'Owner';
 
-  // ── Chart data ────────────────────────────────────────────────────────────
   const costTrendData = data.costTrend.map((item) => ({
     name: `${item.year}-${String(item.month).padStart(2, '0')}`,
     cost: item.totalAmount,
   }));
 
-  // ── Monthly KPIs ──────────────────────────────────────────────────────────
   const monthlyExpenses = data.monthlyExpenses;
   const monthlyRevenue = data.monthlyRevenue;
   const monthlyProfit = data.monthlyProfit;
 
-  // ── Notification icon ─────────────────────────────────────────────────────
   const notifIcon = (type: string) => {
-    if (type === 'warning') return <WarningOutlined style={{ color: 'var(--warning)', fontSize: 16 }} />;
-    if (type === 'error') return <CloseCircleOutlined style={{ color: 'var(--error)', fontSize: 16 }} />;
-    return <InfoCircleOutlined style={{ color: 'var(--info)', fontSize: 16 }} />;
+    if (type === 'warning') return <span style={{ color: 'var(--warning)', fontSize: 16 }}>⚠</span>;
+    if (type === 'error') return <span style={{ color: 'var(--error)', fontSize: 16 }}>✕</span>;
+    return <span style={{ color: 'var(--info)', fontSize: 16 }}>ℹ</span>;
   };
 
-  // ── Field status columns ──────────────────────────────────────────────────
   const fieldColumns = [
     {
       title: t.fields.name,
@@ -112,156 +112,96 @@ export default function Dashboard() {
     },
   ];
 
+  // 5 KPI cards
+  const kpiCards = isDirector
+    ? [
+        { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴' },
+        { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true },
+        { label: t.dashboard.monthlyExpenses, val: monthlyExpenses, unit: '₴' },
+        { label: t.dashboard.totalArea, val: data.totalAreaHectares, unit: 'га' },
+        { label: t.dashboard.totalMachines, val: data.totalMachines, unit: '', sub: `${data.activeMachines} ${t.dashboard.activeCount}` },
+      ]
+    : [
+        { label: t.dashboard.totalArea, val: data.totalAreaHectares, unit: 'га' },
+        { label: t.dashboard.monthlyExpenses, val: monthlyExpenses, unit: '₴' },
+        { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴' },
+        { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true },
+        { label: t.dashboard.totalMachines, val: data.totalMachines, unit: '', sub: `${data.activeMachines} ${t.dashboard.activeCount}` },
+      ];
+
   return (
     <div className="page-enter">
+      {/* Header + Weather */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 12 }}>
         <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
         <WeatherWidget />
       </div>
 
-      {/* KPI Section — role-ordered */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        {(isDirector
-          ? [
-              { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴' },
-              { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true },
-              { label: t.dashboard.monthlyExpenses, val: monthlyExpenses, unit: '₴' },
-              { label: t.dashboard.totalArea, val: data.totalAreaHectares, unit: 'га' },
-            ]
-          : [
-              { label: t.dashboard.totalArea, val: data.totalAreaHectares, unit: 'га' },
-              { label: t.dashboard.monthlyExpenses, val: monthlyExpenses, unit: '₴' },
-              { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴' },
-              { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true },
-            ]
-        ).map((kpi, i) => (
-          <Col xs={24} sm={12} lg={6} key={i}>
-            <Card style={CARD}>
-              <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+      {/* 5 KPI Cards */}
+      <Row gutter={[12, 12]} style={{ marginBottom: 20 }}>
+        {kpiCards.map((kpi, i) => (
+          <Col xs={24} sm={12} md={8} lg={4} xl={4} key={i} style={i === 4 ? { flex: '1 1 0' } : undefined}>
+            <Card size="small" style={CARD} bodyStyle={{ padding: '14px 16px' }}>
+              <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 {kpi.label}
               </Text>
               <div style={{
-                fontSize: 28, fontWeight: 600, marginTop: 4,
+                fontSize: 24, fontWeight: 600, marginTop: 2,
                 color: kpi.colored ? (kpi.val >= 0 ? 'var(--success)' : 'var(--error)') : 'var(--text-primary)',
               }}>
-                {kpi.val.toFixed(0)}{' '}
-                <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{kpi.unit}</span>
+                {typeof kpi.val === 'number' ? kpi.val.toFixed(0) : kpi.val}
+                {kpi.unit && <span style={{ fontSize: 13, color: 'var(--text-secondary)', marginLeft: 4 }}>{kpi.unit}</span>}
               </div>
+              {kpi.sub && (
+                <Text style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{kpi.sub}</Text>
+              )}
             </Card>
           </Col>
         ))}
       </Row>
 
-      {/* Quick Actions — role-prioritized */}
-      <Row gutter={12} style={{ marginBottom: 24 }}>
+      {/* Alerts */}
+      {(data.underRepairMachines > 0 || data.pendingOperations > 0) && (
+        <div style={{ marginBottom: 20 }}>
+          <AlertsPanel
+            underRepairMachines={data.underRepairMachines}
+            pendingOperations={data.pendingOperations}
+          />
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      <Row gutter={12} style={{ marginBottom: 20 }}>
         {isStorekeeper ? (
           <>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<BankOutlined />} onClick={() => navigate('/warehouses')}>
-                {t.nav.warehouses}
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<ToolOutlined />} onClick={() => navigate('/warehouses/movements')}>
-                {t.nav.movements}
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>
-                {t.dashboard.quickFuel}
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>
-                {t.dashboard.quickCost}
-              </Button>
-            </Col>
+            <Col xs={12} sm={6}><Button block icon={<BankOutlined />} onClick={() => navigate('/warehouses')}>{t.nav.warehouses}</Button></Col>
+            <Col xs={12} sm={6}><Button block icon={<ToolOutlined />} onClick={() => navigate('/warehouses/movements')}>{t.nav.movements}</Button></Col>
+            <Col xs={12} sm={6}><Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>{t.dashboard.quickFuel}</Button></Col>
+            <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button></Col>
           </>
         ) : isDirector ? (
           <>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>
-                {t.dashboard.quickCost}
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics/pnl')}>
-                {t.nav.pnl}
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>
-                {t.dashboard.quickOperation}
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>
-                {t.dashboard.quickGrain}
-              </Button>
-            </Col>
+            <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button></Col>
+            <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics/pnl')}>{t.nav.pnl}</Button></Col>
+            <Col xs={12} sm={6}><Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>{t.dashboard.quickOperation}</Button></Col>
+            <Col xs={12} sm={6}><Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>{t.dashboard.quickGrain}</Button></Col>
           </>
         ) : (
           <>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>
-                {t.dashboard.quickOperation}
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>
-                {t.dashboard.quickFuel}
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>
-                {t.dashboard.quickGrain}
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>
-                {t.dashboard.quickCost}
-              </Button>
-            </Col>
+            <Col xs={12} sm={6}><Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>{t.dashboard.quickOperation}</Button></Col>
+            <Col xs={12} sm={6}><Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>{t.dashboard.quickFuel}</Button></Col>
+            <Col xs={12} sm={6}><Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>{t.dashboard.quickGrain}</Button></Col>
+            <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button></Col>
           </>
         )}
       </Row>
 
-      {/* Alerts */}
-      {(data.underRepairMachines > 0 || data.pendingOperations > 0) && (
-        <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
-          {data.underRepairMachines > 0 && (
-            <Col xs={24} sm={12}>
-              <div className="alert-card error">
-                <Typography.Text style={{ color: 'var(--error)', fontWeight: 600, fontSize: 13 }}>
-                  <WarningOutlined style={{ marginRight: 8 }} />
-                  {data.underRepairMachines} {t.dashboard.machinesUnderRepair}
-                </Typography.Text>
-              </div>
-            </Col>
-          )}
-          {data.pendingOperations > 0 && (
-            <Col xs={24} sm={12}>
-              <div className="alert-card">
-                <Typography.Text style={{ color: 'var(--warning)', fontWeight: 600, fontSize: 13 }}>
-                  <ClockCircleOutlined style={{ marginRight: 8 }} />
-                  {data.pendingOperations} {t.dashboard.pendingOpsAlert}
-                </Typography.Text>
-              </div>
-            </Col>
-          )}
-        </Row>
-      )}
-
-      {/* Fields Status + Activity Feed */}
-      <Row gutter={[16, 16]} style={SECTION_GAP}>
+      {/* Main content: Fields + Operations + Activity */}
+      <Row gutter={[16, 16]}>
         {/* Left: Fields status */}
         <Col xs={24} xl={14}>
           <Card
-            title={
-              <Text strong style={{ color: 'var(--text-primary)' }}>
-                {t.dashboard.fieldsStatus}
-              </Text>
-            }
+            title={<Text strong style={{ color: 'var(--text-primary)' }}>{t.dashboard.fieldsStatus}</Text>}
             style={CARD}
             styles={{ body: { padding: 0 } }}
           >
@@ -277,31 +217,30 @@ export default function Dashboard() {
           </Card>
         </Col>
 
-        {/* Right: Activity feed */}
+        {/* Right: Operations Timeline + Activity Feed */}
         <Col xs={24} xl={10}>
           <Card
-            title={
-              <Text strong style={{ color: 'var(--text-primary)' }}>
-                {t.dashboard.activityFeed}
-              </Text>
-            }
+            title={<Text strong style={{ color: 'var(--text-primary)' }}>{t.dashboard.recentOperations}</Text>}
+            style={{ ...CARD, marginBottom: 16 }}
+          >
+            <OperationsTimeline operations={operations.slice(0, 6)} />
+          </Card>
+
+          <Card
+            title={<Text strong style={{ color: 'var(--text-primary)' }}>{t.dashboard.activityFeed}</Text>}
             style={CARD}
           >
             {notifications.length === 0 ? (
-              <Text style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
-                {t.dashboard.noActivity}
-              </Text>
+              <Text style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{t.dashboard.noActivity}</Text>
             ) : (
               <List
-                dataSource={notifications.slice(0, 8)}
+                dataSource={notifications.slice(0, 6)}
                 split={false}
                 renderItem={(n) => (
-                  <List.Item style={{ padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
+                  <List.Item style={{ padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
                     <Space>
                       {notifIcon(n.type)}
-                      <Text type="secondary" style={{ fontSize: 11 }}>
-                        {dayjs(n.createdAtUtc).format('HH:mm')}
-                      </Text>
+                      <Text type="secondary" style={{ fontSize: 11 }}>{dayjs(n.createdAtUtc).format('HH:mm')}</Text>
                       <Text style={{ fontSize: 13 }}>{n.title}</Text>
                     </Space>
                   </List.Item>
@@ -312,12 +251,12 @@ export default function Dashboard() {
         </Col>
       </Row>
 
-      {/* Cost Trend Chart — only when data is available */}
+      {/* Cost Trend Chart */}
       {costTrendData.length > 0 && (
-        <Row gutter={[16, 16]} style={SECTION_GAP}>
-          <Col xs={24} lg={12}>
+        <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
+          <Col xs={24} lg={16}>
             <Card title={t.dashboard.costTrend} style={CARD}>
-              <ResponsiveContainer width="100%" height={240}>
+              <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={costTrendData} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }} stroke="var(--border)" />
