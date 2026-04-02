@@ -11,6 +11,7 @@ import {
   activateUser,
   updateUserRole,
   deleteUser,
+  resetUserPassword,
   type CompanyUserDto,
   type CreateUserRequest,
 } from '../../api/companies';
@@ -24,7 +25,9 @@ export default function CompanyUsersPage() {
   const [users, setUsers] = useState<CompanyUserDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [resetModalUserId, setResetModalUserId] = useState<string | null>(null);
   const [form] = Form.useForm();
+  const [resetForm] = Form.useForm();
 
   const load = async () => {
     if (!companyId) return;
@@ -97,6 +100,19 @@ export default function CompanyUsersPage() {
     }
   };
 
+  const onResetPassword = async (values: { newPassword: string }) => {
+    if (!resetModalUserId) return;
+    try {
+      await resetUserPassword(resetModalUserId, values.newPassword);
+      message.success(t.superAdmin.resetPasswordSuccess);
+      setResetModalUserId(null);
+      resetForm.resetFields();
+      load();
+    } catch {
+      message.error(t.superAdmin.resetPasswordError);
+    }
+  };
+
   const columns = [
     {
       title: t.superAdmin.userEmail,
@@ -149,6 +165,9 @@ export default function CompanyUsersPage() {
       key: 'actions',
       render: (_: unknown, record: CompanyUserDto) => (
         <Space>
+          <Button size="small" onClick={() => { setResetModalUserId(record.id); resetForm.resetFields(); }}>
+            {t.superAdmin.resetPassword}
+          </Button>
           {record.isActive ? (
             <Popconfirm
               title={t.superAdmin.confirmDeactivate}
@@ -234,6 +253,30 @@ export default function CompanyUsersPage() {
             <Space>
               <Button onClick={() => setModalOpen(false)}>{t.common.cancel}</Button>
               <Button type="primary" htmlType="submit">{t.common.create}</Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        open={!!resetModalUserId}
+        title={t.superAdmin.resetPassword}
+        onCancel={() => { setResetModalUserId(null); resetForm.resetFields(); }}
+        footer={null}
+        destroyOnClose
+      >
+        <Form form={resetForm} layout="vertical" onFinish={onResetPassword}>
+          <Form.Item
+            name="newPassword"
+            label={t.superAdmin.newPassword}
+            rules={[{ required: true, min: 8, message: t.superAdmin.enterNewPassword }]}
+          >
+            <Input.Password placeholder={t.superAdmin.enterNewPassword} />
+          </Form.Item>
+          <Form.Item className={s.textRight}>
+            <Space>
+              <Button onClick={() => { setResetModalUserId(null); resetForm.resetFields(); }}>{t.common.cancel}</Button>
+              <Button type="primary" htmlType="submit">{t.superAdmin.resetPassword}</Button>
             </Space>
           </Form.Item>
         </Form>

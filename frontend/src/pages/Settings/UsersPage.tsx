@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Table, Select, Button, message, Card, Radio, Form, Input, Row, Col, Typography, Divider, Alert } from 'antd';
+import { Table, Select, Button, message, Card, Radio, Form, Input, Row, Col, Typography, Divider, Alert, Modal, Space } from 'antd';
 import { SaveOutlined, DatabaseOutlined } from '@ant-design/icons';
 import apiClient from '../../api/axios';
-import { getUsers, updateUserRole } from '../../api/users';
+import { getUsers, updateUserRole, resetUserPassword } from '../../api/users';
 import { getCurrentTenant, updateCurrentTenant } from '../../api/tenants';
 import type { UserDto } from '../../types/users';
 import PageHeader from '../../components/PageHeader';
@@ -22,6 +22,8 @@ export default function UsersPage() {
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [companySaving, setCompanySaving] = useState(false);
   const [companyForm] = Form.useForm();
+  const [resetModalUserId, setResetModalUserId] = useState<string | null>(null);
+  const [resetForm] = Form.useForm();
   const { t, lang, setLang } = useTranslation();
   const { isAdmin } = useRole();
 
@@ -96,6 +98,19 @@ export default function UsersPage() {
     }
   };
 
+  const handleResetPassword = async (values: { newPassword: string }) => {
+    if (!resetModalUserId) return;
+    try {
+      await resetUserPassword(resetModalUserId, values.newPassword);
+      message.success(t.settings.resetPasswordSuccess);
+      setResetModalUserId(null);
+      resetForm.resetFields();
+      load();
+    } catch {
+      message.error(t.settings.resetPasswordError);
+    }
+  };
+
   const columns = [
     {
       title: t.settings.email,
@@ -135,16 +150,26 @@ export default function UsersPage() {
       title: t.common.actions,
       key: 'actions',
       render: (_: unknown, record: UserDto) => (
-        <Button
-          size="small"
-          type="primary"
-          icon={<SaveOutlined />}
-          loading={saving[record.id]}
-          disabled={!isAdmin || pendingRoles[record.id] === record.role}
-          onClick={() => handleSave(record.id)}
-        >
-          {t.settings.saveRole}
-        </Button>
+        <Space>
+          <Button
+            size="small"
+            type="primary"
+            icon={<SaveOutlined />}
+            loading={saving[record.id]}
+            disabled={!isAdmin || pendingRoles[record.id] === record.role}
+            onClick={() => handleSave(record.id)}
+          >
+            {t.settings.saveRole}
+          </Button>
+          {isAdmin && (
+            <Button
+              size="small"
+              onClick={() => { setResetModalUserId(record.id); resetForm.resetFields(); }}
+            >
+              {t.settings.resetPassword}
+            </Button>
+          )}
+        </Space>
       ),
     },
   ];
@@ -232,6 +257,30 @@ export default function UsersPage() {
         loading={loading}
         pagination={false}
       />
+
+      <Modal
+        open={!!resetModalUserId}
+        title={t.settings.resetPassword}
+        onCancel={() => { setResetModalUserId(null); resetForm.resetFields(); }}
+        footer={null}
+        destroyOnClose
+      >
+        <Form form={resetForm} layout="vertical" onFinish={handleResetPassword}>
+          <Form.Item
+            name="newPassword"
+            label={t.settings.newPassword}
+            rules={[{ required: true, min: 8, message: t.settings.enterNewPassword }]}
+          >
+            <Input.Password placeholder={t.settings.enterNewPassword} />
+          </Form.Item>
+          <Form.Item style={{ textAlign: 'right' }}>
+            <Space>
+              <Button onClick={() => { setResetModalUserId(null); resetForm.resetFields(); }}>{t.common.cancel}</Button>
+              <Button type="primary" htmlType="submit">{t.settings.resetPassword}</Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

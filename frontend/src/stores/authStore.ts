@@ -46,7 +46,8 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: true,
         }),
       setTenantId: (tenantId) => set({ tenantId }),
-      logout: () =>
+      logout: () => {
+        localStorage.removeItem('auth-storage');
         set({
           token: null,
           email: null,
@@ -56,7 +57,8 @@ export const useAuthStore = create<AuthState>()(
           firstName: null,
           lastName: null,
           isAuthenticated: false,
-        }),
+        });
+      },
     }),
     {
       name: 'auth-storage',

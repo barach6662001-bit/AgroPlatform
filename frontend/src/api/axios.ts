@@ -34,12 +34,16 @@ const i18nErrors = {
   uk: {
     conflict: 'Конфлікт',
     conflictDesc: 'Запис з таким ідентифікатором вже існує.',
+    forbidden: 'Доступ заборонено',
+    forbiddenDesc: 'У вас немає прав для виконання цієї дії.',
     serverError: 'Помилка сервера',
     serverErrorDesc: 'Виникла неочікувана помилка. Спробуйте ще раз.',
   },
   en: {
     conflict: 'Conflict',
     conflictDesc: 'A record with the same identifier already exists.',
+    forbidden: 'Access Denied',
+    forbiddenDesc: 'You do not have permission to perform this action.',
     serverError: 'Server Error',
     serverErrorDesc: 'An unexpected server error occurred.',
   },
@@ -63,7 +67,11 @@ apiClient.interceptors.response.use(
       window.location.href = '/login';
     }
     if (error.response?.status === 403) {
-      window.location.href = '/access-denied';
+      const e = i18nErrors[getLang()];
+      notification.warning({
+        message: e.forbidden,
+        description: e.forbiddenDesc,
+      });
     }
     if (error.response?.status === 409) {
       const e = i18nErrors[getLang()];
