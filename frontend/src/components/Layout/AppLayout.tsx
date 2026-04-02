@@ -1,5 +1,5 @@
 import { Button, Dropdown } from 'antd';
-import { LogoutOutlined, MenuOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { LogoutOutlined, MenuOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons';
 import { useState, useEffect, useRef } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -10,6 +10,7 @@ import FarmSwitcher from './FarmSwitcher';
 import OfflineIndicator from '../OfflineIndicator';
 import Logo from '../Logo';
 import { useAuthStore } from '../../stores/authStore';
+import { useThemeStore } from '../../stores/themeStore';
 import { useTranslation, languages } from '../../i18n';
 
 const MOBILE_BREAKPOINT = 768;
@@ -20,6 +21,7 @@ export default function AppLayout() {
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth < TABLET_BREAKPOINT);
   const { email, role, logout, tenantId } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const { t, lang, setLang } = useTranslation();
   const queryClient = useQueryClient();
@@ -193,6 +195,12 @@ export default function AppLayout() {
                 </span>
               </Button>
             </Dropdown>
+            <Button
+              type="text"
+              icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />}
+              onClick={toggleTheme}
+              style={{ color: 'var(--text-secondary)', height: 32, padding: '4px 8px' }}
+            />
             <NotificationBell />
             <Button
               type="text"
