@@ -196,6 +196,12 @@ public static class DataSeeder
 
             logger.LogInformation("Seeding default role permissions…");
 
+            var allView = new[]
+            {
+                "Warehouses.View", "Inventory.View", "Analytics.View", "Machinery.View", "Fields.View",
+                "Economics.View", "HR.View", "GrainStorage.View", "Fuel.View", "Sales.View"
+            };
+
             var allManage = new[]
             {
                 "Warehouses.Manage", "Inventory.Manage", "Machinery.Manage", "Fields.Manage",
@@ -204,6 +210,11 @@ public static class DataSeeder
             };
 
             var grants = new List<(string Role, string Policy)>();
+
+            var allRoles = new[] { "SuperAdmin", "CompanyAdmin", "Manager", "WarehouseOperator", "Accountant", "Viewer" };
+            foreach (var role in allRoles)
+                foreach (var policy in allView)
+                    grants.Add((role, policy));
 
             foreach (var policy in allManage)
             {
@@ -220,7 +231,7 @@ public static class DataSeeder
             foreach (var policy in new[] { "Economics.Manage", "Sales.Manage", "HR.Manage" })
                 grants.Add(("Accountant", policy));
 
-            // Viewer: no manage grants — no rows
+            // Viewer: View grants only (already added above)
 
             context.RolePermissions.AddRange(grants.Select(g =>
                 new RolePermission

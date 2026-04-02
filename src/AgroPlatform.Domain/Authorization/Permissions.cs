@@ -1,9 +1,5 @@
 namespace AgroPlatform.Domain.Authorization;
 
-/// <summary>
-/// Defines permission policy names for each module.
-/// Use these constants as the policy name in <c>[Authorize(Policy = ...)]</c>.
-/// </summary>
 public static class Permissions
 {
     public static class Warehouses
@@ -37,26 +33,31 @@ public static class Permissions
 
     public static class Economics
     {
+        public const string View   = "Economics.View";
         public const string Manage = "Economics.Manage";
     }
 
     public static class HR
     {
+        public const string View   = "HR.View";
         public const string Manage = "HR.Manage";
     }
 
     public static class GrainStorage
     {
+        public const string View   = "GrainStorage.View";
         public const string Manage = "GrainStorage.Manage";
     }
 
     public static class Fuel
     {
+        public const string View   = "Fuel.View";
         public const string Manage = "Fuel.Manage";
     }
 
     public static class Sales
     {
+        public const string View   = "Sales.View";
         public const string Manage = "Sales.Manage";
     }
 

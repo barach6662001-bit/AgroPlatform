@@ -7,6 +7,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { usePermissions } from '../../hooks/usePermissions';
 import { useThemeStore } from '../../stores/themeStore';
 
 const groupKeys = new Set([
@@ -52,7 +53,19 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const location = useLocation();
   const { t } = useTranslation();
   const { isAdmin, isSuperAdmin } = useRole();
+  const { hasPermission } = usePermissions();
   const appTheme = useThemeStore((s) => s.theme);
+
+  const canFields      = hasPermission('Fields.View');
+  const canMachinery   = hasPermission('Machinery.View');
+  const canWarehouses  = hasPermission('Warehouses.View');
+  const canGrain       = hasPermission('GrainStorage.View');
+  const canFuel        = hasPermission('Fuel.View');
+  const canSales       = hasPermission('Sales.View');
+  const canEconomics   = hasPermission('Economics.View');
+  const canHR          = hasPermission('HR.View');
+  const canAnalytics   = hasPermission('Analytics.View');
+  const canAdmin       = hasPermission('Admin.Manage');
 
   const [openKeys, setOpenKeys] = useState<string[]>(() => {
     const group = getGroupForPath(location.pathname);
@@ -139,51 +152,51 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const menuItems = [
     { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined />, style: { padding: '4px 8px' } },
     { type: 'divider' as const },
-    {
+    ...(canFields ? [{
       key: 'fields-group',
       label: t.nav.fields,
       icon: <AimOutlined />,
       style: { padding: '4px 8px' },
       children: fieldsChildren,
-    },
-    {
+    }] : []),
+    ...(canMachinery ? [{
       key: 'operations-group',
       label: t.nav.operationsGroup,
       icon: <ToolOutlined />,
       style: { padding: '4px 8px' },
       children: operationsChildren,
-    },
+    }] : []),
     { type: 'divider' as const },
-    {
+    ...(canWarehouses ? [{
       key: 'storage-group',
       label: t.nav.storageLogistics,
       icon: <InboxOutlined />,
       style: { padding: '4px 8px' },
       children: storageChildren,
-    },
-    {
+    }] : []),
+    ...(canHR ? [{
       key: 'hr-group',
       label: t.nav.hr,
       icon: <TeamOutlined />,
       style: { padding: '4px 8px' },
       children: hrChildren,
-    },
+    }] : []),
     { type: 'divider' as const },
-    {
+    ...(canEconomics ? [{
       key: 'finance-group',
       label: t.nav.finance,
       icon: <DollarOutlined />,
       style: { padding: '4px 8px' },
       children: financeChildren,
-    },
-    {
+    }] : []),
+    ...(canAnalytics ? [{
       key: 'analytics-group',
       label: t.nav.analytics,
       icon: <LineChartOutlined />,
       style: { padding: '4px 8px' },
       children: analyticsChildren,
-    },
-    ...(isAdmin
+    }] : []),
+    ...(canAdmin
       ? [
           { type: 'divider' as const },
           {
