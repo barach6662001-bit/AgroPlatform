@@ -41,26 +41,26 @@ describe('PLTable', () => {
 
   it('renders a green progress bar when lower-is-better and fact < plan', () => {
     const { container } = render(<PLTable rows={[baseRows[0]]} />);
-    // Seeds: fact (40k) < plan (50k) → on-target → green bar (#3FB950 = rgb(63, 185, 80))
+    // Seeds: fact (40k) < plan (50k) → on-target → green bar
     const bar = container.querySelector('[role="progressbar"] div') as HTMLDivElement;
     expect(bar).toBeTruthy();
-    expect(bar.style.background).toBe('rgb(63, 185, 80)');
+    expect(bar.style.background).toBe('var(--success)');
   });
 
   it('renders a red progress bar when lower-is-better and fact > plan', () => {
     const { container } = render(<PLTable rows={[baseRows[1]]} />);
-    // Fuel: fact (70k) > plan (60k) → over-budget → red bar (#F85149 = rgb(248, 81, 73))
+    // Fuel: fact (70k) > plan (60k) → over-budget → red bar
     const bar = container.querySelector('[role="progressbar"] div') as HTMLDivElement;
     expect(bar).toBeTruthy();
-    expect(bar.style.background).toBe('rgb(248, 81, 73)');
+    expect(bar.style.background).toBe('var(--error)');
   });
 
   it('renders a green progress bar when higher-is-better and fact > plan', () => {
     const { container } = render(<PLTable rows={[baseRows[2]]} />);
-    // Revenue: fact (120k) > plan (100k) → on-target → green bar (#3FB950 = rgb(63, 185, 80))
+    // Revenue: fact (120k) > plan (100k) → on-target → green bar
     const bar = container.querySelector('[role="progressbar"] div') as HTMLDivElement;
     expect(bar).toBeTruthy();
-    expect(bar.style.background).toBe('rgb(63, 185, 80)');
+    expect(bar.style.background).toBe('var(--success)');
   });
 
   it('renders progress percentage in the execution column', () => {
