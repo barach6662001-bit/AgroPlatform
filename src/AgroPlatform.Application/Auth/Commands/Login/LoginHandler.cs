@@ -35,6 +35,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
             expiresAt,
             user.TenantId,
             user.RequirePasswordChange,
+            user.HasCompletedOnboarding,
             user.FirstName,
             user.LastName);
     }

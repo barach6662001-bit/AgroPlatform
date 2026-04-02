@@ -24,6 +24,7 @@ export default function ChangePassword() {
         data.role,
         data.tenantId,
         data.requirePasswordChange,
+        data.hasCompletedOnboarding,
         data.firstName,
         data.lastName
       );

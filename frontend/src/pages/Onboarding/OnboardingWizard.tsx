@@ -6,6 +6,8 @@ import { createWarehouseItem, createReceipt, getWarehouses, getWarehouseItems } 
 import type { WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import { useAuthStore } from '../../stores/authStore';
+import { completeOnboarding } from '../../api/auth';
 import s from './OnboardingWizard.module.css';
 
 export default function OnboardingWizard() {
@@ -13,6 +15,7 @@ export default function OnboardingWizard() {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(0);
   const [saving, setSaving] = useState(false);
+  const setHasCompletedOnboarding = useAuthStore((s) => s.setHasCompletedOnboarding);
 
   // Step results
   const [createdWarehouse, setCreatedWarehouse] = useState<WarehouseDto | null>(null);
@@ -88,6 +91,8 @@ export default function OnboardingWizard() {
         quantity: values.quantity,
       });
       message.success(t.onboarding.receiptCreated);
+      await completeOnboarding();
+      setHasCompletedOnboarding(true);
       setCurrent(4);
     } catch {
       message.error(t.onboarding.error);
@@ -109,6 +114,16 @@ export default function OnboardingWizard() {
             <div className={s.textCenter}>
               <Button type="primary" size="large" onClick={() => setCurrent(1)}>
                 {t.onboarding.start}
+              </Button>
+              <Button
+                style={{ marginLeft: 8 }}
+                onClick={async () => {
+                  await completeOnboarding();
+                  setHasCompletedOnboarding(true);
+                  navigate("/");
+                }}
+              >
+                {t.onboarding.skip}
               </Button>
             </div>
           </Card>

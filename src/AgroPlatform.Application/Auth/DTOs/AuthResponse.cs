@@ -7,6 +7,7 @@ public record AuthResponse(
     DateTime ExpiresAt,
     Guid TenantId,
     bool RequirePasswordChange,
+    bool HasCompletedOnboarding,
     string? FirstName,
     string? LastName
 );
