@@ -58,7 +58,7 @@ export default function AppLayout() {
     key: lang.code,
     label: (
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 20, lineHeight: 1 }}>{lang.flag}</span>
+        <img src={lang.flag} alt={lang.shortLabel} style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2 }} />
         <span>{lang.label}</span>
       </div>
     ),
@@ -220,9 +220,7 @@ export default function AppLayout() {
                 type="text"
                 style={{ color: '#8b949e', padding: '4px 8px', height: 32 }}
               >
-                <span style={{ fontSize: 16, marginRight: 4 }}>
-                  {currentLang?.flag}
-                </span>
+                <img src={currentLang?.flag} alt={currentLang?.shortLabel} style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2, marginRight: 4 }} />
                 <span style={{ fontSize: 13, fontWeight: 500 }}>
                   {currentLang?.shortLabel}
                 </span>

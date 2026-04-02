@@ -1,6 +1,5 @@
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.Tenants.DTOs;
-using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Users;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +19,7 @@ public class GetTenantsHandler : IRequestHandler<GetTenantsQuery, List<TenantDto
 
     public async Task<List<TenantDto>> Handle(GetTenantsQuery request, CancellationToken cancellationToken)
     {
-        if (_currentUser.IsSuperAdmin || _currentUser.IsInRole(UserRole.CompanyAdmin))
+        if (_currentUser.IsSuperAdmin)
         {
             return await _db.Tenants
                 .Where(t => t.IsActive)

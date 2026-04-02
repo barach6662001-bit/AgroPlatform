@@ -6,8 +6,8 @@ import type { Translations } from './uk';
 const translations: Record<string, Translations> = { uk, en };
 
 export const languages = [
-  { code: 'uk', label: 'Українська', flag: '🇺🇦', shortLabel: 'UA' },
-  { code: 'en', label: 'English', flag: '🇬🇧', shortLabel: 'EN' },
+  { code: 'uk', label: 'Українська', flag: 'https://flagcdn.com/w40/ua.png', shortLabel: 'UA' },
+  { code: 'en', label: 'English', flag: 'https://flagcdn.com/w40/gb.png', shortLabel: 'EN' },
 ];
 
 export function useTranslation() {

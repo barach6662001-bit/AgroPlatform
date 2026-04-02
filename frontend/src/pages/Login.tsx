@@ -114,7 +114,7 @@ export default function Login() {
               <span style={{ color: '#2ea043', fontWeight: 700, fontSize: 24 }}>Tech</span>
             </div>
             <p style={{ color: '#8b949e', fontSize: 13, margin: '4px 0 0' }}>
-              Farm Management Platform
+              {t.auth.platformSubtitle}
             </p>
           </div>
         </div>
@@ -129,7 +129,7 @@ export default function Login() {
             textTransform: 'uppercase',
             marginBottom: 16,
           }}>
-            Платформа управління агробізнесом
+            {t.auth.platformTagline}
           </div>
           <h2 style={{
             margin: '0 0 16px',
@@ -139,7 +139,7 @@ export default function Login() {
             letterSpacing: '-1px',
             lineHeight: 1.15,
           }}>
-            Повний контроль над вашим агробізнесом
+            {t.auth.heroHeadline}
           </h2>
           <p style={{
             margin: 0,
@@ -148,7 +148,7 @@ export default function Login() {
             lineHeight: 1.6,
             maxWidth: 480,
           }}>
-            Управляйте полями, технікою, складами, персоналом та фінансами в єдиній системі.
+            {t.auth.heroDescription}
           </p>
 
           {/* Feature list */}
@@ -178,7 +178,7 @@ export default function Login() {
 
         {/* Footer */}
         <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
-          © 2026 АгроТех. Всі права захищені.
+          {t.auth.copyright}
         </div>
       </div>
 
@@ -219,10 +219,10 @@ export default function Login() {
               color: 'var(--text-primary)',
               letterSpacing: '-0.3px',
             }}>
-              Увійти в акаунт
+              {t.auth.loginTitle}
             </h3>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--text-tertiary)' }}>
-              Введіть ваші облікові дані
+              {t.auth.loginSubtitle}
             </p>
           </div>
 
