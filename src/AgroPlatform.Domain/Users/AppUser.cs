@@ -16,4 +16,7 @@ public class AppUser : IdentityUser
 
     /// <summary>Tracks which admin created this user.</summary>
     public string? CreatedByUserId { get; set; }
+
+    /// <summary>Whether the user has completed the onboarding wizard.</summary>
+    public bool HasCompletedOnboarding { get; set; }
 }

@@ -27,7 +27,7 @@ describe('authStore', () => {
 
   it('setAuth sets all fields and marks authenticated', () => {
     const { setAuth } = useAuthStore.getState();
-    setAuth('tok123', 'user@example.com', 'CompanyAdmin', 'tenant-1', false, 'John', 'Doe');
+    setAuth('tok123', 'user@example.com', 'CompanyAdmin', 'tenant-1', false, true, 'John', 'Doe');
     const state = useAuthStore.getState();
     expect(state.token).toBe('tok123');
     expect(state.email).toBe('user@example.com');

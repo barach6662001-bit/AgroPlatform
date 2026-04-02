@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Auth.Commands.ChangePassword;
+using AgroPlatform.Application.Auth.Commands.CompleteOnboarding;
 using AgroPlatform.Application.Auth.Commands.Login;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -46,5 +47,15 @@ public class AuthController : ControllerBase
     {
         var result = await _sender.Send(command, cancellationToken);
         return Ok(result);
+    }
+
+    /// <summary>Marks the current user as having completed the onboarding wizard.</summary>
+    [HttpPost("complete-onboarding")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> CompleteOnboarding(CancellationToken cancellationToken)
+    {
+        await _sender.Send(new CompleteOnboardingCommand(), cancellationToken);
+        return NoContent();
     }
 }

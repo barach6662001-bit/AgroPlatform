@@ -5,6 +5,7 @@ export interface AuthResponse {
   expiresAt: string;
   tenantId: string;
   requirePasswordChange: boolean;
+  hasCompletedOnboarding: boolean;
   firstName?: string;
   lastName?: string;
 }

@@ -6,3 +6,6 @@ export const login = (data: LoginRequest) =>
 
 export const changePassword = (data: ChangePasswordRequest) =>
   apiClient.post<AuthResponse>('/api/auth/change-password', data).then((r) => r.data);
+
+export const completeOnboarding = () =>
+  apiClient.post("/api/auth/complete-onboarding").then((r) => r.data);

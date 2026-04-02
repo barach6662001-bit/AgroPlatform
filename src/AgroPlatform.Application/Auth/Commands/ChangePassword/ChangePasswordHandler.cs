@@ -55,6 +55,7 @@ public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Auth
             expiresAt,
             user.TenantId,
             false,
+            user.HasCompletedOnboarding,
             user.FirstName,
             user.LastName);
     }

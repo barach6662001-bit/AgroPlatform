@@ -45,6 +45,7 @@ export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const role = useAuthStore((s) => s.role);
+  const hasCompletedOnboarding = useAuthStore((s) => s.hasCompletedOnboarding);
 
   const { data, isLoading: dashLoading, isError: dashError } = useDashboardQuery();
   const { data: notificationsData, isLoading: notifsLoading } = useDashboardNotificationsQuery();
@@ -64,6 +65,10 @@ export default function Dashboard() {
 
   if (role === 'SuperAdmin') {
     return <Navigate to="/superadmin/companies" replace />;
+  }
+
+  if (!hasCompletedOnboarding) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   if (loading) return <TableSkeleton rows={8} />;
