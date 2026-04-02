@@ -148,14 +148,14 @@ export default function AppLayout() {
             <div style={{
               width: 28,
               height: 28,
-              background: 'var(--accent-muted)',
-              border: '1px solid var(--accent-border)',
+              background: 'var(--brand-muted)',
+              border: '1px solid var(--brand-border)',
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: 11,
-              color: 'var(--accent)',
+              color: 'var(--brand)',
               fontWeight: 600,
               flexShrink: 0,
             }}>

@@ -13,9 +13,9 @@
   --agro-text-secondary:var(--text-secondary);
   --agro-text-muted:    var(--text-tertiary);
 
-  --agro-accent:        var(--accent);
-  --agro-accent-hover:  var(--accent-hover);
-  --agro-accent-subtle: var(--accent-muted);
+  --agro-accent:        var(--brand);
+  --agro-accent-hover:  var(--brand-hover);
+  --agro-accent-subtle: var(--brand-muted);
 
   --agro-success: var(--success);
   --agro-warning: var(--warning);
@@ -26,9 +26,9 @@
   --agro-radius-lg: var(--radius-lg);
 
   /* Additional legacy aliases */
-  --color-primary:        var(--accent);
-  --color-primary-hover:  var(--accent-hover);
-  --color-primary-light:  var(--accent-muted);
+  --color-primary:        var(--brand);
+  --color-primary-hover:  var(--brand-hover);
+  --color-primary-light:  var(--brand-muted);
 
   --color-bg-base:        var(--bg-app);
   --color-bg-elevated:    var(--bg-surface);
@@ -136,8 +136,8 @@ a, button, [role="button"],
   color: var(--text-primary) !important;
 }
 .ant-menu-dark .ant-menu-item-selected {
-  background: var(--accent-muted) !important;
-  color: var(--accent) !important;
+  background: var(--brand-muted) !important;
+  color: var(--brand) !important;
   font-weight: 500 !important;
 }
 .ant-menu-dark .ant-menu-submenu-title {
@@ -225,14 +225,14 @@ a, button, [role="button"],
   box-shadow: none !important;
 }
 .ant-btn-primary {
-  background: var(--accent) !important;
-  border-color: var(--accent) !important;
+  background: var(--brand) !important;
+  border-color: var(--brand) !important;
   color: #000 !important;
   font-weight: 600 !important;
 }
 .ant-btn-primary:hover {
-  background: var(--accent-hover) !important;
-  border-color: var(--accent-hover) !important;
+  background: var(--brand-hover) !important;
+  border-color: var(--brand-hover) !important;
   transform: translateY(-1px) !important;
   box-shadow: var(--shadow-glow) !important;
 }
@@ -334,8 +334,8 @@ a, button, [role="button"],
   color: var(--text-primary) !important;
 }
 .ant-select-item-option-selected {
-  background: var(--accent-muted) !important;
-  color: var(--accent) !important;
+  background: var(--brand-muted) !important;
+  color: var(--brand) !important;
   font-weight: 500 !important;
 }
 
@@ -358,10 +358,10 @@ a, button, [role="button"],
 }
 .ant-pagination-item a { color: var(--text-secondary) !important; }
 .ant-pagination-item-active {
-  background: var(--accent-muted) !important;
-  border-color: var(--accent-border) !important;
+  background: var(--brand-muted) !important;
+  border-color: var(--brand-border) !important;
 }
-.ant-pagination-item-active a { color: var(--accent) !important; }
+.ant-pagination-item-active a { color: var(--brand) !important; }
 .ant-pagination-prev button,
 .ant-pagination-next button {
   background: var(--bg-elevated) !important;
@@ -386,8 +386,8 @@ a, button, [role="button"],
   padding: 8px 0 !important;
 }
 .ant-tabs-tab:hover { color: var(--text-primary) !important; }
-.ant-tabs-tab-active .ant-tabs-tab-btn { color: var(--accent) !important; }
-.ant-tabs-ink-bar { background: var(--accent) !important; }
+.ant-tabs-tab-active .ant-tabs-tab-btn { color: var(--brand) !important; }
+.ant-tabs-ink-bar { background: var(--brand) !important; }
 .ant-tabs-nav::before { border-color: var(--border) !important; }
 
 /* Divider */

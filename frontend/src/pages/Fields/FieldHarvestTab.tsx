@@ -93,7 +93,7 @@ export default function FieldHarvestTab({ fieldId }: Props) {
         style={{ marginBottom: 16 }}
       />
       <Space style={{ marginBottom: 12 }}>
-        <span style={{ color: 'var(--agro-text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
+        <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
         <Select
           style={{ width: 90 }}
           value={year}

@@ -18,7 +18,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
       onClose={onClose}
       width={240}
       styles={{
-        header: { background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)', color: 'var(--accent)' },
+        header: { background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)', color: 'var(--brand)' },
         body: { background: 'var(--bg-surface)', padding: 0 },
         mask: { background: 'rgba(0,0,0,0.6)' },
       }}
