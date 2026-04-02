@@ -492,19 +492,19 @@ export default function GrainBatchList() {
       )}
       <Row gutter={12} style={{ marginBottom: 16 }}>
         <Col span={8}>
-          <Card size="small" style={{ background: 'var(--agro-bg-card)', border: '1px solid var(--agro-border)' }}>
+          <Card size="small" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>Загальний обсяг</Text>
             <div style={{ fontSize: 24, fontWeight: 600 }}>{totalTons.toFixed(1)} т</div>
           </Card>
         </Col>
         <Col span={8}>
-          <Card size="small" style={{ background: 'var(--agro-bg-card)', border: '1px solid var(--agro-border)' }}>
+          <Card size="small" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>Загальна вартість</Text>
             <div style={{ fontSize: 24, fontWeight: 600 }}>{totalValue.toLocaleString()} ₴</div>
           </Card>
         </Col>
         <Col span={8}>
-          <Card size="small" style={{ background: 'var(--agro-bg-card)', border: '1px solid var(--agro-border)' }}>
+          <Card size="small" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>Культур</Text>
             <div style={{ fontSize: 24, fontWeight: 600 }}>{cultures.length}</div>
           </Card>

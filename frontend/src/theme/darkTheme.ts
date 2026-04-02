@@ -15,7 +15,7 @@ export const darkTheme: ThemeConfig = {
     colorTextTertiary:    '#6b6b6b',
     colorTextQuaternary:  '#3d3d3d',
     colorPrimary:         '#22c55e',
-    colorSuccess:         '#22c55e',
+    colorSuccess:         '#10b981',
     colorError:           '#ef4444',
     colorWarning:         '#f59e0b',
     colorInfo:            '#3b82f6',
@@ -141,11 +141,11 @@ export const darkTheme: ThemeConfig = {
       colorPrimary: '#22c55e',
     },
     Progress: {
-      colorSuccess: '#22c55e',
+      colorSuccess: '#10b981',
     },
     Alert: {
-      colorSuccessBg:     'rgba(34, 197, 94, 0.08)',
-      colorSuccessBorder: 'rgba(34, 197, 94, 0.2)',
+      colorSuccessBg:     'rgba(16, 185, 129, 0.08)',
+      colorSuccessBorder: 'rgba(16, 185, 129, 0.2)',
       colorErrorBg:       'rgba(239, 68, 68, 0.08)',
       colorErrorBorder:   'rgba(239, 68, 68, 0.2)',
       colorWarningBg:     'rgba(245, 158, 11, 0.08)',

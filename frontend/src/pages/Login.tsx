@@ -124,7 +124,7 @@ export default function Login() {
           <div style={{
             fontSize: 11,
             fontWeight: 600,
-            color: 'var(--accent)',
+            color: 'var(--brand)',
             letterSpacing: '1px',
             textTransform: 'uppercase',
             marginBottom: 16,
@@ -159,15 +159,15 @@ export default function Login() {
                   width: 20,
                   height: 20,
                   borderRadius: '50%',
-                  background: 'var(--accent-muted)',
-                  border: '1px solid var(--accent-border)',
+                  background: 'var(--brand-muted)',
+                  border: '1px solid var(--brand-border)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
                 }}>
                   <svg width="10" height="10" viewBox="0 0 12 12">
-                    <path d="M2 6l3 3 5-5" stroke="var(--accent)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+                    <path d="M2 6l3 3 5-5" stroke="var(--brand)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
                   </svg>
                 </div>
                 <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{feature}</span>

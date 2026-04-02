@@ -274,7 +274,7 @@ export default function FieldsList() {
             />
           </Form.Item>
           {cadastreResult?.found && (
-            <div style={{ marginBottom: 16, padding: '8px 12px', background: 'var(--agro-bg-input)', borderRadius: 6 }}>
+            <div style={{ marginBottom: 16, padding: '8px 12px', background: 'var(--bg-elevated)', borderRadius: 6 }}>
               <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>
                 {t.fields.cadastreInfo} — {t.fields.cadastreDataNote}
               </div>

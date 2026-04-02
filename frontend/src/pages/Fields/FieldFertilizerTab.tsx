@@ -106,7 +106,7 @@ export default function FieldFertilizerTab({ fieldId, fieldArea }: Props) {
   return (
     <div>
       <Space style={{ marginBottom: 12 }}>
-        <span style={{ color: 'var(--agro-text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
+        <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
         <Select
           style={{ width: 90 }}
           value={year}

@@ -12,7 +12,7 @@ interface EmptyStateProps {
 export default function EmptyState({ message, actionLabel, onAction }: EmptyStateProps) {
   return (
     <div style={{ textAlign: 'center', padding: '40px 0' }}>
-      <InboxOutlined style={{ fontSize: 40, color: 'var(--agro-text-secondary)', marginBottom: 12 }} />
+      <InboxOutlined style={{ fontSize: 40, color: 'var(--text-secondary)', marginBottom: 12 }} />
       <div>
         <Text type="secondary">{message}</Text>
       </div>

@@ -253,7 +253,7 @@ export default function FieldDetail() {
       {pnl && (
         <Row gutter={12} style={{ marginBottom: 20 }}>
           <Col span={6}>
-            <Card size="small" style={{ background: 'var(--agro-bg-card)', borderColor: 'var(--agro-border)' }}>
+            <Card size="small" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
               <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
                 {t.fields.expenses}
               </Typography.Text>
@@ -268,7 +268,7 @@ export default function FieldDetail() {
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small" style={{ background: 'var(--agro-bg-card)', borderColor: 'var(--agro-border)' }}>
+            <Card size="small" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
               <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
                 {t.fields.revenue}
               </Typography.Text>
@@ -278,7 +278,7 @@ export default function FieldDetail() {
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small" style={{ background: 'var(--agro-bg-card)', borderColor: 'var(--agro-border)' }}>
+            <Card size="small" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
               <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
                 {t.fields.profit}
               </Typography.Text>
@@ -288,11 +288,11 @@ export default function FieldDetail() {
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small" style={{ background: 'var(--agro-bg-card)', borderColor: 'var(--agro-border)' }}>
+            <Card size="small" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
               <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
                 {t.fields.yield}
               </Typography.Text>
-              <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--agro-text-primary)' }}>
+              <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text-primary)' }}>
                 {pnl.actualYieldPerHectare ? `${pnl.actualYieldPerHectare.toFixed(1)} т/га` : '—'}
               </div>
             </Card>
