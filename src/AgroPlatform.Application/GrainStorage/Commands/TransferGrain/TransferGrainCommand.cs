@@ -7,5 +7,6 @@ public record TransferGrainCommand(
     Guid TargetBatchId,
     decimal QuantityTons,
     DateTime? MovementDate = null,
-    string? Notes = null
+    string? Notes = null,
+    string? ClientOperationId = null
 ) : IRequest<Guid>;
