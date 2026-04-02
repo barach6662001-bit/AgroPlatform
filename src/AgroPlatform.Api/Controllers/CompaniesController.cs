@@ -5,6 +5,7 @@ using AgroPlatform.Application.Companies.Commands.DeleteUser;
 using AgroPlatform.Application.Companies.Commands.CreateUser;
 using AgroPlatform.Application.Companies.Commands.DeactivateCompany;
 using AgroPlatform.Application.Companies.Commands.DeactivateUser;
+using AgroPlatform.Application.Companies.Commands.ResetUserPassword;
 using AgroPlatform.Application.Companies.Commands.UpdateCompany;
 using AgroPlatform.Application.Companies.Commands.UpdateUserRoleByAdmin;
 using AgroPlatform.Application.Companies.Queries.GetCompanies;
@@ -145,6 +146,20 @@ public class CompaniesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateUserRole(string userId, [FromBody] UpdateUserRoleByAdminCommand command, CancellationToken cancellationToken)
+    {
+        if (userId != command.UserId)
+            return BadRequest();
+
+        await _sender.Send(command, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>Resets a user's password. Sets RequirePasswordChange = true.</summary>
+    [HttpPut("users/{userId}/reset-password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResetUserPassword(string userId, [FromBody] ResetUserPasswordCommand command, CancellationToken cancellationToken)
     {
         if (userId != command.UserId)
             return BadRequest();

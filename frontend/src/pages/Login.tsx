@@ -172,7 +172,7 @@ export default function Login() {
               </Button>
             </Form.Item>
             <div className={s.textCenter}>
-              AgroTech Platform
+              {t.auth.forgotPassword}
             </div>
           </Form>
         </div>

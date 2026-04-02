@@ -1,3 +1,4 @@
+using AgroPlatform.Application.Companies.Commands.ResetUserPassword;
 using AgroPlatform.Application.Users.Commands.UpdateUserRole;
 using AgroPlatform.Application.Users.Queries.GetUsers;
 using AgroPlatform.Domain.Authorization;
@@ -44,6 +45,21 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> UpdateUserRole(string id, [FromBody] UpdateUserRoleCommand command, CancellationToken cancellationToken)
     {
         if (id != command.UserId)
+            return BadRequest();
+
+        await _sender.Send(command, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>Resets a user's password. Sets RequirePasswordChange = true.</summary>
+    [HttpPut("{userId}/reset-password")]
+    [Authorize(Policy = Permissions.Admin.Manage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResetUserPassword(string userId, [FromBody] ResetUserPasswordCommand command, CancellationToken cancellationToken)
+    {
+        if (userId != command.UserId)
             return BadRequest();
 
         await _sender.Send(command, cancellationToken);

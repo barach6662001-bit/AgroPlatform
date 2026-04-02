@@ -71,3 +71,6 @@ export const updateUserRole = (userId: string, role: string) =>
 
 export const deleteCompany = (id: string) =>
   apiClient.delete(`/api/companies/${id}/permanent`);
+
+export const resetUserPassword = (userId: string, newPassword: string) =>
+  apiClient.put(`/api/companies/users/${userId}/reset-password`, { userId, newPassword });

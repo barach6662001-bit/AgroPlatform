@@ -69,8 +69,8 @@ export default function Dashboard() {
   if (loading) return <TableSkeleton rows={8} />;
   if (!data) return null;
 
-  const isStorekeeper = role === 'WarehouseOperator';
-  const isDirector = role === 'Accountant';
+  const isWarehouseOp = role === 'WarehouseOperator';
+  const isAccountant = role === 'Accountant';
 
   const costTrendData = data.costTrend.map((item) => ({
     name: `${item.year}-${String(item.month).padStart(2, '0')}`,
@@ -113,7 +113,7 @@ export default function Dashboard() {
   ];
 
   // 5 KPI cards
-  const kpiCards = isDirector
+  const kpiCards = isAccountant
     ? [
         { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴' },
         { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true },
@@ -172,14 +172,14 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <Row gutter={12} style={{ marginBottom: 20 }}>
-        {isStorekeeper ? (
+        {isWarehouseOp ? (
           <>
             <Col xs={12} sm={6}><Button block icon={<BankOutlined />} onClick={() => navigate('/warehouses')}>{t.nav.warehouses}</Button></Col>
             <Col xs={12} sm={6}><Button block icon={<ToolOutlined />} onClick={() => navigate('/warehouses/movements')}>{t.nav.movements}</Button></Col>
             <Col xs={12} sm={6}><Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>{t.dashboard.quickFuel}</Button></Col>
             <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button></Col>
           </>
-        ) : isDirector ? (
+        ) : isAccountant ? (
           <>
             <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button></Col>
             <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics/pnl')}>{t.nav.pnl}</Button></Col>
