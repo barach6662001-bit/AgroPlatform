@@ -314,6 +314,9 @@ public class GrainStorageHandlerTests
 
     private static async Task<(GrainBatch source, GrainBatch target)> CreateTwoBatches(IAppDbContext context)
     {
+        var storage = new Domain.GrainStorage.GrainStorage { Name = "Default Silo", IsActive = true };
+        ((TestDbContext)context).GrainStorages.Add(storage);
+
         var source = new GrainBatch
         {
             GrainType = "Wheat",
@@ -330,6 +333,19 @@ public class GrainStorageHandlerTests
         };
         context.GrainBatches.Add(source);
         context.GrainBatches.Add(target);
+
+        context.GrainBatchPlacements.Add(new GrainBatchPlacement
+        {
+            GrainBatchId = source.Id,
+            GrainStorageId = storage.Id,
+            QuantityTons = 200m,
+        });
+        context.GrainBatchPlacements.Add(new GrainBatchPlacement
+        {
+            GrainBatchId = target.Id,
+            GrainStorageId = storage.Id,
+            QuantityTons = 50m,
+        });
         await context.SaveChangesAsync();
         return (source, target);
     }
@@ -384,7 +400,7 @@ public class GrainStorageHandlerTests
     }
 
     [Fact]
-    public async Task TransferGrain_InsufficientQuantity_ThrowsInvalidOperationException()
+    public async Task TransferGrain_InsufficientQuantity_ThrowsValidationException()
     {
         var context = CreateDbContext();
         var (source, target) = await CreateTwoBatches(context);
@@ -393,8 +409,7 @@ public class GrainStorageHandlerTests
         var command = new TransferGrainCommand(source.Id, target.Id, 999m);
         var act = async () => await handler.Handle(command, CancellationToken.None);
 
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*Insufficient*");
+        await act.Should().ThrowAsync<AgroPlatform.Application.Common.Exceptions.ValidationException>();
     }
 
     [Fact]
@@ -532,12 +547,13 @@ public class GrainStorageHandlerTests
         var handler = new TransferGrainHandler(context);
         await handler.Handle(new TransferGrainCommand(source.Id, target.Id, 50m), CancellationToken.None);
 
-        // Target should NOT have a new placement since target has no storage association
-        // (targetStorageId will be null because target has no placements)
+        // Target should have a new placement in source storage since target had no placement
         var targetPlacements = await ((TestDbContext)context).GrainBatchPlacements
             .Where(p => p.GrainBatchId == target.Id)
             .ToListAsync();
-        targetPlacements.Should().BeEmpty();
+        targetPlacements.Should().ContainSingle();
+        targetPlacements[0].GrainStorageId.Should().Be(s1.Id);
+        targetPlacements[0].QuantityTons.Should().Be(50m);
 
         // But batch-level quantities should still be correct
         var updatedSource = await ((TestDbContext)context).GrainBatches.FindAsync(source.Id);
