@@ -20,6 +20,7 @@ import type { GrainBatchDto, GrainMovementDto, GrainMovementType, GrainOwnership
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
@@ -475,7 +476,11 @@ export default function GrainBatchList() {
 
   return (
     <div>
-      <PageHeader title={t.grain.title} subtitle={t.grain.subtitle} />
+      <PageHeader
+        title={t.grain.title}
+        subtitle={t.grain.subtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.storageLogistics, path: '/warehouses' }, { label: t.nav.grainBatches }]} />}
+      />
       {!loading && storages.length === 0 && (
         <Alert
           type="warning"

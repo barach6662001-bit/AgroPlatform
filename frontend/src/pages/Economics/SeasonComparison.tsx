@@ -13,6 +13,7 @@ import {
 import { getSeasonComparison } from '../../api/economics';
 import type { SeasonComparisonDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -116,7 +117,11 @@ export default function SeasonComparison() {
 
   return (
     <div>
-      <PageHeader title={t.economics.seasonTitle} subtitle={t.economics.seasonSubtitle} />
+      <PageHeader
+        title={t.economics.seasonTitle}
+        subtitle={t.economics.seasonSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.seasonComparison }]} />}
+      />
 
       <Row gutter={[16, 16]} align="middle" style={{ marginBottom: 16 }}>
         <Col>

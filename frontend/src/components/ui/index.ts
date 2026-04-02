@@ -1,3 +1,5 @@
+export { default as Breadcrumbs } from './Breadcrumbs';
+export type { BreadcrumbItem } from './Breadcrumbs';
 export { default as PageLayout } from './PageLayout';
 export { default as DataTable } from './DataTable';
 export { default as FormField } from './FormField';

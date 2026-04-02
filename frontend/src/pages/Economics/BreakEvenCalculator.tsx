@@ -5,6 +5,7 @@ import { CalculatorOutlined, RiseOutlined, WarningOutlined } from '@ant-design/i
 import { getBreakEven } from '../../api/economics';
 import type { BreakEvenDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
@@ -104,7 +105,11 @@ export default function BreakEvenCalculator() {
 
   return (
     <div>
-      <PageHeader title={t.economics.breakEvenTitle} subtitle={t.economics.breakEvenSubtitle} />
+      <PageHeader
+        title={t.economics.breakEvenTitle}
+        subtitle={t.economics.breakEvenSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.breakEven }]} />}
+      />
 
       {/* Filters */}
       <Space style={{ marginBottom: 24 }} wrap>

@@ -4,6 +4,7 @@ import { SaveOutlined, DownloadOutlined, DollarOutlined, RiseOutlined, FallOutli
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts';
 import { getBudgets, upsertBudget, exportBudgets, getBudgetPlanVsFact, type BudgetDto, type BudgetPlanVsFactDto } from '../../api/budgets';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 
@@ -161,7 +162,11 @@ export default function BudgetPage() {
 
   return (
     <div>
-      <PageHeader title={t.budget.title} subtitle={t.budget.subtitle} />
+      <PageHeader
+        title={t.budget.title}
+        subtitle={t.budget.subtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.budget }]} />}
+      />
       <Space style={{ marginBottom: 16 }}>
         <span style={{ color: '#8B949E' }}>{t.budget.year}:</span>
         <Select value={year} onChange={setYear} options={YEAR_OPTIONS} style={{ width: 100 }} />

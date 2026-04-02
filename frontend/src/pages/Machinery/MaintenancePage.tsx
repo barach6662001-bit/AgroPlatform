@@ -7,6 +7,7 @@ import TableSkeleton from '../../components/TableSkeleton';
 import { ArrowLeftOutlined, PlusOutlined, DownloadOutlined } from '@ant-design/icons';
 import { getMaintenanceRecords, addMaintenanceRecord, exportMaintenanceRecords, type MaintenanceRecordDto } from '../../api/maintenance';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { formatDate } from '../../utils/dateFormat';
 
@@ -137,7 +138,10 @@ export default function MaintenancePage() {
         </Button>
       </Space>
 
-      <PageHeader title={t.maintenance.title} />
+      <PageHeader
+        title={t.maintenance.title}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.machinery, path: '/machinery' }, { label: t.maintenance.title }]} />}
+      />
 
       <Card>
         <Table

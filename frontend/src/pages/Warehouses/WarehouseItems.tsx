@@ -10,6 +10,7 @@ import type { BalanceDto, WarehouseDto, WarehouseItemDto, ItemCategoryDto } from
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
@@ -289,7 +290,11 @@ export default function WarehouseItems() {
 
   return (
     <div>
-      <PageHeader title={t.warehouses.itemsTitle} subtitle={t.warehouses.itemsSubtitle} />
+      <PageHeader
+        title={t.warehouses.itemsTitle}
+        subtitle={t.warehouses.itemsSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.warehouses, path: '/warehouses' }, { label: t.nav.materials }]} />}
+      />
       <Space style={{ marginBottom: 16 }}>
         <Select
           placeholder={t.warehouses.allWarehouses}

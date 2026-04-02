@@ -19,6 +19,7 @@ import type { FuelTankDto, FuelTransactionDto } from '../../types/fuel';
 import type { MachineDto } from '../../types/machinery';
 import type { FieldDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { formatDate } from '../../utils/dateFormat';
 
@@ -216,6 +217,7 @@ export default function FuelStation() {
       <PageHeader
         title={t.fuel.title}
         subtitle={t.fuel.subtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.storageLogistics, path: '/warehouses' }, { label: t.nav.fuelStation }]} />}
         actions={
           <Space>
             <Button

@@ -4,6 +4,7 @@ import { PlusOutlined, EyeOutlined, CheckOutlined, SendOutlined } from '@ant-des
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { formatDate } from '../../utils/dateFormat';
 import {
   getInventorySessions,
@@ -281,7 +282,11 @@ export default function InventorySessions() {
 
   return (
     <div>
-      <PageHeader title={t.inventorySessions.title} subtitle={t.inventorySessions.subtitle} />
+      <PageHeader
+        title={t.inventorySessions.title}
+        subtitle={t.inventorySessions.subtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.warehouses, path: '/warehouses' }, { label: t.nav.inventory }]} />}
+      />
       <Space style={{ marginBottom: 16 }}>
         <Select
           placeholder={t.inventorySessions.selectWarehouse}

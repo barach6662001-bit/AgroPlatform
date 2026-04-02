@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import { getWorkLogs, createWorkLog, updateWorkLog, deleteWorkLog, getEmployees } from '../../api/hr';
 import type { WorkLogDto, EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
@@ -170,6 +171,7 @@ export default function WorkLogPage() {
     <div>
       <PageHeader
         title={t.hr.workLogsTitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.hr, path: '/hr/employees' }, { label: t.nav.workLogs }]} />}
         actions={
           <Space>
             {canWrite && (

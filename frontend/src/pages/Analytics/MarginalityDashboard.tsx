@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { getAnalyticsMarginality } from '../../api/analytics';
 import type { MarginalityRowDto, MarginalitySummaryDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
@@ -78,7 +79,11 @@ export default function MarginalityDashboard() {
 
   return (
     <div>
-      <PageHeader title={t.economics.margTitle} subtitle={t.economics.margSubtitle} />
+      <PageHeader
+        title={t.economics.margTitle}
+        subtitle={t.economics.margSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.analytics, path: '/analytics/efficiency' }, { label: t.nav.marginality }]} />}
+      />
 
       <Row gutter={[16, 16]} align="middle" style={{ marginBottom: 16 }}>
         <Col>

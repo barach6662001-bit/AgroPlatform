@@ -17,6 +17,7 @@ import {
 import { getCostAnalytics } from '../../api/economics';
 import type { CostAnalyticsDto, EconomicsByCategoryDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
@@ -76,7 +77,11 @@ export default function CostAnalytics() {
 
   return (
     <div>
-      <PageHeader title={t.economics.analyticsTitle} subtitle={t.economics.analyticsSubtitle} />
+      <PageHeader
+        title={t.economics.analyticsTitle}
+        subtitle={t.economics.analyticsSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.costAnalytics }]} />}
+      />
 
       <Row gutter={[16, 16]} align="middle" style={{ marginBottom: 16 }}>
         <Col>

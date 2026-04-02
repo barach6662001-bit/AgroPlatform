@@ -4,6 +4,7 @@ import { UploadOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import type { UploadFile } from 'antd/es/upload';
 import apiClient from '../../api/axios';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 
 interface ImportRow {
@@ -100,7 +101,11 @@ export default function ImportItemsPage() {
 
   return (
     <div className="page-enter">
-      <PageHeader title={t.importItems.title} subtitle={t.importItems.subtitle} />
+      <PageHeader
+        title={t.importItems.title}
+        subtitle={t.importItems.subtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.warehouses, path: '/warehouses' }, { label: t.nav.import }]} />}
+      />
 
       <Card style={{ marginBottom: 16 }}>
         <Space direction="vertical" style={{ width: '100%' }}>

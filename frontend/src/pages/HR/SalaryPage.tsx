@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import { getSalarySummary, createSalaryPayment, getEmployees } from '../../api/hr';
 import type { SalarySummaryDto, EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 
@@ -94,7 +95,10 @@ export default function SalaryPage() {
 
   return (
     <div>
-      <PageHeader title={t.hr.salaryTitle} />
+      <PageHeader
+        title={t.hr.salaryTitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.hr, path: '/hr/employees' }, { label: t.nav.salary }]} />}
+      />
 
       <Space style={{ marginBottom: 20 }}>
         <Select options={monthOptions} value={month} onChange={setMonth} style={{ width: 130 }} />

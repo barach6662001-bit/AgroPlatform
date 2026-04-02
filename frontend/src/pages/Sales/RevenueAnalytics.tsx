@@ -8,6 +8,7 @@ import {
 import { getSalesAnalytics } from '../../api/sales';
 import type { SalesAnalyticsDto, ProductRevenueDto, BuyerRevenueDto, MonthlyRevenueDto } from '../../types/sales';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
@@ -122,7 +123,11 @@ export default function RevenueAnalytics() {
 
   return (
     <div>
-      <PageHeader title={t.sales.analyticsTitle} subtitle={t.sales.analyticsSubtitle} />
+      <PageHeader
+        title={t.sales.analyticsTitle}
+        subtitle={t.sales.analyticsSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.sales, path: '/sales' }, { label: t.nav.revenueAnalytics }]} />}
+      />
 
       {/* Year filter */}
       <div style={{ marginBottom: 24 }}>

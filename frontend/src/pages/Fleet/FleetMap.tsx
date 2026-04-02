@@ -2,6 +2,7 @@ import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Badge, Tag, Empty } from 'antd';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useFleetHub } from '../../hooks/useFleetHub';
 import { useTranslation } from '../../i18n';
 import type { ConnectionState } from '../../hooks/useFleetHub';
@@ -55,7 +56,11 @@ export default function FleetMap() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
-        <PageHeader title={t.fleet.title} subtitle={t.fleet.subtitle} />
+        <PageHeader
+          title={t.fleet.title}
+          subtitle={t.fleet.subtitle}
+          breadcrumbs={<Breadcrumbs items={[{ label: t.nav.operationsGroup, path: '/operations' }, { label: t.nav.fleet }]} />}
+        />
         <Tag color={color} style={{ fontSize: 13, marginTop: 4 }}>
           <Badge status={statusType} />
           {' '}{connectionLabel}
