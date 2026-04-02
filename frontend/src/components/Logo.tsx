@@ -1,8 +1,9 @@
 interface Props {
   size?: number;
+  variant?: 'icon' | 'full';
 }
 
-export default function Logo({ size = 28 }: Props) {
+function LogoIcon({ size }: { size: number }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -12,17 +13,35 @@ export default function Logo({ size = 28 }: Props) {
       height={size}
       style={{ flexShrink: 0 }}
     >
-      <rect width="32" height="32" rx="8" fill="#0B1220" />
-      <rect x="4" y="4" width="24" height="24" rx="2" stroke="#22C55E" strokeWidth="1.5" fill="none" opacity="0.35" />
-      <line x1="4" y1="12" x2="28" y2="12" stroke="#22C55E" strokeWidth="1" opacity="0.35" />
-      <line x1="4" y1="20" x2="28" y2="20" stroke="#22C55E" strokeWidth="1" opacity="0.35" />
-      <line x1="12" y1="4" x2="12" y2="28" stroke="#22C55E" strokeWidth="1" opacity="0.35" />
-      <line x1="20" y1="4" x2="20" y2="28" stroke="#22C55E" strokeWidth="1" opacity="0.35" />
-      <rect x="5" y="5" width="6" height="6" rx="1.5" fill="#22C55E" />
-      <rect x="13" y="13" width="6" height="6" rx="1.5" fill="#22C55E" opacity="0.65" />
-      <rect x="21" y="21" width="6" height="6" rx="1.5" fill="#22C55E" />
-      <rect x="21" y="5" width="6" height="6" rx="1.5" fill="#22C55E" opacity="0.25" />
-      <rect x="5" y="21" width="6" height="6" rx="1.5" fill="#22C55E" opacity="0.25" />
+      <rect width="32" height="32" rx="8" fill="var(--bg-surface)" />
+      <rect x="4" y="4" width="24" height="24" rx="2" stroke="var(--brand)" strokeWidth="1.5" fill="none" opacity="0.35" />
+      <line x1="4" y1="12" x2="28" y2="12" stroke="var(--brand)" strokeWidth="1" opacity="0.35" />
+      <line x1="4" y1="20" x2="28" y2="20" stroke="var(--brand)" strokeWidth="1" opacity="0.35" />
+      <line x1="12" y1="4" x2="12" y2="28" stroke="var(--brand)" strokeWidth="1" opacity="0.35" />
+      <line x1="20" y1="4" x2="20" y2="28" stroke="var(--brand)" strokeWidth="1" opacity="0.35" />
+      <rect x="5" y="5" width="6" height="6" rx="1.5" fill="var(--brand)" />
+      <rect x="13" y="13" width="6" height="6" rx="1.5" fill="var(--brand)" opacity="0.65" />
+      <rect x="21" y="21" width="6" height="6" rx="1.5" fill="var(--brand)" />
+      <rect x="21" y="5" width="6" height="6" rx="1.5" fill="var(--brand)" opacity="0.25" />
+      <rect x="5" y="21" width="6" height="6" rx="1.5" fill="var(--brand)" opacity="0.25" />
     </svg>
+  );
+}
+
+export default function Logo({ size = 28, variant = 'icon' }: Props) {
+  if (variant === 'icon') return <LogoIcon size={size} />;
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <LogoIcon size={size} />
+      <div style={{ lineHeight: 1.1 }}>
+        <div style={{ fontWeight: 700, fontSize: size * 0.57, letterSpacing: '-0.3px', color: 'var(--text-primary)' }}>
+          Agro<span style={{ color: 'var(--brand)' }}>Tech</span>
+        </div>
+        <div style={{ fontSize: size * 0.32, color: 'var(--text-tertiary)', letterSpacing: '0.5px', textTransform: 'uppercase' as const }}>
+          Farm Management
+        </div>
+      </div>
+    </div>
   );
 }
