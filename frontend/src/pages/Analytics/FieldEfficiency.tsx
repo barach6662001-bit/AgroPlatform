@@ -16,6 +16,7 @@ import type { FieldEfficiencyDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './FieldEfficiency.module.css';
 
 export default function FieldEfficiency() {
   const [data, setData] = useState<FieldEfficiencyDto[]>([]);
@@ -88,7 +89,7 @@ export default function FieldEfficiency() {
             columns={columns}
             rowKey="fieldId"
             pagination={false}
-            style={{ marginBottom: 32 }}
+            className={s.spaced}
           />
           {chartData.length > 0 && (
             <ResponsiveContainer width="100%" height={Math.max(300, chartData.length * 40)}>

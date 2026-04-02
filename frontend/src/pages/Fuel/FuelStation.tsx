@@ -22,6 +22,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { formatDate } from '../../utils/dateFormat';
+import s from './FuelStation.module.css';
 
 const { Option } = Select;
 
@@ -32,9 +33,9 @@ const FUEL_TYPE_LABELS: Record<number, string> = {
 };
 
 function getFillColor(pct: number): string {
-  if (pct >= 50) return '#3fb950';
+  if (pct >= 50) return 'var(--success)';
   if (pct >= 25) return '#d29922';
-  return '#f85149';
+  return 'var(--error)';
 }
 
 export default function FuelStation() {
@@ -238,31 +239,31 @@ export default function FuelStation() {
       />
 
       {/* Tank cards */}
-      <Typography.Title level={5} style={{ color: '#e6edf3', marginBottom: 16 }}>
+      <Typography.Title level={5} className={s.spaced}>
         {t.fuel.tanks}
       </Typography.Title>
-      <Row gutter={[16, 16]} style={{ marginBottom: 32 }}>
+      <Row gutter={[16, 16]} className={s.spaced1}>
         {loadingTanks ? (
-          <Col span={24}><Typography.Text style={{ color: '#aaa' }}>...</Typography.Text></Col>
+          <Col span={24}><Typography.Text className={s.colored}>...</Typography.Text></Col>
         ) : tanks.length === 0 ? (
           <Col span={24}>
-            <Typography.Text style={{ color: '#aaa' }}>{t.fuel.addTank}</Typography.Text>
+            <Typography.Text className={s.colored}>{t.fuel.addTank}</Typography.Text>
           </Col>
         ) : (
           tanks.map((tank) => (
             <Col key={tank.id} xs={24} sm={12} md={8} lg={6}>
               <Card
-                style={{ background: '#161b22', border: '1px solid #30363d' }}
+                className={s.bg}
                 bodyStyle={{ padding: 16 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                  <Typography.Text strong style={{ color: '#e6edf3', fontSize: 15 }}>
+                <div className={s.flex_between}>
+                  <Typography.Text strong className={s.text15}>
                     {tank.name}
                   </Typography.Text>
                   <Tag color="blue">{FUEL_TYPE_LABELS[tank.fuelType] ?? tank.fuelType}</Tag>
                 </div>
-                <div style={{ marginBottom: 8 }}>
-                  <Typography.Text style={{ color: '#aaa', fontSize: 12 }}>
+                <div className={s.spaced2}>
+                  <Typography.Text className={s.text12}>
                     {t.fuel.fillLevel}: {tank.fillPercentage.toFixed(1)}%
                   </Typography.Text>
                   <Progress
@@ -270,15 +271,15 @@ export default function FuelStation() {
                     showInfo={false}
                     strokeColor={getFillColor(tank.fillPercentage)}
                     trailColor="#30363d"
-                    style={{ marginBottom: 4 }}
+                    className={s.spaced3}
                   />
-                  <Typography.Text style={{ color: '#ccc', fontSize: 12 }}>
+                  <Typography.Text className={s.text121}>
                     {tank.currentLiters.toLocaleString('uk-UA')} / {tank.capacityLiters.toLocaleString('uk-UA')} л
                   </Typography.Text>
                 </div>
                 {tank.pricePerLiter != null && (
-                  <div style={{ marginBottom: 8 }}>
-                    <Typography.Text style={{ color: '#8b949e', fontSize: 12 }}>
+                  <div className={s.spaced2}>
+                    <Typography.Text className={s.text122}>
                       {t.fuel.pricePerLiter}: {tank.pricePerLiter.toLocaleString('uk-UA')} грн/л
                     </Typography.Text>
                   </div>
@@ -298,14 +299,14 @@ export default function FuelStation() {
       </Row>
 
       {/* Transactions table */}
-      <Typography.Title level={5} style={{ color: '#e6edf3', marginBottom: 16 }}>
+      <Typography.Title level={5} className={s.spaced}>
         {t.fuel.transactions}
       </Typography.Title>
-      <div style={{ marginBottom: 12 }}>
+      <div className={s.spaced4}>
         <Select
           allowClear
           placeholder={t.fuel.tankName}
-          style={{ width: 220 }}
+          className={s.block15}
           value={selectedTankId}
           onChange={(v) => {
             setSelectedTankId(v);
@@ -353,7 +354,7 @@ export default function FuelStation() {
             </Select>
           </Form.Item>
           <Form.Item name="capacityLiters" label={t.fuel.capacity} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={1} style={{ width: '100%' }} />
+            <InputNumber min={1} className={s.fullWidth} />
           </Form.Item>
         </Form>
       </Modal>
@@ -377,13 +378,13 @@ export default function FuelStation() {
             </Select>
           </Form.Item>
           <Form.Item name="quantityLiters" label={t.fuel.quantityLiters} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0.01} step={1} style={{ width: '100%' }} />
+            <InputNumber min={0.01} step={1} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="pricePerLiter" label={t.fuel.pricePerLiter}>
-            <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+            <InputNumber min={0} step={0.01} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="transactionDate" label={t.fuel.transactionDate} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="supplierName" label={t.fuel.supplier}>
             <Input />
@@ -453,10 +454,10 @@ export default function FuelStation() {
             />
           </Form.Item>
           <Form.Item name="quantityLiters" label={t.fuel.quantityLiters} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0.01} step={1} style={{ width: '100%' }} />
+            <InputNumber min={0.01} step={1} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="transactionDate" label={t.fuel.transactionDate} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="driverName" label={t.fuel.driver}>
             <Input placeholder={t.fuel.driverNamePlaceholder} />

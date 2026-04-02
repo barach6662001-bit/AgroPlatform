@@ -1,0 +1,49 @@
+.colored {
+  color: var(--text-primary);
+}
+
+.text12 {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.block2 {
+  width: 160px;
+}
+
+.padded {
+  padding: 24px;
+}
+
+.flex_center_between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.flex_center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.spaced {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.text13 {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.spaced1 {
+  margin-top: 16px;
+}
+
+.textRight {
+  margin-bottom: 0;
+  text-align: right;
+}

@@ -5,6 +5,7 @@ import type { LatLngBoundsExpression } from 'leaflet';
 import { useTranslation } from '../../i18n';
 import { getFieldNdvi, getFieldNdviDates, reportNdviProblem } from '../../api/satellite';
 import type { NdviData } from '../../api/satellite';
+import s from './FieldNdviTab.module.css';
 
 interface Props {
   fieldId: string;
@@ -157,7 +158,7 @@ export default function FieldNdviTab({ fieldId }: Props) {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
+      <div className={s.flex_centered}>
         <Spin size="large" />
       </div>
     );
@@ -169,7 +170,7 @@ export default function FieldNdviTab({ fieldId }: Props) {
         type="info"
         showIcon
         message={t.fields.ndviNoData}
-        style={{ margin: 16 }}
+        className={s.spaced}
       />
     );
   }
@@ -183,7 +184,7 @@ export default function FieldNdviTab({ fieldId }: Props) {
         showIcon
         message={t.fields.ndviNotConfiguredTitle}
         description={t.fields.ndviNotConfiguredDescription}
-        style={{ margin: 16 }}
+        className={s.spaced}
       />
     );
   }
@@ -202,14 +203,14 @@ export default function FieldNdviTab({ fieldId }: Props) {
           showIcon
           message={t.fields.ndviProblemZoneDetected}
           description={t.fields.ndviProblemZoneBody.replace('{{percent}}', String(problemPercent))}
-          style={{ margin: '0 0 12px 0' }}
+          className={s.spaced1}
           closable
         />
       )}
 
-      <div style={{ position: 'relative' }}>
+      <div className={s.block4}>
         <MapContainer
-          style={{ height: 480, width: '100%' }}
+          className={s.fullWidth}
           center={[48.5, 35.0]}
           zoom={10}
         >
@@ -228,19 +229,10 @@ export default function FieldNdviTab({ fieldId }: Props) {
         {/* NDVI Legend overlay */}
         <Card
           size="small"
-          style={{
-            position: 'absolute',
-            bottom: 24,
-            right: 12,
-            zIndex: 1000,
-            background: 'rgba(255,255,255,0.92)',
-            borderRadius: 8,
-            minWidth: 130,
-            pointerEvents: 'none',
-          }}
+          className={s.bg}
           bodyStyle={{ padding: '8px 12px' }}
         >
-          <Typography.Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
+          <Typography.Text strong className={s.text12}>
             {t.fields.tabNdvi}
           </Typography.Text>
           {[
@@ -248,7 +240,7 @@ export default function FieldNdviTab({ fieldId }: Props) {
             { color: '#ffeb3b', label: t.fields.ndviLegendModerate },
             { color: '#f44336', label: t.fields.ndviLegendStress },
           ].map(({ color, label }) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+            <div key={label} className={s.flex_center}>
               <span
                 style={{
                   display: 'inline-block',
@@ -259,22 +251,22 @@ export default function FieldNdviTab({ fieldId }: Props) {
                   flexShrink: 0,
                 }}
               />
-              <Typography.Text style={{ fontSize: 12 }}>{label}</Typography.Text>
+              <Typography.Text className={s.text121}>{label}</Typography.Text>
             </div>
           ))}
         </Card>
       </div>
 
-      <Typography.Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 12 }}>
+      <Typography.Text type="secondary" className={s.text122}>
         {ndvi.date}
       </Typography.Text>
 
       {availableDates.length > 1 && (
-        <div style={{ marginTop: 16, padding: '0 8px' }}>
-          <Typography.Text strong style={{ fontSize: 13 }}>
+        <div className={s.spaced2}>
+          <Typography.Text strong className={s.text13}>
             {t.fields.ndviDateSliderLabel}
           </Typography.Text>
-          <Typography.Text type="secondary" style={{ fontSize: 12, marginLeft: 8 }}>
+          <Typography.Text type="secondary" className={s.text123}>
             {t.fields.ndviSelectedDate} {availableDates[selectedDateIndex]}
           </Typography.Text>
           <Slider
@@ -284,7 +276,7 @@ export default function FieldNdviTab({ fieldId }: Props) {
             onChange={(val) => setSelectedDateIndex(val)}
             marks={sliderMarks}
             tooltip={{ formatter: (val) => val !== undefined ? availableDates[val] : '' }}
-            style={{ marginTop: 8 }}
+            className={s.spaced3}
           />
         </div>
       )}

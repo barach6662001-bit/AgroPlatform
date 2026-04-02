@@ -21,6 +21,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
+import s from './MachineDetail.module.css';
 
 const statusColors: Record<string, string> = {
   Active: 'success', UnderRepair: 'warning', Decommissioned: 'error',
@@ -178,7 +179,7 @@ export default function MachineDetail() {
 
   return (
     <div>
-      <Space style={{ marginBottom: 16 }}>
+      <Space className={s.spaced}>
         <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/machinery')}>
           {t.machinery.back}
         </Button>
@@ -254,7 +255,7 @@ export default function MachineDetail() {
                   title={t.machinery.totalHours}
                   value={machine.totalHoursWorked}
                   precision={1}
-                  valueStyle={{ color: '#1890ff' }}
+                  valueStyle={{ color: 'var(--info)' }}
                 />
               </Card>
             </Col>
@@ -264,7 +265,7 @@ export default function MachineDetail() {
                   title={t.machinery.totalFuel}
                   value={machine.totalFuelConsumed}
                   precision={1}
-                  valueStyle={{ color: '#faad14' }}
+                  valueStyle={{ color: 'var(--warning)' }}
                 />
               </Card>
             </Col>
@@ -280,7 +281,7 @@ export default function MachineDetail() {
                         return `Через ${days} дн. (${new Date(machine.nextMaintenanceDate).toLocaleDateString('uk-UA')})`;
                       })()
                     : '—'}
-                  valueStyle={{ color: machine.nextMaintenanceDate && Math.ceil((new Date(machine.nextMaintenanceDate).getTime() - Date.now()) / 86400000) < 0 ? '#f85149' : machine.nextMaintenanceDate && Math.ceil((new Date(machine.nextMaintenanceDate).getTime() - Date.now()) / 86400000) <= 7 ? '#f0883e' : '#8b949e' }}
+                  valueStyle={{ color: machine.nextMaintenanceDate && Math.ceil((new Date(machine.nextMaintenanceDate).getTime() - Date.now()) / 86400000) < 0 ? 'var(--error)' : machine.nextMaintenanceDate && Math.ceil((new Date(machine.nextMaintenanceDate).getTime() - Date.now()) / 86400000) <= 7 ? 'var(--warning)' : 'var(--text-secondary)' }}
                 />
               </Card>
             </Col>
@@ -289,7 +290,7 @@ export default function MachineDetail() {
       </Row>
 
       {/* Work Log Table + Chart */}
-      <Card title={t.machinery.workLog} style={{ marginTop: 16 }}>
+      <Card title={t.machinery.workLog} className={s.spaced1}>
         <Table
           dataSource={machine.recentWorkLogs}
           columns={workLogColumns}
@@ -298,14 +299,14 @@ export default function MachineDetail() {
           locale={{ emptyText: <EmptyState message={t.machinery.workLogEmpty || 'Напрацювань немає'} actionLabel={t.machinery.logWork} onAction={() => setWorkLogOpen(true)} /> }}
         />
         {workChartData.length > 1 && (
-          <div style={{ marginTop: 16 }}>
+          <div className={s.spaced1}>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={workChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
-                <XAxis dataKey="date" tick={{ fill: '#8B949E', fontSize: 11 }} />
-                <YAxis tick={{ fill: '#8B949E', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }} />
-                <Line type="monotone" dataKey={t.machinery.hours} stroke="#1890ff" strokeWidth={2} dot={{ fill: '#1890ff', r: 3 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
+                <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }} />
+                <Line type="monotone" dataKey={t.machinery.hours} stroke="var(--info)" strokeWidth={2} dot={{ fill: 'var(--info)', r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -313,7 +314,7 @@ export default function MachineDetail() {
       </Card>
 
       {/* Fuel Log Table + Chart */}
-      <Card title={t.machinery.fuelLog} style={{ marginTop: 16 }}>
+      <Card title={t.machinery.fuelLog} className={s.spaced1}>
         <Table
           dataSource={fuelTransactions.filter((tx) => tx.transactionType === 'Issue')}
           columns={fuelLogColumns}
@@ -322,14 +323,14 @@ export default function MachineDetail() {
           locale={{ emptyText: t.machinery.fuelLogEmpty }}
         />
         {fuelChartData.length > 1 && (
-          <div style={{ marginTop: 16 }}>
+          <div className={s.spaced1}>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={fuelChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
-                <XAxis dataKey="date" tick={{ fill: '#8B949E', fontSize: 11 }} />
-                <YAxis tick={{ fill: '#8B949E', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }} />
-                <Bar dataKey={t.machinery.liters} fill="#faad14" radius={[4, 4, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
+                <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }} />
+                <Bar dataKey={t.machinery.liters} fill="var(--warning)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -339,7 +340,7 @@ export default function MachineDetail() {
       {/* Maintenance Records */}
       <Card
         title={t.maintenance.title}
-        style={{ marginTop: 16 }}
+        className={s.spaced1}
         extra={
           <Button icon={<DownloadOutlined />} loading={exportingMaintenance} onClick={handleExportMaintenance}>
             {t.warehouses_export.exportCosts}
@@ -365,12 +366,12 @@ export default function MachineDetail() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={workForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={workForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="date" label={t.machinery.date} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="hoursWorked" label={t.machinery.hoursWorked} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+            <InputNumber min={0} step={0.1} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="description" label={t.machinery.notes}>
             <Input />
@@ -388,9 +389,9 @@ export default function MachineDetail() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={maintenanceForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={maintenanceForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="date" label={t.maintenance.date} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="type" label={t.maintenance.type} rules={[{ required: true, message: t.common.required }]}>
             <Select options={MAINTENANCE_TYPES.map((tp) => ({
@@ -402,13 +403,13 @@ export default function MachineDetail() {
             <Input.TextArea rows={2} />
           </Form.Item>
           <Form.Item name="cost" label={t.maintenance.cost}>
-            <InputNumber min={0} step={100} style={{ width: '100%' }} addonAfter="UAH" />
+            <InputNumber min={0} step={100} className={s.fullWidth} addonAfter="UAH" />
           </Form.Item>
           <Form.Item name="hoursAtMaintenance" label={t.maintenance.hoursAtMaintenance}>
-            <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+            <InputNumber min={0} step={0.1} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="nextMaintenanceDate" label={t.maintenance.nextMaintenanceDate}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
         </Form>
       </Modal>

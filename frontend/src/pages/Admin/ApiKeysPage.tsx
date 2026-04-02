@@ -27,6 +27,7 @@ import { PlusOutlined, CopyOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getApiKeys, createApiKey, revokeApiKey, ApiKeyDto, CreateApiKeyResponse } from '../../api/apiKeys';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
+import s from './ApiKeysPage.module.css';
 
 export const ApiKeysPage: React.FC = () => {
   const [keys, setKeys] = useState<ApiKeyDto[]>([]);
@@ -101,9 +102,9 @@ export const ApiKeysPage: React.FC = () => {
       dataIndex: 'scopes',
       key: 'scopes',
       render: (scopes: string) => (
-        <div style={{ maxWidth: 200, overflow: 'auto' }}>
+        <div className={s.block0}>
           {scopes.split(',').map((scope) => (
-            <Tag key={scope} style={{ fontSize: '11px' }}>
+            <Tag key={scope} className={s.text11}>
               {scope.trim()}
             </Tag>
           ))}
@@ -151,7 +152,7 @@ export const ApiKeysPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div className={s.padded}>
       <Card
         title="API Keys"
         extra={
@@ -163,7 +164,7 @@ export const ApiKeysPage: React.FC = () => {
         <Alert
           message="Store your API key securely. You won't be able to see it again after closing this dialog."
           type="info"
-          style={{ marginBottom: '16px' }}
+          className={s.spaced}
         />
         <Table
           columns={columns}
@@ -251,18 +252,13 @@ export const ApiKeysPage: React.FC = () => {
         <Alert
           message="Save this key securely. You won't see it again."
           type="warning"
-          style={{ marginBottom: '16px' }}
+          className={s.spaced}
         />
-        <div style={{ background: '#f5f5f5', padding: '12px', borderRadius: '4px', marginBottom: '16px' }}>
+        <div className={s.spaced1}>
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '8px',
-            }}
+            className={s.flex_center_between}
           >
-            <code style={{ flex: 1, wordBreak: 'break-all' }}>{displayKey}</code>
+            <code className={s.block7}>{displayKey}</code>
             <Button icon={<CopyOutlined />} onClick={copyKeyToClipboard} />
           </div>
         </div>

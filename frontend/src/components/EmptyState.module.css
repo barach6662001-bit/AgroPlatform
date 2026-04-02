@@ -1,0 +1,14 @@
+.textCenter {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.text40 {
+  font-size: 40px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.spaced {
+  margin-top: 12px;
+}

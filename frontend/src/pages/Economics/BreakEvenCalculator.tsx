@@ -7,6 +7,7 @@ import type { BreakEvenDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './BreakEvenCalculator.module.css';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -81,7 +82,7 @@ export default function BreakEvenCalculator() {
       dataIndex: 'totalCosts',
       key: 'totalCosts',
       sorter: (a: BreakEvenDto, b: BreakEvenDto) => a.totalCosts - b.totalCosts,
-      render: (v: number) => <span style={{ color: '#f85149' }}>{v.toLocaleString()} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{v.toLocaleString()} UAH</span>,
     },
     {
       title: t.economics.breakEvenPrice,
@@ -96,8 +97,8 @@ export default function BreakEvenCalculator() {
       sorter: (a: BreakEvenDto, b: BreakEvenDto) =>
         (a.breakEvenYield ?? -1) - (b.breakEvenYield ?? -1),
       render: (v: number | undefined) => {
-        if (v == null) return <span style={{ color: '#8B949E' }}>—</span>;
-        const color = v <= 3 ? '#3fb950' : v <= 6 ? '#d29922' : '#f85149';
+        if (v == null) return <span className={s.colored1}>—</span>;
+        const color = v <= 3 ? 'var(--success)' : v <= 6 ? '#d29922' : 'var(--error)';
         return <strong style={{ color }}>{v.toFixed(3)} т/га</strong>;
       },
     },
@@ -112,38 +113,38 @@ export default function BreakEvenCalculator() {
       />
 
       {/* Filters */}
-      <Space style={{ marginBottom: 24 }} wrap>
-        <span style={{ color: '#8B949E' }}>{t.economics.year}:</span>
+      <Space className={s.spaced} wrap>
+        <span className={s.colored1}>{t.economics.year}:</span>
         <Select
           value={year}
           onChange={setYear}
           options={YEAR_OPTIONS}
-          style={{ width: 100 }}
+          className={s.block5}
         />
-        <span style={{ color: '#8B949E' }}>{t.economics.breakEvenPrice}:</span>
+        <span className={s.colored1}>{t.economics.breakEvenPrice}:</span>
         <InputNumber
           min={1}
           step={100}
           value={pricePerTonne}
           onChange={(v) => setPricePerTonne(v)}
           placeholder="UAH/т"
-          style={{ width: 160 }}
+          className={s.block7}
         />
       </Space>
 
       {(!pricePerTonne || pricePerTonne <= 0) && (
-        <div style={{ marginBottom: 16, color: '#8B949E', fontSize: 13 }}>
+        <div className={s.text13}>
           ℹ️ {t.economics.breakEvenEnterPrice}
         </div>
       )}
 
       {/* KPI cards */}
       {pricePerTonne && pricePerTonne > 0 && (
-        <Row gutter={16} style={{ marginBottom: 24 }}>
+        <Row gutter={16} className={s.spaced}>
           <Col xs={24} sm={8}>
-            <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+            <Card className={s.bg}>
               <Statistic
-                title={<span style={{ color: '#8B949E' }}>{t.economics.breakEvenTotalFields}</span>}
+                title={<span className={s.colored1}>{t.economics.breakEvenTotalFields}</span>}
                 value={data.length}
                 valueStyle={{ color: '#58A6FF' }}
                 prefix={<CalculatorOutlined />}
@@ -151,9 +152,9 @@ export default function BreakEvenCalculator() {
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+            <Card className={s.bg}>
               <Statistic
-                title={<span style={{ color: '#8B949E' }}>{t.economics.breakEvenAvgThreshold}</span>}
+                title={<span className={s.colored1}>{t.economics.breakEvenAvgThreshold}</span>}
                 value={avgThreshold != null ? avgThreshold.toFixed(3) : '—'}
                 suffix={avgThreshold != null ? ' т/га' : ''}
                 valueStyle={{ color: '#d29922' }}
@@ -162,12 +163,12 @@ export default function BreakEvenCalculator() {
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+            <Card className={s.bg}>
               <Statistic
-                title={<span style={{ color: '#8B949E' }}>{t.economics.breakEvenMaxThreshold}</span>}
+                title={<span className={s.colored1}>{t.economics.breakEvenMaxThreshold}</span>}
                 value={maxThreshold != null ? maxThreshold.toFixed(3) : '—'}
                 suffix={maxThreshold != null ? ' т/га' : ''}
-                valueStyle={{ color: '#f85149' }}
+                valueStyle={{ color: 'var(--error)' }}
                 prefix={<WarningOutlined />}
               />
             </Card>
@@ -178,22 +179,22 @@ export default function BreakEvenCalculator() {
       {/* Chart */}
       {chartData.length > 0 && (
         <Card
-          title={<span style={{ color: '#E6EDF3' }}>{t.economics.breakEvenYield}</span>}
-          style={{ background: '#161B22', border: '1px solid #30363D', marginBottom: 24 }}
+          title={<span className={s.colored2}>{t.economics.breakEvenYield}</span>}
+          className={s.spaced1}
         >
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 60 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis
                 dataKey="name"
-                tick={{ fill: '#8B949E', fontSize: 11 }}
+                tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
                 angle={-35}
                 textAnchor="end"
                 interval={0}
               />
-              <YAxis tick={{ fill: '#8B949E', fontSize: 11 }} unit=" т/га" />
+              <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" т/га" />
               <Tooltip
-                contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }}
+                contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
               />
               <Bar dataKey={t.economics.breakEvenYield} fill="#d29922" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -203,7 +204,7 @@ export default function BreakEvenCalculator() {
 
       {/* Table */}
       {pricePerTonne && pricePerTonne > 0 && data.length === 0 && !loading ? (
-        <Empty description={<span style={{ color: '#8B949E' }}>{t.common.noData}</span>} />
+        <Empty description={<span className={s.colored1}>{t.common.noData}</span>} />
       ) : (
         <Table
           dataSource={data}

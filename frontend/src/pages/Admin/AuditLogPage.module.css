@@ -1,0 +1,36 @@
+.spaced {
+  margin-bottom: 24px;
+}
+
+.block2 {
+  width: 200px;
+}
+
+.block3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.text12 {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.text11 {
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.padded {
+  background-color: var(--bg-muted);
+  padding: 12px;
+  border-radius: 4px;
+  overflow: auto;
+}
+
+.padded1 {
+  padding: 2px 8px;
+  background-color: var(--bg-muted);
+  border-radius: 999px;
+}

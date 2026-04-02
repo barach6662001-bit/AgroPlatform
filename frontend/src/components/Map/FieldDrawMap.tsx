@@ -9,6 +9,7 @@ import type { FieldDetailDto } from '../../types/field';
 import { getCropColor } from '../../utils/cropColors';
 import { useTranslation } from '../../i18n';
 import CadastreLayer from './CadastreLayer';
+import s from './FieldDrawMap.module.css';
 
 interface DrawControlProps {
   field: FieldDetailDto;
@@ -121,14 +122,14 @@ export default function FieldDrawMap({ field, onGeometryChange, height = 400 }: 
 
   return (
     <div>
-      <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div className={s.flex_center}>
         <Switch
           size="small"
           checked={showCadastre}
           onChange={setShowCadastre}
           id="cadastre-layer-toggle"
         />
-        <label htmlFor="cadastre-layer-toggle" style={{ cursor: 'pointer', userSelect: 'none' }}>
+        <label htmlFor="cadastre-layer-toggle" className={s.block1}>
           {t.fields.cadastreLayer}
         </label>
       </div>

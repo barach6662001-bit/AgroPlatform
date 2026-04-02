@@ -7,9 +7,9 @@ const TILE_URL = '/api/cadastre/tile/{z}/{x}/{y}';
 
 const LAYER_STYLES: L.VectorGrid.ProtobufOptions['vectorTileLayerStyles'] = {
   kadastr: {
-    fillColor: '#FFD700',
+    fillColor: 'var(--warning)',
     fillOpacity: 0.25,
-    color: '#FF8C00',
+    color: 'var(--warning)',
     weight: 1,
     fill: true,
   },

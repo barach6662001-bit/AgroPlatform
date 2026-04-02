@@ -14,6 +14,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
+import s from './WarehouseItems.module.css';
 
 export default function WarehouseItems() {
   const [searchParams] = useSearchParams();
@@ -207,7 +208,7 @@ export default function WarehouseItems() {
       title: t.warehouses.balance, key: 'balance',
       render: (_: unknown, r: BalanceDto) => (
         <span>
-          <strong style={{ color: r.balanceBase > 0 ? '#3fb950' : '#f85149' }}>
+          <strong style={{ color: r.balanceBase > 0 ? 'var(--success)' : 'var(--error)' }}>
             {r.balanceBase.toFixed(2)}
           </strong>
           {' '}{r.baseUnit}
@@ -277,10 +278,10 @@ export default function WarehouseItems() {
         <Select options={itemOptions} placeholder={t.warehouses.selectItem} showSearch optionFilterProp="label" />
       </Form.Item>
       <Form.Item name="quantity" label={t.warehouses.quantity} rules={[{ required: true, message: t.common.required }]}>
-        <InputNumber min={0.001} step={0.001} style={{ width: '100%' }} />
+        <InputNumber min={0.001} step={0.001} className={s.fullWidth} />
       </Form.Item>
       <Form.Item name="date" label={t.common.date} rules={[{ required: true, message: t.common.required }]}>
-        <DatePicker style={{ width: '100%' }} />
+        <DatePicker className={s.fullWidth} />
       </Form.Item>
       <Form.Item name="notes" label={t.common.notes}>
         <Input />
@@ -295,11 +296,11 @@ export default function WarehouseItems() {
         subtitle={t.warehouses.itemsSubtitle}
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.warehouses, path: '/warehouses' }, { label: t.nav.materials }]} />}
       />
-      <Space style={{ marginBottom: 16 }}>
+      <Space className={s.spaced}>
         <Select
           placeholder={t.warehouses.allWarehouses}
           allowClear
-          style={{ width: 240 }}
+          className={s.block4}
           options={warehouseOptions}
           onChange={handleWarehouseChange}
           value={selectedWarehouse}
@@ -359,7 +360,7 @@ export default function WarehouseItems() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={receiptForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={receiptForm} layout="vertical" className={s.spaced1}>
           <MovementForm />
           <Form.Item name="pricePerUnit" label={t.warehouses.pricePerUnit}>
             <InputNumber
@@ -367,7 +368,7 @@ export default function WarehouseItems() {
               step={0.01}
               precision={2}
               addonAfter="UAH"
-              style={{ width: '100%' }}
+              className={s.fullWidth}
               onChange={(val) => {
                 const qty = receiptForm.getFieldValue('quantity');
                 if (val && qty) {
@@ -392,7 +393,7 @@ export default function WarehouseItems() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={issueForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={issueForm} layout="vertical" className={s.spaced1}>
           <MovementForm />
           <Form.Item name="fieldId" label={t.warehouses.field || 'Поле'}>
             <Select
@@ -420,7 +421,7 @@ export default function WarehouseItems() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={createItemForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={createItemForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="name" label={t.warehouses.name} rules={[{ required: true, message: t.common.required }]}>
             <Input />
           </Form.Item>
@@ -447,10 +448,10 @@ export default function WarehouseItems() {
             <Input />
           </Form.Item>
           <Form.Item name="minimumQuantity" label={t.warehouses.minimumQuantity}>
-            <InputNumber min={0} step={0.001} style={{ width: '100%' }} />
+            <InputNumber min={0} step={0.001} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="purchasePrice" label={t.warehouses.purchasePrice}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} addonAfter="UAH" />
+            <InputNumber min={0} precision={4} className={s.fullWidth} addonAfter="UAH" />
           </Form.Item>
         </Form>
       </Modal>
@@ -464,7 +465,7 @@ export default function WarehouseItems() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={transferForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={transferForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="sourceWarehouseId" label={t.warehouses.fromWarehouse} rules={[{ required: true, message: t.common.required }]}>
             <Select options={warehouseOptions} placeholder={t.warehouses.selectWarehouse} />
           </Form.Item>
@@ -475,7 +476,7 @@ export default function WarehouseItems() {
             <Select options={itemOptions} placeholder={t.warehouses.selectItem} showSearch optionFilterProp="label" />
           </Form.Item>
           <Form.Item name="quantity" label={t.warehouses.quantity} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0.001} step={0.001} style={{ width: '100%' }} />
+            <InputNumber min={0.001} step={0.001} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="note" label={t.common.notes}>
             <Input />
@@ -493,7 +494,7 @@ export default function WarehouseItems() {
         cancelText={t.common.cancel}
         confirmLoading={editItemSaving}
       >
-        <Form form={editItemForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={editItemForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="name" label={t.warehouses.name} rules={[{ required: true, message: t.common.required }]}>
             <Input />
           </Form.Item>
@@ -520,10 +521,10 @@ export default function WarehouseItems() {
             <Input />
           </Form.Item>
           <Form.Item name="minimumQuantity" label={t.warehouses.minimumQuantity}>
-            <InputNumber min={0} step={0.001} style={{ width: '100%' }} />
+            <InputNumber min={0} step={0.001} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="purchasePrice" label={t.warehouses.purchasePrice}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} addonAfter="UAH" />
+            <InputNumber min={0} precision={4} className={s.fullWidth} addonAfter="UAH" />
           </Form.Item>
         </Form>
       </Modal>

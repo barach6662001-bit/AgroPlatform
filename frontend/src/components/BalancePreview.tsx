@@ -4,6 +4,7 @@ import { getBalances, getWarehouses, getWarehouseItems } from '../api/warehouses
 import type { BalanceDto, WarehouseDto, WarehouseItemDto } from '../types/warehouse';
 import type { PaginatedResult } from '../types/common';
 import { useTranslation } from '../i18n';
+import s from './BalancePreview.module.css';
 
 const { Text, Title } = Typography;
 
@@ -63,15 +64,15 @@ export default function BalancePreview({ itemId: propItemId, warehouseId: propWa
   const isNegative = newBalance < 0;
 
   return (
-    <Card size="small" style={{ marginTop: 8 }}>
-      <Space direction="vertical" style={{ width: '100%' }} size="small">
+    <Card size="small" className={s.spaced}>
+      <Space direction="vertical" className={s.fullWidth} size="small">
         <Text strong>{t.balancePreview.title}</Text>
         <Space wrap>
           <Select
             placeholder={t.balancePreview.selectWarehouse}
             value={selectedWarehouse}
             onChange={setSelectedWarehouse}
-            style={{ width: 200 }}
+            className={s.block2}
             showSearch
             optionFilterProp="label"
             options={warehouses.map((w) => ({ value: w.id, label: w.name }))}
@@ -81,7 +82,7 @@ export default function BalancePreview({ itemId: propItemId, warehouseId: propWa
             placeholder={t.balancePreview.selectItem}
             value={selectedItem}
             onChange={setSelectedItem}
-            style={{ width: 200 }}
+            className={s.block2}
             showSearch
             optionFilterProp="label"
             options={items.map((i) => ({ value: i.id, label: `${i.name} (${i.code})` }))}
@@ -93,7 +94,7 @@ export default function BalancePreview({ itemId: propItemId, warehouseId: propWa
 
         {!loading && selectedWarehouse && selectedItem && (
           <>
-            <Title level={5} style={{ margin: 0 }}>
+            <Title level={5} className={s.spaced1}>
               {currentBalance.toFixed(1)} {unit}
               {qty > 0 && (
                 <>

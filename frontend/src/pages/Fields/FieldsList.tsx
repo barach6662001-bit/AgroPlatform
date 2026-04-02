@@ -16,6 +16,7 @@ import { useRole } from '../../hooks/useRole';
 import { exportToCsv } from '../../utils/exportCsv';
 import { useFieldsQuery } from '../../hooks/useFieldsQuery';
 import { useAuthStore } from '../../stores/authStore';
+import s from './FieldsList.module.css';
 
 export default function FieldsList() {
   const [search, setSearch] = useState('');
@@ -194,13 +195,13 @@ export default function FieldsList() {
   return (
     <div>
       <PageHeader title={t.fields.title} subtitle={t.fields.subtitle} />
-      <Space style={{ marginBottom: 16 }}>
+      <Space className={s.spaced}>
         <Input
           placeholder={t.fields.searchPlaceholder}
           prefix={<SearchOutlined />}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          style={{ width: 320 }}
+          className={s.block1}
         />
         {canCreate && (
           <Button
@@ -262,7 +263,7 @@ export default function FieldsList() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={form} layout="vertical" className={s.spaced1}>
           <Form.Item name="name" label={t.fields.name} rules={[{ required: true, message: t.common.required }]}>
             <Input />
           </Form.Item>
@@ -270,29 +271,29 @@ export default function FieldsList() {
             <Input
               placeholder="1810400000:00:022:0005"
               onChange={e => handleCadastralNumberChange(e.target.value)}
-              suffix={cadastreLoading ? <Spin size="small" /> : <SearchOutlined style={{ color: '#484f58' }} />}
+              suffix={cadastreLoading ? <Spin size="small" /> : <SearchOutlined className={s.colored} />}
             />
           </Form.Item>
           {cadastreResult?.found && (
-            <div style={{ marginBottom: 16, padding: '8px 12px', background: 'var(--bg-elevated)', borderRadius: 6 }}>
-              <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>
+            <div className={s.spaced2}>
+              <div className={s.text12}>
                 {t.fields.cadastreInfo} — {t.fields.cadastreDataNote}
               </div>
               {cadastreResult.purpose && (
-                <div style={{ fontSize: 13 }}>
-                  <span style={{ color: 'rgba(0,0,0,0.45)' }}>{t.fields.cadastrePurpose}: </span>
+                <div className={s.text13}>
+                  <span className={s.colored1}>{t.fields.cadastrePurpose}: </span>
                   {cadastreResult.purpose}
                 </div>
               )}
               {cadastreResult.ownership && (
-                <div style={{ fontSize: 13 }}>
-                  <span style={{ color: 'rgba(0,0,0,0.45)' }}>{t.fields.cadastreOwnership}: </span>
+                <div className={s.text13}>
+                  <span className={s.colored1}>{t.fields.cadastreOwnership}: </span>
                   {cadastreResult.ownership}
                 </div>
               )}
               {cadastreResult.area && (
-                <div style={{ fontSize: 13 }}>
-                  <span style={{ color: 'rgba(0,0,0,0.45)'}}>{t.fields.area}: </span>
+                <div className={s.text13}>
+                  <span className={s.colored1}>{t.fields.area}: </span>
                   {cadastreResult.area} га
                 </div>
               )}
@@ -304,7 +305,7 @@ export default function FieldsList() {
               <span>
                 {t.fields.area}
                 {cadastreArea && (
-                  <span style={{ color: '#484f58', fontSize: 12, marginLeft: 8 }}>
+                  <span className={s.text121}>
                     ({t.fields.fromCadastre}: {cadastreArea} га)
                   </span>
                 )}
@@ -312,7 +313,7 @@ export default function FieldsList() {
             }
             rules={[{ required: true, message: t.common.required }]}
           >
-            <InputNumber min={0} step={0.01} precision={4} style={{ width: '100%' }} addonAfter="га" />
+            <InputNumber min={0} step={0.01} precision={4} className={s.fullWidth} addonAfter="га" />
           </Form.Item>
           <Form.Item name="soilType" label={t.fields.soilType}>
             <Select
@@ -350,7 +351,7 @@ export default function FieldsList() {
         cancelText={t.common.cancel}
         confirmLoading={editSaving}
       >
-        <Form form={editForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={editForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="name" label={t.fields.name} rules={[{ required: true, message: t.common.required }]}>
             <Input />
           </Form.Item>
@@ -358,7 +359,7 @@ export default function FieldsList() {
             <Input />
           </Form.Item>
           <Form.Item name="areaHectares" label={t.fields.area} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+            <InputNumber min={0} step={0.01} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="soilType" label={t.fields.soilType}>
             <Select
@@ -388,7 +389,7 @@ export default function FieldsList() {
             <InputNumber
               min={2000}
               max={new Date().getFullYear() + 1}
-              style={{ width: '100%' }}
+              className={s.fullWidth}
               placeholder={String(new Date().getFullYear())}
             />
           </Form.Item>

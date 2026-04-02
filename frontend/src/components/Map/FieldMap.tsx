@@ -7,6 +7,7 @@ import L from 'leaflet';
 import type { FieldDto } from '../../types/field';
 import { useTranslation } from '../../i18n';
 import CadastreLayer from './CadastreLayer';
+import s from './FieldMap.module.css';
 
 interface FieldWithGeoJson extends FieldDto {
   geoJson?: string;
@@ -64,7 +65,7 @@ export default function FieldMap({ fields, height = 500 }: FieldMapProps) {
 
   if (parsedFields.length === 0) {
     return (
-      <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', borderRadius: 4 }}>
+      <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-subtle)', borderRadius: 4 }}>
         <Empty description={t.fields.noCoordinates} />
       </div>
     );
@@ -72,14 +73,14 @@ export default function FieldMap({ fields, height = 500 }: FieldMapProps) {
 
   return (
     <div>
-      <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div className={s.flex_center}>
         <Switch
           size="small"
           checked={showCadastre}
           onChange={setShowCadastre}
           id="cadastre-layer-toggle-map"
         />
-        <label htmlFor="cadastre-layer-toggle-map" style={{ cursor: 'pointer', userSelect: 'none' }}>
+        <label htmlFor="cadastre-layer-toggle-map" className={s.block2}>
           {t.fields.cadastreLayer}
         </label>
       </div>

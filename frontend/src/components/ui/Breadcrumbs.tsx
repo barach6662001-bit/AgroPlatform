@@ -1,6 +1,7 @@
 import { Breadcrumb } from 'antd';
 import { Link } from 'react-router-dom';
 import { HomeOutlined } from '@ant-design/icons';
+import s from './Breadcrumbs.module.css';
 
 export interface BreadcrumbItem {
   label: string;
@@ -29,7 +30,7 @@ export default function Breadcrumbs({ items }: Props) {
 
   return (
     <Breadcrumb
-      style={{ marginBottom: 12, fontSize: 13 }}
+      className={s.text13}
       items={breadcrumbItems}
     />
   );

@@ -8,6 +8,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import s from './WarehousesList.module.css';
 
 export default function WarehousesList() {
   const [result, setResult] = useState<PaginatedResult<WarehouseDto> | null>(null);
@@ -84,7 +85,7 @@ export default function WarehousesList() {
   return (
     <div>
       <PageHeader title={t.warehouses.title} subtitle={t.warehouses.subtitle} />
-      <Space style={{ marginBottom: 16 }}>
+      <Space className={s.spaced}>
         {canCreate && (
           <Button
             type="primary"
@@ -119,7 +120,7 @@ export default function WarehousesList() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={form} layout="vertical" className={s.spaced1}>
           <Form.Item name="name" label={t.warehouses.name} rules={[{ required: true, message: t.common.required }]}>
             <Input />
           </Form.Item>

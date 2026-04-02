@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Table, Checkbox, Button, App, Spin, Alert } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { useTranslation } from '../../i18n';
+import s from './RolePermissionsPage.module.css';
 import {
   getRolePermissions,
   getAvailableRoles,
@@ -135,7 +136,7 @@ export default function RolePermissionsPage() {
 
   if (loading) {
     return (
-      <div style={{ padding: 24, textAlign: 'center' }}>
+      <div className={s.textCenter}>
         <Spin size="large" />
       </div>
     );
@@ -143,18 +144,18 @@ export default function RolePermissionsPage() {
 
   if (error) {
     return (
-      <div style={{ padding: 24 }}>
+      <div className={s.padded}>
         <Alert type="error" message={error} showIcon />
       </div>
     );
   }
 
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+    <div className={s.padded}>
+      <div className={s.flex_center_between}>
         <div>
-          <h2 style={{ margin: 0 }}>{t.rolePermissions.title}</h2>
-          <p style={{ margin: 0, color: 'var(--text-secondary)' }}>{t.rolePermissions.subtitle}</p>
+          <h2 className={s.spaced}>{t.rolePermissions.title}</h2>
+          <p className={s.spaced1}>{t.rolePermissions.subtitle}</p>
         </div>
         <Button
           type="primary"

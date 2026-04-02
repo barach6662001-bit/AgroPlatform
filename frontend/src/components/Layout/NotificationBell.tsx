@@ -4,6 +4,7 @@ import { BellOutlined } from '@ant-design/icons';
 import { useNotificationStore } from '../../hooks/useNotifications';
 import { useTranslation } from '../../i18n';
 import type { Notification, NotificationType } from '../../hooks/useNotifications';
+import s from './NotificationBell.module.css';
 import {
   getNotifications,
   markAllNotificationsRead,
@@ -12,9 +13,9 @@ import {
 } from '../../api/notifications';
 
 const typeColor: Record<NotificationType, string> = {
-  info: '#1677ff',
-  warning: '#faad14',
-  error: '#ff4d4f',
+  info: 'var(--info)',
+  warning: 'var(--warning)',
+  error: 'var(--error)',
 };
 
 const typeTagColor: Record<NotificationType, string> = {
@@ -98,8 +99,8 @@ export default function NotificationBell() {
   const recentNotifications = notifications.slice(0, 20);
 
   const content = (
-    <div style={{ width: 340 }}>
-      <Space style={{ width: '100%', justifyContent: 'space-between', marginBottom: 8 }}>
+    <div className={s.block0}>
+      <Space className={s.fullWidth}>
         <Typography.Text strong>{t.notifications.title}</Typography.Text>
         <Space>
           <Button size="small" type="link" onClick={handleMarkAllRead}>
@@ -115,7 +116,7 @@ export default function NotificationBell() {
       ) : (
         <List
           dataSource={recentNotifications}
-          style={{ maxHeight: 400, overflowY: 'auto' }}
+          className={s.block2}
           renderItem={(item: Notification) => (
             <List.Item
               style={{
@@ -128,17 +129,17 @@ export default function NotificationBell() {
               }}
               onClick={() => handleMarkRead(item.id)}
             >
-              <div style={{ width: '100%' }}>
-                <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-                  <Tag color={typeTagColor[item.type]} style={{ margin: 0 }}>
+              <div className={s.fullWidth1}>
+                <Space className={s.fullWidth2}>
+                  <Tag color={typeTagColor[item.type]} className={s.spaced}>
                     {item.type.toUpperCase()}
                   </Tag>
-                  <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+                  <Typography.Text type="secondary" className={s.text11}>
                     {formatRelativeTime(item.timestamp)}
                   </Typography.Text>
                 </Space>
                 <Typography.Text
-                  style={{ display: 'block', marginTop: 4, fontSize: 13 }}
+                  className={s.text13}
                   strong={!item.read}
                 >
                   {item.message}
@@ -163,8 +164,8 @@ export default function NotificationBell() {
       <Badge count={unreadCount} size="small" offset={[-2, 2]}>
         <Button
           type="text"
-          icon={<BellOutlined style={{ fontSize: 18, color: '#E6EDF3' }} />}
-          style={{ padding: '4px 8px' }}
+          icon={<BellOutlined className={s.text18} />}
+          className={s.padded}
         />
       </Badge>
     </Popover>

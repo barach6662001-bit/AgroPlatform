@@ -1,0 +1,15 @@
+.colored {
+  color: var(--warning);
+}
+
+.colored1 {
+  color: var(--error);
+}
+
+.colored2 {
+  color: var(--info);
+}
+
+.spaced {
+  margin-bottom: 16px;
+}

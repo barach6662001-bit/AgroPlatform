@@ -1,6 +1,7 @@
 import { Typography, Space } from 'antd';
 import { WarningOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from '../../i18n';
+import s from './AlertsPanel.module.css';
 
 const { Text } = Typography;
 
@@ -33,19 +34,11 @@ export default function AlertsPanel({ underRepairMachines, pendingOperations }: 
   if (alerts.length === 0) return null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div className={s.flex_col}>
       {alerts.map((alert, i) => (
         <div
           key={i}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '10px 14px',
-            borderRadius: 8,
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border)',
-          }}
+          className={s.flex_center}
         >
           <Space>
             <span style={{ color: alert.color, fontSize: 16 }}>{alert.icon}</span>

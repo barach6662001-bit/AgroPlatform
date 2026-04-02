@@ -6,6 +6,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useFleetHub } from '../../hooks/useFleetHub';
 import { useTranslation } from '../../i18n';
 import type { ConnectionState } from '../../hooks/useFleetHub';
+import s from './FleetMap.module.css';
 
 // The default Leaflet icon is patched globally via src/utils/leafletFix.ts
 
@@ -19,16 +20,16 @@ function formatRelativeTime(timestampUtc: string): string {
 }
 
 const connectionTagProps: Record<ConnectionState, { color: string; statusType: 'success' | 'warning' | 'error' }> = {
-  connected: { color: '#3fb950', statusType: 'success' },
+  connected: { color: 'var(--success)', statusType: 'success' },
   reconnecting: { color: '#d29922', statusType: 'warning' },
-  disconnected: { color: '#f85149', statusType: 'error' },
+  disconnected: { color: 'var(--error)', statusType: 'error' },
 };
 
 /** Color per machinery type for map marker dots. */
 const TYPE_COLORS: Record<string, string> = {
-  Tractor:    '#52c41a',
+  Tractor:    'var(--success)',
   Combine:    '#fa8c16',
-  Sprayer:    '#1677ff',
+  Sprayer:    'var(--info)',
   Seeder:     '#fadb14',
   Cultivator: '#722ed1',
   Truck:      '#f5222d',
@@ -55,20 +56,20 @@ export default function FleetMap() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
+      <div className={s.flex_between}>
         <PageHeader
           title={t.fleet.title}
           subtitle={t.fleet.subtitle}
           breadcrumbs={<Breadcrumbs items={[{ label: t.nav.operationsGroup, path: '/operations' }, { label: t.nav.fleet }]} />}
         />
-        <Tag color={color} style={{ fontSize: 13, marginTop: 4 }}>
+        <Tag color={color} className={s.text13}>
           <Badge status={statusType} />
           {' '}{connectionLabel}
         </Tag>
       </div>
 
       {positions.size === 0 && (
-        <div style={{ marginBottom: 16 }}>
+        <div className={s.spaced}>
           <Empty description={t.fleet.noVehicles} />
         </div>
       )}
@@ -76,7 +77,7 @@ export default function FleetMap() {
       <MapContainer
         center={[49.0, 32.0]}
         zoom={6}
-        style={{ height: 'calc(100vh - 260px)', width: '100%', borderRadius: 8 }}
+        className={s.fullWidth}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

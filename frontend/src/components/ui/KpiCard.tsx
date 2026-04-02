@@ -1,4 +1,5 @@
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import s from './KpiCard.module.css';
 
 interface Props {
   label: string;
@@ -12,28 +13,11 @@ export default function KpiCard({ label, value, trend, prefix, suffix }: Props) 
   const trendColor = trend && trend.value >= 0 ? 'var(--success)' : 'var(--error)';
 
   return (
-    <div style={{
-      padding: '20px 24px',
-      background: 'var(--bg-surface)',
-      borderRadius: 'var(--radius-lg)',
-      border: '1px solid var(--border)',
-    }}>
-      <div style={{
-        fontSize: 11,
-        fontWeight: 600,
-        textTransform: 'uppercase' as const,
-        letterSpacing: '0.5px',
-        color: 'var(--text-secondary)',
-        marginBottom: 8,
-      }}>
+    <div className={s.padded}>
+      <div className={s.upper}>
         {label}
       </div>
-      <div style={{
-        fontSize: 28,
-        fontWeight: 600,
-        color: 'var(--text-primary)',
-        lineHeight: 1.1,
-      }}>
+      <div className={s.text28}>
         {prefix}{value}{suffix}
       </div>
       {trend && (
@@ -48,7 +32,7 @@ export default function KpiCard({ label, value, trend, prefix, suffix }: Props) 
           {trend.value >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
           <span>{Math.abs(trend.value)}%</span>
           {trend.label && (
-            <span style={{ color: 'var(--text-tertiary)', marginLeft: 4 }}>{trend.label}</span>
+            <span className={s.spaced}>{trend.label}</span>
           )}
         </div>
       )}

@@ -8,6 +8,7 @@ import type { FieldHarvestDto } from '../../types/field';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import s from './FieldHarvestTab.module.css';
 
 interface Props {
   fieldId: string;
@@ -56,7 +57,7 @@ export default function FieldHarvestTab({ fieldId }: Props) {
           {v?.toFixed(1)} т
           {record.syncedFromGrainStorage && (
             <Tooltip title={t.fields.syncedFromGrain}>
-              <SyncOutlined style={{ color: '#238636', marginLeft: 6 }} />
+              <SyncOutlined className={s.spaced} />
             </Tooltip>
           )}
         </span>
@@ -90,12 +91,12 @@ export default function FieldHarvestTab({ fieldId }: Props) {
         type="info"
         showIcon
         message={t.fields.harvestSyncInfo}
-        style={{ marginBottom: 16 }}
+        className={s.spaced1}
       />
-      <Space style={{ marginBottom: 12 }}>
-        <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
+      <Space className={s.spaced2}>
+        <span className={s.text13}>{t.fields.year}:</span>
         <Select
-          style={{ width: 90 }}
+          className={s.block4}
           value={year}
           onChange={setYear}
           options={yearOptions}

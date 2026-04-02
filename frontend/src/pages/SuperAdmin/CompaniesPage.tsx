@@ -3,6 +3,7 @@ import { Table, Button, Tag, Space, Modal, Form, Input, message, Popconfirm } fr
 import { PlusOutlined, EditOutlined, DeleteOutlined, TeamOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
+import s from './CompaniesPage.module.css';
 import {
   getCompanies,
   createCompany,
@@ -90,9 +91,9 @@ export default function CompaniesPage() {
       key: 'name',
       render: (name: string, record: CompanyDto) => (
         <div>
-          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{name}</div>
+          <div className={s.semibold}>{name}</div>
           {record.companyName && (
-            <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{record.companyName}</div>
+            <div className={s.text12}>{record.companyName}</div>
           )}
         </div>
       ),
@@ -156,11 +157,11 @@ export default function CompaniesPage() {
   ];
 
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+    <div className={s.padded}>
+      <div className={s.flex_center_between}>
         <div>
-          <h2 style={{ margin: 0, color: 'var(--text-primary)' }}>{t.superAdmin.companiesTitle}</h2>
-          <p style={{ margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: 13 }}>
+          <h2 className={s.spaced}>{t.superAdmin.companiesTitle}</h2>
+          <p className={s.text13}>
             {t.superAdmin.companiesSubtitle}
           </p>
         </div>
@@ -184,7 +185,7 @@ export default function CompaniesPage() {
         footer={null}
         destroyOnClose
       >
-        <Form form={form} layout="vertical" onFinish={onSubmit} style={{ marginTop: 16 }}>
+        <Form form={form} layout="vertical" onFinish={onSubmit} className={s.spaced1}>
           <Form.Item name="name" label={t.superAdmin.companyName} rules={[{ required: true }]}>
             <Input />
           </Form.Item>
@@ -200,7 +201,7 @@ export default function CompaniesPage() {
           <Form.Item name="phone" label={t.superAdmin.phone}>
             <Input />
           </Form.Item>
-          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+          <Form.Item className={s.textRight}>
             <Space>
               <Button onClick={() => setModalOpen(false)}>{t.common.cancel}</Button>
               <Button type="primary" htmlType="submit">{t.common.save}</Button>

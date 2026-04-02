@@ -6,6 +6,7 @@ import apiClient from '../../api/axios';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './ImportItemsPage.module.css';
 
 interface ImportRow {
   name: string;
@@ -107,8 +108,8 @@ export default function ImportItemsPage() {
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.warehouses, path: '/warehouses' }, { label: t.nav.import }]} />}
       />
 
-      <Card style={{ marginBottom: 16 }}>
-        <Space direction="vertical" style={{ width: '100%' }}>
+      <Card className={s.spaced}>
+        <Space direction="vertical" className={s.fullWidth}>
           <Upload
             fileList={fileList}
             beforeUpload={(file) => {
@@ -136,7 +137,7 @@ export default function ImportItemsPage() {
           <Alert
             type={parseResult.errorCount > 0 ? 'warning' : 'success'}
             message={`${t.importItems.valid}: ${parseResult.validCount}, ${t.importItems.errors}: ${parseResult.errorCount}`}
-            style={{ marginBottom: 16 }}
+            className={s.spaced}
           />
           <Table
             dataSource={parseResult.rows}
@@ -144,7 +145,7 @@ export default function ImportItemsPage() {
             rowKey="rowNumber"
             size="small"
             pagination={{ pageSize: 50 }}
-            style={{ marginBottom: 16 }}
+            className={s.spaced}
           />
           {!confirmResult && (
             <Button

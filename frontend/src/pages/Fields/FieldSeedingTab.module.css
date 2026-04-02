@@ -1,0 +1,20 @@
+.spaced {
+  margin-bottom: 12px;
+}
+
+.text13 {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.block2 {
+  width: 90px;
+}
+
+.spaced1 {
+  margin-top: 16px;
+}
+
+.fullWidth {
+  width: 100%;
+}

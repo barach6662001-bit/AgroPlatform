@@ -12,6 +12,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import s from './GrainStorageList.module.css';
 
 export default function GrainStorageList() {
   const { t } = useTranslation();
@@ -235,7 +236,7 @@ export default function GrainStorageList() {
             <Input maxLength={50} placeholder="Елеватор, амбар, склад..." />
           </Form.Item>
           <Form.Item name="capacityTons" label={t.grainStorages.capacity}>
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} placeholder="0" />
+            <InputNumber min={0} precision={2} className={s.fullWidth} placeholder="0" />
           </Form.Item>
           <Form.Item name="notes" label={t.grainStorages.notes}>
             <Input.TextArea rows={3} maxLength={1000} />

@@ -1,0 +1,23 @@
+.spaced {
+  display: block;
+  margin: 100px auto;
+}
+
+.padded {
+  padding: 24px;
+}
+
+.flex_center_between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.spaced1 {
+  margin: 0;
+}
+
+.fullWidth {
+  width: 100%;
+}

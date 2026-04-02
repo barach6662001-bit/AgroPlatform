@@ -8,6 +8,7 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import s from './FieldSeedingTab.module.css';
 
 interface Props {
   fieldId: string;
@@ -90,10 +91,10 @@ export default function FieldSeedingTab({ fieldId, fieldArea }: Props) {
 
   return (
     <div>
-      <Space style={{ marginBottom: 12 }}>
-        <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
+      <Space className={s.spaced}>
+        <span className={s.text13}>{t.fields.year}:</span>
         <Select
-          style={{ width: 90 }}
+          className={s.block2}
           value={year}
           onChange={setYear}
           options={yearOptions}
@@ -130,9 +131,9 @@ export default function FieldSeedingTab({ fieldId, fieldArea }: Props) {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }} initialValues={{ year: currentYear }}>
+        <Form form={form} layout="vertical" className={s.spaced1} initialValues={{ year: currentYear }}>
           <Form.Item name="year" label={t.fields.year} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
+            <InputNumber min={2000} max={2100} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="cropName" label={t.fields.cropName} rules={[{ required: true, message: t.common.required }]}>
             <Input />
@@ -144,7 +145,7 @@ export default function FieldSeedingTab({ fieldId, fieldArea }: Props) {
             <InputNumber
               min={0}
               precision={4}
-              style={{ width: '100%' }}
+              className={s.fullWidth}
               onChange={(val) => {
                 const area = fieldArea ?? 0;
                 if (val != null && area > 0) {
@@ -154,10 +155,10 @@ export default function FieldSeedingTab({ fieldId, fieldArea }: Props) {
             />
           </Form.Item>
           <Form.Item name="totalSeedKg" label={t.fields.totalSeed}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="seedingDate" label={t.fields.seedingDate}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />

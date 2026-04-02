@@ -7,6 +7,7 @@ import type { AuditLogDto } from '../../types/audit';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import s from './AuditLogPage.module.css';
 
 const { RangePicker } = DatePicker;
 
@@ -143,7 +144,7 @@ export default function AuditLogPage() {
       width: 260,
       ellipsis: true,
       render: (v: string) => (
-        <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{v}</span>
+        <span className={s.text12}>{v}</span>
       ),
     },
     {
@@ -180,7 +181,7 @@ export default function AuditLogPage() {
     <div>
       <PageHeader title={t.auditLog.title} subtitle={t.auditLog.subtitle} />
 
-      <div style={{ background: 'var(--bg-surface)', borderRadius: 8, padding: 16, marginBottom: 16, border: '1px solid var(--border)' }}>
+      <div className={s.spaced}>
         <Row gutter={[12, 12]} align="middle">
           <Col xs={24} sm={12} md={6}>
             <Input
@@ -194,7 +195,7 @@ export default function AuditLogPage() {
           <Col xs={24} sm={12} md={5}>
             <Select
               placeholder={t.auditLog.filterEntityType}
-              style={{ width: '100%' }}
+              className={s.fullWidth}
               allowClear
               value={entityTypeFilter}
               onChange={(v) => { setEntityTypeFilter(v); setPage(1); }}
@@ -204,7 +205,7 @@ export default function AuditLogPage() {
           <Col xs={24} sm={12} md={4}>
             <Select
               placeholder={t.auditLog.filterAction}
-              style={{ width: '100%' }}
+              className={s.fullWidth}
               allowClear
               value={actionFilter}
               onChange={(v) => { setActionFilter(v); setPage(1); }}
@@ -213,7 +214,7 @@ export default function AuditLogPage() {
           </Col>
           <Col xs={24} sm={12} md={7}>
             <RangePicker
-              style={{ width: '100%' }}
+              className={s.fullWidth}
               value={dateRange}
               onChange={(v) => { setDateRange(v as [dayjs.Dayjs | null, dayjs.Dayjs | null] | null); setPage(1); }}
               showTime
@@ -251,26 +252,26 @@ export default function AuditLogPage() {
         onClose={() => setSelectedEntry(null)}
       >
         {selectedEntry && (
-          <Space direction="vertical" size={16} style={{ width: '100%' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16 }}>
+          <Space direction="vertical" size={16} className={s.fullWidth}>
+            <div className={s.block6}>
               <div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.auditLog.timestamp}</div>
+                <div className={s.text121}>{t.auditLog.timestamp}</div>
                 <div>{dayjs(selectedEntry.timestamp).format('DD.MM.YYYY HH:mm:ss')}</div>
               </div>
               <div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.auditLog.user}</div>
+                <div className={s.text121}>{t.auditLog.user}</div>
                 <div>{selectedEntry.userId ?? '—'}</div>
               </div>
               <div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.auditLog.entityType}</div>
+                <div className={s.text121}>{t.auditLog.entityType}</div>
                 <div>{selectedEntry.entityType}</div>
               </div>
               <div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.auditLog.action}</div>
+                <div className={s.text121}>{t.auditLog.action}</div>
                 <div>{selectedEntry.action}</div>
               </div>
-              <div style={{ gridColumn: '1 / -1' }}>
-                <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t.auditLog.entityId}</div>
+              <div className={s.block11}>
+                <div className={s.text121}>{t.auditLog.entityId}</div>
                 <Typography.Text code copyable>
                   {selectedEntry.entityId}
                 </Typography.Text>
@@ -295,7 +296,7 @@ export default function AuditLogPage() {
                   dataIndex: 'before',
                   key: 'before',
                   render: (value: string) => (
-                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{value}</pre>
+                    <pre className={s.spaced1}>{value}</pre>
                   ),
                 },
                 {
@@ -303,7 +304,7 @@ export default function AuditLogPage() {
                   dataIndex: 'after',
                   key: 'after',
                   render: (value: string) => (
-                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{value}</pre>
+                    <pre className={s.spaced1}>{value}</pre>
                   ),
                 },
               ]}
@@ -311,7 +312,7 @@ export default function AuditLogPage() {
 
             {selectedEntry.notes ? (
               <div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: 12, marginBottom: 4 }}>{t.auditLog.notes}</div>
+                <div className={s.text122}>{t.auditLog.notes}</div>
                 <Typography.Text>{selectedEntry.notes}</Typography.Text>
               </div>
             ) : null}

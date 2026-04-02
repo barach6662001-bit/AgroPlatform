@@ -10,6 +10,7 @@ import type { SalesAnalyticsDto, ProductRevenueDto, BuyerRevenueDto, MonthlyReve
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './RevenueAnalytics.module.css';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -19,7 +20,7 @@ const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTH_NAMES_UK = ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер', 'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру'];
 
-const PIE_COLORS = ['#58A6FF', '#3fb950', '#f0883e', '#a371f7', '#f85149', '#ffa657', '#56d364', '#79c0ff'];
+const PIE_COLORS = ['#58A6FF', 'var(--success)', 'var(--warning)', '#a371f7', 'var(--error)', '#ffa657', '#56d364', '#79c0ff'];
 
 const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
 
@@ -69,7 +70,7 @@ export default function RevenueAnalytics() {
       dataIndex: 'totalAmount',
       key: 'totalAmount',
       sorter: (a: ProductRevenueDto, b: ProductRevenueDto) => a.totalAmount - b.totalAmount,
-      render: (v: number) => <span style={{ color: '#3fb950' }}>{fmt(v)} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{fmt(v)} UAH</span>,
     },
     {
       title: t.sales.quantity,
@@ -90,7 +91,7 @@ export default function RevenueAnalytics() {
       dataIndex: 'totalAmount',
       key: 'totalAmount',
       sorter: (a: BuyerRevenueDto, b: BuyerRevenueDto) => a.totalAmount - b.totalAmount,
-      render: (v: number) => <span style={{ color: '#3fb950' }}>{fmt(v)} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{fmt(v)} UAH</span>,
     },
     {
       title: t.sales.salesCount,
@@ -110,7 +111,7 @@ export default function RevenueAnalytics() {
       title: t.sales.totalAmount,
       dataIndex: 'totalAmount',
       key: 'totalAmount',
-      render: (v: number) => <span style={{ color: '#3fb950' }}>{fmt(v)} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{fmt(v)} UAH</span>,
     },
     {
       title: t.sales.salesCount,
@@ -130,34 +131,34 @@ export default function RevenueAnalytics() {
       />
 
       {/* Year filter */}
-      <div style={{ marginBottom: 24 }}>
-        <span style={{ color: '#8B949E', marginRight: 8 }}>{t.economics.year}:</span>
+      <div className={s.spaced}>
+        <span className={s.spaced1}>{t.economics.year}:</span>
         <Select
           value={year}
           onChange={setYear}
           options={YEAR_OPTIONS}
-          style={{ width: 100 }}
+          className={s.block5}
         />
       </div>
 
       {/* KPI cards */}
-      <Row gutter={16} style={{ marginBottom: 24 }}>
+      <Row gutter={16} className={s.spaced}>
         <Col xs={24} sm={12} lg={6}>
-          <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+          <Card className={s.bg}>
             <Statistic
-              title={<span style={{ color: '#8B949E' }}>{t.sales.totalRevenue}</span>}
+              title={<span className={s.colored1}>{t.sales.totalRevenue}</span>}
               value={data?.totalRevenue ?? 0}
               suffix="UAH"
-              valueStyle={{ color: '#3fb950' }}
+              valueStyle={{ color: 'var(--success)' }}
               prefix={<DollarOutlined />}
               formatter={(v) => fmt(Number(v))}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+          <Card className={s.bg}>
             <Statistic
-              title={<span style={{ color: '#8B949E' }}>{t.sales.salesCount}</span>}
+              title={<span className={s.colored1}>{t.sales.salesCount}</span>}
               value={data?.totalSalesCount ?? 0}
               valueStyle={{ color: '#58A6FF' }}
               prefix={<ShoppingOutlined />}
@@ -165,19 +166,19 @@ export default function RevenueAnalytics() {
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+          <Card className={s.bg}>
             <Statistic
-              title={<span style={{ color: '#8B949E' }}>{t.sales.topProducts}</span>}
+              title={<span className={s.colored1}>{t.sales.topProducts}</span>}
               value={topProduct?.product ?? '—'}
-              valueStyle={{ color: '#f0883e', fontSize: 16 }}
+              valueStyle={{ color: 'var(--warning)', fontSize: 16 }}
               prefix={<TrophyOutlined />}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+          <Card className={s.bg}>
             <Statistic
-              title={<span style={{ color: '#8B949E' }}>{t.sales.topBuyers}</span>}
+              title={<span className={s.colored1}>{t.sales.topBuyers}</span>}
               value={topBuyer?.buyerName ?? '—'}
               valueStyle={{ color: '#a371f7', fontSize: 16 }}
               prefix={<UserOutlined />}
@@ -187,15 +188,15 @@ export default function RevenueAnalytics() {
       </Row>
 
       {!hasData && !loading ? (
-        <Empty description={<span style={{ color: '#8B949E' }}>{t.sales.noAnalyticsData}</span>} />
+        <Empty description={<span className={s.colored1}>{t.sales.noAnalyticsData}</span>} />
       ) : (
         <>
           {/* Charts row: pie by product + bar by buyer */}
-          <Row gutter={16} style={{ marginBottom: 24 }}>
+          <Row gutter={16} className={s.spaced}>
             <Col xs={24} lg={12}>
               <Card
-                title={<span style={{ color: '#E6EDF3' }}>{t.sales.byProduct}</span>}
-                style={{ background: '#161B22', border: '1px solid #30363D' }}
+                title={<span className={s.colored2}>{t.sales.byProduct}</span>}
+                className={s.bg}
                 loading={loading}
               >
                 {pieData.length > 0 ? (
@@ -218,38 +219,38 @@ export default function RevenueAnalytics() {
                         ))}
                       </Pie>
                       <Tooltip
-                        contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }}
+                        contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                         formatter={(v: number) => [`${fmt(v)} UAH`, t.sales.revenueAmount]}
                       />
-                      <Legend wrapperStyle={{ color: '#8B949E', fontSize: 12 }} />
+                      <Legend wrapperStyle={{ color: 'var(--text-secondary)', fontSize: 12 }} />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <Empty description={<span style={{ color: '#8B949E' }}>{t.sales.noAnalyticsData}</span>} />
+                  <Empty description={<span className={s.colored1}>{t.sales.noAnalyticsData}</span>} />
                 )}
               </Card>
             </Col>
             <Col xs={24} lg={12}>
               <Card
-                title={<span style={{ color: '#E6EDF3' }}>{t.sales.byBuyer}</span>}
-                style={{ background: '#161B22', border: '1px solid #30363D' }}
+                title={<span className={s.colored2}>{t.sales.byBuyer}</span>}
+                className={s.bg}
                 loading={loading}
               >
                 {buyerChartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={260}>
                     <BarChart data={buyerChartData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#30363D" horizontal={false} />
-                      <XAxis type="number" tick={{ fill: '#8B949E', fontSize: 11 }} />
-                      <YAxis type="category" dataKey="name" tick={{ fill: '#8B949E', fontSize: 11 }} width={90} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+                      <XAxis type="number" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
+                      <YAxis type="category" dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} width={90} />
                       <Tooltip
-                        contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }}
+                        contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                         formatter={(v: number) => [`${fmt(v)} UAH`]}
                       />
                       <Bar dataKey={t.sales.revenueAmount} fill="#58A6FF" radius={[0, 4, 4, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <Empty description={<span style={{ color: '#8B949E' }}>{t.sales.noAnalyticsData}</span>} />
+                  <Empty description={<span className={s.colored1}>{t.sales.noAnalyticsData}</span>} />
                 )}
               </Card>
             </Col>
@@ -257,32 +258,32 @@ export default function RevenueAnalytics() {
 
           {/* Monthly revenue chart */}
           <Card
-            title={<span style={{ color: '#E6EDF3' }}>{t.sales.monthlyRevenue}</span>}
-            style={{ background: '#161B22', border: '1px solid #30363D', marginBottom: 24 }}
+            title={<span className={s.colored2}>{t.sales.monthlyRevenue}</span>}
+            className={s.spaced2}
             loading={loading}
           >
             {monthlyChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={monthlyChartData} margin={{ top: 5, right: 20, left: 20, bottom: 40 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis
                     dataKey="name"
-                    tick={{ fill: '#8B949E', fontSize: 11 }}
+                    tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
                     angle={-35}
                     textAnchor="end"
                     interval={0}
                   />
-                  <YAxis tick={{ fill: '#8B949E', fontSize: 11 }} />
+                  <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                   <Tooltip
-                    contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }}
+                    contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                     formatter={(v: number) => [`${fmt(v)} UAH`]}
                   />
-                  <Legend wrapperStyle={{ color: '#8B949E' }} />
-                  <Bar dataKey={t.sales.revenueAmount} fill="#3fb950" radius={[4, 4, 0, 0]} />
+                  <Legend wrapperStyle={{ color: 'var(--text-secondary)' }} />
+                  <Bar dataKey={t.sales.revenueAmount} fill="var(--success)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <Empty description={<span style={{ color: '#8B949E' }}>{t.sales.noAnalyticsData}</span>} />
+              <Empty description={<span className={s.colored1}>{t.sales.noAnalyticsData}</span>} />
             )}
           </Card>
 
@@ -290,8 +291,8 @@ export default function RevenueAnalytics() {
           <Row gutter={16}>
             <Col xs={24} lg={12}>
               <Card
-                title={<span style={{ color: '#E6EDF3' }}>{t.sales.byProduct}</span>}
-                style={{ background: '#161B22', border: '1px solid #30363D', marginBottom: 24 }}
+                title={<span className={s.colored2}>{t.sales.byProduct}</span>}
+                className={s.spaced2}
               >
                 <Table
                   dataSource={data?.byProduct ?? []}
@@ -305,8 +306,8 @@ export default function RevenueAnalytics() {
             </Col>
             <Col xs={24} lg={12}>
               <Card
-                title={<span style={{ color: '#E6EDF3' }}>{t.sales.byBuyer}</span>}
-                style={{ background: '#161B22', border: '1px solid #30363D', marginBottom: 24 }}
+                title={<span className={s.colored2}>{t.sales.byBuyer}</span>}
+                className={s.spaced2}
               >
                 <Table
                   dataSource={data?.byBuyer ?? []}
@@ -321,8 +322,8 @@ export default function RevenueAnalytics() {
           </Row>
 
           <Card
-            title={<span style={{ color: '#E6EDF3' }}>{t.sales.byMonth}</span>}
-            style={{ background: '#161B22', border: '1px solid #30363D' }}
+            title={<span className={s.colored2}>{t.sales.byMonth}</span>}
+            className={s.bg}
           >
             <Table
               dataSource={data?.byMonth ?? []}

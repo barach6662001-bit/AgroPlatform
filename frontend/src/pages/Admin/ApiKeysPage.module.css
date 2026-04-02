@@ -1,0 +1,35 @@
+.block0 {
+  max-width: 200px;
+  overflow: auto;
+}
+
+.text11 {
+  font-size: 11px;
+}
+
+.padded {
+  padding: 24px;
+}
+
+.spaced {
+  margin-bottom: 16px;
+}
+
+.spaced1 {
+  background: var(--bg-subtle);
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.flex_center_between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.block7 {
+  flex: 1;
+  word-break: break-all;
+}

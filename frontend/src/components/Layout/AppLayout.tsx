@@ -12,6 +12,7 @@ import Logo from '../Logo';
 import { useAuthStore } from '../../stores/authStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useTranslation, languages } from '../../i18n';
+import s from './AppLayout.module.css';
 
 const MOBILE_BREAKPOINT = 768;
 const TABLET_BREAKPOINT = 1024;
@@ -60,8 +61,8 @@ export default function AppLayout() {
   const langMenuItems = languages.map(lang => ({
     key: lang.code,
     label: (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <img src={lang.flag} alt={lang.shortLabel} style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2 }} />
+      <div className={s.flex_center}>
+        <img src={lang.flag} alt={lang.shortLabel} className={s.bordered} />
         <span>{lang.label}</span>
       </div>
     ),
@@ -70,12 +71,7 @@ export default function AppLayout() {
   const userInitial = email ? email.charAt(0).toUpperCase() : '?';
 
   return (
-    <div style={{
-      display: 'flex',
-      height: '100vh',
-      background: 'var(--bg-app)',
-      overflow: 'hidden',
-    }}>
+    <div className={s.flex}>
       {/* Sidebar — desktop and tablet */}
       {!isMobile && (
         <aside style={{
@@ -101,7 +97,7 @@ export default function AppLayout() {
           </div>
 
           {/* Navigation */}
-          <div style={{ flex: 1, overflow: 'auto', padding: '8px 0' }}>
+          <div className={s.padded}>
             <Sidebar collapsed={sidebarCollapsed} />
           </div>
 
@@ -114,28 +110,15 @@ export default function AppLayout() {
             gap: 8,
             justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
           }}>
-            <div style={{
-              width: 28,
-              height: 28,
-              background: 'var(--brand-muted)',
-              border: '1px solid var(--brand-border)',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 11,
-              color: 'var(--brand)',
-              fontWeight: 600,
-              flexShrink: 0,
-            }}>
+            <div className={s.flex_center_centered}>
               {userInitial}
             </div>
             {!sidebarCollapsed && (
-              <div style={{ overflow: 'hidden', flex: 1 }}>
-                <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div className={s.block8}>
+                <div className={s.text12}>
                   {email}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{role}</div>
+                <div className={s.text11}>{role}</div>
               </div>
             )}
           </div>
@@ -143,39 +126,29 @@ export default function AppLayout() {
       )}
 
       {/* Main area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div className={s.flex_col}>
         {/* Topbar */}
-        <header style={{
-          height: 56,
-          flexShrink: 0,
-          background: 'var(--bg-surface)',
-          borderBottom: '1px solid var(--border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 24px',
-          gap: 12,
-        }}>
+        <header className={s.flex_center_between}>
           {isMobile ? (
             <Button
               type="text"
-              icon={<MenuOutlined style={{ fontSize: 18, color: 'var(--text-secondary)' }} />}
+              icon={<MenuOutlined className={s.text18} />}
               onClick={() => setDrawerOpen(true)}
-              style={{ padding: '4px 8px', height: 'auto' }}
+              className={s.padded1}
             />
           ) : (
             <Button
               type="text"
               icon={sidebarCollapsed
-                ? <MenuUnfoldOutlined style={{ fontSize: 16, color: 'var(--text-secondary)' }} />
-                : <MenuFoldOutlined style={{ fontSize: 16, color: 'var(--text-secondary)' }} />
+                ? <MenuUnfoldOutlined className={s.text16} />
+                : <MenuFoldOutlined className={s.text16} />
               }
               onClick={() => setSidebarCollapsed(prev => !prev)}
-              style={{ padding: '4px 8px', height: 'auto' }}
+              className={s.padded1}
             />
           )}
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className={s.flex_center}>
             <FarmSwitcher />
             <OfflineIndicator />
             <Dropdown
@@ -187,10 +160,10 @@ export default function AppLayout() {
             >
               <Button
                 type="text"
-                style={{ color: '#8b949e', padding: '4px 8px', height: 32 }}
+                className={s.padded2}
               >
-                <img src={currentLang?.flag} alt={currentLang?.shortLabel} style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2, marginRight: 4 }} />
-                <span style={{ fontSize: 13, fontWeight: 500 }}>
+                <img src={currentLang?.flag} alt={currentLang?.shortLabel} className={s.spaced} />
+                <span className={s.text13}>
                   {currentLang?.shortLabel}
                 </span>
               </Button>
@@ -199,14 +172,14 @@ export default function AppLayout() {
               type="text"
               icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />}
               onClick={toggleTheme}
-              style={{ color: 'var(--text-secondary)', height: 32, padding: '4px 8px' }}
+              className={s.padded2}
             />
             <NotificationBell />
             <Button
               type="text"
               icon={<LogoutOutlined />}
               onClick={handleLogout}
-              style={{ color: 'var(--text-secondary)', fontSize: 13, height: 32 }}
+              className={s.text131}
             >
               {!isMobile && t.auth.logout}
             </Button>
@@ -214,11 +187,7 @@ export default function AppLayout() {
         </header>
 
         {/* Page content */}
-        <main style={{
-          flex: 1,
-          overflow: 'auto',
-          padding: '24px 28px',
-        }}>
+        <main className={s.padded3}>
           <div className="page-content">
             <Outlet />
           </div>

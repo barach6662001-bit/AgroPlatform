@@ -1,0 +1,28 @@
+.text11 {
+  margin: 0;
+  font-size: 11px;
+}
+
+.colored {
+  color: var(--text-secondary);
+}
+
+.spaced {
+  margin-bottom: 16px;
+}
+
+.block3 {
+  width: 280px;
+}
+
+.block4 {
+  width: 160px;
+}
+
+.spaced1 {
+  margin-top: 16px;
+}
+
+.fullWidth {
+  width: 100%;
+}

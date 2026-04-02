@@ -10,6 +10,7 @@ import {
   type ApprovalRequestDto,
 } from '../../api/approvals';
 import dayjs from 'dayjs';
+import s from './PendingApprovalsPage.module.css';
 
 const ACTION_TYPE_LABELS: Record<number, string> = {
   0: 'IssueStock',
@@ -153,12 +154,12 @@ export default function PendingApprovalsPage() {
     },
   ];
 
-  if (loading) return <Spin size="large" style={{ display: 'block', margin: '100px auto' }} />;
+  if (loading) return <Spin size="large" className={s.spaced} />;
 
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ margin: 0 }}>{t.approvals.title}</h2>
+    <div className={s.padded}>
+      <div className={s.flex_center_between}>
+        <h2 className={s.spaced1}>{t.approvals.title}</h2>
         <Space>
           <Button
             onClick={() => setShowAll(!showAll)}

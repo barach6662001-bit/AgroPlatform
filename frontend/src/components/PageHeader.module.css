@@ -1,0 +1,34 @@
+.spaced {
+  margin-bottom: 8px;
+}
+
+.flex_between {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.text22 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+}
+
+.text13 {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.flex_center {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}

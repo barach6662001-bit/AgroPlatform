@@ -8,6 +8,7 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import s from './FieldSoilAnalysisTab.module.css';
 
 interface Props {
   fieldId: string;
@@ -148,7 +149,7 @@ export default function FieldSoilAnalysisTab({ fieldId }: Props) {
 
   return (
     <div>
-      <Space style={{ marginBottom: 12 }}>
+      <Space className={s.spaced}>
         {canWrite && (
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
             {t.fields.addSoilAnalysis}
@@ -182,28 +183,28 @@ export default function FieldSoilAnalysisTab({ fieldId }: Props) {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={form} layout="vertical" className={s.spaced1}>
           <Form.Item
             name="sampleDate"
             label={t.fields.soilSampleDate}
             rules={[{ required: true, message: t.common.required }]}
           >
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="pH" label={t.fields.soilPH}>
-            <InputNumber min={0} max={14} precision={2} style={{ width: '100%' }} />
+            <InputNumber min={0} max={14} precision={2} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="nitrogen" label={t.fields.soilNitrogen}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="phosphorus" label={t.fields.soilPhosphorus}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="potassium" label={t.fields.soilPotassium}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="humus" label={t.fields.soilHumus}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.fields.notes}>
             <Input.TextArea rows={2} />

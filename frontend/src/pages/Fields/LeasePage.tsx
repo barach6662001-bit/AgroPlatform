@@ -17,6 +17,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
+import s from './LeasePage.module.css';
 
 const { Text } = Typography;
 
@@ -219,8 +220,8 @@ export default function LeasePage() {
         const pct = total > 0 ? Math.min(Math.round((paid / total) * 100), 100) : 0;
         return (
           <div>
-            <Progress percent={pct} size="small" strokeColor={pct >= 100 ? '#3fb950' : pct > 0 ? '#f0883e' : '#f85149'} showInfo={false} />
-            <Text type="secondary" style={{ fontSize: 11 }}>{paid.toLocaleString()} / {total.toLocaleString()} ₴</Text>
+            <Progress percent={pct} size="small" strokeColor={pct >= 100 ? 'var(--success)' : pct > 0 ? 'var(--warning)' : 'var(--error)'} showInfo={false} />
+            <Text type="secondary" className={s.text11}>{paid.toLocaleString()} / {total.toLocaleString()} ₴</Text>
           </div>
         );
       },
@@ -276,14 +277,14 @@ export default function LeasePage() {
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.fields, path: '/fields' }, { label: t.nav.leases }]} />}
       />
 
-      <Card style={{ marginBottom: 16 }}>
+      <Card className={s.spaced}>
         <Space wrap>
           <span>{t.lease.year}:</span>
           <Select
             value={year}
             options={yearOptions}
             onChange={setYear}
-            style={{ width: 100 }}
+            className={s.block2}
           />
           {canWrite && (
             <Button type="primary" icon={<PlusOutlined />} onClick={() => setAddModalOpen(true)}>
@@ -333,7 +334,7 @@ export default function LeasePage() {
         confirmLoading={saving}
         width={600}
       >
-        <Form form={addForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={addForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="fieldId" label={t.lease.field} rules={[{ required: true, message: t.common.required }]}>
             <Select
               showSearch
@@ -352,7 +353,7 @@ export default function LeasePage() {
             <Input />
           </Form.Item>
           <Form.Item name="annualPayment" label={t.lease.annualPayment} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={2} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="paymentType" label={t.lease.paymentType} initialValue="Cash">
             <Select options={[
@@ -362,13 +363,13 @@ export default function LeasePage() {
             ]} />
           </Form.Item>
           <Form.Item name="grainPaymentTons" label={t.lease.grainTons}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="contractStartDate" label={t.lease.contractStart} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="contractEndDate" label={t.lease.contractEnd}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />
@@ -387,7 +388,7 @@ export default function LeasePage() {
         confirmLoading={saving}
         width={600}
       >
-        <Form form={editForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={editForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="ownerName" label={t.lease.ownerName} rules={[{ required: true, message: t.common.required }]}>
             <Input />
           </Form.Item>
@@ -398,7 +399,7 @@ export default function LeasePage() {
             <Input />
           </Form.Item>
           <Form.Item name="annualPayment" label={t.lease.annualPayment} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={2} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="paymentType" label={t.lease.paymentType}>
             <Select options={[
@@ -408,10 +409,10 @@ export default function LeasePage() {
             ]} />
           </Form.Item>
           <Form.Item name="grainPaymentTons" label={t.lease.grainTons}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="contractEndDate" label={t.lease.contractEnd}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />
@@ -429,7 +430,7 @@ export default function LeasePage() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={payForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={payForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="paymentMethod" label={t.lease.paymentMethod} initialValue="cash">
             <Radio.Group onChange={e => setPaymentMethod(e.target.value)}>
               <Radio.Button value="cash">{t.lease.paymentCash}</Radio.Button>
@@ -437,11 +438,11 @@ export default function LeasePage() {
             </Radio.Group>
           </Form.Item>
           <Form.Item name="year" label={t.lease.year} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
+            <InputNumber min={2000} max={2100} className={s.fullWidth} />
           </Form.Item>
           {paymentMethod === 'cash' && (
             <Form.Item name="amount" label={t.lease.paymentAmount} rules={[{ required: true, message: t.common.required }]}>
-              <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+              <InputNumber min={0} precision={2} className={s.fullWidth} />
             </Form.Item>
           )}
           {paymentMethod === 'grain' && (
@@ -469,7 +470,7 @@ export default function LeasePage() {
                   max={selectedBatch?.quantityTons}
                   precision={3}
                   addonAfter="т"
-                  style={{ width: '100%' }}
+                  className={s.fullWidth}
                   onChange={(val) => {
                     const price = payForm.getFieldValue('grainPricePerTon');
                     if (val && price) {
@@ -483,7 +484,7 @@ export default function LeasePage() {
                   min={0}
                   precision={2}
                   addonAfter="грн/т"
-                  style={{ width: '100%' }}
+                  className={s.fullWidth}
                   onChange={(price) => {
                     const qty = payForm.getFieldValue('grainQuantityTons');
                     if (qty && price) {
@@ -493,12 +494,12 @@ export default function LeasePage() {
                 />
               </Form.Item>
               <Form.Item name="amount" label={t.lease.calculatedAmount}>
-                <InputNumber disabled addonAfter="грн" style={{ width: '100%' }} />
+                <InputNumber disabled addonAfter="грн" className={s.fullWidth} />
               </Form.Item>
             </>
           )}
           <Form.Item name="paymentDate" label={t.lease.paymentDate} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.lease.paymentNotes}>
             <Input />
