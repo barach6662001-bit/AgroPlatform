@@ -8,6 +8,7 @@ import type { UserDto } from '../../types/users';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation, languages } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import s from './UsersPage.module.css';
 
 const { Text } = Typography;
 
@@ -118,7 +119,7 @@ export default function UsersPage() {
       render: (_: unknown, record: UserDto) => (
         <Select
           value={pendingRoles[record.id] ?? record.role}
-          style={{ width: 160 }}
+          className={s.block0}
           onChange={(v) =>
             setPendingRoles((prev) => ({ ...prev, [record.id]: v }))
           }
@@ -152,7 +153,7 @@ export default function UsersPage() {
     <div>
       <PageHeader title={t.settings.usersTitle} subtitle={t.settings.usersSubtitle} />
 
-      <Card title={t.settings.companyInfo} style={{ marginBottom: 24 }}>
+      <Card title={t.settings.companyInfo} className={s.spaced}>
         <Form layout="vertical" form={companyForm} onFinish={handleSaveCompany}>
           <Row gutter={16}>
             <Col span={12}>
@@ -182,12 +183,12 @@ export default function UsersPage() {
         </Form>
       </Card>
 
-      <Card title={t.settings.language} style={{ marginBottom: 24 }}>
+      <Card title={t.settings.language} className={s.spaced}>
         <Radio.Group value={lang} onChange={(e) => setLang(e.target.value)}>
           {languages.map((language) => (
             <Radio.Button key={language.code} value={language.code}
-              style={{ marginRight: 8, marginBottom: 8 }}>
-              <img src={language.flag} alt={language.shortLabel} style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2, marginRight: 6 }} />
+              className={s.spaced1}>
+              <img src={language.flag} alt={language.shortLabel} className={s.spaced2} />
               {language.label}
             </Radio.Button>
           ))}
@@ -198,22 +199,22 @@ export default function UsersPage() {
         <Card
           title={
             <span>
-              <DatabaseOutlined style={{ marginRight: 8 }} />
+              <DatabaseOutlined className={s.spaced3} />
               {t.settings.demoDataTitle}
             </span>
           }
-          style={{ marginBottom: 24 }}
+          className={s.spaced}
         >
           <Alert
             type="warning"
             showIcon
             message={t.settings.demoDataWarning}
-            style={{ marginBottom: 16 }}
+            className={s.spaced4}
           />
-          <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+          <Text type="secondary" className={s.spaced5}>
             {t.settings.demoDataDescription}
           </Text>
-          <Divider style={{ margin: '12px 0' }} />
+          <Divider className={s.spaced6} />
           <Button
             icon={<DatabaseOutlined />}
             loading={seedLoading}

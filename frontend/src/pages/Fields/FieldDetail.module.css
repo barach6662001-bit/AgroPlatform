@@ -1,0 +1,65 @@
+.spaced {
+  margin-bottom: 16px;
+}
+
+.spaced1 {
+  margin-bottom: 20px;
+}
+
+.colored {
+  background: var(--bg-surface);
+  border-color: var(--border);
+}
+
+.upper {
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.text20 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--error);
+}
+
+.text11 {
+  font-size: 11px;
+}
+
+.text201 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.text202 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.spaced2 {
+  margin-bottom: 12px;
+}
+
+.spaced3 {
+  margin-top: 16px;
+}
+
+.textCenter {
+  text-align: center;
+  padding: 16px 0;
+  color: #888;
+}
+
+.spaced4 {
+  margin-top: 8px;
+}
+
+.block21 {
+  width: 220px;
+}
+
+.fullWidth {
+  width: 100%;
+}

@@ -6,6 +6,7 @@ import type { RotationAdviceDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './CropRotationAdvisor.module.css';
 
 const { Text } = Typography;
 
@@ -92,12 +93,12 @@ export default function CropRotationAdvisor() {
         subtitle={t.fields.rotationAdviceSubtitle}
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.fields, path: '/fields' }, { label: t.nav.cropRotationAdvisor }]} />}
       />
-      <div style={{ marginBottom: 16 }}>
-        <Text style={{ marginRight: 8 }}>{t.fields.rotationYears}:</Text>
+      <div className={s.spaced}>
+        <Text className={s.spaced1}>{t.fields.rotationYears}:</Text>
         <Select
           value={years}
           onChange={setYears}
-          style={{ width: 100 }}
+          className={s.block2}
           options={[
             { value: 1, label: '1' },
             { value: 2, label: '2' },

@@ -13,6 +13,7 @@ import type { FieldDetailDto } from '../../types/field';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import s from './FieldZonesTab.module.css';
 
 const ZONE_COLORS = [
   '#e67e22', '#2ecc71', '#3498db', '#9b59b6', '#e74c3c',
@@ -244,15 +245,15 @@ export default function FieldZonesTab({ fieldId, field }: Props) {
 
   return (
     <div>
-      <div style={{ marginBottom: 12 }}>
-        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+      <div className={s.spaced}>
+        <Typography.Text type="secondary" className={s.text13}>
           {t.fields.drawZone}
         </Typography.Text>
       </div>
 
-      <div style={{ marginBottom: 16, borderRadius: 4, overflow: 'hidden', border: '1px solid #d9d9d9' }}>
+      <div className={s.spaced1}>
         <MapContainer
-          style={{ height: 420, width: '100%' }}
+          className={s.fullWidth}
           center={[48.5, 35.0]}
           zoom={10}
         >
@@ -294,7 +295,7 @@ export default function FieldZonesTab({ fieldId, field }: Props) {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={form} layout="vertical" className={s.spaced2}>
           <Form.Item
             name="name"
             label={t.fields.zoneName}

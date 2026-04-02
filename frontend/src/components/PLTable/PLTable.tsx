@@ -1,6 +1,7 @@
 import { Tooltip } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { formatUA } from '../../utils/numberFormat';
+import s from './PLTable.module.css';
 
 export interface PLTableRow {
   key: string;
@@ -31,8 +32,8 @@ interface Props {
   };
 }
 
-const SUCCESS_COLOR = '#3FB950';
-const DANGER_COLOR  = '#F85149';
+const SUCCESS_COLOR = 'var(--success)';
+const DANGER_COLOR  = 'var(--error)';
 const TRACK_COLOR   = '#21262D';
 
 /** Clamp a percentage to [0, 100] for the progress bar width. */
@@ -75,30 +76,25 @@ export default function PLTable({ rows, labels }: Props) {
   const colExecution = labels?.execution ?? 'Виконання';
 
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div className={s.block2}>
       <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          fontSize: 14,
-          color: '#E6EDF3',
-        }}
+        className={s.fullWidth}
       >
         {/* Header */}
         <thead>
-          <tr style={{ background: '#0D1117' }}>
+          <tr className={s.bg}>
             {[colMetric, colPlan, colFact, colExecution].map((h) => (
               <th
                 key={h}
                 style={{
                   padding: '10px 14px',
                   textAlign: h === colMetric ? 'left' : 'right',
-                  color: '#8B949E',
+                  color: 'var(--text-secondary)',
                   fontWeight: 600,
                   fontSize: 12,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
-                  borderBottom: '1px solid #30363D',
+                  borderBottom: '1px solid var(--border)',
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -125,7 +121,7 @@ export default function PLTable({ rows, labels }: Props) {
               <tr
                 key={row.key}
                 style={{
-                  background: idx % 2 === 0 ? '#161B22' : '#0D1117',
+                  background: idx % 2 === 0 ? 'var(--bg-surface)' : 'var(--bg-base)',
                   borderBottom: '1px solid #21262D',
                   transition: 'background 0.15s',
                 }}
@@ -134,16 +130,16 @@ export default function PLTable({ rows, labels }: Props) {
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLTableRowElement).style.background =
-                    idx % 2 === 0 ? '#161B22' : '#0D1117';
+                    idx % 2 === 0 ? 'var(--bg-surface)' : 'var(--bg-base)';
                 }}
               >
                 {/* Metric name */}
-                <td style={{ padding: '10px 14px', fontWeight: 500 }}>
+                <td className={s.medium}>
                   {row.label}
                 </td>
 
                 {/* Plan */}
-                <td style={{ padding: '10px 14px', textAlign: 'right', color: '#8B949E' }}>
+                <td className={s.textRight}>
                   {formatUA(row.plan)}{unit}
                 </td>
 
@@ -153,13 +149,13 @@ export default function PLTable({ rows, labels }: Props) {
                 </td>
 
                 {/* Progress bar + percentage */}
-                <td style={{ padding: '10px 14px', minWidth: 160 }}>
+                <td className={s.padded}>
                   <Tooltip
                     title={`${row.label}: ${Math.round(pct)}%`}
                     mouseEnterDelay={0.3}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ flex: 1 }}>
+                    <div className={s.flex_center}>
+                      <div className={s.block12}>
                         <ProgressBar pct={pct} color={barColor} />
                       </div>
                       <span
@@ -172,7 +168,7 @@ export default function PLTable({ rows, labels }: Props) {
                           whiteSpace: 'nowrap',
                         }}
                       >
-                        <Icon style={{ marginRight: 3, fontSize: 10 }} />
+                        <Icon className={s.text10} />
                         {Math.round(pct)}%
                       </span>
                     </div>

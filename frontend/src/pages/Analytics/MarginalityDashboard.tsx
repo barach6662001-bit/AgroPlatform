@@ -7,6 +7,7 @@ import type { MarginalityRowDto, MarginalitySummaryDto } from '../../types/econo
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './MarginalityDashboard.module.css';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -85,18 +86,18 @@ export default function MarginalityDashboard() {
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.analytics, path: '/analytics/efficiency' }, { label: t.nav.marginality }]} />}
       />
 
-      <Row gutter={[16, 16]} align="middle" style={{ marginBottom: 16 }}>
+      <Row gutter={[16, 16]} align="middle" className={s.spaced}>
         <Col>
           <Select
             value={year}
             options={YEAR_OPTIONS}
             onChange={setYear}
-            style={{ width: 120 }}
+            className={s.block1}
           />
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Row gutter={[16, 16]} className={s.spaced1}>
         <Col xs={12} sm={6}>
           <Card>
             <Statistic
@@ -104,7 +105,7 @@ export default function MarginalityDashboard() {
               value={data?.totalRevenue ?? 0}
               suffix="UAH"
               prefix={<DollarOutlined />}
-              valueStyle={{ color: '#3f8600' }}
+              valueStyle={{ color: 'var(--success)' }}
               loading={loading}
               formatter={(v) => fmt(Number(v))}
             />
@@ -117,7 +118,7 @@ export default function MarginalityDashboard() {
               value={data?.totalCosts ?? 0}
               suffix="UAH"
               prefix={<ArrowDownOutlined />}
-              valueStyle={{ color: '#cf1322' }}
+              valueStyle={{ color: 'var(--error)' }}
               loading={loading}
               formatter={(v) => fmt(Number(v))}
             />
@@ -130,7 +131,7 @@ export default function MarginalityDashboard() {
               value={data?.margin ?? 0}
               suffix="UAH"
               prefix={marginPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-              valueStyle={{ color: marginPositive ? '#3f8600' : '#cf1322' }}
+              valueStyle={{ color: marginPositive ? 'var(--success)' : 'var(--error)' }}
               loading={loading}
               formatter={(v) => fmt(Number(v))}
             />
@@ -143,7 +144,7 @@ export default function MarginalityDashboard() {
               value={data?.marginPercent != null ? data.marginPercent : '—'}
               suffix={data?.marginPercent != null ? '%' : ''}
               prefix={<RiseOutlined />}
-              valueStyle={{ color: marginPositive ? '#3f8600' : '#cf1322' }}
+              valueStyle={{ color: marginPositive ? 'var(--success)' : 'var(--error)' }}
               loading={loading}
             />
           </Card>
@@ -151,11 +152,11 @@ export default function MarginalityDashboard() {
       </Row>
 
       {!loading && !hasData ? (
-        <Empty description={t.economics.margEmpty} style={{ margin: '40px 0' }} />
+        <Empty description={t.economics.margEmpty} className={s.spaced2} />
       ) : (
         <>
           {chartData.length > 0 && (
-            <Card title={t.economics.costsVsRevenue} style={{ marginBottom: 24 }}>
+            <Card title={t.economics.costsVsRevenue} className={s.spaced1}>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -171,7 +172,7 @@ export default function MarginalityDashboard() {
           )}
 
           {(data?.byProduct ?? []).length > 0 && (
-            <Card title={t.economics.margByProduct} style={{ marginBottom: 24 }}>
+            <Card title={t.economics.margByProduct} className={s.spaced1}>
               <Table<MarginalityRowDto>
                 dataSource={data?.byProduct}
                 columns={columns}

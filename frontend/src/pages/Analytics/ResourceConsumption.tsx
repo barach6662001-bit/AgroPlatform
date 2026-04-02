@@ -16,6 +16,7 @@ import type { ResourceConsumptionDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './ResourceConsumption.module.css';
 
 const { RangePicker } = DatePicker;
 
@@ -57,7 +58,7 @@ export default function ResourceConsumption() {
         subtitle={t.analytics.title}
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.analytics, path: '/analytics/efficiency' }, { label: t.nav.resources }]} />}
       />
-      <Space style={{ marginBottom: 16 }}>
+      <Space className={s.spaced}>
         <RangePicker
           onChange={(_, dateStrings) =>
             setDateRange(dateStrings[0] && dateStrings[1] ? [dateStrings[0], dateStrings[1]] : null)
@@ -74,7 +75,7 @@ export default function ResourceConsumption() {
             columns={columns}
             rowKey="itemId"
             pagination={false}
-            style={{ marginBottom: 32 }}
+            className={s.spaced1}
           />
           {chartData.length > 0 && (
             <ResponsiveContainer width="100%" height={350}>

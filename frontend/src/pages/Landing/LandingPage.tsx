@@ -1,6 +1,7 @@
 import { Button, Card, Col, Row, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
+import s from './LandingPage.module.css';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -16,17 +17,17 @@ export default function LandingPage() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary, #f5f5f5)' }}>
+    <div className={s.bg}>
       {/* Hero */}
-      <section style={{ textAlign: 'center', padding: '80px 24px 48px', background: '#1B5E20', color: '#fff' }}>
-        <Title level={1} style={{ color: '#fff', fontSize: 40, marginBottom: 16 }}>
+      <section className={s.textCenter}>
+        <Title level={1} className={s.text40}>
           {t.landing.heroTitle}
         </Title>
-        <Paragraph style={{ color: 'rgba(255,255,255,0.85)', fontSize: 18, maxWidth: 600, margin: '0 auto 32px' }}>
+        <Paragraph className={s.text18}>
           {t.landing.heroSubtitle}
         </Paragraph>
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Button type="primary" size="large" onClick={() => navigate('/login')} style={{ background: '#fff', color: '#1B5E20', borderColor: '#fff' }}>
+        <div className={s.flex_centered_wrap}>
+          <Button type="primary" size="large" onClick={() => navigate('/login')} className={s.colored}>
             {t.landing.ctaLogin}
           </Button>
           <Button size="large" ghost onClick={() => navigate('/login')}>
@@ -36,12 +37,12 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 24px' }}>
+      <section className={s.spaced}>
         <Row gutter={[24, 24]}>
           {features.map((f) => (
             <Col xs={24} sm={12} lg={6} key={f.title}>
-              <Card hoverable style={{ height: '100%', textAlign: 'center' }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>{f.icon}</div>
+              <Card hoverable className={s.textCenter1}>
+                <div className={s.text48}>{f.icon}</div>
                 <Title level={4}>{f.title}</Title>
                 <Text type="secondary">{f.desc}</Text>
               </Card>
@@ -51,7 +52,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer style={{ textAlign: 'center', padding: '24px', borderTop: '1px solid #e0e0e0' }}>
+      <footer className={s.textCenter2}>
         <Text type="secondary">
           {t.landing.footerText.replace('{year}', String(new Date().getFullYear()))}
         </Text>

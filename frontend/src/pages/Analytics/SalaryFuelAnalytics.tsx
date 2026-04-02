@@ -15,6 +15,7 @@ import type { SalaryFuelAnalyticsDto, FuelByMachineDto, SalaryByEmployeeDto } fr
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './SalaryFuelAnalytics.module.css';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -86,18 +87,18 @@ export default function SalaryFuelAnalytics() {
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.analytics, path: '/analytics/efficiency' }, { label: t.nav.salaryFuelAnalytics }]} />}
       />
 
-      <Row gutter={[16, 16]} align="middle" style={{ marginBottom: 16 }}>
+      <Row gutter={[16, 16]} align="middle" className={s.spaced}>
         <Col>
           <Select
             value={year}
             options={YEAR_OPTIONS}
             onChange={setYear}
-            style={{ width: 120 }}
+            className={s.block1}
           />
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Row gutter={[16, 16]} className={s.spaced1}>
         <Col xs={12} sm={6}>
           <Card>
             <Statistic
@@ -105,7 +106,7 @@ export default function SalaryFuelAnalytics() {
               value={data?.totalSalary ?? 0}
               suffix="UAH"
               prefix={<DollarOutlined />}
-              valueStyle={{ color: '#3f8600' }}
+              valueStyle={{ color: 'var(--success)' }}
               loading={loading}
               formatter={(v) => fmt(Number(v))}
             />
@@ -118,7 +119,7 @@ export default function SalaryFuelAnalytics() {
               value={data?.totalFuelLiters ?? 0}
               suffix="л"
               prefix={<FireOutlined />}
-              valueStyle={{ color: '#d46b08' }}
+              valueStyle={{ color: 'var(--warning)' }}
               loading={loading}
               formatter={(v) => fmtDec(Number(v))}
             />
@@ -147,10 +148,10 @@ export default function SalaryFuelAnalytics() {
       </Row>
 
       {!loading && !hasData ? (
-        <Empty description={t.analytics.salaryFuelEmpty} style={{ margin: '40px 0' }} />
+        <Empty description={t.analytics.salaryFuelEmpty} className={s.spaced2} />
       ) : (
         <>
-          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Row gutter={[16, 16]} className={s.spaced1}>
             <Col xs={24} md={12}>
               <Card title={t.analytics.salaryByMonth}>
                 <ResponsiveContainer width="100%" height={260}>
@@ -180,7 +181,7 @@ export default function SalaryFuelAnalytics() {
           </Row>
 
           {(data?.fuelByMachine ?? []).length > 0 && (
-            <Card title={t.analytics.fuelByMachine} style={{ marginBottom: 24 }}>
+            <Card title={t.analytics.fuelByMachine} className={s.spaced1}>
               <Table<FuelByMachineDto>
                 dataSource={data?.fuelByMachine}
                 columns={fuelByMachineColumns}

@@ -19,6 +19,7 @@ import type { CostAnalyticsDto, EconomicsByCategoryDto } from '../../types/econo
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './CostAnalytics.module.css';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -31,8 +32,8 @@ const MONTH_SHORT: Record<number, string> = {
 };
 
 const PIE_COLORS = [
-  '#4096ff', '#52c41a', '#faad14', '#ff4d4f', '#722ed1',
-  '#13c2c2', '#eb2f96', '#fa8c16', '#a0d911', '#1677ff',
+  '#4096ff', 'var(--success)', 'var(--warning)', 'var(--error)', '#722ed1',
+  '#13c2c2', '#eb2f96', '#fa8c16', '#a0d911', 'var(--info)',
 ];
 
 const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
@@ -83,18 +84,18 @@ export default function CostAnalytics() {
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.costAnalytics }]} />}
       />
 
-      <Row gutter={[16, 16]} align="middle" style={{ marginBottom: 16 }}>
+      <Row gutter={[16, 16]} align="middle" className={s.spaced}>
         <Col>
           <Select
             value={year}
             options={YEAR_OPTIONS}
             onChange={setYear}
-            style={{ width: 120 }}
+            className={s.block1}
           />
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Row gutter={[16, 16]} className={s.spaced1}>
         <Col xs={12} sm={8}>
           <Card>
             <Statistic
@@ -102,7 +103,7 @@ export default function CostAnalytics() {
               value={data?.totalCosts ?? 0}
               suffix="UAH"
               prefix={<ArrowDownOutlined />}
-              valueStyle={{ color: '#cf1322' }}
+              valueStyle={{ color: 'var(--error)' }}
               loading={loading}
               formatter={(v) => fmt(Number(v))}
             />
@@ -115,7 +116,7 @@ export default function CostAnalytics() {
               value={data?.totalRevenue ?? 0}
               suffix="UAH"
               prefix={<ArrowUpOutlined />}
-              valueStyle={{ color: '#3f8600' }}
+              valueStyle={{ color: 'var(--success)' }}
               loading={loading}
               formatter={(v) => fmt(Number(v))}
             />
@@ -128,7 +129,7 @@ export default function CostAnalytics() {
               value={(data?.totalRevenue ?? 0) - (data?.totalCosts ?? 0)}
               suffix="UAH"
               prefix={<DollarOutlined />}
-              valueStyle={{ color: ((data?.totalRevenue ?? 0) - (data?.totalCosts ?? 0)) >= 0 ? '#3f8600' : '#cf1322' }}
+              valueStyle={{ color: ((data?.totalRevenue ?? 0) - (data?.totalCosts ?? 0)) >= 0 ? 'var(--success)' : 'var(--error)' }}
               loading={loading}
               formatter={(v) => fmt(Number(v))}
             />
@@ -137,10 +138,10 @@ export default function CostAnalytics() {
       </Row>
 
       {!loading && !hasData ? (
-        <Empty description={t.economics.analyticsEmpty} style={{ margin: '40px 0' }} />
+        <Empty description={t.economics.analyticsEmpty} className={s.spaced2} />
       ) : (
         <>
-          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Row gutter={[16, 16]} className={s.spaced1}>
             <Col xs={24} md={10}>
               <Card title={t.economics.analyticsByCategory}>
                 {pieData.length > 0 ? (

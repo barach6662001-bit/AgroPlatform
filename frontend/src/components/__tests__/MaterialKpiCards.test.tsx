@@ -69,7 +69,7 @@ describe('MaterialKpiCards', () => {
     render(<MaterialKpiCards items={ITEMS} />);
     const totalCard = screen.getByTestId('kpi-card-Total');
     // Ant Design Card wraps content, the data-testid is on the ant-card root div
-    expect(totalCard.style.background).toBe('rgb(31, 111, 235)');
+    expect(totalCard.style.background).toBe('var(--info)');
   });
 
   it('renders loading skeletons when loading=true', () => {

@@ -1,18 +1,19 @@
 import { Row, Col, Card, Statistic, Skeleton } from 'antd';
 import type { MaterialKpiItem } from '../../types/economics';
 import { formatUA } from '../../utils/numberFormat';
+import s from './MaterialKpiCards.module.css';
 
 /** Background colour for the "Всього / Total" highlighted card (SASAgro blue). */
-const TOTAL_BG      = '#1F6FEB';
-const TOTAL_BORDER  = '#2D7FF5';
-const TOTAL_TEXT    = '#FFFFFF';
+const TOTAL_BG      = 'var(--info)';
+const TOTAL_BORDER  = 'var(--info)';
+const TOTAL_TEXT    = 'var(--bg-surface)';
 const TOTAL_ICON    = 'rgba(255,255,255,0.85)';
 
 /** Default card appearance (dark surface, matching app theme). */
-const CARD_BG       = '#161B22';
-const CARD_BORDER   = '#30363D';
-const CARD_TEXT     = '#E6EDF3';
-const CARD_ICON     = '#8B949E';
+const CARD_BG       = 'var(--bg-surface)';
+const CARD_BORDER   = 'var(--border)';
+const CARD_TEXT     = 'var(--text-primary)';
+const CARD_ICON     = 'var(--text-secondary)';
 
 interface Props {
   /** Pre-built KPI items to display. Pass an empty array or undefined while loading. */
@@ -71,7 +72,7 @@ export default function MaterialKpiCards({ items, loading = false }: Props) {
         };
 
         const titleStyle: React.CSSProperties = {
-          color: isTotal ? 'rgba(255,255,255,0.85)' : '#8B949E',
+          color: isTotal ? 'rgba(255,255,255,0.85)' : 'var(--text-secondary)',
           fontSize: 12,
           fontWeight: 600,
           textTransform: 'uppercase',
@@ -94,12 +95,7 @@ export default function MaterialKpiCards({ items, loading = false }: Props) {
             >
               {/* Icon row */}
               <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  marginBottom: 8,
-                }}
+                className={s.flex_center}
               >
                 <span style={iconStyle} aria-hidden="true">
                   {item.icon}
@@ -114,7 +110,7 @@ export default function MaterialKpiCards({ items, loading = false }: Props) {
                 value={formatUA(item.amount)}
                 suffix="UAH"
                 valueStyle={valueStyle}
-                style={{ marginTop: 4 }}
+                className={s.spaced}
               />
             </Card>
           </Col>

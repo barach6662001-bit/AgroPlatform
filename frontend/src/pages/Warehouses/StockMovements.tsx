@@ -9,6 +9,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { formatDate } from '../../utils/dateFormat';
+import s from './StockMovements.module.css';
 
 const { RangePicker } = DatePicker;
 
@@ -131,11 +132,11 @@ export default function StockMovements() {
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.warehouses, path: '/warehouses' }, { label: t.nav.movements }]} />}
       />
 
-      <Space style={{ marginBottom: 16 }} wrap>
+      <Space className={s.spaced} wrap>
         <Select
           placeholder={t.warehouses.allWarehouses}
           allowClear
-          style={{ width: 200 }}
+          className={s.block1}
           value={warehouseId}
           onChange={(v) => { setWarehouseId(v); setPage(1); }}
           options={warehouses.map((w) => ({ value: w.id, label: w.name }))}
@@ -143,7 +144,7 @@ export default function StockMovements() {
         <Select
           placeholder={t.warehouses.allItems}
           allowClear
-          style={{ width: 200 }}
+          className={s.block1}
           value={itemId}
           onChange={(v) => { setItemId(v); setPage(1); }}
           showSearch
@@ -155,7 +156,7 @@ export default function StockMovements() {
         <Select
           placeholder={t.warehouses.allTypes}
           allowClear
-          style={{ width: 160 }}
+          className={s.block3}
           value={moveType}
           onChange={(v) => { setMoveType(v); setPage(1); }}
           options={moveTypeOptions}

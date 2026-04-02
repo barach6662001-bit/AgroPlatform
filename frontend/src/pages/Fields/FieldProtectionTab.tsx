@@ -10,6 +10,7 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import s from './FieldProtectionTab.module.css';
 
 interface Props {
   fieldId: string;
@@ -106,10 +107,10 @@ export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
 
   return (
     <div>
-      <Space style={{ marginBottom: 12 }}>
-        <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{t.fields.year}:</span>
+      <Space className={s.spaced}>
+        <span className={s.text13}>{t.fields.year}:</span>
         <Select
-          style={{ width: 90 }}
+          className={s.block2}
           value={year}
           onChange={setYear}
           options={yearOptions}
@@ -146,9 +147,9 @@ export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }} initialValues={{ year: currentYear }}>
+        <Form form={form} layout="vertical" className={s.spaced1} initialValues={{ year: currentYear }}>
           <Form.Item name="year" label={t.fields.year} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
+            <InputNumber min={2000} max={2100} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="productName" label={t.fields.productName} rules={[{ required: true, message: t.common.required }]}>
             <Select
@@ -181,7 +182,7 @@ export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
             <InputNumber
               min={0}
               precision={4}
-              style={{ width: '100%' }}
+              className={s.fullWidth}
               onChange={(val) => {
                 const area = fieldArea ?? 0;
                 if (val != null && area > 0) {
@@ -196,16 +197,16 @@ export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
             />
           </Form.Item>
           <Form.Item name="totalLiters" label={t.fields.totalLiters}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="costPerLiter" label={t.fields.costPerLiterLabel}>
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={2} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="totalCost" label={t.fields.totalCostLabel}>
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} addonAfter="грн" />
+            <InputNumber min={0} precision={2} className={s.fullWidth} addonAfter="грн" />
           </Form.Item>
           <Form.Item name="applicationDate" label={t.fields.applicationDate} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />

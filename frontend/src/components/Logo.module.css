@@ -1,0 +1,17 @@
+.block0 {
+  flex-shrink: 0;
+}
+
+.flex_center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.block2 {
+  line-height: 1.1;
+}
+
+.colored {
+  color: var(--brand);
+}

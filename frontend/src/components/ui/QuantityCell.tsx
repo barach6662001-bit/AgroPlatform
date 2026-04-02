@@ -1,3 +1,4 @@
+import s from './QuantityCell.module.css';
 interface Props {
   value: number;
   unit: string;
@@ -12,13 +13,9 @@ export default function QuantityCell({ value, unit, precision = 2, locale = 'uk-
   }).format(value);
 
   return (
-    <span style={{
-      fontVariantNumeric: 'tabular-nums',
-      whiteSpace: 'nowrap',
-      color: 'var(--text-primary)',
-    }}>
+    <span className={s.colored}>
       {formatted}
-      <span style={{ color: 'var(--text-tertiary)', marginLeft: 4, fontSize: '0.9em' }}>
+      <span className={s.text09em}>
         {unit}
       </span>
     </span>

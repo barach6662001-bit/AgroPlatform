@@ -1,0 +1,92 @@
+.text16 {
+  color: var(--warning);
+  font-size: 16px;
+}
+
+.text161 {
+  color: var(--error);
+  font-size: 16px;
+}
+
+.text162 {
+  color: var(--info);
+  font-size: 16px;
+}
+
+.colored {
+  color: var(--text-primary);
+}
+
+.text11 {
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.text111 {
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: transparent;
+}
+
+.text12 {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.flex_between_wrap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.spaced {
+  margin-bottom: 20px;
+}
+
+.upper {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.text13 {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+.text112 {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.colored1 {
+  color: var(--text-secondary);
+}
+
+.text131 {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.padded {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.text113 {
+  font-size: 11px;
+}
+
+.text132 {
+  font-size: 13px;
+}
+
+.spaced1 {
+  margin-top: 20px;
+}

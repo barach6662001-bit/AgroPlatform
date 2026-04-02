@@ -1,0 +1,14 @@
+.fullWidth {
+  width: 100%;
+  padding: 16px 0;
+}
+
+.bordered {
+  height: 36px;
+  border-radius: 6px;
+}
+
+.bordered1 {
+  height: 44px;
+  border-radius: 4px;
+}

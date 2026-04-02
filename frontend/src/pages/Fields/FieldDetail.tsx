@@ -25,6 +25,7 @@ import FieldZonesTab from './FieldZonesTab';
 import FieldSoilAnalysisTab from './FieldSoilAnalysisTab';
 import FieldPrescriptionTab from './FieldPrescriptionTab';
 import FieldInspectionTab from './FieldInspectionTab';
+import s from './FieldDetail.module.css';
 
 export default function FieldDetail() {
   const { id } = useParams<{ id: string }>();
@@ -244,7 +245,7 @@ export default function FieldDetail() {
 
   return (
     <div>
-      <Space style={{ marginBottom: 16 }}>
+      <Space className={s.spaced}>
         <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/fields')}>
           {t.fields.backToList}
         </Button>
@@ -256,48 +257,48 @@ export default function FieldDetail() {
       />
 
       {pnl && (
-        <Row gutter={12} style={{ marginBottom: 20 }}>
+        <Row gutter={12} className={s.spaced1}>
           <Col span={6}>
-            <Card size="small" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
-              <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
+            <Card size="small" className={s.colored}>
+              <Typography.Text type="secondary" className={s.upper}>
                 {t.fields.expenses}
               </Typography.Text>
-              <div style={{ fontSize: 20, fontWeight: 600, color: '#f85149' }}>
+              <div className={s.text20}>
                 {(pnl.totalCosts || 0).toLocaleString()} ₴
               </div>
               {pnl.costPerHectare != null && pnl.costPerHectare > 0 && (
-                <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+                <Typography.Text type="secondary" className={s.text11}>
                   {pnl.costPerHectare.toLocaleString()} ₴/га
                 </Typography.Text>
               )}
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
-              <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
+            <Card size="small" className={s.colored}>
+              <Typography.Text type="secondary" className={s.upper}>
                 {t.fields.revenue}
               </Typography.Text>
-              <div style={{ fontSize: 20, fontWeight: 600, color: '#3fb950' }}>
+              <div className={s.text201}>
                 {(pnl.estimatedRevenue || 0).toLocaleString()} ₴
               </div>
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
-              <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
+            <Card size="small" className={s.colored}>
+              <Typography.Text type="secondary" className={s.upper}>
                 {t.fields.profit}
               </Typography.Text>
-              <div style={{ fontSize: 20, fontWeight: 600, color: (pnl.netProfit || 0) >= 0 ? '#3fb950' : '#f85149' }}>
+              <div style={{ fontSize: 20, fontWeight: 600, color: (pnl.netProfit || 0) >= 0 ? 'var(--success)' : 'var(--error)' }}>
                 {(pnl.netProfit || 0).toLocaleString()} ₴
               </div>
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
-              <Typography.Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>
+            <Card size="small" className={s.colored}>
+              <Typography.Text type="secondary" className={s.upper}>
                 {t.fields.yield}
               </Typography.Text>
-              <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text-primary)' }}>
+              <div className={s.text202}>
                 {pnl.actualYieldPerHectare ? `${pnl.actualYieldPerHectare.toFixed(1)} т/га` : '—'}
               </div>
             </Card>
@@ -311,7 +312,7 @@ export default function FieldDetail() {
           label: t.fields.tabInfo,
           children: (
             <div>
-              <Space style={{ marginBottom: 12 }}>
+              <Space className={s.spaced2}>
                 <Button type="primary" icon={<PlusOutlined />} onClick={() => setAssignModalOpen(true)}>
                   {t.fields.assignCrop}
                 </Button>
@@ -344,7 +345,7 @@ export default function FieldDetail() {
                 </Col>
               </Row>
 
-              <Card title={t.fields.cropHistory} style={{ marginTop: 16 }}>
+              <Card title={t.fields.cropHistory} className={s.spaced3}>
                 <Table
                   dataSource={field.cropHistory}
                   columns={historyColumns}
@@ -354,7 +355,7 @@ export default function FieldDetail() {
                 />
               </Card>
 
-              <Card title={t.fields.rotationPlans} style={{ marginTop: 16 }}>
+              <Card title={t.fields.rotationPlans} className={s.spaced3}>
                 <Table
                   dataSource={field.rotationPlans}
                   columns={planColumns}
@@ -367,7 +368,7 @@ export default function FieldDetail() {
               {(field.ownershipType === 1 || field.ownershipType === 2) && (
                 <Card
                   title={t.lease.title}
-                  style={{ marginTop: 16 }}
+                  className={s.spaced3}
                   extra={
                     canWrite && (
                       <Button type="primary" icon={<PlusOutlined />} onClick={() => setLeaseModalOpen(true)} size="small">
@@ -377,10 +378,10 @@ export default function FieldDetail() {
                   }
                 >
                   {leases.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '16px 0', color: '#888' }}>
+                    <div className={s.textCenter}>
                       {t.lease.noLeases}
                       {canWrite && (
-                        <div style={{ marginTop: 8 }}>
+                        <div className={s.spaced4}>
                           <Button icon={<PlusOutlined />} onClick={() => setLeaseModalOpen(true)}>
                             {t.lease.addLease}
                           </Button>
@@ -481,7 +482,7 @@ export default function FieldDetail() {
                         placeholder="XXXXXXXXXX:XX:XXX:XXXX"
                         value={cadInput}
                         onChange={(e) => setCadInput(e.target.value)}
-                        style={{ width: 220 }}
+                        className={s.block21}
                         size="small"
                       />
                       <Button
@@ -548,12 +549,12 @@ export default function FieldDetail() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={assignForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={assignForm} layout="vertical" className={s.spaced3}>
           <Form.Item name="cropType" label={t.fields.crop} rules={[{ required: true, message: t.common.required }]}>
             <Select options={cropOptions} />
           </Form.Item>
           <Form.Item name="year" label={t.fields.cropYear} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
+            <InputNumber min={2000} max={2100} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.fields.notes}>
             <Input />
@@ -571,12 +572,12 @@ export default function FieldDetail() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={planForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={planForm} layout="vertical" className={s.spaced3}>
           <Form.Item name="plannedCrop" label={t.fields.plannedCrop} rules={[{ required: true, message: t.common.required }]}>
             <Select options={cropOptions} />
           </Form.Item>
           <Form.Item name="plannedYear" label={t.fields.plannedYear} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
+            <InputNumber min={2000} max={2100} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.fields.notes}>
             <Input />
@@ -594,7 +595,7 @@ export default function FieldDetail() {
         confirmLoading={saving}
         width={600}
       >
-        <Form form={leaseForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={leaseForm} layout="vertical" className={s.spaced3}>
           <Form.Item name="ownerName" label={t.lease.ownerName} rules={[{ required: true, message: t.common.required }]}>
             <Input />
           </Form.Item>
@@ -605,7 +606,7 @@ export default function FieldDetail() {
             <Input />
           </Form.Item>
           <Form.Item name="annualPayment" label={t.lease.annualPayment} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={2} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="paymentType" label={t.lease.paymentType} initialValue="Cash">
             <Select options={[
@@ -615,13 +616,13 @@ export default function FieldDetail() {
             ]} />
           </Form.Item>
           <Form.Item name="grainPaymentTons" label={t.lease.grainTons}>
-            <InputNumber min={0} precision={4} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="contractStartDate" label={t.lease.contractStart} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="contractEndDate" label={t.lease.contractEnd}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />
@@ -638,15 +639,15 @@ export default function FieldDetail() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={payForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={payForm} layout="vertical" className={s.spaced3}>
           <Form.Item name="year" label={t.lease.year} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={2000} max={2100} style={{ width: '100%' }} />
+            <InputNumber min={2000} max={2100} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="amount" label={t.lease.paymentAmount} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+            <InputNumber min={0} precision={2} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="paymentDate" label={t.lease.paymentDate} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.lease.paymentNotes}>
             <Input />

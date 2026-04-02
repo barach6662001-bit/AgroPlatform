@@ -1,0 +1,56 @@
+.colored {
+  color: var(--error);
+}
+
+.colored1 {
+  color: var(--text-secondary);
+}
+
+.text11 {
+  color: var(--text-secondary);
+  font-size: 11px;
+  margin-right: 4px;
+}
+
+.text111 {
+  color: var(--success);
+  font-size: 11px;
+  margin-right: 4px;
+}
+
+.colored2 {
+  color: var(--success);
+}
+
+.spaced {
+  margin-bottom: 24px;
+}
+
+.block12 {
+  width: 100px;
+}
+
+.block14 {
+  width: 140px;
+}
+
+.text13 {
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.bg {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.colored3 {
+  color: var(--text-primary);
+}
+
+.spaced1 {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}

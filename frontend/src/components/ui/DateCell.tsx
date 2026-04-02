@@ -1,4 +1,5 @@
 import { Tooltip } from 'antd';
+import s from './DateCell.module.css';
 
 interface Props {
   value: string | Date;
@@ -29,7 +30,7 @@ export default function DateCell({ value, format = 'date', locale = 'uk-UA' }: P
 
   return (
     <Tooltip title={relative || formatted}>
-      <span style={{ color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+      <span className={s.colored}>
         {formatted}
       </span>
     </Tooltip>

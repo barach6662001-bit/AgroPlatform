@@ -6,6 +6,7 @@ import { getPrescriptionMap, exportPrescriptionMap } from '../../api/fields';
 import type { PrescriptionMapDto, PrescriptionZoneDto } from '../../types/field';
 import { useTranslation } from '../../i18n';
 import EmptyState from '../../components/EmptyState';
+import s from './FieldPrescriptionTab.module.css';
 
 interface Props {
   fieldId: string;
@@ -118,10 +119,10 @@ export default function FieldPrescriptionTab({ fieldId }: Props) {
   const hasData = data && data.zones.length > 0 && data.zones.some(z => z.sampleDate);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className={s.flex_col}>
       <Space wrap>
         <Select
-          style={{ minWidth: 160 }}
+          className={s.block1}
           value={nutrient}
           onChange={(v) => setNutrient(v)}
           options={NUTRIENTS.map((n) => ({ value: n, label: nutrientLabel(n) }))}

@@ -1,6 +1,7 @@
 import { Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import type { ReactNode } from 'react';
+import s from './ActionBar.module.css';
 
 interface Props {
   searchPlaceholder?: string;
@@ -18,25 +19,20 @@ export default function ActionBar({
   primaryAction,
 }: Props) {
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 8,
-      marginBottom: 16,
-    }}>
+    <div className={s.flex_center}>
       {onSearchChange && (
         <Input
-          prefix={<SearchOutlined style={{ color: 'var(--text-tertiary)' }} />}
+          prefix={<SearchOutlined className={s.colored} />}
           placeholder={searchPlaceholder}
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
           allowClear
-          style={{ maxWidth: 320 }}
+          className={s.block2}
         />
       )}
-      <div style={{ flex: 1 }} />
+      <div className={s.block3} />
       {secondaryActions && (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div className={s.flex_center1}>
           {secondaryActions}
         </div>
       )}

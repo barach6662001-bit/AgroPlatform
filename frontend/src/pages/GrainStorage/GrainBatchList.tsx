@@ -24,6 +24,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import s from './GrainBatchList.module.css';
 
 const QUICK_GRAIN_TYPES = ['Пшениця озима', 'Кукурудза', 'Соняшник'];
 const LAST_GRAIN_KEY = 'lastGrainType';
@@ -485,7 +486,7 @@ export default function GrainBatchList() {
         <Alert
           type="warning"
           showIcon
-          style={{ marginBottom: 16 }}
+          className={s.spaced}
           message={t.grainStorages.noStorages}
           description={t.grainStorages.noStoragesHint}
           action={
@@ -495,34 +496,34 @@ export default function GrainBatchList() {
           }
         />
       )}
-      <Row gutter={12} style={{ marginBottom: 16 }}>
+      <Row gutter={12} className={s.spaced}>
         <Col span={8}>
-          <Card size="small" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
-            <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>Загальний обсяг</Text>
-            <div style={{ fontSize: 24, fontWeight: 600 }}>{totalTons.toFixed(1)} т</div>
+          <Card size="small" className={s.bg}>
+            <Text type="secondary" className={s.upper}>Загальний обсяг</Text>
+            <div className={s.text24}>{totalTons.toFixed(1)} т</div>
           </Card>
         </Col>
         <Col span={8}>
-          <Card size="small" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
-            <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>Загальна вартість</Text>
-            <div style={{ fontSize: 24, fontWeight: 600 }}>{totalValue.toLocaleString()} ₴</div>
+          <Card size="small" className={s.bg}>
+            <Text type="secondary" className={s.upper}>Загальна вартість</Text>
+            <div className={s.text24}>{totalValue.toLocaleString()} ₴</div>
           </Card>
         </Col>
         <Col span={8}>
-          <Card size="small" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
-            <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase' }}>Культур</Text>
-            <div style={{ fontSize: 24, fontWeight: 600 }}>{cultures.length}</div>
+          <Card size="small" className={s.bg}>
+            <Text type="secondary" className={s.upper}>Культур</Text>
+            <div className={s.text24}>{cultures.length}</div>
           </Card>
         </Col>
       </Row>
 
       {/* Filters & Actions */}
-      <Space style={{ marginBottom: 16 }} wrap>
+      <Space className={s.spaced} wrap>
         {storages.length > 1 && (
           <Select
             allowClear
             placeholder={t.grain.selectStorage}
-            style={{ width: 200 }}
+            className={s.block12}
             options={storages.map(s => ({ value: s.id, label: s.name }))}
             onChange={v => { setSelectedStorageId(v); setPage(1); }}
           />
@@ -530,7 +531,7 @@ export default function GrainBatchList() {
         <Select
           allowClear
           placeholder={t.grain.ownershipType}
-          style={{ width: 160 }}
+          className={s.block13}
           options={ownershipOptions(t)}
           value={filterOwnership}
           onChange={v => { setFilterOwnership(v); setPage(1); }}
@@ -540,14 +541,14 @@ export default function GrainBatchList() {
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              style={{ background: '#238636', borderColor: '#238636' }}
+              className={s.colored}
               onClick={openBatchModal}
             >
               {t.grain.receiveGrain}
             </Button>
             <Button
               icon={<ExportOutlined />}
-              style={{ borderColor: '#d29922', color: '#d29922' }}
+              className={s.colored1}
               onClick={openIssueModal}
             >
               {t.grain.issueGrain}
@@ -613,11 +614,11 @@ export default function GrainBatchList() {
             label: t.grain.ledger,
             children: (
               <>
-                <Space style={{ marginBottom: 12 }} wrap>
+                <Space className={s.spaced1} wrap>
                   <Select
                     allowClear
                     placeholder={t.grain.movementType}
-                    style={{ width: 160 }}
+                    className={s.block13}
                     options={movementTypeOptions}
                     value={ledgerTypeFilter}
                     onChange={v => { setLedgerTypeFilter(v); setLedgerPage(1); }}
@@ -683,11 +684,11 @@ export default function GrainBatchList() {
         cancelText={t.common.cancel}
         confirmLoading={savingBatch}
       >
-        <Form form={batchForm} layout="vertical" style={{ marginTop: 16 }}>
-          <div style={{ marginBottom: 8 }}>
-            <span style={{ fontSize: 12, color: '#888' }}>{t.grain.quickSelect}: </span>
+        <Form form={batchForm} layout="vertical" className={s.spaced2}>
+          <div className={s.spaced3}>
+            <span className={s.text12}>{t.grain.quickSelect}: </span>
             {QUICK_GRAIN_TYPES.map(grain => (
-              <Button key={grain} size="small" onClick={() => batchForm.setFieldsValue({ grainType: grain })} style={{ marginRight: 8, marginBottom: 4 }}>
+              <Button key={grain} size="small" onClick={() => batchForm.setFieldsValue({ grainType: grain })} className={s.spaced4}>
                 {grain}
               </Button>
             ))}
@@ -714,10 +715,10 @@ export default function GrainBatchList() {
             <Input />
           </Form.Item>
           <Form.Item name="initialQuantityTons" label={t.grain.initialQuantity} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0} style={{ width: '100%' }} />
+            <InputNumber min={0} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="pricePerTon" label={t.grain.pricePerTon}>
-            <InputNumber min={0} style={{ width: '100%' }} />
+            <InputNumber min={0} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="contractNumber" label={t.grain.contractNumber}>
             <Input />
@@ -730,10 +731,10 @@ export default function GrainBatchList() {
             />
           </Form.Item>
           <Form.Item name="moisturePercent" label={t.grain.moisture}>
-            <InputNumber min={0} max={100} precision={1} addonAfter="%" style={{ width: '100%' }} />
+            <InputNumber min={0} max={100} precision={1} addonAfter="%" className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="receivedDate" label={t.grain.receivedDate} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />
@@ -751,7 +752,7 @@ export default function GrainBatchList() {
         cancelText={t.common.cancel}
         confirmLoading={savingIssue}
       >
-        <Form form={issueForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={issueForm} layout="vertical" className={s.spaced2}>
           <Form.Item name="grainBatchId" label={t.grain.selectBatch} rules={[{ required: true, message: t.common.required }]}>
             <Select
               showSearch placeholder={t.grain.selectBatch}
@@ -764,10 +765,10 @@ export default function GrainBatchList() {
             />
           </Form.Item>
           {selectedIssueBatch && (
-            <Alert type="info" message={`${t.grain.available}: ${selectedIssueBatch.quantityTons.toFixed(3)} т`} style={{ marginBottom: 12 }} />
+            <Alert type="info" message={`${t.grain.available}: ${selectedIssueBatch.quantityTons.toFixed(3)} т`} className={s.spaced1} />
           )}
           <Form.Item name="quantityTons" label={t.grain.issueQuantity} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0.001} max={selectedIssueBatch?.quantityTons} precision={3} addonAfter="т" style={{ width: '100%' }} />
+            <InputNumber min={0.001} max={selectedIssueBatch?.quantityTons} precision={3} addonAfter="т" className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="reason" label={t.grain.exportReason}>
             <Select allowClear options={[
@@ -778,7 +779,7 @@ export default function GrainBatchList() {
             ]} />
           </Form.Item>
           <Form.Item name="pricePerTon" label={t.grain.exportPrice}>
-            <InputNumber min={0} precision={2} addonAfter="грн/т" style={{ width: '100%' }} />
+            <InputNumber min={0} precision={2} addonAfter="грн/т" className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="buyerName" label={t.grain.buyer}>
             <Input placeholder="Назва покупця або отримувача" />
@@ -796,7 +797,7 @@ export default function GrainBatchList() {
         cancelText={t.common.cancel}
         confirmLoading={savingTransfer}
       >
-        <Form form={transferForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={transferForm} layout="vertical" className={s.spaced2}>
           <Form.Item name="sourceBatchId" label={t.grain.sourceBatch} rules={[{ required: true, message: t.common.required }]}>
             <Select showSearch placeholder={t.grain.selectBatch} options={batchOptions}
               filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())} />
@@ -806,7 +807,7 @@ export default function GrainBatchList() {
               filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())} />
           </Form.Item>
           <Form.Item name="quantityTons" label={t.grain.issueQuantity} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0.001} precision={3} addonAfter="т" style={{ width: '100%' }} />
+            <InputNumber min={0.001} precision={3} addonAfter="т" className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />
@@ -825,11 +826,11 @@ export default function GrainBatchList() {
         confirmLoading={savingSplit}
       >
         {selectedSplitBatch && (
-          <Alert type="info" message={`${t.grain.available}: ${selectedSplitBatch.quantityTons.toFixed(3)} т`} style={{ marginBottom: 12 }} />
+          <Alert type="info" message={`${t.grain.available}: ${selectedSplitBatch.quantityTons.toFixed(3)} т`} className={s.spaced1} />
         )}
-        <Form form={splitForm} layout="vertical" style={{ marginTop: 8 }}>
+        <Form form={splitForm} layout="vertical" className={s.spaced5}>
           <Form.Item name="splitQuantityTons" label={t.grain.splitQuantity} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0.001} max={selectedSplitBatch?.quantityTons} precision={3} addonAfter="т" style={{ width: '100%' }} />
+            <InputNumber min={0.001} max={selectedSplitBatch?.quantityTons} precision={3} addonAfter="т" className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="targetStorageId" label={t.grain.selectStorage}>
             <Select allowClear options={storages.map(s => ({ value: s.id, label: s.name }))} placeholder={t.grain.selectStorage} />
@@ -851,11 +852,11 @@ export default function GrainBatchList() {
         confirmLoading={savingAdjust}
       >
         {selectedAdjustBatch && (
-          <Alert type="info" message={`${t.grain.available}: ${selectedAdjustBatch.quantityTons.toFixed(3)} т`} style={{ marginBottom: 12 }} />
+          <Alert type="info" message={`${t.grain.available}: ${selectedAdjustBatch.quantityTons.toFixed(3)} т`} className={s.spaced1} />
         )}
-        <Form form={adjustForm} layout="vertical" style={{ marginTop: 8 }}>
+        <Form form={adjustForm} layout="vertical" className={s.spaced5}>
           <Form.Item name="adjustmentTons" label={t.grain.adjustmentTons} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber precision={3} addonAfter="т" style={{ width: '100%' }} />
+            <InputNumber precision={3} addonAfter="т" className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="reason" label={t.grain.reason}>
             <Input />
@@ -878,11 +879,11 @@ export default function GrainBatchList() {
         okButtonProps={{ danger: true }}
       >
         {selectedWriteOffBatch && (
-          <Alert type="warning" message={`${t.grain.available}: ${selectedWriteOffBatch.quantityTons.toFixed(3)} т`} style={{ marginBottom: 12 }} />
+          <Alert type="warning" message={`${t.grain.available}: ${selectedWriteOffBatch.quantityTons.toFixed(3)} т`} className={s.spaced1} />
         )}
-        <Form form={writeOffForm} layout="vertical" style={{ marginTop: 8 }}>
+        <Form form={writeOffForm} layout="vertical" className={s.spaced5}>
           <Form.Item name="quantityTons" label={t.grain.issueQuantity} rules={[{ required: true, message: t.common.required }]}>
-            <InputNumber min={0.001} max={selectedWriteOffBatch?.quantityTons} precision={3} addonAfter="т" style={{ width: '100%' }} />
+            <InputNumber min={0.001} max={selectedWriteOffBatch?.quantityTons} precision={3} addonAfter="т" className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="reason" label={t.grain.reason}>
             <Input />

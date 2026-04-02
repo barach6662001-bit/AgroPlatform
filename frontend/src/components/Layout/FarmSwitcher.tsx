@@ -4,6 +4,7 @@ import { BankOutlined } from '@ant-design/icons';
 import { getTenants, type TenantDto } from '../../api/tenants';
 import { useAuthStore } from '../../stores/authStore';
 import { useTranslation } from '../../i18n';
+import s from './FarmSwitcher.module.css';
 
 export default function FarmSwitcher() {
   const [tenants, setTenants] = useState<TenantDto[]>([]);
@@ -36,10 +37,10 @@ export default function FarmSwitcher() {
       value={tenantId && tenants.some((t) => t.id === tenantId) ? tenantId : undefined}
       onChange={(value) => setTenantId(value)}
       placeholder={t.farmSwitcher.placeholder}
-      style={{ minWidth: 160, maxWidth: 220 }}
+      className={s.block0}
       size="small"
       variant="filled"
-      suffixIcon={<BankOutlined style={{ color: 'var(--text-secondary)' }} />}
+      suffixIcon={<BankOutlined className={s.colored} />}
       popupMatchSelectWidth={false}
       options={tenants.map((tenant) => ({ label: tenant.name, value: tenant.id }))}
     />

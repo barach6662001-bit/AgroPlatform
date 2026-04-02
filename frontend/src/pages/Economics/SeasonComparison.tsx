@@ -15,6 +15,7 @@ import type { SeasonComparisonDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './SeasonComparison.module.css';
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
@@ -123,7 +124,7 @@ export default function SeasonComparison() {
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.seasonComparison }]} />}
       />
 
-      <Row gutter={[16, 16]} align="middle" style={{ marginBottom: 16 }}>
+      <Row gutter={[16, 16]} align="middle" className={s.spaced}>
         <Col>
           <Select
             mode="multiple"
@@ -131,17 +132,17 @@ export default function SeasonComparison() {
             options={YEAR_OPTIONS}
             onChange={setSelectedYears}
             placeholder={t.economics.seasonSelectYears}
-            style={{ minWidth: 240 }}
+            className={s.block1}
           />
         </Col>
       </Row>
 
       {!loading && !hasData ? (
-        <Empty description={t.economics.seasonEmpty} style={{ margin: '40px 0' }} />
+        <Empty description={t.economics.seasonEmpty} className={s.spaced1} />
       ) : (
         <>
           {bestYear && (
-            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+            <Row gutter={[16, 16]} className={s.spaced2}>
               <Col xs={12} sm={6}>
                 <Card>
                   <Statistic
@@ -157,7 +158,7 @@ export default function SeasonComparison() {
                     title={t.economics.seasonRevenue}
                     value={bestYear.totalRevenue}
                     suffix="UAH"
-                    valueStyle={{ color: '#3f8600' }}
+                    valueStyle={{ color: 'var(--success)' }}
                     loading={loading}
                     formatter={(v) => fmt(Number(v))}
                   />
@@ -169,7 +170,7 @@ export default function SeasonComparison() {
                     title={t.economics.seasonMargin}
                     value={bestYear.margin}
                     suffix="UAH"
-                    valueStyle={{ color: bestYear.margin >= 0 ? '#3f8600' : '#cf1322' }}
+                    valueStyle={{ color: bestYear.margin >= 0 ? 'var(--success)' : 'var(--error)' }}
                     loading={loading}
                     formatter={(v) => fmt(Number(v))}
                   />
@@ -181,7 +182,7 @@ export default function SeasonComparison() {
                     title={t.economics.seasonMarginPct}
                     value={bestYear.marginPercent != null ? bestYear.marginPercent : '—'}
                     suffix={bestYear.marginPercent != null ? '%' : ''}
-                    valueStyle={{ color: bestYear.margin >= 0 ? '#3f8600' : '#cf1322' }}
+                    valueStyle={{ color: bestYear.margin >= 0 ? 'var(--success)' : 'var(--error)' }}
                     loading={loading}
                   />
                 </Card>
@@ -190,7 +191,7 @@ export default function SeasonComparison() {
           )}
 
           {chartData.length > 0 && (
-            <Card title={t.economics.seasonChartTitle} style={{ marginBottom: 24 }}>
+            <Card title={t.economics.seasonChartTitle} className={s.spaced2}>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" />

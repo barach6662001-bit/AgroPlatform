@@ -1,3 +1,4 @@
+import s from './Logo.module.css';
 interface Props {
   size?: number;
   variant?: 'icon' | 'full';
@@ -11,7 +12,7 @@ function LogoIcon({ size }: { size: number }) {
       fill="none"
       width={size}
       height={size}
-      style={{ flexShrink: 0 }}
+      className={s.block0}
     >
       <rect width="32" height="32" rx="8" fill="var(--bg-surface)" />
       <rect x="4" y="4" width="24" height="24" rx="2" stroke="var(--brand)" strokeWidth="1.5" fill="none" opacity="0.35" />
@@ -32,11 +33,11 @@ export default function Logo({ size = 28, variant = 'icon' }: Props) {
   if (variant === 'icon') return <LogoIcon size={size} />;
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <div className={s.flex_center}>
       <LogoIcon size={size} />
-      <div style={{ lineHeight: 1.1 }}>
+      <div className={s.block2}>
         <div style={{ fontWeight: 700, fontSize: size * 0.57, letterSpacing: '-0.3px', color: 'var(--text-primary)' }}>
-          Agro<span style={{ color: 'var(--brand)' }}>Tech</span>
+          Agro<span className={s.colored}>Tech</span>
         </div>
         <div style={{ fontSize: size * 0.32, color: 'var(--text-tertiary)', letterSpacing: '0.5px', textTransform: 'uppercase' as const }}>
           Farm Management

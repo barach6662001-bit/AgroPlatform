@@ -3,6 +3,7 @@ import { Table, Button, Space, Spin, Select, message, Drawer, Collapse } from 'a
 import { ReloadOutlined, EyeOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getAuditLog, type AuditEntryDto } from '../../api/audit';
+import s from './AuditLogPage.module.css';
 
 export default function AuditLogPage() {
   const [entries, setEntries] = useState<AuditEntryDto[]>([]);
@@ -71,8 +72,8 @@ export default function AuditLogPage() {
       width: 100,
       render: (action: string) => {
         const colors: Record<string, string> = {
-          Created: '#52c41a', // green
-          Updated: '#1890ff', // blue
+          Created: 'var(--success)', // green
+          Updated: 'var(--info)', // blue
           Deleted: '#f5222d', // red
         };
         return <span style={{ color: colors[action] || '#999' }}>{action}</span>;
@@ -98,11 +99,11 @@ export default function AuditLogPage() {
 
   return (
     <Spin spinning={loading}>
-      <div style={{ marginBottom: 24 }}>
+      <div className={s.spaced}>
         <Space>
           <Select
             placeholder="Filter by entity type"
-            style={{ width: 200 }}
+            className={s.block2}
             allowClear
             value={entityType}
             onChange={setEntityType}
@@ -153,30 +154,30 @@ export default function AuditLogPage() {
                 key: 'general',
                 label: 'General Info',
                 children: (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div className={s.block3}>
                     <div>
-                      <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Timestamp</div>
+                      <div className={s.text12}>Timestamp</div>
                       <div>{dayjs(selectedEntry.createdAtUtc).format('DD.MM.YYYY HH:mm:ss')}</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>User</div>
+                      <div className={s.text12}>User</div>
                       <div>{selectedEntry.userEmail}</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Entity Type</div>
+                      <div className={s.text12}>Entity Type</div>
                       <div>{selectedEntry.entityType}</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Action</div>
+                      <div className={s.text12}>Action</div>
                       <div>{selectedEntry.action}</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Entity ID</div>
-                      <div style={{ fontSize: 11, wordBreak: 'break-all' }}>{selectedEntry.entityId}</div>
+                      <div className={s.text12}>Entity ID</div>
+                      <div className={s.text11}>{selectedEntry.entityId}</div>
                     </div>
                     {selectedEntry.ipAddress && (
                       <div>
-                        <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>IP Address</div>
+                        <div className={s.text12}>IP Address</div>
                         <div>{selectedEntry.ipAddress}</div>
                       </div>
                     )}
@@ -189,7 +190,7 @@ export default function AuditLogPage() {
                       key: 'oldValues',
                       label: 'Old Values',
                       children: (
-                        <pre style={{ backgroundColor: 'var(--bg-muted)', padding: 12, borderRadius: 4, overflow: 'auto' }}>
+                        <pre className={s.padded}>
                           {parseValue(selectedEntry.oldValues)}
                         </pre>
                       ),
@@ -204,7 +205,7 @@ export default function AuditLogPage() {
                       children: (
                         <Space wrap>
                           {selectedEntry.affectedColumns.map((column) => (
-                            <span key={column} style={{ padding: '2px 8px', backgroundColor: 'var(--bg-muted)', borderRadius: 999 }}>
+                            <span key={column} className={s.padded1}>
                               {column}
                             </span>
                           ))}
@@ -219,7 +220,7 @@ export default function AuditLogPage() {
                       key: 'newValues',
                       label: 'New Values',
                       children: (
-                        <pre style={{ backgroundColor: 'var(--bg-muted)', padding: 12, borderRadius: 4, overflow: 'auto' }}>
+                        <pre className={s.padded}>
                           {parseValue(selectedEntry.newValues)}
                         </pre>
                       ),

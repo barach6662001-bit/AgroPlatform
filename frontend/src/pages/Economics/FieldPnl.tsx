@@ -8,6 +8,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { printReport } from '../../utils/printReport';
+import s from './FieldPnl.module.css';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -91,7 +92,7 @@ export default function FieldPnl() {
       key: 'totalCosts',
       sorter: (a: FieldPnlDto, b: FieldPnlDto) => a.totalCosts - b.totalCosts,
       render: (v: number) => (
-        <span style={{ color: '#f85149' }}>{v.toLocaleString()} UAH</span>
+        <span className={s.colored}>{v.toLocaleString()} UAH</span>
       ),
     },
     {
@@ -108,19 +109,19 @@ export default function FieldPnl() {
         (a.estimatedRevenue ?? -1) - (b.estimatedRevenue ?? -1),
       render: (_: unknown, r: FieldPnlDto) => {
         const v = r.estimatedRevenue;
-        if (v == null || v === 0) return <span style={{ color: '#8B949E' }}>—</span>;
+        if (v == null || v === 0) return <span className={s.colored1}>—</span>;
         if (r.revenueSource === 'Estimated') {
           return (
             <span>
-              <span style={{ color: '#8B949E', fontSize: 11, marginRight: 4 }}>{t.economics.estimatedRevenueLabel}</span>
-              <span style={{ color: '#8B949E' }}>{v.toLocaleString()} UAH</span>
+              <span className={s.text11}>{t.economics.estimatedRevenueLabel}</span>
+              <span className={s.colored1}>{v.toLocaleString()} UAH</span>
             </span>
           );
         }
         return (
           <span>
-            <span style={{ color: '#3fb950', fontSize: 11, marginRight: 4 }}>{t.economics.actualRevenue}</span>
-            <span style={{ color: '#3fb950' }}>{v.toLocaleString()} UAH</span>
+            <span className={s.text111}>{t.economics.actualRevenue}</span>
+            <span className={s.colored2}>{v.toLocaleString()} UAH</span>
           </span>
         );
       },
@@ -132,8 +133,8 @@ export default function FieldPnl() {
       sorter: (a: FieldPnlDto, b: FieldPnlDto) =>
         (a.netProfit ?? -Infinity) - (b.netProfit ?? -Infinity),
       render: (v: number | undefined) => {
-        if (v == null) return <span style={{ color: '#8B949E' }}>—</span>;
-        const color = v >= 0 ? '#3fb950' : '#f85149';
+        if (v == null) return <span className={s.colored1}>—</span>;
+        const color = v >= 0 ? 'var(--success)' : 'var(--error)';
         return <strong style={{ color }}>{v.toLocaleString()} UAH</strong>;
       },
     },
@@ -142,9 +143,9 @@ export default function FieldPnl() {
       key: 'margin',
       render: (_: unknown, r: FieldPnlDto) => {
         if (r.estimatedRevenue == null || r.estimatedRevenue === 0 || r.revenueSource === 'None')
-          return <span style={{ color: '#8B949E' }}>—</span>;
+          return <span className={s.colored1}>—</span>;
         const margin = ((r.netProfit ?? 0) / r.estimatedRevenue) * 100;
-        const color = margin >= 0 ? '#3fb950' : '#f85149';
+        const color = margin >= 0 ? 'var(--success)' : 'var(--error)';
         return (
           <Tag color={margin >= 0 ? 'success' : 'error'} style={{ color }}>
             {margin.toFixed(1)}%
@@ -163,61 +164,61 @@ export default function FieldPnl() {
       />
 
       {/* Filters */}
-      <Space style={{ marginBottom: 24 }} wrap>
-        <span style={{ color: '#8B949E' }}>{t.economics.year}:</span>
+      <Space className={s.spaced} wrap>
+        <span className={s.colored1}>{t.economics.year}:</span>
         <Select
           value={year}
           onChange={setYear}
           options={YEAR_OPTIONS}
-          style={{ width: 100 }}
+          className={s.block12}
         />
-        <span style={{ color: '#8B949E' }}>{t.economics.pricePerTonne}:</span>
+        <span className={s.colored1}>{t.economics.pricePerTonne}:</span>
         <InputNumber
           min={0}
           step={100}
           value={pricePerTonne}
           onChange={(v) => setPricePerTonne(v)}
           placeholder="UAH"
-          style={{ width: 140 }}
+          className={s.block14}
         />
         <Button icon={<PrinterOutlined />} onClick={() => printReport(t.economics.pnlTitle, `<table><thead><tr><th>Поле</th><th>Витрати</th><th>Дохід</th><th>Прибуток</th></tr></thead><tbody>${data.map(d => `<tr><td>${d.fieldName}</td><td>${d.totalCosts.toLocaleString()}</td><td>${(d.estimatedRevenue ?? 0).toLocaleString()}</td><td>${(d.netProfit ?? 0).toLocaleString()}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
       </Space>
 
       {!pricePerTonne && (
-        <div style={{ marginBottom: 16, color: '#8B949E', fontSize: 13 }}>
+        <div className={s.text13}>
           ℹ️ {t.economics.pnlNoRevenue}
         </div>
       )}
 
       {/* KPI cards */}
-      <Row gutter={16} style={{ marginBottom: 24 }}>
+      <Row gutter={16} className={s.spaced}>
         <Col xs={24} sm={8}>
-          <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+          <Card className={s.bg}>
             <Statistic
-              title={<span style={{ color: '#8B949E' }}>{t.economics.totalCostsSum}</span>}
+              title={<span className={s.colored1}>{t.economics.totalCostsSum}</span>}
               value={totalCosts}
               suffix="UAH"
-              valueStyle={{ color: '#f85149' }}
+              valueStyle={{ color: 'var(--error)' }}
               prefix={<DollarOutlined />}
               formatter={(v) => Number(v).toLocaleString()}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+          <Card className={s.bg}>
             <Statistic
-              title={<span style={{ color: '#8B949E' }}>{t.economics.avgMargin}</span>}
+              title={<span className={s.colored1}>{t.economics.avgMargin}</span>}
               value={avgMargin != null ? avgMargin.toFixed(1) : '—'}
               suffix={avgMargin != null ? '%' : ''}
-              valueStyle={{ color: avgMargin != null && avgMargin >= 0 ? '#3fb950' : '#f85149' }}
+              valueStyle={{ color: avgMargin != null && avgMargin >= 0 ? 'var(--success)' : 'var(--error)' }}
               prefix={<RiseOutlined />}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card style={{ background: '#161B22', border: '1px solid #30363D' }}>
+          <Card className={s.bg}>
             <Statistic
-              title={<span style={{ color: '#8B949E' }}>{t.economics.bestField}</span>}
+              title={<span className={s.colored1}>{t.economics.bestField}</span>}
               value={bestField?.fieldName ?? '—'}
               valueStyle={{ color: '#58A6FF', fontSize: 18 }}
               prefix={<TrophyOutlined />}
@@ -229,26 +230,26 @@ export default function FieldPnl() {
       {/* Chart */}
       {data.length > 0 && (
         <Card
-          title={<span style={{ color: '#E6EDF3' }}>{t.economics.costsVsRevenue}</span>}
-          style={{ background: '#161B22', border: '1px solid #30363D', marginBottom: 24 }}
+          title={<span className={s.colored3}>{t.economics.costsVsRevenue}</span>}
+          className={s.spaced1}
         >
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 60 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#30363D" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis
                 dataKey="name"
-                tick={{ fill: '#8B949E', fontSize: 11 }}
+                tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
                 angle={-35}
                 textAnchor="end"
                 interval={0}
               />
-              <YAxis tick={{ fill: '#8B949E', fontSize: 11 }} />
+              <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ background: '#161B22', border: '1px solid #30363D', color: '#E6EDF3' }}
+                contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
               />
-              <Legend wrapperStyle={{ color: '#8B949E' }} />
-              <Bar dataKey={t.economics.totalCostsSum} fill="#f85149" radius={[4, 4, 0, 0]} />
-              <Bar dataKey={t.economics.revenue} fill="#3fb950" radius={[4, 4, 0, 0]} />
+              <Legend wrapperStyle={{ color: 'var(--text-secondary)' }} />
+              <Bar dataKey={t.economics.totalCostsSum} fill="var(--error)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey={t.economics.revenue} fill="var(--success)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
@@ -256,7 +257,7 @@ export default function FieldPnl() {
 
       {/* Table */}
       {data.length === 0 && !loading ? (
-        <Empty description={<span style={{ color: '#8B949E' }}>{t.economics.pnlNoRevenue}</span>} />
+        <Empty description={<span className={s.colored1}>{t.economics.pnlNoRevenue}</span>} />
       ) : (
         <Table
           dataSource={data}
@@ -270,12 +271,12 @@ export default function FieldPnl() {
                 <strong>{t.economics.total}</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={1}>
-                <strong style={{ color: '#f85149' }}>{totalCosts.toLocaleString()} UAH</strong>
+                <strong className={s.colored}>{totalCosts.toLocaleString()} UAH</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={2} />
               <Table.Summary.Cell index={3}>
                 {pricePerTonne && (
-                  <strong style={{ color: '#3fb950' }}>{totalRevenue.toLocaleString()} UAH</strong>
+                  <strong className={s.colored2}>{totalRevenue.toLocaleString()} UAH</strong>
                 )}
               </Table.Summary.Cell>
               <Table.Summary.Cell index={4} />

@@ -6,6 +6,7 @@ import { createWarehouseItem, createReceipt, getWarehouses, getWarehouseItems } 
 import type { WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
+import s from './OnboardingWizard.module.css';
 
 export default function OnboardingWizard() {
   const { t } = useTranslation();
@@ -105,7 +106,7 @@ export default function OnboardingWizard() {
               title={t.onboarding.welcomeTitle}
               subTitle={t.onboarding.welcomeSubtitle}
             />
-            <div style={{ textAlign: 'center' }}>
+            <div className={s.textCenter}>
               <Button type="primary" size="large" onClick={() => setCurrent(1)}>
                 {t.onboarding.start}
               </Button>
@@ -174,7 +175,7 @@ export default function OnboardingWizard() {
                 />
               </Form.Item>
               <Form.Item name="quantity" label={t.onboarding.quantity} rules={[{ required: true }]}>
-                <InputNumber min={0.01} style={{ width: '100%' }} />
+                <InputNumber min={0.01} className={s.fullWidth} />
               </Form.Item>
               <Button type="primary" onClick={handleCreateReceipt} loading={saving}>
                 {t.onboarding.createReceipt}
@@ -208,7 +209,7 @@ export default function OnboardingWizard() {
   return (
     <div className="page-enter">
       <PageHeader title={t.onboarding.title} subtitle={t.onboarding.subtitle} />
-      <Steps current={current} items={steps} style={{ marginBottom: 24 }} />
+      <Steps current={current} items={steps} className={s.spaced} />
       {renderStep()}
     </div>
   );

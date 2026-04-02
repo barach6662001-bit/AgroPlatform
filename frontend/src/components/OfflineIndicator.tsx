@@ -2,6 +2,7 @@ import { Badge, Button, Tooltip } from 'antd';
 import { CloudSyncOutlined, DisconnectOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useOfflineSync } from '../hooks/useOfflineSync';
 import { useTranslation } from '../i18n';
+import s from './OfflineIndicator.module.css';
 
 export default function OfflineIndicator() {
   const { isOnline, pendingCount, isSyncing, triggerSync } = useOfflineSync();
@@ -14,20 +15,10 @@ export default function OfflineIndicator() {
   if (!isOnline) {
     return (
       <Tooltip title={pendingCount > 0 ? t.offline.pendingCount.replace('{n}', String(pendingCount)) : t.offline.offline}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Badge count={pendingCount} size="small" color="#faad14">
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              background: 'rgba(250,173,20,0.15)',
-              border: '1px solid rgba(250,173,20,0.4)',
-              borderRadius: 6,
-              padding: '3px 8px',
-              fontSize: 12,
-              color: '#faad14',
-            }}>
-              <DisconnectOutlined style={{ fontSize: 13 }} />
+        <div className={s.flex_center}>
+          <Badge count={pendingCount} size="small" color="var(--warning)">
+            <div className={s.flex_center1}>
+              <DisconnectOutlined className={s.text13} />
               <span>{t.offline.offline}</span>
             </div>
           </Badge>
@@ -42,20 +33,13 @@ export default function OfflineIndicator() {
       <Button
         type="text"
         size="small"
-        icon={isSyncing ? <LoadingOutlined spin style={{ fontSize: 13 }} /> : <CloudSyncOutlined style={{ fontSize: 13 }} />}
+        icon={isSyncing ? <LoadingOutlined spin className={s.text13} /> : <CloudSyncOutlined className={s.text13} />}
         onClick={triggerSync}
         disabled={isSyncing}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
-          color: '#52c41a',
-          fontSize: 12,
-          height: 28,
-        }}
+        className={s.flex_center2}
       >
         {pendingCount > 0 && !isSyncing && (
-          <Badge count={pendingCount} size="small" style={{ marginLeft: 2 }} />
+          <Badge count={pendingCount} size="small" className={s.spaced} />
         )}
         {isSyncing ? t.offline.syncing : t.offline.pendingCount.replace('{n}', String(pendingCount))}
       </Button>

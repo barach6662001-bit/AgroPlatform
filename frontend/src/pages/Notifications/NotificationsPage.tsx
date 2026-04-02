@@ -11,11 +11,12 @@ import {
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
+import s from './NotificationsPage.module.css';
 
 const typeIcon = (type: string) => {
-  if (type === 'warning') return <WarningOutlined style={{ color: '#faad14' }} />;
-  if (type === 'error') return <CloseCircleOutlined style={{ color: '#ff4d4f' }} />;
-  return <InfoCircleOutlined style={{ color: '#1677ff' }} />;
+  if (type === 'warning') return <WarningOutlined className={s.colored} />;
+  if (type === 'error') return <CloseCircleOutlined className={s.colored1} />;
+  return <InfoCircleOutlined className={s.colored2} />;
 };
 
 export default function NotificationsPage() {
@@ -111,7 +112,7 @@ export default function NotificationsPage() {
       <PageHeader title={t.notifications.title} />
       {permissionState === 'default' && (
         <Alert
-          style={{ marginBottom: 16 }}
+          className={s.spaced}
           type="info"
           icon={<BellOutlined />}
           showIcon
@@ -125,7 +126,7 @@ export default function NotificationsPage() {
       )}
       {permissionState === 'granted' && (
         <Alert
-          style={{ marginBottom: 16 }}
+          className={s.spaced}
           type="success"
           showIcon
           message={t.notifications.pushEnabled}
@@ -133,13 +134,13 @@ export default function NotificationsPage() {
       )}
       {permissionState === 'denied' && (
         <Alert
-          style={{ marginBottom: 16 }}
+          className={s.spaced}
           type="warning"
           showIcon
           message={t.notifications.pushDenied}
         />
       )}
-      <Space style={{ marginBottom: 16 }}>
+      <Space className={s.spaced}>
         <Button onClick={handleMarkAllRead}>{t.notifications.markAllRead}</Button>
         <Button onClick={handleClearRead}>{t.notifications.clearAll}</Button>
         <Checkbox

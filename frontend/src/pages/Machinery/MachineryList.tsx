@@ -16,6 +16,7 @@ import { useRole } from '../../hooks/useRole';
 import { useFleetHub } from '../../hooks/useFleetHub';
 import { getEmployees } from '../../api/hr';
 import EmptyState from '../../components/EmptyState';
+import s from './MachineryList.module.css';
 
 
 const { Text } = Typography;
@@ -126,7 +127,7 @@ export default function MachineryList() {
         <Space>
           {name}
           {activeVehicleIds.has(record.id) && (
-            <Tag color="green" style={{ margin: 0, fontSize: 11 }}>
+            <Tag color="green" className={s.text11}>
               {t.fleet.liveSignal}
             </Tag>
           )}
@@ -148,7 +149,7 @@ export default function MachineryList() {
       title: t.machinery.assignedDriver,
       dataIndex: 'assignedDriverName',
       key: 'assignedDriverName',
-      render: (v?: string) => v || <span style={{ color: '#8b949e' }}>{t.machinery.noDriver}</span>,
+      render: (v?: string) => v || <span className={s.colored}>{t.machinery.noDriver}</span>,
     },
     {
       title: 'Наступне ТО',
@@ -189,18 +190,18 @@ export default function MachineryList() {
   return (
     <div>
       <PageHeader title={t.machinery.title} subtitle={t.machinery.subtitle} />
-      <Space style={{ marginBottom: 16 }}>
+      <Space className={s.spaced}>
         <Input
           placeholder={t.machinery.searchPlaceholder}
           prefix={<SearchOutlined />}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          style={{ width: 280 }}
+          className={s.block3}
         />
         <Select
           placeholder={t.machinery.typeFilter}
           allowClear
-          style={{ width: 160 }}
+          className={s.block4}
           value={typeFilter}
           onChange={setTypeFilter}
           options={Object.entries(t.machineryTypes).map(([k, v]) => ({ value: k, label: v }))}
@@ -208,7 +209,7 @@ export default function MachineryList() {
         <Select
           placeholder={t.machinery.statusFilter}
           allowClear
-          style={{ width: 160 }}
+          className={s.block4}
           value={statusFilter}
           onChange={setStatusFilter}
           options={Object.entries(t.machineryStatuses).map(([k, v]) => ({ value: k, label: v }))}
@@ -271,7 +272,7 @@ export default function MachineryList() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={form} layout="vertical" className={s.spaced1}>
           <Form.Item name="name" label={t.machinery.name} rules={[{ required: true, message: t.common.required }]}>
             <Input />
           </Form.Item>
@@ -291,7 +292,7 @@ export default function MachineryList() {
             <Input />
           </Form.Item>
           <Form.Item name="year" label={t.machinery.year}>
-            <InputNumber min={1950} max={2100} style={{ width: '100%' }} />
+            <InputNumber min={1950} max={2100} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="fuelType" label={t.machinery.fuelType} rules={[{ required: true, message: t.common.required }]}>
             <Select
@@ -333,7 +334,7 @@ export default function MachineryList() {
         cancelText={t.common.cancel}
         confirmLoading={editSaving}
       >
-        <Form form={editForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={editForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="name" label={t.machinery.name} rules={[{ required: true, message: t.common.required }]}>
             <Input />
           </Form.Item>
@@ -353,7 +354,7 @@ export default function MachineryList() {
             <Input />
           </Form.Item>
           <Form.Item name="year" label={t.machinery.year}>
-            <InputNumber min={1900} max={2030} style={{ width: '100%' }} />
+            <InputNumber min={1900} max={2030} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="status" label={t.machinery.status}>
             <Select
@@ -367,7 +368,7 @@ export default function MachineryList() {
             />
           </Form.Item>
           <Form.Item name="fuelConsumptionPerHour" label={t.machinery.fuelConsumption}>
-            <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+            <InputNumber min={0} step={0.1} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="assignedDriverId" label={t.machinery.assignedDriver}>
             <Select

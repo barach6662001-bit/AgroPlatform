@@ -1,0 +1,8 @@
+.block0 {
+  min-width: 160px;
+  max-width: 220px;
+}
+
+.colored {
+  color: var(--text-secondary);
+}

@@ -1,0 +1,9 @@
+.flex_col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.block1 {
+  min-width: 160px;
+}

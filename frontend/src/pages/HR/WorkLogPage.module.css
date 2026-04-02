@@ -1,0 +1,23 @@
+.spaced {
+  margin-bottom: 16px;
+}
+
+.block1 {
+  width: 130px;
+}
+
+.block2 {
+  width: 90px;
+}
+
+.block3 {
+  width: 220px;
+}
+
+.colored {
+  color: var(--success);
+}
+
+.fullWidth {
+  width: 100%;
+}

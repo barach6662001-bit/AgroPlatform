@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { changePassword } from '../api/auth';
 import { useTranslation } from '../i18n';
+import s from './ChangePassword.module.css';
 
 export default function ChangePassword() {
   const navigate = useNavigate();
@@ -35,34 +36,21 @@ export default function ChangePassword() {
 
   return (
     <div
-      style={{
-        minHeight: '100vh',
-        background: 'var(--bg-app)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      className={s.flex_center_centered}
     >
       <div
-        style={{
-          background: 'var(--bg-surface)',
-          border: '1px solid var(--border)',
-          borderRadius: 12,
-          padding: '40px 48px',
-          width: '100%',
-          maxWidth: 400,
-        }}
+        className={s.fullWidth}
       >
-        <div style={{ marginBottom: 24, textAlign: 'center' }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>🔒</div>
-          <h2 style={{ margin: '0 0 8px', color: 'var(--text-primary)', fontSize: 22, fontWeight: 700 }}>
+        <div className={s.textCenter}>
+          <div className={s.text32}>🔒</div>
+          <h2 className={s.text22}>
             {t.auth.changePasswordTitle}
           </h2>
-          <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>
+          <p className={s.text14}>
             {t.auth.changePasswordSubtitle}
           </p>
           {email && (
-            <p style={{ margin: '8px 0 0', color: 'var(--text-tertiary)', fontSize: 13 }}>
+            <p className={s.text13}>
               {email}
             </p>
           )}
@@ -71,11 +59,11 @@ export default function ChangePassword() {
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item
             name="currentPassword"
-            label={<span style={{ color: 'var(--text-secondary)', fontSize: 12, fontWeight: 500 }}>{t.auth.currentPassword}</span>}
+            label={<span className={s.text12}>{t.auth.currentPassword}</span>}
             rules={[{ required: true, message: t.auth.enterCurrentPassword }]}
           >
             <Input.Password
-              prefix={<LockOutlined style={{ color: 'var(--text-tertiary)' }} />}
+              prefix={<LockOutlined className={s.colored} />}
               placeholder={t.auth.currentPassword}
               size="large"
             />
@@ -83,7 +71,7 @@ export default function ChangePassword() {
 
           <Form.Item
             name="newPassword"
-            label={<span style={{ color: 'var(--text-secondary)', fontSize: 12, fontWeight: 500 }}>{t.auth.newPassword}</span>}
+            label={<span className={s.text12}>{t.auth.newPassword}</span>}
             rules={[
               { required: true, message: t.auth.enterNewPassword },
               { min: 8, message: t.auth.minPassword },
@@ -92,7 +80,7 @@ export default function ChangePassword() {
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined style={{ color: 'var(--text-tertiary)' }} />}
+              prefix={<LockOutlined className={s.colored} />}
               placeholder={t.auth.newPassword}
               size="large"
             />
@@ -100,7 +88,7 @@ export default function ChangePassword() {
 
           <Form.Item
             name="confirmPassword"
-            label={<span style={{ color: 'var(--text-secondary)', fontSize: 12, fontWeight: 500 }}>{t.auth.confirmPassword}</span>}
+            label={<span className={s.text12}>{t.auth.confirmPassword}</span>}
             dependencies={['newPassword']}
             rules={[
               { required: true, message: t.auth.enterConfirmPassword },
@@ -113,14 +101,14 @@ export default function ChangePassword() {
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined style={{ color: 'var(--text-tertiary)' }} />}
+              prefix={<LockOutlined className={s.colored} />}
               placeholder={t.auth.confirmPassword}
               size="large"
             />
           </Form.Item>
 
-          <Form.Item style={{ marginTop: 8, marginBottom: 0 }}>
-            <Button type="primary" htmlType="submit" block size="large" style={{ height: 40, fontSize: 14 }}>
+          <Form.Item className={s.spaced}>
+            <Button type="primary" htmlType="submit" block size="large" className={s.text141}>
               {t.auth.changePasswordButton}
             </Button>
           </Form.Item>

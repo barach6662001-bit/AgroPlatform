@@ -19,6 +19,7 @@ import {
 import type { InventorySessionDto, InventorySessionDetailDto } from '../../types/warehouse';
 import type { WarehouseDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
+import s from './InventorySessions.module.css';
 
 const STATUS_LABELS: Record<number, string> = {
   0: 'Draft',
@@ -259,7 +260,7 @@ export default function InventorySessions() {
       render: (_: unknown, l: InventorySessionDetailDto['lines'][0]) => {
         if (!l.isCountRecorded || l.actualQuantityBase == null) return '—';
         const diff = l.actualQuantityBase - l.expectedQuantityBase;
-        return <span style={{ color: diff === 0 ? 'inherit' : diff > 0 ? '#3fb950' : '#f85149' }}>{diff >= 0 ? '+' : ''}{diff.toFixed(2)} {l.baseUnit}</span>;
+        return <span style={{ color: diff === 0 ? 'inherit' : diff > 0 ? 'var(--success)' : 'var(--error)' }}>{diff >= 0 ? '+' : ''}{diff.toFixed(2)} {l.baseUnit}</span>;
       },
     },
     {
@@ -287,11 +288,11 @@ export default function InventorySessions() {
         subtitle={t.inventorySessions.subtitle}
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.warehouses, path: '/warehouses' }, { label: t.nav.inventory }]} />}
       />
-      <Space style={{ marginBottom: 16 }}>
+      <Space className={s.spaced}>
         <Select
           placeholder={t.inventorySessions.selectWarehouse}
           allowClear
-          style={{ width: 240 }}
+          className={s.block2}
           options={warehouses.map(w => ({ value: w.id, label: w.name }))}
           onChange={(v) => { setSelectedWarehouse(v); setPage(1); loadSessions(v, 1); }}
         />
@@ -326,7 +327,7 @@ export default function InventorySessions() {
         cancelText={t.common?.cancel ?? 'Cancel'}
         confirmLoading={startSaving}
       >
-        <Form form={startForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={startForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="warehouseId" label={t.inventorySessions.warehouse} rules={[{ required: true }]}>
             <Select options={warehouses.map(w => ({ value: w.id, label: w.name }))} placeholder={t.inventorySessions.selectWarehouse} />
           </Form.Item>
@@ -370,7 +371,7 @@ export default function InventorySessions() {
       >
         {detail && (
           <>
-            <Descriptions size="small" style={{ marginBottom: 16 }}>
+            <Descriptions size="small" className={s.spaced}>
               <Descriptions.Item label={t.inventorySessions.warehouse}>{detail.warehouseName}</Descriptions.Item>
               <Descriptions.Item label={t.inventorySessions.status}>
                 <Tag color={STATUS_COLORS[detail.status]}>{getStatusLabel(detail.status)}</Tag>
@@ -400,9 +401,9 @@ export default function InventorySessions() {
         cancelText={t.common?.cancel ?? 'Cancel'}
         confirmLoading={countSaving}
       >
-        <Form form={countForm} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={countForm} layout="vertical" className={s.spaced1}>
           <Form.Item name="actualQuantity" label={t.inventorySessions.actual} rules={[{ required: true }]}>
-            <InputNumber min={0} step={0.001} style={{ width: '100%' }} />
+            <InputNumber min={0} step={0.001} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="note" label={t.inventorySessions.notes}>
             <Input />

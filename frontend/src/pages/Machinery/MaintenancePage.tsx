@@ -10,6 +10,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { formatDate } from '../../utils/dateFormat';
+import s from './MaintenancePage.module.css';
 
 const MAINTENANCE_TYPES = ['Scheduled', 'Repair', 'Inspection'];
 
@@ -126,7 +127,7 @@ export default function MaintenancePage() {
 
   return (
     <div>
-      <Space style={{ marginBottom: 16 }}>
+      <Space className={s.spaced}>
         <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(`/machinery/${id}`)}>
           {t.machinery.back}
         </Button>
@@ -162,9 +163,9 @@ export default function MaintenancePage() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={form} layout="vertical" className={s.spaced1}>
           <Form.Item name="date" label={t.maintenance.date} rules={[{ required: true, message: t.common.required }]}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="type" label={t.maintenance.type} rules={[{ required: true, message: t.common.required }]}>
             <Select options={MAINTENANCE_TYPES.map((tp) => ({
@@ -176,13 +177,13 @@ export default function MaintenancePage() {
             <Input.TextArea rows={2} />
           </Form.Item>
           <Form.Item name="cost" label={t.maintenance.cost}>
-            <InputNumber min={0} step={100} style={{ width: '100%' }} addonAfter="UAH" />
+            <InputNumber min={0} step={100} className={s.fullWidth} addonAfter="UAH" />
           </Form.Item>
           <Form.Item name="hoursAtMaintenance" label={t.maintenance.hoursAtMaintenance}>
-            <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+            <InputNumber min={0} step={0.1} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="nextMaintenanceDate" label={t.maintenance.nextMaintenanceDate}>
-            <DatePicker style={{ width: '100%' }} />
+            <DatePicker className={s.fullWidth} />
           </Form.Item>
         </Form>
       </Modal>

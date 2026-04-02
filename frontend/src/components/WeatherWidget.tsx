@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, Spin, Typography } from 'antd';
 import { CloudOutlined } from '@ant-design/icons';
 import apiClient from '../api/axios';
+import s from './WeatherWidget.module.css';
 
 const { Text } = Typography;
 
@@ -49,26 +50,26 @@ export default function WeatherWidget() {
   return (
     <Card
       size="small"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', minWidth: 220, borderRadius: 10 }}
+      className={s.bg}
       styles={{ body: { padding: '10px 14px' } }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div className={s.flex_center}>
         {icon ? (
           <img
             src={`https://openweathermap.org/img/wn/${icon}.png`}
             alt={desc}
-            style={{ width: 40, height: 40 }}
+            className={s.block2}
           />
         ) : (
-          <CloudOutlined style={{ fontSize: 32, color: 'var(--text-tertiary)' }} />
+          <CloudOutlined className={s.text32} />
         )}
         <div>
-          <div style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: 22, lineHeight: 1 }}>
+          <div className={s.text22}>
             {Math.round(data.main.temp)}°C
           </div>
-          <Text style={{ color: 'var(--text-tertiary)', fontSize: 12 }}>{desc}</Text>
+          <Text className={s.text12}>{desc}</Text>
         </div>
-        <div style={{ marginLeft: 12, fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.7 }}>
+        <div className={s.text121}>
           <div>💧 {data.main.humidity}%</div>
           <div>💨 {data.wind?.speed} м/с</div>
           <div>🌡 {Math.round(data.main.feels_like)}°C</div>

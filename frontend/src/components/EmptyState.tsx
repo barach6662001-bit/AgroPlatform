@@ -1,5 +1,6 @@
 import { Button, Typography } from 'antd';
 import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
+import s from './EmptyState.module.css';
 
 const { Text } = Typography;
 
@@ -11,8 +12,8 @@ interface EmptyStateProps {
 
 export default function EmptyState({ message, actionLabel, onAction }: EmptyStateProps) {
   return (
-    <div style={{ textAlign: 'center', padding: '40px 0' }}>
-      <InboxOutlined style={{ fontSize: 40, color: 'var(--text-secondary)', marginBottom: 12 }} />
+    <div className={s.textCenter}>
+      <InboxOutlined className={s.text40} />
       <div>
         <Text type="secondary">{message}</Text>
       </div>
@@ -21,7 +22,7 @@ export default function EmptyState({ message, actionLabel, onAction }: EmptyStat
           type="primary"
           icon={<PlusOutlined />}
           onClick={onAction}
-          style={{ marginTop: 12 }}
+          className={s.spaced}
         >
           {actionLabel}
         </Button>

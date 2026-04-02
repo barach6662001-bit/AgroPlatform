@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
 import { useTranslation, languages } from '../i18n';
 import Logo from '../components/Logo';
+import s from './Login.module.css';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -26,8 +27,8 @@ export default function Login() {
   const langMenuItems = languages.map(l => ({
     key: l.code,
     label: (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <img src={l.flag} alt={l.shortLabel} style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2 }} />
+      <div className={s.flex_center}>
+        <img src={l.flag} alt={l.shortLabel} className={s.bordered} />
         <span>{l.label}</span>
       </div>
     ),
@@ -65,112 +66,57 @@ export default function Login() {
         }
       `}</style>
       <div
-        className="login-layout"
-        style={{
-          minHeight: '100vh',
-          background: 'var(--bg-app)',
-        }}
+        className={`login-layout ${s.bg}`}
+        
       >
         {/* Left side — branding */}
         <div
-          className="login-left-side"
-          style={{
-            background: 'var(--bg-surface)',
-            borderRight: '1px solid var(--border)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
+          className={`login-left-side ${s.flex_between_col}`}
+          
         >
           {/* Decorative gradient */}
-        <div style={{
-          position: 'absolute',
-          top: -100,
-          left: -100,
-          width: 400,
-          height: 400,
-          background: 'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
+        <div className={s.bg1} />
 
         {/* Logo */}
         <Logo size={40} variant="full" />
 
         {/* Center content */}
         <div>
-          <div style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: 'var(--brand)',
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            marginBottom: 16,
-          }}>
+          <div className={s.upper}>
             {t.auth.platformTagline}
           </div>
-          <h2 style={{
-            margin: '0 0 16px',
-            fontSize: 40,
-            fontWeight: 700,
-            color: 'var(--text-primary)',
-            letterSpacing: '-1px',
-            lineHeight: 1.15,
-          }}>
+          <h2 className={s.text40}>
             {t.auth.heroHeadline}
           </h2>
-          <p style={{
-            margin: 0,
-            fontSize: 16,
-            color: 'var(--text-secondary)',
-            lineHeight: 1.6,
-            maxWidth: 480,
-          }}>
+          <p className={s.text16}>
             {t.auth.heroDescription}
           </p>
 
           {/* Feature list */}
-          <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className={s.flex_col}>
             {features.map(feature => (
-              <div key={feature} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: '50%',
-                  background: 'var(--brand-muted)',
-                  border: '1px solid var(--brand-border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}>
+              <div key={feature} className={s.flex_center1}>
+                <div className={s.flex_center_centered}>
                   <svg width="10" height="10" viewBox="0 0 12 12">
                     <path d="M2 6l3 3 5-5" stroke="var(--brand)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
                   </svg>
                 </div>
-                <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{feature}</span>
+                <span className={s.text14}>{feature}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
+        <div className={s.text12}>
           {t.auth.copyright}
         </div>
       </div>
 
       {/* Right side — form */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '48px 40px',
-        position: 'relative',
-      }}>
+      <div className={s.flex_center_centered1}>
         {/* Language switcher */}
-        <div style={{ position: 'absolute', top: 20, right: 20 }}>
+        <div className={s.block14}>
           <Dropdown
             menu={{
               items: langMenuItems,
@@ -178,27 +124,21 @@ export default function Login() {
               onClick: ({ key }) => setLang(key as 'uk' | 'en'),
             }}
           >
-            <Button type="text" style={{ color: 'var(--text-secondary)', padding: '4px 8px' }}>
-              <img src={currentLang?.flag} alt={currentLang?.shortLabel} style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2, marginRight: 4 }} />
-              <span style={{ fontSize: 13, fontWeight: 500 }}>
+            <Button type="text" className={s.padded}>
+              <img src={currentLang?.flag} alt={currentLang?.shortLabel} className={s.spaced} />
+              <span className={s.text13}>
                 {currentLang?.shortLabel}
               </span>
             </Button>
           </Dropdown>
         </div>
 
-        <div style={{ width: '100%', maxWidth: 320 }}>
-          <div style={{ marginBottom: 32 }}>
-            <h3 style={{
-              margin: '0 0 4px',
-              fontSize: 20,
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.3px',
-            }}>
+        <div className={s.fullWidth}>
+          <div className={s.spaced1}>
+            <h3 className={s.text20}>
               {t.auth.loginTitle}
             </h3>
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--text-tertiary)' }}>
+            <p className={s.text131}>
               {t.auth.loginSubtitle}
             </p>
           </div>
@@ -206,32 +146,32 @@ export default function Login() {
           <Form layout="vertical" onFinish={onFinish}>
             <Form.Item
               name="email"
-              label={<span style={{ color: 'var(--text-secondary)', fontSize: 12, fontWeight: 500 }}>{t.auth.email}</span>}
+              label={<span className={s.text121}>{t.auth.email}</span>}
               rules={[{ required: true, type: 'email', message: t.auth.enterEmail }]}
             >
               <Input
-                prefix={<UserOutlined style={{ color: 'var(--text-tertiary)' }} />}
+                prefix={<UserOutlined className={s.colored} />}
                 placeholder={t.auth.email}
                 size="large"
               />
             </Form.Item>
             <Form.Item
               name="password"
-              label={<span style={{ color: 'var(--text-secondary)', fontSize: 12, fontWeight: 500 }}>{t.auth.password}</span>}
+              label={<span className={s.text121}>{t.auth.password}</span>}
               rules={[{ required: true, message: t.auth.enterPassword }]}
             >
               <Input.Password
-                prefix={<LockOutlined style={{ color: 'var(--text-tertiary)' }} />}
+                prefix={<LockOutlined className={s.colored} />}
                 placeholder={t.auth.password}
                 size="large"
               />
             </Form.Item>
-            <Form.Item style={{ marginTop: 8, marginBottom: 12 }}>
-              <Button type="primary" htmlType="submit" block size="large" style={{ height: 40, fontSize: 14 }}>
+            <Form.Item className={s.spaced2}>
+              <Button type="primary" htmlType="submit" block size="large" className={s.text141}>
                 {t.auth.login}
               </Button>
             </Form.Item>
-            <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-tertiary)' }}>
+            <div className={s.textCenter}>
               AgroTech Platform
             </div>
           </Form>

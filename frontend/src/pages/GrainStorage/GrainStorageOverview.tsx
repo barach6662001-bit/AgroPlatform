@@ -14,13 +14,14 @@ import type { GrainStorageOverviewDto, GrainBatchSummaryDto } from '../../types/
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import s from './GrainStorageOverview.module.css';
 
 const { Text } = Typography;
 
 function occupancyColor(pct: number): string {
-  if (pct >= 90) return '#ff4d4f';
-  if (pct >= 70) return '#faad14';
-  return '#52c41a';
+  if (pct >= 90) return 'var(--error)';
+  if (pct >= 70) return 'var(--warning)';
+  return 'var(--success)';
 }
 
 function ownershipLabel(t: ReturnType<typeof useTranslation>['t'], value: number): string {
@@ -74,8 +75,8 @@ function batchColumns(t: ReturnType<typeof useTranslation>['t']): ColumnsType<Gr
         if (v == null) return '—';
         const high = v > 15;
         return (
-          <Text style={{ color: high ? '#faad14' : undefined }}>
-            {v.toFixed(1)}%{high && <WarningOutlined style={{ marginLeft: 4 }} />}
+          <Text style={{ color: high ? 'var(--warning)' : undefined }}>
+            {v.toFixed(1)}%{high && <WarningOutlined className={s.spaced} />}
           </Text>
         );
       },
@@ -149,7 +150,7 @@ export default function GrainStorageOverview() {
             <Select
               allowClear
               placeholder={t.grainStorages.filterAllStorages}
-              style={{ width: 200 }}
+              className={s.block3}
               options={storageOptions}
               value={selectedStorageId}
               onChange={setSelectedStorageId}
@@ -159,15 +160,15 @@ export default function GrainStorageOverview() {
       />
 
       {/* Summary KPI row */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Row gutter={[16, 16]} className={s.spaced1}>
         <Col xs={24} sm={12} md={6}>
           <Card size="small">
-            <Text type="secondary" style={{ fontSize: 12 }}>{t.grainStorages.occupied}</Text>
-            <div style={{ fontSize: 22, fontWeight: 700, marginTop: 4 }}>
+            <Text type="secondary" className={s.text12}>{t.grainStorages.occupied}</Text>
+            <div className={s.text22}>
               {totalOccupied.toFixed(1)} т
             </div>
             {totalCapacity > 0 && (
-              <Text type="secondary" style={{ fontSize: 11 }}>
+              <Text type="secondary" className={s.text11}>
                 / {totalCapacity.toFixed(1)} т {t.grainStorages.capacity}
               </Text>
             )}
@@ -175,24 +176,24 @@ export default function GrainStorageOverview() {
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card size="small">
-            <Text type="secondary" style={{ fontSize: 12 }}>{t.grainStorages.batches}</Text>
-            <div style={{ fontSize: 22, fontWeight: 700, marginTop: 4 }}>{totalBatches}</div>
+            <Text type="secondary" className={s.text12}>{t.grainStorages.batches}</Text>
+            <div className={s.text22}>{totalBatches}</div>
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card size="small">
-            <Text type="secondary" style={{ fontSize: 12 }}>{t.grainStorages.title}</Text>
-            <div style={{ fontSize: 22, fontWeight: 700, marginTop: 4 }}>{data.length}</div>
+            <Text type="secondary" className={s.text12}>{t.grainStorages.title}</Text>
+            <div className={s.text22}>{data.length}</div>
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card size="small">
-            <Text type="secondary" style={{ fontSize: 12 }}>{t.grainStorages.warningsTitle}</Text>
-            <div style={{ fontSize: 22, fontWeight: 700, marginTop: 4, color: storagesWithWarnings > 0 ? '#faad14' : '#52c41a' }}>
+            <Text type="secondary" className={s.text12}>{t.grainStorages.warningsTitle}</Text>
+            <div style={{ fontSize: 22, fontWeight: 700, marginTop: 4, color: storagesWithWarnings > 0 ? 'var(--warning)' : 'var(--success)' }}>
               {storagesWithWarnings > 0 ? (
-                <><WarningOutlined style={{ marginRight: 6 }} />{storagesWithWarnings}</>
+                <><WarningOutlined className={s.spaced2} />{storagesWithWarnings}</>
               ) : (
-                <><CheckCircleOutlined style={{ marginRight: 6 }} />0</>
+                <><CheckCircleOutlined className={s.spaced2} />0</>
               )}
             </div>
           </Card>
@@ -202,8 +203,8 @@ export default function GrainStorageOverview() {
       {/* Per-storage cards */}
       {!loading && data.length === 0 && (
         <Card>
-          <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-tertiary)' }}>
-            <DatabaseOutlined style={{ fontSize: 40, marginBottom: 12 }} />
+          <div className={s.textCenter}>
+            <DatabaseOutlined className={s.text40} />
             <div>{t.grainStorages.noStorages}</div>
           </div>
         </Card>
@@ -212,7 +213,7 @@ export default function GrainStorageOverview() {
       <Row gutter={[16, 16]}>
         {data.map(storage => {
           const pct = storage.occupancyPercent ?? 0;
-          const color = storage.capacityTons ? occupancyColor(pct) : '#1677ff';
+          const color = storage.capacityTons ? occupancyColor(pct) : 'var(--info)';
 
           return (
             <Col xs={24} key={storage.id}>
@@ -221,7 +222,7 @@ export default function GrainStorageOverview() {
                 styles={{ body: { padding: '16px 20px' } }}
                 title={
                   <Space>
-                    <span style={{ fontWeight: 700 }}>{storage.name}</span>
+                    <span className={s.bold}>{storage.name}</span>
                     {storage.code && <Tag>{storage.code}</Tag>}
                     {storage.storageType && <Tag color="geekblue">{storage.storageType}</Tag>}
                     <Badge
@@ -243,25 +244,25 @@ export default function GrainStorageOverview() {
               >
                 {/* Warnings */}
                 {storage.warnings.length > 0 && (
-                  <div style={{ marginBottom: 12 }}>
+                  <div className={s.spaced3}>
                     {storage.warnings.map((w, i) => (
                       <Alert
                         key={i}
                         type="warning"
                         showIcon
                         message={w}
-                        style={{ marginBottom: 6 }}
+                        className={s.spaced4}
                       />
                     ))}
                   </div>
                 )}
 
                 {/* Occupancy + stats */}
-                <Row gutter={[24, 16]} style={{ marginBottom: 16 }}>
+                <Row gutter={[24, 16]} className={s.spaced5}>
                   <Col xs={24} md={8}>
                     {storage.capacityTons ? (
                       <>
-                        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 4 }}>
+                        <div className={s.text121}>
                           {t.grainStorages.occupancy}
                         </div>
                         <Tooltip title={`${storage.occupiedTons.toFixed(2)} / ${storage.capacityTons.toFixed(2)} т`}>
@@ -271,30 +272,30 @@ export default function GrainStorageOverview() {
                             format={p => `${p}%`}
                           />
                         </Tooltip>
-                        <Space style={{ marginTop: 6 }}>
-                          <Text style={{ fontSize: 12 }}>
+                        <Space className={s.spaced6}>
+                          <Text className={s.text12}>
                             {t.grainStorages.occupied}: <strong>{storage.occupiedTons.toFixed(2)} т</strong>
                           </Text>
-                          <Text style={{ fontSize: 12 }}>
+                          <Text className={s.text12}>
                             {t.grainStorages.free}: <strong>{(storage.freeTons ?? 0).toFixed(2)} т</strong>
                           </Text>
                         </Space>
                       </>
                     ) : (
                       <>
-                        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 4 }}>
+                        <div className={s.text121}>
                           {t.grainStorages.occupied}
                         </div>
-                        <div style={{ fontSize: 20, fontWeight: 700 }}>
+                        <div className={s.text20}>
                           {storage.occupiedTons.toFixed(2)} т
                         </div>
-                        <Text type="secondary" style={{ fontSize: 11 }}>{t.grainStorages.noCapacity}</Text>
+                        <Text type="secondary" className={s.text11}>{t.grainStorages.noCapacity}</Text>
                       </>
                     )}
                   </Col>
 
                   <Col xs={24} md={8}>
-                    <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 6 }}>
+                    <div className={s.text122}>
                       {t.grainStorages.grainTypes}
                     </div>
                     {storage.grainTypes.length > 0 ? (
@@ -309,14 +310,14 @@ export default function GrainStorageOverview() {
                   </Col>
 
                   <Col xs={24} md={8}>
-                    <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 4 }}>
+                    <div className={s.text121}>
                       {t.grainStorages.batchesInStorage}
                     </div>
-                    <div style={{ fontSize: 20, fontWeight: 700 }}>
+                    <div className={s.text20}>
                       {storage.batchCount}
                     </div>
                     {storage.location && (
-                      <Text type="secondary" style={{ fontSize: 11 }}>{storage.location}</Text>
+                      <Text type="secondary" className={s.text11}>{storage.location}</Text>
                     )}
                   </Col>
                 </Row>
@@ -329,12 +330,12 @@ export default function GrainStorageOverview() {
                     rowKey="id"
                     size="small"
                     pagination={false}
-                    style={{ marginTop: 8 }}
+                    className={s.spaced7}
                   />
                 )}
 
                 {storage.batches.length === 0 && (
-                  <div style={{ color: 'var(--text-tertiary)', fontSize: 12, padding: '8px 0' }}>
+                  <div className={s.text123}>
                     {t.grainStorages.noBatches}
                   </div>
                 )}

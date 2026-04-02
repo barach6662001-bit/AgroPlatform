@@ -1,0 +1,4 @@
+.colored {
+  color: var(--text-primary);
+  white-space: nowrap;
+}

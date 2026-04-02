@@ -3,6 +3,7 @@ import { Table, Button, Tag, Space, Modal, Form, Input, Select, message, Popconf
 import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
+import s from './CompanyUsersPage.module.css';
 import {
   getCompanyUsers,
   createUser,
@@ -103,9 +104,9 @@ export default function CompanyUsersPage() {
       key: 'email',
       render: (email: string, record: CompanyUserDto) => (
         <div>
-          <div style={{ color: 'var(--text-primary)' }}>{email}</div>
+          <div className={s.colored}>{email}</div>
           {(record.firstName || record.lastName) && (
-            <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
+            <div className={s.text12}>
               {[record.firstName, record.lastName].filter(Boolean).join(' ')}
             </div>
           )}
@@ -120,7 +121,7 @@ export default function CompanyUsersPage() {
         <Select
           value={role}
           size="small"
-          style={{ width: 160 }}
+          className={s.block2}
           onChange={(v) => onRoleChange(record.id, v)}
           options={COMPANY_ROLES.map((r) => ({
             value: r,
@@ -177,13 +178,13 @@ export default function CompanyUsersPage() {
   ];
 
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div className={s.padded}>
+      <div className={s.flex_center_between}>
+        <div className={s.flex_center}>
           <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/superadmin/companies')} />
           <div>
-            <h2 style={{ margin: 0, color: 'var(--text-primary)' }}>{t.superAdmin.usersTitle}</h2>
-            <p style={{ margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: 13 }}>
+            <h2 className={s.spaced}>{t.superAdmin.usersTitle}</h2>
+            <p className={s.text13}>
               {t.superAdmin.usersSubtitle}
             </p>
           </div>
@@ -208,7 +209,7 @@ export default function CompanyUsersPage() {
         footer={null}
         destroyOnClose
       >
-        <Form form={form} layout="vertical" onFinish={onSubmit} style={{ marginTop: 16 }}>
+        <Form form={form} layout="vertical" onFinish={onSubmit} className={s.spaced1}>
           <Form.Item name="email" label={t.auth.email} rules={[{ required: true, type: 'email' }]}>
             <Input />
           </Form.Item>
@@ -229,7 +230,7 @@ export default function CompanyUsersPage() {
               }))}
             />
           </Form.Item>
-          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+          <Form.Item className={s.textRight}>
             <Space>
               <Button onClick={() => setModalOpen(false)}>{t.common.cancel}</Button>
               <Button type="primary" htmlType="submit">{t.common.create}</Button>

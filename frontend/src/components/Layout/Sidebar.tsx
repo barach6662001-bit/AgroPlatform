@@ -9,6 +9,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useThemeStore } from '../../stores/themeStore';
+import s from './Sidebar.module.css';
 
 const groupKeys = new Set([
   'fields-group', 'operations-group', 'storage-group',
@@ -231,7 +232,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       )?.key ?? '/';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>
+    <div className={s.flex_col}>
       <Menu
         theme={appTheme === 'dark' ? 'dark' : 'light'}
         mode="inline"
@@ -243,14 +244,14 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
         onClick={({ key }) => {
           if (!groupKeys.has(key)) navigate(key);
         }}
-        style={{ borderRight: 0, flex: 1, overflowY: 'auto', background: 'transparent' }}
+        className={s.bg}
       />
       {!collapsed && (
-        <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)' }}>
-          <span style={{ fontSize: 11, color: 'var(--text-disabled)', display: 'block' }}>
+        <div className={s.padded}>
+          <span className={s.text11}>
             v1.0.0 · Agrotech Platform
           </span>
-          <span style={{ fontSize: 10, color: 'var(--text-disabled)' }}>
+          <span className={s.text10}>
             {import.meta.env.MODE}
           </span>
         </div>

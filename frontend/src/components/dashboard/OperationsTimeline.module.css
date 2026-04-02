@@ -1,0 +1,53 @@
+.padded {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.flex_center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.text16 {
+  color: var(--success);
+  font-size: 16px;
+}
+
+.text161 {
+  color: var(--warning);
+  font-size: 16px;
+}
+
+.block4 {
+  flex: 1;
+  min-width: 0;
+}
+
+.text13 {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.text11 {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.textRight {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.text111 {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.text10 {
+  font-size: 10px;
+  margin: 0;
+  border-radius: 4px;
+}
