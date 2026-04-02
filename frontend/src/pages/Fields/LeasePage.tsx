@@ -13,6 +13,7 @@ import type { FieldDto } from '../../types/field';
 import type { GrainBatchDto } from '../../types/grain';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
@@ -269,7 +270,11 @@ export default function LeasePage() {
 
   return (
     <div>
-      <PageHeader title={t.lease.title} subtitle={t.lease.subtitle} />
+      <PageHeader
+        title={t.lease.title}
+        subtitle={t.lease.subtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.fields, path: '/fields' }, { label: t.nav.leases }]} />}
+      />
 
       <Card style={{ marginBottom: 16 }}>
         <Space wrap>

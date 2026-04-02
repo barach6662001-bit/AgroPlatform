@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { getGrainStorageOverview } from '../../api/grain';
 import type { GrainStorageOverviewDto, GrainBatchSummaryDto } from '../../types/grain';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 
 const { Text } = Typography;
@@ -136,6 +137,7 @@ export default function GrainStorageOverview() {
       <PageHeader
         title={t.grainStorages.overviewTitle}
         subtitle={t.grainStorages.overviewSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.storageLogistics, path: '/warehouses' }, { label: t.nav.grainOverview }]} />}
         actions={
           <Space>
             <Switch

@@ -5,6 +5,7 @@ import { DollarOutlined, RiseOutlined, TrophyOutlined, PrinterOutlined } from '@
 import { getFieldPnl } from '../../api/economics';
 import type { FieldPnlDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { printReport } from '../../utils/printReport';
 
@@ -155,7 +156,11 @@ export default function FieldPnl() {
 
   return (
     <div>
-      <PageHeader title={t.economics.pnlTitle} subtitle={t.economics.pnlSubtitle} />
+      <PageHeader
+        title={t.economics.pnlTitle}
+        subtitle={t.economics.pnlSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.pnl }]} />}
+      />
 
       {/* Filters */}
       <Space style={{ marginBottom: 24 }} wrap>

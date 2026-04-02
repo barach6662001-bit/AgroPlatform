@@ -14,6 +14,7 @@ import {
 import { getFieldEfficiency } from '../../api/analytics';
 import type { FieldEfficiencyDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 
 export default function FieldEfficiency() {
@@ -73,7 +74,11 @@ export default function FieldEfficiency() {
 
   return (
     <div>
-      <PageHeader title={t.analytics.fieldEfficiency} subtitle={t.analytics.title} />
+      <PageHeader
+        title={t.analytics.fieldEfficiency}
+        subtitle={t.analytics.title}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.analytics, path: '/analytics/efficiency' }, { label: t.nav.efficiency }]} />}
+      />
       {loading ? (
         <TableSkeleton />
       ) : (

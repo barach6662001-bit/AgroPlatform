@@ -6,6 +6,7 @@ import { getStockMovements, getWarehouses, getWarehouseItems } from '../../api/w
 import type { StockMoveDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { formatDate } from '../../utils/dateFormat';
 
@@ -124,7 +125,11 @@ export default function StockMovements() {
 
   return (
     <div>
-      <PageHeader title={t.warehouses.movementsTitle} subtitle={t.warehouses.movementsSubtitle} />
+      <PageHeader
+        title={t.warehouses.movementsTitle}
+        subtitle={t.warehouses.movementsSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.warehouses, path: '/warehouses' }, { label: t.nav.movements }]} />}
+      />
 
       <Space style={{ marginBottom: 16 }} wrap>
         <Select

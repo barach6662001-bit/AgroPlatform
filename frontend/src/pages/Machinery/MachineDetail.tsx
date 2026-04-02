@@ -17,6 +17,7 @@ import { getFuelTransactions } from '../../api/fuel';
 import type { MachineDetailDto, WorkLogDto } from '../../types/machinery';
 import type { FuelTransactionDto } from '../../types/fuel';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
@@ -204,6 +205,7 @@ export default function MachineDetail() {
       <PageHeader
         title={machine.name}
         subtitle={`${t.machineryTypes[machine.type as keyof typeof t.machineryTypes] || machine.type} | ${machine.inventoryNumber}`}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.machinery, path: '/machinery' }, { label: machine.name }]} />}
       />
 
       <Row gutter={[16, 16]}>

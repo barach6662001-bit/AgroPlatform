@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { getGrainStorages, createGrainStorage, updateGrainStorage, deleteGrainStorage } from '../../api/grain';
 import type { GrainStorageDto } from '../../types/grain';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 
@@ -179,6 +180,7 @@ export default function GrainStorageList() {
       <PageHeader
         title={t.grainStorages.title}
         subtitle={t.grainStorages.subtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.storageLogistics, path: '/warehouses' }, { label: t.nav.grainStorages }]} />}
         actions={
           <Space>
             <Button

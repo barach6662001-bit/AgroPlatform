@@ -13,6 +13,7 @@ import {
 import { getSalaryFuelAnalytics } from '../../api/analytics';
 import type { SalaryFuelAnalyticsDto, FuelByMachineDto, SalaryByEmployeeDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
@@ -79,7 +80,11 @@ export default function SalaryFuelAnalytics() {
 
   return (
     <div>
-      <PageHeader title={t.analytics.salaryFuelTitle} subtitle={t.analytics.salaryFuelSubtitle} />
+      <PageHeader
+        title={t.analytics.salaryFuelTitle}
+        subtitle={t.analytics.salaryFuelSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.analytics, path: '/analytics/efficiency' }, { label: t.nav.salaryFuelAnalytics }]} />}
+      />
 
       <Row gutter={[16, 16]} align="middle" style={{ marginBottom: 16 }}>
         <Col>

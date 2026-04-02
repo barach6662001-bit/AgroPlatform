@@ -21,6 +21,7 @@ import type { AgroOperationDetailDto, AgroOperationResourceDto, AgroOperationMac
 import type { WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
 import type { MachineDto } from '../../types/machinery';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
@@ -263,6 +264,7 @@ export default function OperationDetail() {
       <PageHeader
         title={`${t.operationTypes[op.operationType as keyof typeof t.operationTypes] || op.operationType} — ${op.fieldName}`}
         subtitle={op.isCompleted ? t.operations.completed : t.operations.inProgress}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.operations, path: '/operations' }, { label: op.fieldName }]} />}
       />
 
       <Row gutter={[16, 16]}>

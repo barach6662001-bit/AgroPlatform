@@ -4,6 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { getRotationAdvice } from '../../api/fields';
 import type { RotationAdviceDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 
 const { Text } = Typography;
@@ -86,7 +87,11 @@ export default function CropRotationAdvisor() {
 
   return (
     <div>
-      <PageHeader title={t.fields.rotationAdviceTitle} subtitle={t.fields.rotationAdviceSubtitle} />
+      <PageHeader
+        title={t.fields.rotationAdviceTitle}
+        subtitle={t.fields.rotationAdviceSubtitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.fields, path: '/fields' }, { label: t.nav.cropRotationAdvisor }]} />}
+      />
       <div style={{ marginBottom: 16 }}>
         <Text style={{ marginRight: 8 }}>{t.fields.rotationYears}:</Text>
         <Select

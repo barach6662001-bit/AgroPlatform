@@ -12,6 +12,7 @@ import type { FieldDetailDto, CropHistoryDto, CropRotationPlanDto, CropType } fr
 import type { LandLeaseDto } from '../../types/lease';
 import type { FieldPnlDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import FieldDrawMap from '../../components/Map/FieldDrawMap';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
@@ -248,7 +249,11 @@ export default function FieldDetail() {
           {t.fields.backToList}
         </Button>
       </Space>
-      <PageHeader title={field.name} subtitle={t.fields.areaSubtitle.replace('{{area}}', field.areaHectares.toFixed(2))} />
+      <PageHeader
+        title={field.name}
+        subtitle={t.fields.areaSubtitle.replace('{{area}}', field.areaHectares.toFixed(2))}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.fields, path: '/fields' }, { label: field.name }]} />}
+      />
 
       {pnl && (
         <Row gutter={12} style={{ marginBottom: 20 }}>
