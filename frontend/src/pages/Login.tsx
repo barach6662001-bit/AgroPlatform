@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
 import { useTranslation, languages } from '../i18n';
+import Logo from '../components/Logo';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -95,29 +96,7 @@ export default function Login() {
         }} />
 
         {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 36,
-            height: 36,
-            background: 'linear-gradient(135deg, #238636 0%, #2ea043 100%)',
-            borderRadius: 10,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 0 12px rgba(35,134,54,0.3)',
-          }}>
-            <span style={{ fontSize: 20 }}>🌿</span>
-          </div>
-          <div>
-            <div>
-              <span style={{ color: '#e6edf3', fontWeight: 700, fontSize: 24 }}>Agro</span>
-              <span style={{ color: '#2ea043', fontWeight: 700, fontSize: 24 }}>Tech</span>
-            </div>
-            <p style={{ color: '#8b949e', fontSize: 13, margin: '4px 0 0' }}>
-              {t.auth.platformSubtitle}
-            </p>
-          </div>
-        </div>
+        <Logo size={40} variant="full" />
 
         {/* Center content */}
         <div>

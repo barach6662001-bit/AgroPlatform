@@ -8,6 +8,7 @@ import MobileDrawer from './MobileDrawer';
 import NotificationBell from './NotificationBell';
 import FarmSwitcher from './FarmSwitcher';
 import OfflineIndicator from '../OfflineIndicator';
+import Logo from '../Logo';
 import { useAuthStore } from '../../stores/authStore';
 import { useTranslation, languages } from '../../i18n';
 
@@ -88,47 +89,13 @@ export default function AppLayout() {
           {/* Logo */}
           <div style={{
             padding: sidebarCollapsed ? '16px 0' : '16px 20px',
-            borderBottom: '1px solid #21262d',
+            borderBottom: '1px solid var(--border)',
             display: 'flex',
             alignItems: 'center',
-            gap: 10,
             flexShrink: 0,
             justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
           }}>
-            <div style={{
-              width: 32,
-              height: 32,
-              background: 'linear-gradient(135deg, #238636 0%, #2ea043 100%)',
-              borderRadius: 8,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              boxShadow: '0 0 12px rgba(35,134,54,0.3)',
-            }}>
-              <span style={{ fontSize: 16 }}>🌿</span>
-            </div>
-            {!sidebarCollapsed && (
-              <div>
-                <div style={{
-                  color: '#e6edf3',
-                  fontWeight: 700,
-                  fontSize: 16,
-                  letterSpacing: '-0.3px',
-                  lineHeight: 1.1,
-                }}>
-                  Agro<span style={{ color: '#2ea043' }}>Tech</span>
-                </div>
-                <div style={{
-                  color: '#484f58',
-                  fontSize: 10,
-                  letterSpacing: '0.5px',
-                  textTransform: 'uppercase',
-                }}>
-                  Farm Management
-                </div>
-              </div>
-            )}
+            <Logo size={32} variant={sidebarCollapsed ? 'icon' : 'full'} />
           </div>
 
           {/* Navigation */}
