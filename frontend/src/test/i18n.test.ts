@@ -115,20 +115,20 @@ describe('i18n', () => {
     it('each language has a flag emoji', () => {
       for (const lang of languages) {
         expect(lang.flag, `${lang.code} should have a flag`).toBeTruthy();
-        // Emoji flags are surrogate pairs — length > 1
-        expect(lang.flag.length, `${lang.code} flag should be an emoji`).toBeGreaterThan(1);
+        // Flags are CDN image URLs
+        expect(lang.flag, `${lang.code} flag should be a URL`).toContain('flagcdn.com');
       }
     });
 
     it('Ukrainian entry has correct flag and shortLabel', () => {
       const uk = languages.find(l => l.code === 'uk');
-      expect(uk?.flag).toBe('🇺🇦');
+      expect(uk?.flag).toBe('https://flagcdn.com/w40/ua.png');
       expect(uk?.shortLabel).toBe('UA');
     });
 
     it('English entry has correct flag and shortLabel', () => {
       const en = languages.find(l => l.code === 'en');
-      expect(en?.flag).toBe('🇬🇧');
+      expect(en?.flag).toBe('https://flagcdn.com/w40/gb.png');
       expect(en?.shortLabel).toBe('EN');
     });
   });
