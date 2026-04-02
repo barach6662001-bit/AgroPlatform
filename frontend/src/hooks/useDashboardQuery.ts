@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getDashboard } from '../api/analytics';
 import { getNotifications } from '../api/notifications';
 import { getFields } from '../api/fields';
+import { getOperations } from '../api/operations';
 import { useAuthStore } from '../stores/authStore';
 
 export const DASHBOARD_QUERY_KEY = (tenantId?: string | null) =>
@@ -35,5 +36,17 @@ export function useDashboardFieldsQuery() {
     queryKey: DASHBOARD_FIELDS_QUERY_KEY(tenantId),
     queryFn: ({ signal }) => getFields({ pageSize: 8 }, signal),
     staleTime: 120_000,
+  });
+}
+
+export const DASHBOARD_OPERATIONS_QUERY_KEY = (tenantId?: string | null) =>
+  ['dashboard', tenantId, 'operations'] as const;
+
+export function useDashboardOperationsQuery() {
+  const { tenantId } = useAuthStore();
+  return useQuery({
+    queryKey: DASHBOARD_OPERATIONS_QUERY_KEY(tenantId),
+    queryFn: ({ signal }) => getOperations({ pageSize: 8 }),
+    staleTime: 60_000,
   });
 }
