@@ -712,7 +712,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea")
+                        .HasDefaultValueSql("'\\x00'::bytea");
 
                     b.Property<string>("SoilType")
                         .HasMaxLength(100)
@@ -1556,7 +1557,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea")
+                        .HasDefaultValueSql("'\\x00'::bytea");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -2454,7 +2456,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea")
+                        .HasDefaultValueSql("'\\x00'::bytea");
 
                     b.Property<string>("Status")
                         .IsRequired()

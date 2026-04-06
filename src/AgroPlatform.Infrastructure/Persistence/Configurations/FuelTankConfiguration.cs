@@ -28,7 +28,9 @@ public class FuelTankConfiguration : IEntityTypeConfiguration<FuelTank>
             .HasPrecision(18, 4);
 
         builder.Property(t => t.RowVersion)
-            .IsRowVersion();
+            .IsRequired()
+            .IsConcurrencyToken()
+            .HasDefaultValueSql("'\\x00'::bytea");
 
         builder.Property(t => t.IsActive)
             .HasDefaultValue(true);

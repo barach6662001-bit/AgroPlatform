@@ -16,7 +16,7 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 type: "bytea",
                 rowVersion: true,
                 nullable: false,
-                defaultValue: new byte[0]);
+                defaultValueSql: "'\\x00'::bytea");
 
             migrationBuilder.AddColumn<byte[]>(
                 name: "RowVersion",
@@ -24,7 +24,7 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 type: "bytea",
                 rowVersion: true,
                 nullable: false,
-                defaultValue: new byte[0]);
+                defaultValueSql: "'\\x00'::bytea");
 
             migrationBuilder.AddColumn<byte[]>(
                 name: "RowVersion",
@@ -32,7 +32,7 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                 type: "bytea",
                 rowVersion: true,
                 nullable: false,
-                defaultValue: new byte[0]);
+                defaultValueSql: "'\\x00'::bytea");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StockMoves_OperationId",

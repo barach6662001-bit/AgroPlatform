@@ -47,7 +47,9 @@ public class FieldConfiguration : IEntityTypeConfiguration<Field>
             .HasConversion<int>();
 
         builder.Property(f => f.RowVersion)
-            .IsRowVersion();
+            .IsRequired()
+            .IsConcurrencyToken()
+            .HasDefaultValueSql("'\\x00'::bytea");
 
         builder.HasMany(f => f.CropHistory)
             .WithOne(h => h.Field)

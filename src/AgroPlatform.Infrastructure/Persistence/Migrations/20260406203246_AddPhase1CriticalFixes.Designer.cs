@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroPlatform.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260406195940_AddPhase1CriticalFixes")]
+    [Migration("20260406203246_AddPhase1CriticalFixes")]
     partial class AddPhase1CriticalFixes
     {
         /// <inheritdoc />
@@ -715,7 +715,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea")
+                        .HasDefaultValueSql("'\\x00'::bytea");
 
                     b.Property<string>("SoilType")
                         .HasMaxLength(100)
@@ -1559,7 +1560,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea")
+                        .HasDefaultValueSql("'\\x00'::bytea");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -2457,7 +2459,8 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea")
+                        .HasDefaultValueSql("'\\x00'::bytea");
 
                     b.Property<string>("Status")
                         .IsRequired()

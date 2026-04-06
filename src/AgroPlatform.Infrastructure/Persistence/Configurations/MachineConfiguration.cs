@@ -50,7 +50,9 @@ public class MachineConfiguration : IEntityTypeConfiguration<Machine>
             .HasMaxLength(200);
 
         builder.Property(m => m.RowVersion)
-            .IsRowVersion();
+            .IsRequired()
+            .IsConcurrencyToken()
+            .HasDefaultValueSql("'\\x00'::bytea");
 
         builder.HasMany(m => m.WorkLogs)
             .WithOne(w => w.Machine)
