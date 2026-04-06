@@ -7,5 +7,6 @@ public record WriteOffGrainBatchCommand(
     decimal QuantityTons,
     string? Reason = null,
     string? Notes = null,
-    DateTime? MovementDate = null
+    DateTime? MovementDate = null,
+    string? ClientOperationId = null
 ) : IRequest<Guid>;

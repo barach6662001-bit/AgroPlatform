@@ -5,6 +5,7 @@ using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.GrainStorage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AgroPlatform.Application.GrainStorage.Commands.CreateGrainMovement;
 
@@ -19,6 +20,23 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
 
     public async Task<Guid> Handle(CreateGrainMovementCommand request, CancellationToken cancellationToken)
     {
+        IDbContextTransaction? tx = _context.Database.IsRelational()
+            ? await _context.Database.BeginTransactionAsync(cancellationToken)
+            : null;
+        await using var _ = tx;
+
+        // Idempotency check
+        if (!string.IsNullOrEmpty(request.ClientOperationId))
+        {
+            var existing = await _context.GrainMovements
+                .FirstOrDefaultAsync(m => m.ClientOperationId == request.ClientOperationId, cancellationToken);
+            if (existing != null)
+            {
+                if (tx != null) await tx.CommitAsync(cancellationToken);
+                return existing.Id;
+            }
+        }
+
         var batch = await _context.GrainBatches
             .FirstOrDefaultAsync(b => b.Id == request.GrainBatchId, cancellationToken)
             ?? throw new NotFoundException(nameof(GrainBatch), request.GrainBatchId);
@@ -33,6 +51,7 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
             Notes = request.Notes,
             PricePerTon = request.PricePerTon,
             BuyerName = request.BuyerName,
+            ClientOperationId = request.ClientOperationId,
         };
 
         bool isIncoming = request.MovementType is GrainMovementType.Receipt or GrainMovementType.Merge;
@@ -95,6 +114,9 @@ public class CreateGrainMovementHandler : IRequestHandler<CreateGrainMovementCom
                 await _context.SaveChangesAsync(cancellationToken);
             }
         }
+
+        if (tx != null)
+            await tx.CommitAsync(cancellationToken);
 
         return movement.Id;
     }
