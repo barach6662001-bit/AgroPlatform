@@ -610,6 +610,7 @@ const uk = {
     selectWarehouse: 'Оберіть склад',
     notes: 'Примітки',
     status: 'Статус',
+    statusDraft: 'Чернетка',
     statusInProgress: 'В роботі',
     statusPendingApproval: 'На погодженні',
     statusApproved: 'Погоджено',

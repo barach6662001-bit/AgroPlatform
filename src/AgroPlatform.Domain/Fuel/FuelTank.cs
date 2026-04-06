@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Enums;
 
@@ -11,6 +12,9 @@ public class FuelTank : AuditableEntity
     public decimal CurrentLiters { get; set; }
     public decimal? PricePerLiter { get; set; }
     public bool IsActive { get; set; } = true;
+
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
     public ICollection<FuelTransaction> Transactions { get; set; } = new List<FuelTransaction>();
 }

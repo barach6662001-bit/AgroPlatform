@@ -612,6 +612,7 @@ const en: Translations = {
     selectWarehouse: 'Select warehouse',
     notes: 'Notes',
     status: 'Status',
+    statusDraft: 'Draft',
     statusInProgress: 'In Progress',
     statusPendingApproval: 'Pending Approval',
     statusApproved: 'Approved',

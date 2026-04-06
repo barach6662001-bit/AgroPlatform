@@ -27,6 +27,9 @@ public class FuelTankConfiguration : IEntityTypeConfiguration<FuelTank>
         builder.Property(t => t.PricePerLiter)
             .HasPrecision(18, 4);
 
+        builder.Property(t => t.RowVersion)
+            .IsRowVersion();
+
         builder.Property(t => t.IsActive)
             .HasDefaultValue(true);
 
