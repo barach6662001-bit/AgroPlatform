@@ -21,6 +21,13 @@ public class CreateFuelSupplyHandler : IRequestHandler<CreateFuelSupplyCommand, 
             .FirstOrDefaultAsync(t => t.Id == request.FuelTankId, cancellationToken)
             ?? throw new NotFoundException(nameof(FuelTank), request.FuelTankId);
 
+        if (tank.CapacityLiters > 0 && tank.CurrentLiters + request.QuantityLiters > tank.CapacityLiters)
+        {
+            throw new ConflictException(
+                $"Supply of {request.QuantityLiters:F0}L would exceed tank capacity " +
+                $"({tank.CurrentLiters:F0}L / {tank.CapacityLiters:F0}L).");
+        }
+
         tank.CurrentLiters += request.QuantityLiters;
         if (request.PricePerLiter.HasValue)
             tank.PricePerLiter = request.PricePerLiter;
