@@ -598,6 +598,8 @@ const uk = {
     selectCategory: 'Оберіть категорію',
     inventorySessionsTitle: 'Інвентаризація',
     inventorySessionsSubtitle: 'Сесії інвентаризації складів',
+    availableStock: 'Наявний залишок',
+    exceedsAvailable: 'Кількість перевищує наявний залишок',
   },
   inventorySessions: {
     title: 'Інвентаризація',
