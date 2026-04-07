@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Enums;
@@ -23,6 +24,9 @@ public class Field : AuditableEntity
     public string? CadastralPurpose { get; set; }       // цільове призначення
     public string? CadastralOwnership { get; set; }     // форма власності (Приватна, Державна, Комунальна)
     public DateTime? CadastralFetchedAt { get; set; }   // коли востаннє підтягнули дані
+
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
     public ICollection<FieldCropHistory> CropHistory { get; set; } = new List<FieldCropHistory>();
     public ICollection<AgroOperation> Operations { get; set; } = new List<AgroOperation>();

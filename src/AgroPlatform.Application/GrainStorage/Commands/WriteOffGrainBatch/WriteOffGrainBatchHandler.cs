@@ -18,6 +18,15 @@ public class WriteOffGrainBatchHandler : IRequestHandler<WriteOffGrainBatchComma
 
     public async Task<Guid> Handle(WriteOffGrainBatchCommand request, CancellationToken cancellationToken)
     {
+        // Idempotency check
+        if (!string.IsNullOrEmpty(request.ClientOperationId))
+        {
+            var existing = await _context.GrainMovements
+                .FirstOrDefaultAsync(m => m.ClientOperationId == request.ClientOperationId, cancellationToken);
+            if (existing != null)
+                return existing.Id;
+        }
+
         var batch = await _context.GrainBatches
             .FirstOrDefaultAsync(b => b.Id == request.BatchId, cancellationToken)
             ?? throw new NotFoundException(nameof(GrainBatch), request.BatchId);
@@ -30,6 +39,7 @@ public class WriteOffGrainBatchHandler : IRequestHandler<WriteOffGrainBatchComma
             MovementDate = request.MovementDate ?? DateTime.UtcNow,
             Reason = request.Reason,
             Notes = request.Notes,
+            ClientOperationId = request.ClientOperationId,
         };
 
         _context.GrainMovements.Add(movement);
