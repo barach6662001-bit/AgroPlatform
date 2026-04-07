@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Exceptions;
+using AgroPlatform.Application.Common.Extensions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Fuel;
 using MediatR;
@@ -17,9 +18,18 @@ public class CreateFuelSupplyHandler : IRequestHandler<CreateFuelSupplyCommand, 
 
     public async Task<Guid> Handle(CreateFuelSupplyCommand request, CancellationToken cancellationToken)
     {
+        await using var tx = await _context.Database.BeginRepeatableReadTransactionIfSupportedAsync(cancellationToken);
+
         var tank = await _context.FuelTanks
             .FirstOrDefaultAsync(t => t.Id == request.FuelTankId, cancellationToken)
             ?? throw new NotFoundException(nameof(FuelTank), request.FuelTankId);
+
+        if (tank.CapacityLiters > 0 && tank.CurrentLiters + request.QuantityLiters > tank.CapacityLiters)
+        {
+            throw new ConflictException(
+                $"Supply of {request.QuantityLiters:F0}L would exceed tank capacity " +
+                $"({tank.CurrentLiters:F0}L / {tank.CapacityLiters:F0}L).");
+        }
 
         tank.CurrentLiters += request.QuantityLiters;
         if (request.PricePerLiter.HasValue)
@@ -44,6 +54,9 @@ public class CreateFuelSupplyHandler : IRequestHandler<CreateFuelSupplyCommand, 
 
         _context.FuelTransactions.Add(transaction);
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (tx is not null) await tx.CommitAsync(cancellationToken);
+
         return transaction.Id;
     }
 }

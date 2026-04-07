@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Enums;
 
@@ -22,6 +23,9 @@ public class Machine : AuditableEntity
 
     public Guid? AssignedDriverId { get; set; }
     public string? AssignedDriverName { get; set; }
+
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
     public ICollection<MachineWorkLog> WorkLogs { get; set; } = new List<MachineWorkLog>();
     public ICollection<FuelLog> FuelLogs { get; set; } = new List<FuelLog>();

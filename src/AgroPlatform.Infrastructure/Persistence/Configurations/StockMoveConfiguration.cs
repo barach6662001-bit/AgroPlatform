@@ -33,6 +33,9 @@ public class StockMoveConfiguration : IEntityTypeConfiguration<StockMove>
 
         builder.HasIndex(m => new { m.WarehouseId, m.ItemId });
 
+        builder.HasIndex(m => m.OperationId)
+            .HasFilter("\"OperationId\" IS NOT NULL");
+
         builder.HasIndex(m => m.ClientOperationId)
             .IsUnique()
             .HasFilter("\"ClientOperationId\" IS NOT NULL");
