@@ -52,8 +52,22 @@
   margin-bottom: 12px;
 }
 
+.featureIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: var(--brand-muted);
+  border: 1px solid var(--brand-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 24px;
+  color: var(--brand);
+}
+
 .textCenter2 {
   text-align: center;
   padding: 24px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border);
 }

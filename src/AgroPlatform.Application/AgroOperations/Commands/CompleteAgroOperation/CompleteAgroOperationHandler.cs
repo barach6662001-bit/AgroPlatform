@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Exceptions;
+using AgroPlatform.Application.Common.Helpers;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.AgroOperations;
 using AgroPlatform.Domain.Economics;
@@ -100,14 +101,7 @@ public class CompleteAgroOperationHandler : IRequestHandler<CompleteAgroOperatio
                 var totalCost = resource.ActualQuantity!.Value * warehouseItem.PurchasePrice.Value;
 
                 // Map warehouse item category to cost category
-                var costCategory = warehouseItem.Category switch
-                {
-                    "Fertilizers" => CostCategory.Fertilizer,
-                    "Seeds" => CostCategory.Seeds,
-                    "Pesticides" => CostCategory.Pesticide,
-                    "Fuel" => CostCategory.Fuel,
-                    _ => CostCategory.Other
-                };
+                var costCategory = CostCategoryMapper.FromCategoryName(warehouseItem.Category);
 
                 _context.CostRecords.Add(new CostRecord
                 {
