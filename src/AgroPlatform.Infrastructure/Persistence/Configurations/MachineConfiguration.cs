@@ -49,6 +49,11 @@ public class MachineConfiguration : IEntityTypeConfiguration<Machine>
         builder.Property(m => m.AssignedDriverName)
             .HasMaxLength(200);
 
+        builder.Property(m => m.RowVersion)
+            .IsRequired()
+            .IsConcurrencyToken()
+            .HasDefaultValueSql("'\\x00'::bytea");
+
         builder.HasMany(m => m.WorkLogs)
             .WithOne(w => w.Machine)
             .HasForeignKey(w => w.MachineId)

@@ -53,5 +53,9 @@ public class GrainMovementConfiguration : IEntityTypeConfiguration<GrainMovement
             .HasFilter("\"OperationId\" IS NOT NULL");
 
         builder.HasIndex(m => new { m.GrainBatchId, m.MovementDate });
+
+        builder.HasIndex(m => m.ClientOperationId)
+            .IsUnique()
+            .HasFilter("\"ClientOperationId\" IS NOT NULL");
     }
 }
