@@ -21,15 +21,6 @@ import type { WarehouseDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import s from './InventorySessions.module.css';
 
-const STATUS_LABELS: Record<number, string> = {
-  0: 'Draft',
-  1: 'InProgress',
-  2: 'PendingApproval',
-  3: 'Approved',
-  4: 'Completed',
-  5: 'Cancelled',
-};
-
 const STATUS_COLORS: Record<number, string> = {
   0: 'default',
   1: 'processing',
@@ -184,13 +175,14 @@ export default function InventorySessions() {
 
   const getStatusLabel = (status: number) => {
     const map: Record<number, string> = {
+      0: t.inventorySessions.statusDraft,
       1: t.inventorySessions.statusInProgress,
       2: t.inventorySessions.statusPendingApproval,
       3: t.inventorySessions.statusApproved,
       4: t.inventorySessions.statusCompleted,
       5: t.inventorySessions.statusCancelled,
     };
-    return map[status] ?? STATUS_LABELS[status] ?? String(status);
+    return map[status] ?? String(status);
   };
 
   const columns = [
