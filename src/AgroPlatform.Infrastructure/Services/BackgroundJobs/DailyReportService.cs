@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -92,11 +93,11 @@ public class DailyReportService : BackgroundService
         if (balances.Count == 0) return;
 
         var adminEmails = await db.Users
-            .Where(u => u.TenantId == tenantId)
-            .Join(db.UserRoles, u => u.Id, ur => ur.UserId, (u, ur) => new { u.Email, ur.RoleId })
-            .Join(db.Roles, x => x.RoleId, r => r.Id, (x, r) => new { x.Email, r.Name })
-            .Where(x => x.Name == "Admin" || x.Name == "Director" || x.Name == "CompanyAdmin")
-            .Select(x => x.Email)
+            .Where(u => u.TenantId == tenantId && u.IsActive)
+            .Where(u => u.Role == UserRole.SuperAdmin
+                     || u.Role == UserRole.CompanyAdmin
+                     || u.Role == UserRole.Manager)
+            .Select(u => u.Email)
             .Distinct()
             .ToListAsync(ct);
 
