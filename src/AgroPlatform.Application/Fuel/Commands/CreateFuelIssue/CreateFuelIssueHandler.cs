@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Exceptions;
+using AgroPlatform.Application.Common.Extensions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Enums;
@@ -26,6 +27,8 @@ public class CreateFuelIssueHandler : IRequestHandler<CreateFuelIssueCommand, Gu
 
     public async Task<Guid> Handle(CreateFuelIssueCommand request, CancellationToken cancellationToken)
     {
+        await using var tx = await _context.Database.BeginRepeatableReadTransactionIfSupportedAsync(cancellationToken);
+
         var tank = await _context.FuelTanks
             .FirstOrDefaultAsync(t => t.Id == request.FuelTankId, cancellationToken)
             ?? throw new NotFoundException(nameof(FuelTank), request.FuelTankId);
@@ -82,6 +85,8 @@ public class CreateFuelIssueHandler : IRequestHandler<CreateFuelIssueCommand, Gu
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (tx is not null) await tx.CommitAsync(cancellationToken);
 
         // Notify if fuel tank is running low (below 20%)
         if (tank.CapacityLiters > 0 && tank.CurrentLiters < tank.CapacityLiters * 0.2m)

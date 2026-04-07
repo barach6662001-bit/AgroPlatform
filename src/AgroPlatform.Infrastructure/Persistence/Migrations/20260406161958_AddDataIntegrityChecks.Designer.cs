@@ -3,6 +3,7 @@ using System;
 using AgroPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgroPlatform.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260406161958_AddDataIntegrityChecks")]
+    partial class AddDataIntegrityChecks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -707,13 +710,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("OwnershipType")
                         .HasColumnType("integer");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea")
-                        .HasDefaultValueSql("'\\x00'::bytea");
 
                     b.Property<string>("SoilType")
                         .HasMaxLength(100)
@@ -1552,13 +1548,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                     b.Property<decimal?>("PricePerLiter")
                         .HasPrecision(18, 4)
                         .HasColumnType("numeric(18,4)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea")
-                        .HasDefaultValueSql("'\\x00'::bytea");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -2451,13 +2440,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime?>("NextMaintenanceDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea")
-                        .HasDefaultValueSql("'\\x00'::bytea");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -3445,9 +3427,6 @@ namespace AgroPlatform.Infrastructure.Persistence.Migrations
                         .HasFilter("\"ClientOperationId\" IS NOT NULL");
 
                     b.HasIndex("ItemId");
-
-                    b.HasIndex("OperationId")
-                        .HasFilter("\"OperationId\" IS NOT NULL");
 
                     b.HasIndex("WarehouseId", "ItemId");
 

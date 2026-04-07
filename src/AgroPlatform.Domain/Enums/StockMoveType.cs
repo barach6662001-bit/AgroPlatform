@@ -7,5 +7,6 @@ public enum StockMoveType
     TransferOut,
     TransferIn,
     InventoryPlus,
-    InventoryMinus
+    InventoryMinus,
+    Return
 }

@@ -1,6 +1,6 @@
 import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
-import { Table, Select, Space, message, Tag, Button, Modal, Form, InputNumber, DatePicker, Input } from 'antd';
+import { Table, Select, Space, message, Tag, Button, Modal, Form, InputNumber, DatePicker, Input, Alert } from 'antd';
 import { PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import apiClient from '../../api/axios';
@@ -47,6 +47,14 @@ export default function WarehouseItems() {
   const { hasPermission } = useRole();
 
   const canManageItems = hasPermission('inventory', 'manage');
+
+  // Helper: find total available balance for a given warehouse + item
+  const getAvailableBalance = (warehouseId?: string, itemId?: string): number => {
+    if (!warehouseId || !itemId || !result?.items) return 0;
+    return result.items
+      .filter((b) => b.warehouseId === warehouseId && b.itemId === itemId)
+      .reduce((sum, b) => sum + b.balanceBase, 0);
+  };
 
   const loadBalances = (warehouseId?: string, p = page, ps = pageSize) => {
     setLoading(true);
@@ -393,8 +401,53 @@ export default function WarehouseItems() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={issueForm} layout="vertical" className={s.spaced1}>
-          <MovementForm />
+        <Form form={issueForm} layout="vertical" className={s.spaced1}
+          onValuesChange={() => issueForm.getFieldValue('warehouseId') && issueForm.getFieldValue('itemId') && issueForm.validateFields(['quantity']).catch(() => {})}
+        >
+          <Form.Item name="warehouseId" label={t.warehouses.warehouse} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={warehouseOptions} placeholder={t.warehouses.selectWarehouse} />
+          </Form.Item>
+          <Form.Item name="itemId" label={t.warehouses.item} rules={[{ required: true, message: t.common.required }]}>
+            <Select options={itemOptions} placeholder={t.warehouses.selectItem} showSearch optionFilterProp="label" />
+          </Form.Item>
+          <Form.Item noStyle dependencies={['warehouseId', 'itemId']}>
+            {({ getFieldValue }) => {
+              const wh = getFieldValue('warehouseId');
+              const item = getFieldValue('itemId');
+              const avail = getAvailableBalance(wh, item);
+              const selectedItem = items.find((i) => i.id === item);
+              const unit = selectedItem?.baseUnit ?? '';
+              return wh && item ? (
+                <Alert
+                  type={avail > 0 ? 'info' : 'warning'}
+                  showIcon
+                  style={{ marginBottom: 16 }}
+                  message={`${t.warehouses.availableStock}: ${avail.toFixed(2)} ${unit}`}
+                />
+              ) : null;
+            }}
+          </Form.Item>
+          <Form.Item name="quantity" label={t.warehouses.quantity}
+            dependencies={['warehouseId', 'itemId']}
+            rules={[
+              { required: true, message: t.common.required },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  const avail = getAvailableBalance(getFieldValue('warehouseId'), getFieldValue('itemId'));
+                  if (value && avail > 0 && value > avail) return Promise.reject(t.warehouses.exceedsAvailable);
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <InputNumber min={0.001} step={0.001} className={s.fullWidth} />
+          </Form.Item>
+          <Form.Item name="date" label={t.common.date} rules={[{ required: true, message: t.common.required }]}>
+            <DatePicker className={s.fullWidth} />
+          </Form.Item>
+          <Form.Item name="notes" label={t.common.notes}>
+            <Input />
+          </Form.Item>
           <Form.Item name="fieldId" label={t.warehouses.field || 'Поле'}>
             <Select
               allowClear
@@ -475,7 +528,36 @@ export default function WarehouseItems() {
           <Form.Item name="itemId" label={t.warehouses.item} rules={[{ required: true, message: t.common.required }]}>
             <Select options={itemOptions} placeholder={t.warehouses.selectItem} showSearch optionFilterProp="label" />
           </Form.Item>
-          <Form.Item name="quantity" label={t.warehouses.quantity} rules={[{ required: true, message: t.common.required }]}>
+          <Form.Item noStyle dependencies={['sourceWarehouseId', 'itemId']}>
+            {({ getFieldValue }) => {
+              const wh = getFieldValue('sourceWarehouseId');
+              const item = getFieldValue('itemId');
+              const avail = getAvailableBalance(wh, item);
+              const selectedItem = items.find((i) => i.id === item);
+              const unit = selectedItem?.baseUnit ?? '';
+              return wh && item ? (
+                <Alert
+                  type={avail > 0 ? 'info' : 'warning'}
+                  showIcon
+                  style={{ marginBottom: 16 }}
+                  message={`${t.warehouses.availableStock}: ${avail.toFixed(2)} ${unit}`}
+                />
+              ) : null;
+            }}
+          </Form.Item>
+          <Form.Item name="quantity" label={t.warehouses.quantity}
+            dependencies={['sourceWarehouseId', 'itemId']}
+            rules={[
+              { required: true, message: t.common.required },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  const avail = getAvailableBalance(getFieldValue('sourceWarehouseId'), getFieldValue('itemId'));
+                  if (value && avail > 0 && value > avail) return Promise.reject(t.warehouses.exceedsAvailable);
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
             <InputNumber min={0.001} step={0.001} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="note" label={t.common.notes}>
