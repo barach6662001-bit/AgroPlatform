@@ -380,8 +380,53 @@ a, button, [role="button"],
 .page-container { padding: 0; }
 
 /* Card hover states */
+.ant-card {
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease !important;
+}
 .ant-card:hover {
   border-color: var(--border-strong) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* Segmented control */
+.ant-segmented {
+  background: var(--bg-elevated) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 2px !important;
+}
+.ant-segmented-item {
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-secondary) !important;
+  font-size: 13px !important;
+  transition: all 0.15s ease !important;
+}
+.ant-segmented-item-selected {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+.ant-segmented-item:hover:not(.ant-segmented-item-selected) {
+  color: var(--text-primary) !important;
+}
+
+/* Focus-visible for keyboard navigation */
+.ant-btn:focus-visible,
+.ant-input:focus-visible,
+.ant-select-selector:focus-visible,
+.ant-pagination-item:focus-visible {
+  outline: 2px solid var(--border-focus) !important;
+  outline-offset: 2px !important;
+}
+
+/* Table header font-size upgrade (11px → 12px for readability) */
+.ant-table-thead > tr > th {
+  font-size: 12px !important;
+}
+
+/* Tags minimum font-size (11px → 12px) */
+.ant-tag {
+  font-size: 12px !important;
 }
 
 /* KPI card style */

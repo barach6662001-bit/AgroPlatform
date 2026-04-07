@@ -1,4 +1,5 @@
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Application.Warehouses.Commands.BulkReceiptStock;
 using AgroPlatform.Application.Warehouses.Commands.CreateWarehouse;
 using AgroPlatform.Application.Warehouses.Commands.CreateWarehouseItem;
 using AgroPlatform.Application.Warehouses.Commands.CreateItemCategory;
@@ -7,6 +8,7 @@ using AgroPlatform.Application.Warehouses.Commands.InventoryAdjust;
 using AgroPlatform.Application.Warehouses.Commands.UpdateWarehouseItem;
 using AgroPlatform.Application.Warehouses.Commands.IssueStock;
 using AgroPlatform.Application.Warehouses.Commands.ReceiptStock;
+using AgroPlatform.Application.Warehouses.Commands.ReturnStock;
 using AgroPlatform.Application.Warehouses.Commands.TransferStock;
 using AgroPlatform.Application.Warehouses.Queries.GetBalance;
 using AgroPlatform.Application.Warehouses.Queries.GetItemCategories;
@@ -123,6 +125,18 @@ public class WarehousesController : ControllerBase
         return CreatedAtAction(nameof(GetWarehouses), new { }, new { id });
     }
 
+    /// <summary>Records multiple stock receipts in a single atomic operation.</summary>
+    /// <param name="command">Bulk receipt data with multiple item lines.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpPost("receipt/bulk")]
+    [Authorize(Policy = Permissions.Inventory.Manage)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> BulkReceiptStock([FromBody] BulkReceiptStockCommand command, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(command, cancellationToken);
+        return Ok(result);
+    }
+
     /// <summary>Records a stock issue (outgoing dispatch) from a warehouse.</summary>
     /// <param name="command">Issue data. If BatchId is omitted, batches are auto-selected using FEFO/FIFO strategy.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -134,6 +148,19 @@ public class WarehousesController : ControllerBase
     {
         var result = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetWarehouses), new { }, result);
+    }
+
+    /// <summary>Records a stock return (previously issued items coming back to warehouse).</summary>
+    /// <param name="command">Return data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The ID of the created stock movement record.</returns>
+    [HttpPost("return")]
+    [Authorize(Policy = Permissions.Inventory.Manage)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> ReturnStock([FromBody] ReturnStockCommand command, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetWarehouses), new { }, new { id });
     }
 
     /// <summary>Transfers stock between two warehouses.</summary>

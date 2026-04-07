@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { usePermissionsStore } from './permissionsStore';
 
 interface AuthState {
   token: string | null;
@@ -50,9 +51,13 @@ export const useAuthStore = create<AuthState>()(
           lastName: lastName ?? null,
           isAuthenticated: true,
         }),
-      setTenantId: (tenantId) => set({ tenantId }),
+      setTenantId: (tenantId) => {
+        usePermissionsStore.getState().reset();
+        set({ tenantId });
+      },
       setHasCompletedOnboarding: (value) => set({ hasCompletedOnboarding: value }),
       logout: () => {
+        usePermissionsStore.getState().reset();
         localStorage.removeItem('auth-storage');
         set({
           token: null,

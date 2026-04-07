@@ -600,6 +600,8 @@ const en: Translations = {
     selectCategory: 'Select category',
     inventorySessionsTitle: 'Inventory',
     inventorySessionsSubtitle: 'Warehouse inventory sessions',
+    availableStock: 'Available stock',
+    exceedsAvailable: 'Quantity exceeds available stock',
   },
   inventorySessions: {
     title: 'Inventory',
@@ -610,6 +612,7 @@ const en: Translations = {
     selectWarehouse: 'Select warehouse',
     notes: 'Notes',
     status: 'Status',
+    statusDraft: 'Draft',
     statusInProgress: 'In Progress',
     statusPendingApproval: 'Pending Approval',
     statusApproved: 'Approved',

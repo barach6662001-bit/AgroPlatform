@@ -598,6 +598,8 @@ const uk = {
     selectCategory: 'Оберіть категорію',
     inventorySessionsTitle: 'Інвентаризація',
     inventorySessionsSubtitle: 'Сесії інвентаризації складів',
+    availableStock: 'Наявний залишок',
+    exceedsAvailable: 'Кількість перевищує наявний залишок',
   },
   inventorySessions: {
     title: 'Інвентаризація',
@@ -608,6 +610,7 @@ const uk = {
     selectWarehouse: 'Оберіть склад',
     notes: 'Примітки',
     status: 'Статус',
+    statusDraft: 'Чернетка',
     statusInProgress: 'В роботі',
     statusPendingApproval: 'На погодженні',
     statusApproved: 'Погоджено',

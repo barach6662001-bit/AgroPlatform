@@ -19,6 +19,15 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
 
     public async Task<Guid> Handle(SplitGrainBatchCommand request, CancellationToken cancellationToken)
     {
+        // Idempotency check
+        if (!string.IsNullOrEmpty(request.ClientOperationId))
+        {
+            var existing = await _context.GrainMovements
+                .FirstOrDefaultAsync(m => m.ClientOperationId == request.ClientOperationId, cancellationToken);
+            if (existing != null)
+                return existing.TargetBatchId ?? existing.Id;
+        }
+
         var source = await _context.GrainBatches
             .Include(b => b.Placements)
             .FirstOrDefaultAsync(b => b.Id == request.SourceBatchId, cancellationToken)
@@ -85,6 +94,7 @@ public class SplitGrainBatchHandler : IRequestHandler<SplitGrainBatchCommand, Gu
             TargetStorageId = targetStorageId,
             TargetBatchId = newBatch.Id,
             Notes = request.Notes,
+            ClientOperationId = request.ClientOperationId,
         });
 
         // Incoming leg on new batch (Receipt via split)
