@@ -12,9 +12,11 @@ interface EmptyStateProps {
 
 export default function EmptyState({ message, actionLabel, onAction }: EmptyStateProps) {
   return (
-    <div className={s.textCenter}>
-      <InboxOutlined className={s.text40} />
-      <div>
+    <div className={s.wrapper}>
+      <div className={s.iconBadge}>
+        <InboxOutlined className={s.icon} />
+      </div>
+      <div className={s.text}>
         <Text type="secondary">{message}</Text>
       </div>
       {actionLabel && onAction && (
@@ -22,7 +24,7 @@ export default function EmptyState({ message, actionLabel, onAction }: EmptyStat
           type="primary"
           icon={<PlusOutlined />}
           onClick={onAction}
-          className={s.spaced}
+          className={s.action}
         >
           {actionLabel}
         </Button>

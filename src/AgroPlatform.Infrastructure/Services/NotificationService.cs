@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Enums;
 using AgroPlatform.Domain.Notifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,11 +51,11 @@ public class NotificationService : INotificationService
             try
             {
                 var adminEmails = await context.Users
-                    .Where(u => u.TenantId == tenantId)
-                    .Join(context.UserRoles, u => u.Id, ur => ur.UserId, (u, ur) => new { u.Email, ur.RoleId })
-                    .Join(context.Roles, x => x.RoleId, r => r.Id, (x, r) => new { x.Email, r.Name })
-                    .Where(x => x.Name == "Admin" || x.Name == "Director")
-                    .Select(x => x.Email)
+                    .Where(u => u.TenantId == tenantId && u.IsActive)
+                    .Where(u => u.Role == UserRole.SuperAdmin
+                             || u.Role == UserRole.CompanyAdmin
+                             || u.Role == UserRole.Manager)
+                    .Select(u => u.Email)
                     .Distinct()
                     .ToListAsync(cancellationToken);
 

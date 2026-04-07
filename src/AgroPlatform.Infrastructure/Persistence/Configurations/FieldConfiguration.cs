@@ -46,6 +46,11 @@ public class FieldConfiguration : IEntityTypeConfiguration<Field>
         builder.Property(f => f.OwnershipType)
             .HasConversion<int>();
 
+        builder.Property(f => f.RowVersion)
+            .IsRequired()
+            .IsConcurrencyToken()
+            .HasDefaultValueSql("'\\x00'::bytea");
+
         builder.HasMany(f => f.CropHistory)
             .WithOne(h => h.Field)
             .HasForeignKey(h => h.FieldId)

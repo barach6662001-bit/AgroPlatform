@@ -10,7 +10,27 @@
 }
 
 .bg {
+  background: var(--bg-subtle);
+}
+
+.rowEven {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.rowEven:hover {
+  background: var(--bg-overlay);
+}
+
+.rowOdd {
   background: var(--bg-base);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.rowOdd:hover {
+  background: var(--bg-overlay);
 }
 
 .medium {
