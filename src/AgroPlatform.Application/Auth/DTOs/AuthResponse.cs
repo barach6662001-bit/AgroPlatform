@@ -9,5 +9,7 @@ public record AuthResponse(
     bool RequirePasswordChange,
     bool HasCompletedOnboarding,
     string? FirstName,
-    string? LastName
+    string? LastName,
+    string? RefreshToken = null,
+    DateTime? RefreshTokenExpiresAt = null
 );

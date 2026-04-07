@@ -152,6 +152,8 @@ const uk = {
     loginSubtitle: 'Введіть ваші облікові дані',
     copyright: '© 2026 АгроТех. Всі права захищені.',
     platformSubtitle: 'Farm Management Platform',
+    sessionExpired: 'Сесія закінчилася',
+    sessionExpiredDesc: 'Будь ласка, увійдіть знову.',
   },
   roles: {
     SuperAdmin: 'Супер-адмін',

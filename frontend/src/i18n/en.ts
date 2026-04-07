@@ -154,6 +154,8 @@ const en: Translations = {
     loginSubtitle: 'Enter your credentials',
     copyright: '© 2026 AgroTech. All rights reserved.',
     platformSubtitle: 'Farm Management Platform',
+    sessionExpired: 'Session expired',
+    sessionExpiredDesc: 'Please log in again.',
   },
   roles: {
     SuperAdmin: 'Super Admin',

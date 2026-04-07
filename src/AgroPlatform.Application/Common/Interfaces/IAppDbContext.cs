@@ -70,6 +70,7 @@ public interface IAppDbContext
     DbSet<AuditEntry> AuditEntries { get; }
     DbSet<Attachment> Attachments { get; }
     DbSet<ApiKey> ApiKeys { get; }
+    DbSet<RefreshToken> RefreshTokens { get; }
 
     // Approval workflow
     DbSet<ApprovalRule> ApprovalRules { get; }

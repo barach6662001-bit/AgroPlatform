@@ -11,11 +11,13 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly IAppDbContext _db;
 
-    public LoginHandler(UserManager<AppUser> userManager, IJwtTokenService jwtTokenService)
+    public LoginHandler(UserManager<AppUser> userManager, IJwtTokenService jwtTokenService, IAppDbContext db)
     {
         _userManager = userManager;
         _jwtTokenService = jwtTokenService;
+        _db = db;
     }
 
     public async Task<AuthResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -28,6 +30,21 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
             throw new UnauthorizedException("Account is inactive.");
 
         var (token, expiresAt) = _jwtTokenService.GenerateToken(user);
+
+        var refreshTokenValue = _jwtTokenService.GenerateRefreshToken();
+        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtTokenService.RefreshTokenExpiresInDays);
+
+        var refreshToken = new Domain.Users.RefreshToken
+        {
+            UserId = user.Id,
+            TokenHash = _jwtTokenService.HashToken(refreshTokenValue),
+            ExpiresAtUtc = refreshTokenExpiresAt,
+            CreatedAtUtc = DateTime.UtcNow,
+        };
+
+        _db.RefreshTokens.Add(refreshToken);
+        await _db.SaveChangesAsync(cancellationToken);
+
         return new AuthResponse(
             token,
             user.Email!,
@@ -37,6 +54,8 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
             user.RequirePasswordChange,
             user.HasCompletedOnboarding,
             user.FirstName,
-            user.LastName);
+            user.LastName,
+            refreshTokenValue,
+            refreshTokenExpiresAt);
     }
 }

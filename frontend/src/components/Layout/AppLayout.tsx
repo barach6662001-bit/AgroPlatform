@@ -11,6 +11,7 @@ import OfflineIndicator from '../OfflineIndicator';
 import Logo from '../Logo';
 import CommandPalette from '../CommandPalette';
 import { useAuthStore } from '../../stores/authStore';
+import { revokeRefreshToken } from '../../api/auth';
 import { useThemeStore } from '../../stores/themeStore';
 import { useTranslation, languages } from '../../i18n';
 import s from './AppLayout.module.css';
@@ -23,7 +24,7 @@ export default function AppLayout() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth < TABLET_BREAKPOINT);
-  const { email, role, logout, tenantId } = useAuthStore();
+  const { email, role, logout, tenantId, refreshToken } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const { t, lang, setLang } = useTranslation();
@@ -55,6 +56,9 @@ export default function AppLayout() {
   }, []);
 
   const handleLogout = () => {
+    if (refreshToken) {
+      revokeRefreshToken({ refreshToken }).catch(() => {});
+    }
     logout();
     navigate('/login');
   };

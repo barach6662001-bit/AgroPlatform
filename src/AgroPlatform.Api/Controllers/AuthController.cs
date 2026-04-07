@@ -1,6 +1,8 @@
 using AgroPlatform.Application.Auth.Commands.ChangePassword;
 using AgroPlatform.Application.Auth.Commands.CompleteOnboarding;
 using AgroPlatform.Application.Auth.Commands.Login;
+using AgroPlatform.Application.Auth.Commands.RefreshToken;
+using AgroPlatform.Application.Auth.Commands.RevokeRefreshToken;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +37,28 @@ public class AuthController : ControllerBase
     {
         var result = await _sender.Send(command, cancellationToken);
         return Ok(result);
+    }
+
+    /// <summary>Exchanges a valid refresh token for a new access + refresh token pair.</summary>
+    [HttpPost("refresh")]
+    [AllowAnonymous]
+    [EnableRateLimiting("auth-login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand command, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(command, cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Revokes a refresh token (used on logout).</summary>
+    [HttpPost("revoke")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> Revoke([FromBody] RevokeRefreshTokenCommand command, CancellationToken cancellationToken)
+    {
+        await _sender.Send(command, cancellationToken);
+        return NoContent();
     }
 
     /// <summary>Changes the current user's password. Returns a new JWT token.</summary>
