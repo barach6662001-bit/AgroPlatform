@@ -26,7 +26,8 @@ export default function ChangePassword() {
         data.requirePasswordChange,
         data.hasCompletedOnboarding,
         data.firstName,
-        data.lastName
+        data.lastName,
+        data.refreshToken
       );
       message.success(t.auth.passwordChanged);
       navigate('/');

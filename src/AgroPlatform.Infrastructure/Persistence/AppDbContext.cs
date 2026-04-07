@@ -78,6 +78,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
     public DbSet<Attachment> Attachments => Set<Attachment>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     // Approval workflow
     public DbSet<ApprovalRule> ApprovalRules => Set<ApprovalRule>();

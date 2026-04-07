@@ -13,15 +13,18 @@ public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Auth
     private readonly UserManager<AppUser> _userManager;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly ICurrentUserService _currentUser;
+    private readonly IAppDbContext _db;
 
     public ChangePasswordHandler(
         UserManager<AppUser> userManager,
         IJwtTokenService jwtTokenService,
-        ICurrentUserService currentUser)
+        ICurrentUserService currentUser,
+        IAppDbContext db)
     {
         _userManager = userManager;
         _jwtTokenService = jwtTokenService;
         _currentUser = currentUser;
+        _db = db;
     }
 
     public async Task<AuthResponse> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
@@ -48,6 +51,21 @@ public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Auth
         await _userManager.UpdateAsync(user);
 
         var (token, expiresAt) = _jwtTokenService.GenerateToken(user);
+
+        var refreshTokenValue = _jwtTokenService.GenerateRefreshToken();
+        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtTokenService.RefreshTokenExpiresInDays);
+
+        var refreshToken = new Domain.Users.RefreshToken
+        {
+            UserId = user.Id,
+            TokenHash = _jwtTokenService.HashToken(refreshTokenValue),
+            ExpiresAtUtc = refreshTokenExpiresAt,
+            CreatedAtUtc = DateTime.UtcNow,
+        };
+
+        _db.RefreshTokens.Add(refreshToken);
+        await _db.SaveChangesAsync(cancellationToken);
+
         return new AuthResponse(
             token,
             user.Email!,
@@ -57,6 +75,8 @@ public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Auth
             false,
             user.HasCompletedOnboarding,
             user.FirstName,
-            user.LastName);
+            user.LastName,
+            refreshTokenValue,
+            refreshTokenExpiresAt);
     }
 }

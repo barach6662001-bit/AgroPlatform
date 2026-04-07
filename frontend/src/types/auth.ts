@@ -8,6 +8,8 @@ export interface AuthResponse {
   hasCompletedOnboarding: boolean;
   firstName?: string;
   lastName?: string;
+  refreshToken?: string;
+  refreshTokenExpiresAt?: string;
 }
 
 export interface LoginRequest {
@@ -18,4 +20,8 @@ export interface LoginRequest {
 export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
 }

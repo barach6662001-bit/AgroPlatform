@@ -4,6 +4,7 @@ import { usePermissionsStore } from './permissionsStore';
 
 interface AuthState {
   token: string | null;
+  refreshToken: string | null;
   email: string | null;
   role: string | null;
   tenantId: string | null;
@@ -20,8 +21,10 @@ interface AuthState {
     requirePasswordChange: boolean,
     hasCompletedOnboarding?: boolean,
     firstName?: string,
-    lastName?: string
+    lastName?: string,
+    refreshToken?: string
   ) => void;
+  setTokens: (token: string, refreshToken: string) => void;
   setTenantId: (tenantId: string) => void;
   setHasCompletedOnboarding: (value: boolean) => void;
   logout: () => void;
@@ -31,6 +34,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       token: null,
+      refreshToken: null,
       email: null,
       role: null,
       tenantId: null,
@@ -39,9 +43,10 @@ export const useAuthStore = create<AuthState>()(
       firstName: null,
       lastName: null,
       isAuthenticated: false,
-      setAuth: (token, email, role, tenantId, requirePasswordChange, hasCompletedOnboarding, firstName, lastName) =>
+      setAuth: (token, email, role, tenantId, requirePasswordChange, hasCompletedOnboarding, firstName, lastName, refreshToken) =>
         set({
           token,
+          refreshToken: refreshToken ?? null,
           email,
           role,
           tenantId,
@@ -51,6 +56,8 @@ export const useAuthStore = create<AuthState>()(
           lastName: lastName ?? null,
           isAuthenticated: true,
         }),
+      setTokens: (token, refreshToken) =>
+        set({ token, refreshToken }),
       setTenantId: (tenantId) => {
         usePermissionsStore.getState().reset();
         set({ tenantId });
@@ -61,6 +68,7 @@ export const useAuthStore = create<AuthState>()(
         localStorage.removeItem('auth-storage');
         set({
           token: null,
+          refreshToken: null,
           email: null,
           role: null,
           tenantId: null,

@@ -90,6 +90,7 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
     public DbSet<Attachment> Attachments => Set<Attachment>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
     public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
     public DbSet<InventorySession> InventorySessions => Set<InventorySession>();

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { notification } from 'antd';
 import { useAuthStore } from '../stores/authStore';
 
@@ -38,6 +38,8 @@ const i18nErrors = {
     forbiddenDesc: 'У вас немає прав для виконання цієї дії.',
     serverError: 'Помилка сервера',
     serverErrorDesc: 'Виникла неочікувана помилка. Спробуйте ще раз.',
+    sessionExpired: 'Сесія закінчилася',
+    sessionExpiredDesc: 'Будь ласка, увійдіть знову.',
   },
   en: {
     conflict: 'Conflict',
@@ -46,6 +48,8 @@ const i18nErrors = {
     forbiddenDesc: 'You do not have permission to perform this action.',
     serverError: 'Server Error',
     serverErrorDesc: 'An unexpected server error occurred.',
+    sessionExpired: 'Session expired',
+    sessionExpiredDesc: 'Please log in again.',
   },
 };
 
@@ -59,13 +63,94 @@ function getLang(): 'uk' | 'en' {
   }
 }
 
+// ─ Silent token refresh logic ─
+let isRefreshing = false;
+let pendingQueue: Array<{
+  resolve: (config: InternalAxiosRequestConfig) => void;
+  reject: (error: unknown) => void;
+}> = [];
+
+function processQueue(error: unknown, token: string | null) {
+  pendingQueue.forEach(({ resolve, reject }) => {
+    if (error) {
+      reject(error);
+    } else if (token) {
+      resolve({ headers: { Authorization: `Bearer ${token}` } } as InternalAxiosRequestConfig);
+    }
+  });
+  pendingQueue = [];
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      useAuthStore.getState().logout();
-      window.location.href = '/login';
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+    // ─ AUTO-REFRESH ON 401 ─
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+      const state = useAuthStore.getState();
+      const refreshToken = state.refreshToken;
+
+      // No refresh token or request was to auth endpoints — just logout
+      if (!refreshToken || originalRequest.url?.startsWith('/api/auth/refresh')) {
+        useAuthStore.getState().logout();
+        const e = i18nErrors[getLang()];
+        notification.warning({
+          message: e.sessionExpired,
+          description: e.sessionExpiredDesc,
+        });
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        // Another refresh is in progress — queue this request
+        return new Promise<InternalAxiosRequestConfig>((resolve, reject) => {
+          pendingQueue.push({ resolve, reject });
+        }).then((config) => {
+          originalRequest.headers.Authorization = config.headers.Authorization;
+          return apiClient(originalRequest);
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const { data } = await axios.post<{
+          token: string;
+          refreshToken: string;
+          email: string;
+          role: string;
+          tenantId: string;
+          requirePasswordChange: boolean;
+          hasCompletedOnboarding: boolean;
+          firstName?: string;
+          lastName?: string;
+        }>(
+          `${apiClient.defaults.baseURL || ''}/api/auth/refresh`,
+          { refreshToken }
+        );
+
+        useAuthStore.getState().setTokens(data.token, data.refreshToken);
+        originalRequest.headers.Authorization = `Bearer ${data.token}`;
+        processQueue(null, data.token);
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        useAuthStore.getState().logout();
+        const e = i18nErrors[getLang()];
+        notification.warning({
+          message: e.sessionExpired,
+          description: e.sessionExpiredDesc,
+        });
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
     if (error.response?.status === 403) {
       const e = i18nErrors[getLang()];
       notification.warning({
@@ -77,14 +162,14 @@ apiClient.interceptors.response.use(
       const e = i18nErrors[getLang()];
       notification.warning({
         message: e.conflict,
-        description: error.response?.data?.detail ?? e.conflictDesc,
+        description: (error.response?.data as { detail?: string })?.detail ?? e.conflictDesc,
       });
     }
-    if (error.response?.status >= 500) {
+    if (error.response?.status && error.response.status >= 500) {
       const e = i18nErrors[getLang()];
       notification.error({
         message: e.serverError,
-        description: error.response?.data?.detail ?? error.message ?? e.serverErrorDesc,
+        description: (error.response?.data as { detail?: string })?.detail ?? error.message ?? e.serverErrorDesc,
       });
     }
     return Promise.reject(error);

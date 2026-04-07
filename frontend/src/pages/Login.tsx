@@ -15,7 +15,7 @@ export default function Login() {
   const onFinish = async (values: { email: string; password: string }) => {
     try {
       const data = await login(values);
-      setAuth(data.token, data.email, data.role, data.tenantId, data.requirePasswordChange, data.hasCompletedOnboarding, data.firstName, data.lastName);
+      setAuth(data.token, data.email, data.role, data.tenantId, data.requirePasswordChange, data.hasCompletedOnboarding, data.firstName, data.lastName, data.refreshToken);
       message.success(t.auth.welcomeMessage);
       navigate(data.requirePasswordChange ? '/change-password' : '/');
     } catch {

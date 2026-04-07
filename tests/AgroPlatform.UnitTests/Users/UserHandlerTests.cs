@@ -108,6 +108,7 @@ public class UserHandlerTests
     {
         var userManager = CreateUserManager();
         var jwtService = Substitute.For<IJwtTokenService>();
+        var db = Substitute.For<IAppDbContext>();
 
         var user = new AppUser
         {
@@ -121,7 +122,7 @@ public class UserHandlerTests
         userManager.FindByEmailAsync(user.Email).Returns(user);
         userManager.CheckPasswordAsync(user, "password123").Returns(true);
 
-        var handler = new LoginHandler(userManager, jwtService);
+        var handler = new LoginHandler(userManager, jwtService, db);
         var act = async () =>
             await handler.Handle(new LoginCommand(user.Email, "password123"), CancellationToken.None);
 
