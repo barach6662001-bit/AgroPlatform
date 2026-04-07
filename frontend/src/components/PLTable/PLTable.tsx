@@ -34,7 +34,6 @@ interface Props {
 
 const SUCCESS_COLOR = 'var(--success)';
 const DANGER_COLOR  = 'var(--error)';
-const TRACK_COLOR   = '#21262D';
 
 /** Clamp a percentage to [0, 100] for the progress bar width. */
 function clamp(val: number): number {
@@ -52,7 +51,7 @@ function ProgressBar({ pct, color }: { pct: number; color: string }) {
         width: '100%',
         height: 6,
         borderRadius: 3,
-        background: TRACK_COLOR,
+        background: 'var(--bg-overlay)',
         overflow: 'hidden',
       }}
     >
@@ -120,18 +119,7 @@ export default function PLTable({ rows, labels }: Props) {
             return (
               <tr
                 key={row.key}
-                style={{
-                  background: idx % 2 === 0 ? 'var(--bg-surface)' : 'var(--bg-base)',
-                  borderBottom: '1px solid #21262D',
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLTableRowElement).style.background = '#21262D';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLTableRowElement).style.background =
-                    idx % 2 === 0 ? 'var(--bg-surface)' : 'var(--bg-base)';
-                }}
+                className={idx % 2 === 0 ? s.rowEven : s.rowOdd}
               >
                 {/* Metric name */}
                 <td className={s.medium}>
