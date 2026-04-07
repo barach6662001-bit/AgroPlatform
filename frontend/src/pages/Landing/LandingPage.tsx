@@ -1,4 +1,5 @@
 import { Button, Card, Col, Row, Typography } from 'antd';
+import { DatabaseOutlined, EnvironmentOutlined, BarChartOutlined, CarOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 import s from './LandingPage.module.css';
@@ -10,10 +11,10 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   const features = [
-    { title: t.landing.featureWarehouses, desc: t.landing.featureWarehousesDesc, icon: '📦' },
-    { title: t.landing.featureFields, desc: t.landing.featureFieldsDesc, icon: '🌾' },
-    { title: t.landing.featureEconomics, desc: t.landing.featureEconomicsDesc, icon: '📊' },
-    { title: t.landing.featureFleet, desc: t.landing.featureFleetDesc, icon: '🚜' },
+    { title: t.landing.featureWarehouses, desc: t.landing.featureWarehousesDesc, icon: <DatabaseOutlined /> },
+    { title: t.landing.featureFields, desc: t.landing.featureFieldsDesc, icon: <EnvironmentOutlined /> },
+    { title: t.landing.featureEconomics, desc: t.landing.featureEconomicsDesc, icon: <BarChartOutlined /> },
+    { title: t.landing.featureFleet, desc: t.landing.featureFleetDesc, icon: <CarOutlined /> },
   ];
 
   return (
@@ -42,7 +43,7 @@ export default function LandingPage() {
           {features.map((f) => (
             <Col xs={24} sm={12} lg={6} key={f.title}>
               <Card hoverable className={s.textCenter1}>
-                <div className={s.text48}>{f.icon}</div>
+              <div className={s.featureIcon}>{f.icon}</div>
                 <Title level={4}>{f.title}</Title>
                 <Text type="secondary">{f.desc}</Text>
               </Card>

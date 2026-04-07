@@ -4,6 +4,7 @@ using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.GrainStorage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AgroPlatform.Application.GrainStorage.Commands.CreateGrainBatch;
 
@@ -18,6 +19,11 @@ public class CreateGrainBatchHandler : IRequestHandler<CreateGrainBatchCommand, 
 
     public async Task<Guid> Handle(CreateGrainBatchCommand request, CancellationToken cancellationToken)
     {
+        IDbContextTransaction? tx = _context.Database.IsRelational()
+            ? await _context.Database.BeginTransactionAsync(cancellationToken)
+            : null;
+        await using var _ = tx;
+
         var batch = new GrainBatch
         {
             GrainType = request.GrainType,
@@ -60,6 +66,9 @@ public class CreateGrainBatchHandler : IRequestHandler<CreateGrainBatchCommand, 
         {
             await SyncFieldHarvest(request.SourceFieldId.Value, batch, cancellationToken);
         }
+
+        if (tx != null)
+            await tx.CommitAsync(cancellationToken);
 
         return batch.Id;
     }

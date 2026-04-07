@@ -1,6 +1,7 @@
 using System.Text.Json;
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Extensions;
+using AgroPlatform.Application.Common.Helpers;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Economics;
 using AgroPlatform.Domain.Enums;
@@ -161,20 +162,7 @@ public class IssueStockHandler : IRequestHandler<IssueStockCommand, IssueStockRe
 
         if (totalCost.HasValue && totalCost.Value > 0)
         {
-            var costCategory = item.Category switch
-            {
-                // English names
-                "Fertilizers" => CostCategory.Fertilizer,
-                "Seeds" => CostCategory.Seeds,
-                "Pesticides" => CostCategory.Pesticide,
-                "Fuel" => CostCategory.Fuel,
-                // Ukrainian names (seeded by DataSeeder)
-                "Добрива" => CostCategory.Fertilizer,
-                "Насіння" => CostCategory.Seeds,
-                "ЗЗР" => CostCategory.Pesticide,
-                "ПММ" => CostCategory.Fuel,
-                _ => CostCategory.Other
-            };
+            var costCategory = CostCategoryMapper.FromCategoryName(item.Category);
 
             _context.CostRecords.Add(new CostRecord
             {

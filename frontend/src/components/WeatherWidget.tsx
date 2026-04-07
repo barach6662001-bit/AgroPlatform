@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card, Spin, Typography } from 'antd';
-import { CloudOutlined } from '@ant-design/icons';
+import { CloudOutlined, ExperimentOutlined, DashboardOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import apiClient from '../api/axios';
 import s from './WeatherWidget.module.css';
 
@@ -70,10 +70,10 @@ export default function WeatherWidget() {
           <Text className={s.text12}>{desc}</Text>
         </div>
         <div className={s.text121}>
-          <div>💧 {data.main.humidity}%</div>
-          <div>💨 {data.wind?.speed} м/с</div>
-          <div>🌡 {Math.round(data.main.feels_like)}°C</div>
-          {data.name && <div>📍 {data.name}</div>}
+          <div><ExperimentOutlined style={{ marginRight: 4 }} />{data.main.humidity}%</div>
+          <div><DashboardOutlined style={{ marginRight: 4 }} />{data.wind?.speed} м/с</div>
+          <div><CloudOutlined style={{ marginRight: 4 }} />{Math.round(data.main.feels_like)}°C</div>
+          {data.name && <div><EnvironmentOutlined style={{ marginRight: 4 }} />{data.name}</div>}
         </div>
       </div>
     </Card>
