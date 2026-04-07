@@ -14,7 +14,7 @@
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <!-- Prometheus exporter 1.10.0-beta.1 (net8.0 TFM) references Microsoft.Extensions.Options 9.0.0;
          add explicit reference so the DLL is included in publish output. -->
-    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.5" />
   </ItemGroup>
 
   <ItemGroup>
