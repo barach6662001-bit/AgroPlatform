@@ -8,5 +8,6 @@ public record SplitGrainBatchCommand(
     decimal SplitQuantityTons,
     Guid? TargetStorageId = null,
     string? Notes = null,
-    DateTime? MovementDate = null
+    DateTime? MovementDate = null,
+    string? ClientOperationId = null
 ) : IRequest<Guid>;

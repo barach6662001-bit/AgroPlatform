@@ -1,5 +1,6 @@
 using AgroPlatform.Application.GrainStorage.Commands.AdjustGrainBatch;
 using AgroPlatform.Application.GrainStorage.Commands.AddGrainBatchPlacement;
+using AgroPlatform.Application.GrainStorage.Commands.AddGrainReceipt;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainTransfers;
 using AgroPlatform.Application.GrainStorage.Queries.GetGrainStorageOverview;
 using AgroPlatform.Application.GrainStorage.Commands.CreateGrainBatch;
@@ -59,6 +60,17 @@ public class GrainStorageController : ControllerBase
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetGrainBatches), new { }, new { id });
+    }
+
+    /// <summary>Adds additional quantity to an existing grain batch (partial/staged receipt).</summary>
+    [HttpPost("{id:guid}/receipt")]
+    [Authorize(Policy = Permissions.GrainStorage.Manage)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddGrainReceipt(Guid id, [FromBody] AddGrainReceiptCommand command, CancellationToken cancellationToken)
+    {
+        var movementId = await _sender.Send(command with { GrainBatchId = id }, cancellationToken);
+        return CreatedAtAction(nameof(GetGrainMovements), new { id }, new { id = movementId });
     }
 
     /// <summary>Records a grain movement for a specific batch (Receipt, Issue, SaleDispatch, Adjustment, WriteOff).</summary>
