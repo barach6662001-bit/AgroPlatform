@@ -6,6 +6,9 @@ import {
   DollarOutlined,
   BankOutlined,
   FireOutlined,
+  WarningOutlined,
+  CloseCircleOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 import {
   XAxis,
@@ -28,16 +31,16 @@ import AlertsPanel from '../components/dashboard/AlertsPanel';
 import OperationsTimeline from '../components/dashboard/OperationsTimeline';
 import { useTranslation } from '../i18n';
 import { useAuthStore } from '../stores/authStore';
+import { formatUA } from '../utils/numberFormat';
 import {
   useDashboardQuery,
   useDashboardNotificationsQuery,
   useDashboardFieldsQuery,
   useDashboardOperationsQuery,
 } from '../hooks/useDashboardQuery';
+import s from './Dashboard.module.css';
 
 dayjs.extend(relativeTime);
-
-const CARD = { background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12 };
 
 const { Text } = Typography;
 
@@ -87,9 +90,9 @@ export default function Dashboard() {
   const monthlyProfit = data.monthlyProfit;
 
   const notifIcon = (type: string) => {
-    if (type === 'warning') return <span style={{ color: 'var(--warning)', fontSize: 16 }}>⚠</span>;
-    if (type === 'error') return <span style={{ color: 'var(--error)', fontSize: 16 }}>✕</span>;
-    return <span style={{ color: 'var(--info)', fontSize: 16 }}>ℹ</span>;
+    if (type === 'warning') return <WarningOutlined className={s.notifIcon} style={{ color: 'var(--warning)' }} />;
+    if (type === 'error') return <CloseCircleOutlined className={s.notifIcon} style={{ color: 'var(--error)' }} />;
+    return <InfoCircleOutlined className={s.notifIcon} style={{ color: 'var(--info)' }} />;
   };
 
   const fieldColumns = [
@@ -137,33 +140,26 @@ export default function Dashboard() {
   return (
     <div className="page-enter">
       {/* Header + Weather */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 12 }}>
+      <div className={s.flex_between_wrap}>
         <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
         <WeatherWidget />
       </div>
 
       {/* 5 KPI Cards */}
-      <Row gutter={[12, 12]} style={{ marginBottom: 20 }}>
+      <div className={s.kpiGrid}>
         {kpiCards.map((kpi, i) => (
-          <Col xs={24} sm={12} md={8} lg={4} xl={4} key={i} style={i === 4 ? { flex: '1 1 0' } : undefined}>
-            <Card size="small" style={CARD} bodyStyle={{ padding: '14px 16px' }}>
-              <Text type="secondary" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                {kpi.label}
-              </Text>
-              <div style={{
-                fontSize: 24, fontWeight: 600, marginTop: 2,
-                color: kpi.colored ? (kpi.val >= 0 ? 'var(--success)' : 'var(--error)') : 'var(--text-primary)',
-              }}>
-                {typeof kpi.val === 'number' ? kpi.val.toFixed(0) : kpi.val}
-                {kpi.unit && <span style={{ fontSize: 13, color: 'var(--text-secondary)', marginLeft: 4 }}>{kpi.unit}</span>}
-              </div>
-              {kpi.sub && (
-                <Text style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{kpi.sub}</Text>
-              )}
-            </Card>
-          </Col>
+          <div key={i} className={s.kpiCard}>
+            <div className={s.kpiLabel}>{kpi.label}</div>
+            <div className={s.kpiValue} style={{
+              color: kpi.colored ? (kpi.val >= 0 ? 'var(--success)' : 'var(--error)') : undefined,
+            }}>
+              {typeof kpi.val === 'number' ? formatUA(kpi.val) : kpi.val}
+              {kpi.unit && <span className={s.kpiUnit}>{kpi.unit}</span>}
+            </div>
+            {kpi.sub && <div className={s.kpiSub}>{kpi.sub}</div>}
+          </div>
         ))}
-      </Row>
+      </div>
 
       {/* Alerts */}
       {(data.underRepairMachines > 0 || data.pendingOperations > 0) && (
@@ -176,30 +172,30 @@ export default function Dashboard() {
       )}
 
       {/* Quick Actions */}
-      <Row gutter={12} style={{ marginBottom: 20 }}>
+      <div className={s.quickActions}>
         {isWarehouseOp ? (
           <>
-            <Col xs={12} sm={6}><Button block icon={<BankOutlined />} onClick={() => navigate('/warehouses')}>{t.nav.warehouses}</Button></Col>
-            <Col xs={12} sm={6}><Button block icon={<ToolOutlined />} onClick={() => navigate('/warehouses/movements')}>{t.nav.movements}</Button></Col>
-            <Col xs={12} sm={6}><Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>{t.dashboard.quickFuel}</Button></Col>
-            <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button></Col>
+            <Button block icon={<BankOutlined />} onClick={() => navigate('/warehouses')}>{t.nav.warehouses}</Button>
+            <Button block icon={<ToolOutlined />} onClick={() => navigate('/warehouses/movements')}>{t.nav.movements}</Button>
+            <Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>{t.dashboard.quickFuel}</Button>
+            <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button>
           </>
         ) : isAccountant ? (
           <>
-            <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button></Col>
-            <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics/pnl')}>{t.nav.pnl}</Button></Col>
-            <Col xs={12} sm={6}><Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>{t.dashboard.quickOperation}</Button></Col>
-            <Col xs={12} sm={6}><Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>{t.dashboard.quickGrain}</Button></Col>
+            <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button>
+            <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics/pnl')}>{t.nav.pnl}</Button>
+            <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>{t.dashboard.quickOperation}</Button>
+            <Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>{t.dashboard.quickGrain}</Button>
           </>
         ) : (
           <>
-            <Col xs={12} sm={6}><Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>{t.dashboard.quickOperation}</Button></Col>
-            <Col xs={12} sm={6}><Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>{t.dashboard.quickFuel}</Button></Col>
-            <Col xs={12} sm={6}><Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>{t.dashboard.quickGrain}</Button></Col>
-            <Col xs={12} sm={6}><Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button></Col>
+            <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>{t.dashboard.quickOperation}</Button>
+            <Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>{t.dashboard.quickFuel}</Button>
+            <Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>{t.dashboard.quickGrain}</Button>
+            <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button>
           </>
         )}
-      </Row>
+      </div>
 
       {/* Main content: Fields + Operations + Activity */}
       <Row gutter={[16, 16]}>
@@ -207,7 +203,6 @@ export default function Dashboard() {
         <Col xs={24} xl={14}>
           <Card
             title={<Text strong style={{ color: 'var(--text-primary)' }}>{t.dashboard.fieldsStatus}</Text>}
-            style={CARD}
             styles={{ body: { padding: 0 } }}
           >
             <Table
@@ -226,14 +221,13 @@ export default function Dashboard() {
         <Col xs={24} xl={10}>
           <Card
             title={<Text strong style={{ color: 'var(--text-primary)' }}>{t.dashboard.recentOperations}</Text>}
-            style={{ ...CARD, marginBottom: 16 }}
+            style={{ marginBottom: 16 }}
           >
             <OperationsTimeline operations={operations.slice(0, 6)} />
           </Card>
 
           <Card
             title={<Text strong style={{ color: 'var(--text-primary)' }}>{t.dashboard.activityFeed}</Text>}
-            style={CARD}
           >
             {notifications.length === 0 ? (
               <Text style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{t.dashboard.noActivity}</Text>
@@ -258,10 +252,8 @@ export default function Dashboard() {
 
       {/* Cost Trend Chart */}
       {costTrendData.length > 0 && (
-        <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
-          <Col xs={24} lg={16}>
-            <Card title={t.dashboard.costTrend} style={CARD}>
-              <ResponsiveContainer width="100%" height={220}>
+        <Card title={t.dashboard.costTrend} style={{ marginTop: 20 }}>
+          <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={costTrendData} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }} stroke="var(--border)" />
@@ -269,10 +261,8 @@ export default function Dashboard() {
                   <Tooltip />
                   <Line type="monotone" dataKey="cost" stroke="var(--error)" name={t.dashboard.costsUAH} strokeWidth={2} />
                 </LineChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
+          </ResponsiveContainer>
+        </Card>
       )}
     </div>
   );
