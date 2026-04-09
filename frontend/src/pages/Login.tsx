@@ -35,10 +35,10 @@ export default function Login() {
   }));
 
   const features = [
-    t.auth.featureFieldManagement,
-    t.auth.featureGpsMonitoring,
-    t.auth.featureStorageManagement,
-    t.auth.featureAnalyticsAndReports,
+    { text: t.auth.featureFieldManagement, metric: '50 000+ га' },
+    { text: t.auth.featureGpsMonitoring, metric: 'GPS real-time' },
+    { text: t.auth.featureStorageManagement, metric: '99.9%' },
+    { text: t.auth.featureAnalyticsAndReports, metric: '-30% витрат' },
   ];
 
   return (
@@ -71,11 +71,11 @@ export default function Login() {
       >
         {/* Left side — branding */}
         <div
-          className={`login-left-side ${s.flex_between_col}`}
+          className={`login-left-side ${s.heroSection}`}
           
         >
           {/* Decorative gradient */}
-        <div className={s.bg1} />
+        <div className={s.heroGradient} />
 
         {/* Logo */}
         <Logo size={40} variant="full" />
@@ -85,38 +85,51 @@ export default function Login() {
           <div className={s.upper}>
             {t.auth.platformTagline}
           </div>
-          <h2 className={s.text40}>
+          <h2 className={s.heroHeadline}>
             {t.auth.heroHeadline}
           </h2>
-          <p className={s.text16}>
+          <p className={s.heroDesc}>
             {t.auth.heroDescription}
           </p>
 
           {/* Feature list */}
-          <div className={s.flex_col}>
+          <div className={s.featureList}>
             {features.map(feature => (
-              <div key={feature} className={s.flex_center1}>
-                <div className={s.flex_center_centered}>
+              <div key={feature.text} className={s.featureItem}>
+                <div className={s.featureCheck}>
                   <svg width="10" height="10" viewBox="0 0 12 12">
                     <path d="M2 6l3 3 5-5" stroke="var(--brand)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
                   </svg>
                 </div>
-                <span className={s.text14}>{feature}</span>
+                <span className={s.featureText}>{feature.text}</span>
+                <span className={s.featureMetric}>{feature.metric}</span>
               </div>
             ))}
+          </div>
+
+          {/* Social proof */}
+          <div className={s.socialProof}>
+            <div className={s.proofMetric}>
+              <span className={s.proofNumber}>12+</span>
+              <span className={s.proofLabel}>{t.auth.proofCompanies}</span>
+            </div>
+            <div className={s.proofMetric}>
+              <span className={s.proofNumber}>200K+</span>
+              <span className={s.proofLabel}>{t.auth.proofHectares}</span>
+            </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className={s.text12}>
+        <div className={s.copyright}>
           {t.auth.copyright}
         </div>
       </div>
 
       {/* Right side — form */}
-      <div className={s.flex_center_centered1}>
+      <div className={s.formSection}>
         {/* Language switcher */}
-        <div className={s.block14}>
+        <div className={s.langSwitcher}>
           <Dropdown
             menu={{
               items: langMenuItems,
@@ -124,21 +137,21 @@ export default function Login() {
               onClick: ({ key }) => setLang(key as 'uk' | 'en'),
             }}
           >
-            <Button type="text" className={s.padded}>
-              <img src={currentLang?.flag} alt={currentLang?.shortLabel} className={s.spaced} />
-              <span className={s.text13}>
+            <Button type="text" className={s.langButton}>
+              <img src={currentLang?.flag} alt={currentLang?.shortLabel} className={s.flagIcon} />
+              <span className={s.langLabel}>
                 {currentLang?.shortLabel}
               </span>
             </Button>
           </Dropdown>
         </div>
 
-        <div className={s.fullWidth}>
-          <div className={s.spaced1}>
-            <h3 className={s.text20}>
+        <div className={s.formWrapper}>
+          <div className={s.formHeader}>
+            <h3 className={s.formTitle}>
               {t.auth.loginTitle}
             </h3>
-            <p className={s.text131}>
+            <p className={s.formSubtitle}>
               {t.auth.loginSubtitle}
             </p>
           </div>
@@ -146,32 +159,32 @@ export default function Login() {
           <Form layout="vertical" onFinish={onFinish}>
             <Form.Item
               name="email"
-              label={<span className={s.text121}>{t.auth.email}</span>}
+              label={<span className={s.fieldLabel}>{t.auth.email}</span>}
               rules={[{ required: true, type: 'email', message: t.auth.enterEmail }]}
             >
               <Input
-                prefix={<UserOutlined className={s.colored} />}
+                prefix={<UserOutlined className={s.inputIcon} />}
                 placeholder={t.auth.email}
                 size="large"
               />
             </Form.Item>
             <Form.Item
               name="password"
-              label={<span className={s.text121}>{t.auth.password}</span>}
+              label={<span className={s.fieldLabel}>{t.auth.password}</span>}
               rules={[{ required: true, message: t.auth.enterPassword }]}
             >
               <Input.Password
-                prefix={<LockOutlined className={s.colored} />}
+                prefix={<LockOutlined className={s.inputIcon} />}
                 placeholder={t.auth.password}
                 size="large"
               />
             </Form.Item>
-            <Form.Item className={s.spaced2}>
-              <Button type="primary" htmlType="submit" block size="large" className={s.text141}>
+            <Form.Item className={s.submitGap}>
+              <Button type="primary" htmlType="submit" block size="large" className={s.submitButton}>
                 {t.auth.login}
               </Button>
             </Form.Item>
-            <div className={s.textCenter}>
+            <div className={s.forgotLink}>
               {t.auth.forgotPassword}
             </div>
           </Form>

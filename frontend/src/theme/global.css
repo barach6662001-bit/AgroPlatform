@@ -381,11 +381,10 @@ a, button, [role="button"],
 
 /* Card hover states */
 .ant-card {
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 .ant-card:hover {
   border-color: var(--border-strong) !important;
-  transform: translateY(-1px);
   box-shadow: var(--shadow-sm) !important;
 }
 
@@ -446,6 +445,52 @@ a, button, [role="button"],
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
+}
+
+/* Typography utilities */
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 4px 0 0;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.label-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Clickable table rows */
+.ant-table-tbody > tr.clickable-row {
+  cursor: pointer;
+}
+.ant-table-tbody > tr.clickable-row:hover > td {
+  background: var(--brand-muted) !important;
+}
+
+/* Menu item padding via CSS (no inline styles) */
+.ant-menu-dark .ant-menu-item {
+  padding: 4px 8px !important;
+}
+.ant-menu-dark .ant-menu-submenu-title {
+  padding: 4px 8px !important;
 }
 
 /* Alert cards */
