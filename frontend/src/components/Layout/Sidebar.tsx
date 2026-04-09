@@ -94,9 +94,6 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const storageChildren = [
     { key: '/warehouses', label: t.nav.warehouses },
     { key: '/warehouses/items', label: t.nav.materials },
-    { key: '/warehouses/movements', label: t.nav.movements },
-    { key: '/warehouses/inventory', label: t.nav.inventory },
-    { key: '/warehouses/import', label: t.nav.import },
     { key: '/storage', label: t.nav.grainModule },
     { key: '/fuel', label: t.nav.fuelStation },
   ];

@@ -508,6 +508,8 @@ const en: Translations = {
     prescriptionLoadError: 'Error loading prescription map',
     prescriptionExportError: 'Error exporting CSV',
     tabInspection: 'Inspection',
+    tabAgronomy: 'Agronomy',
+    tabPrecision: 'Precision Farming',
     addInspection: 'Add Inspection',
     noInspections: 'No inspection records yet',
     inspectionDate: 'Inspection Date',

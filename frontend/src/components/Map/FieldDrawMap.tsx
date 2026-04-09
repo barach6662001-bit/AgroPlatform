@@ -133,11 +133,12 @@ export default function FieldDrawMap({ field, onGeometryChange, height = 400 }: 
           {t.fields.cadastreLayer}
         </label>
       </div>
-      <MapContainer
-        style={{ height, width: '100%' }}
-        center={[48.5, 35.0]}
-        zoom={10}
-      >
+      <div className={s.mapWrapper}>
+        <MapContainer
+          style={{ height, width: '100%' }}
+          center={[49.0, 31.5]}
+          zoom={6}
+        >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -145,6 +146,7 @@ export default function FieldDrawMap({ field, onGeometryChange, height = 400 }: 
         <CadastreLayer enabled={showCadastre} />
         <DrawControl field={field} onGeometryChange={onGeometryChange} />
       </MapContainer>
+      </div>
     </div>
   );
 }

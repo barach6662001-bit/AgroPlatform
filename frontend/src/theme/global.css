@@ -126,7 +126,7 @@ a, button, [role="button"],
 .ant-table-thead > tr > th {
   background: var(--bg-surface) !important;
   border-bottom: 1px solid var(--border) !important;
-  color: var(--text-tertiary) !important;
+  color: var(--text-secondary) !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
@@ -381,11 +381,10 @@ a, button, [role="button"],
 
 /* Card hover states */
 .ant-card {
-  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  transition: border-color 0.15s ease !important;
 }
 .ant-card:hover {
   border-color: var(--border-strong) !important;
-  box-shadow: var(--shadow-sm) !important;
 }
 
 /* Segmented control */
