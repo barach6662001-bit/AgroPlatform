@@ -8,6 +8,21 @@
   margin: 16px;
 }
 
+.emptyWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+}
+
+.configHint {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  max-width: 400px;
+  text-align: center;
+  margin-top: 8px;
+}
+
 .spaced1 {
   margin: 0 0 12px 0;
 }

@@ -80,6 +80,21 @@ export default function Login() {
         {/* Logo */}
         <Logo size={40} variant="full" />
 
+        {/* Decorative field illustration */}
+        <div className={s.heroIllustration}>
+          <svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg" className={s.fieldSvg}>
+            <path d="M0 80 Q100 40 200 70 Q300 100 400 60 L400 120 L0 120 Z" fill="var(--brand)" opacity="0.06" />
+            <path d="M0 90 Q80 60 180 85 Q280 110 400 75 L400 120 L0 120 Z" fill="var(--brand)" opacity="0.04" />
+            <line x1="50" y1="70" x2="150" y2="55" stroke="var(--brand)" strokeWidth="0.5" opacity="0.15" />
+            <line x1="100" y1="75" x2="200" y2="60" stroke="var(--brand)" strokeWidth="0.5" opacity="0.12" />
+            <line x1="200" y1="65" x2="350" y2="55" stroke="var(--brand)" strokeWidth="0.5" opacity="0.1" />
+            <circle cx="120" cy="62" r="3" fill="var(--brand)" opacity="0.3" />
+            <circle cx="220" cy="68" r="3" fill="var(--brand)" opacity="0.25" />
+            <circle cx="310" cy="58" r="3" fill="var(--brand)" opacity="0.2" />
+            <circle cx="180" cy="72" r="2" fill="var(--brand)" opacity="0.15" />
+          </svg>
+        </div>
+
         {/* Center content */}
         <div>
           <div className={s.upper}>

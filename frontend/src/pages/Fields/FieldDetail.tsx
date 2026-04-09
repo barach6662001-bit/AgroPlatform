@@ -245,65 +245,49 @@ export default function FieldDetail() {
 
   return (
     <div>
-      <Space className={s.spaced}>
+      <Space className={s.sectionGap}>
         <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/fields')}>
           {t.fields.backToList}
         </Button>
       </Space>
       <PageHeader
-        title={field.name}
+        title={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
         subtitle={t.fields.areaSubtitle.replace('{{area}}', field.areaHectares.toFixed(2))}
         breadcrumbs={<Breadcrumbs items={[{ label: t.nav.fields, path: '/fields' }, { label: field.name }]} />}
       />
 
       {pnl && (
-        <Row gutter={12} className={s.spaced1}>
-          <Col span={6}>
-            <Card size="small" className={s.colored}>
-              <Typography.Text type="secondary" className={s.upper}>
-                {t.fields.expenses}
+        <div className={s.fieldKpiGrid}>
+          <div className={s.fieldKpiCard}>
+            <div className={s.fieldKpiLabel}>{t.fields.expenses}</div>
+            <div className={`${s.fieldKpiValue} ${s.kpiExpenses}`}>
+              {(pnl.totalCosts || 0).toLocaleString()} ₴
+            </div>
+            {pnl.costPerHectare != null && pnl.costPerHectare > 0 && (
+              <Typography.Text type="secondary" className={s.subValue}>
+                {pnl.costPerHectare.toLocaleString()} ₴/га
               </Typography.Text>
-              <div className={s.text20}>
-                {(pnl.totalCosts || 0).toLocaleString()} ₴
-              </div>
-              {pnl.costPerHectare != null && pnl.costPerHectare > 0 && (
-                <Typography.Text type="secondary" className={s.text11}>
-                  {pnl.costPerHectare.toLocaleString()} ₴/га
-                </Typography.Text>
-              )}
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" className={s.colored}>
-              <Typography.Text type="secondary" className={s.upper}>
-                {t.fields.revenue}
-              </Typography.Text>
-              <div className={s.text201}>
-                {(pnl.estimatedRevenue || 0).toLocaleString()} ₴
-              </div>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" className={s.colored}>
-              <Typography.Text type="secondary" className={s.upper}>
-                {t.fields.profit}
-              </Typography.Text>
-              <div style={{ fontSize: 20, fontWeight: 600, color: (pnl.netProfit || 0) >= 0 ? 'var(--success)' : 'var(--error)' }}>
-                {(pnl.netProfit || 0).toLocaleString()} ₴
-              </div>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" className={s.colored}>
-              <Typography.Text type="secondary" className={s.upper}>
-                {t.fields.yield}
-              </Typography.Text>
-              <div className={s.text202}>
-                {pnl.actualYieldPerHectare ? `${pnl.actualYieldPerHectare.toFixed(1)} т/га` : '—'}
-              </div>
-            </Card>
-          </Col>
-        </Row>
+            )}
+          </div>
+          <div className={s.fieldKpiCard}>
+            <div className={s.fieldKpiLabel}>{t.fields.revenue}</div>
+            <div className={`${s.fieldKpiValue} ${s.kpiRevenue}`}>
+              {(pnl.estimatedRevenue || 0).toLocaleString()} ₴
+            </div>
+          </div>
+          <div className={s.fieldKpiCard}>
+            <div className={s.fieldKpiLabel}>{t.fields.profit}</div>
+            <div className={`${s.fieldKpiValue} ${(pnl.netProfit || 0) > 0 ? s.kpiRevenue : (pnl.netProfit || 0) < 0 ? s.kpiExpenses : ''}`}>
+              {(pnl.netProfit || 0).toLocaleString()} ₴
+            </div>
+          </div>
+          <div className={s.fieldKpiCard}>
+            <div className={s.fieldKpiLabel}>{t.fields.yield}</div>
+            <div className={s.fieldKpiValue}>
+              {pnl.actualYieldPerHectare ? `${pnl.actualYieldPerHectare.toFixed(1)} т/га` : '—'}
+            </div>
+          </div>
+        </div>
       )}
 
       <Tabs defaultActiveKey="info" items={[
@@ -312,7 +296,7 @@ export default function FieldDetail() {
           label: t.fields.tabInfo,
           children: (
             <div>
-              <Space className={s.spaced2}>
+              <Space className={s.actionsGap}>
                 <Button type="primary" icon={<PlusOutlined />} onClick={() => setAssignModalOpen(true)}>
                   {t.fields.assignCrop}
                 </Button>
@@ -345,7 +329,7 @@ export default function FieldDetail() {
                 </Col>
               </Row>
 
-              <Card title={t.fields.cropHistory} className={s.spaced3}>
+              <Card title={t.fields.cropHistory} className={s.cardGap}>
                 <Table
                   dataSource={field.cropHistory}
                   columns={historyColumns}
@@ -355,7 +339,7 @@ export default function FieldDetail() {
                 />
               </Card>
 
-              <Card title={t.fields.rotationPlans} className={s.spaced3}>
+              <Card title={t.fields.rotationPlans} className={s.cardGap}>
                 <Table
                   dataSource={field.rotationPlans}
                   columns={planColumns}
@@ -368,7 +352,7 @@ export default function FieldDetail() {
               {(field.ownershipType === 1 || field.ownershipType === 2) && (
                 <Card
                   title={t.lease.title}
-                  className={s.spaced3}
+                  className={s.cardGap}
                   extra={
                     canWrite && (
                       <Button type="primary" icon={<PlusOutlined />} onClick={() => setLeaseModalOpen(true)} size="small">
@@ -378,10 +362,10 @@ export default function FieldDetail() {
                   }
                 >
                   {leases.length === 0 ? (
-                    <div className={s.textCenter}>
+                    <div className={s.emptyText}>
                       {t.lease.noLeases}
                       {canWrite && (
-                        <div className={s.spaced4}>
+                        <div className={s.smallGap}>
                           <Button icon={<PlusOutlined />} onClick={() => setLeaseModalOpen(true)}>
                             {t.lease.addLease}
                           </Button>
@@ -428,24 +412,16 @@ export default function FieldDetail() {
           ),
         },
         {
-          key: 'seeding',
-          label: t.fields.tabSeeding,
-          children: <FieldSeedingTab fieldId={id!} fieldArea={field?.areaHectares} />,
-        },
-        {
-          key: 'fertilizer',
-          label: t.fields.tabFertilizer,
-          children: <FieldFertilizerTab fieldId={id!} fieldArea={field?.areaHectares} />,
-        },
-        {
-          key: 'protection',
-          label: t.fields.tabProtection,
-          children: <FieldProtectionTab fieldId={id!} fieldArea={field?.areaHectares} />,
-        },
-        {
-          key: 'harvest',
-          label: t.fields.tabHarvest,
-          children: <FieldHarvestTab fieldId={id!} />,
+          key: 'agro',
+          label: t.fields.tabAgronomy,
+          children: (
+            <Tabs defaultActiveKey="seeding" size="small" items={[
+              { key: 'seeding', label: t.fields.tabSeeding, children: <FieldSeedingTab fieldId={id!} fieldArea={field?.areaHectares} /> },
+              { key: 'fertilizer', label: t.fields.tabFertilizer, children: <FieldFertilizerTab fieldId={id!} fieldArea={field?.areaHectares} /> },
+              { key: 'protection', label: t.fields.tabProtection, children: <FieldProtectionTab fieldId={id!} fieldArea={field?.areaHectares} /> },
+              { key: 'harvest', label: t.fields.tabHarvest, children: <FieldHarvestTab fieldId={id!} /> },
+            ]} />
+          ),
         },
         {
           key: 'map',
@@ -458,6 +434,7 @@ export default function FieldDetail() {
                   {field.cadastralNumber ? (
                     <>
                       <Button
+                        type="link"
                         icon={<ExportOutlined />}
                         size="small"
                         onClick={() => window.open(
@@ -513,29 +490,17 @@ export default function FieldDetail() {
           ),
         },
         {
-          key: 'ndvi',
-          label: t.fields.tabNdvi,
-          children: <FieldNdviTab fieldId={id!} />,
-        },
-        {
-          key: 'zones',
-          label: t.fields.tabZones,
-          children: <FieldZonesTab fieldId={id!} field={field} />,
-        },
-        {
-          key: 'soil',
-          label: t.fields.tabSoil,
-          children: <FieldSoilAnalysisTab fieldId={id!} />,
-        },
-        {
-          key: 'prescription',
-          label: t.fields.tabPrescription,
-          children: <FieldPrescriptionTab fieldId={id!} />,
-        },
-        {
-          key: 'inspection',
-          label: t.fields.tabInspection,
-          children: <FieldInspectionTab fieldId={id!} />,
+          key: 'precision',
+          label: t.fields.tabPrecision,
+          children: (
+            <Tabs defaultActiveKey="ndvi" size="small" items={[
+              { key: 'ndvi', label: t.fields.tabNdvi, children: <FieldNdviTab fieldId={id!} /> },
+              { key: 'zones', label: t.fields.tabZones, children: <FieldZonesTab fieldId={id!} field={field} /> },
+              { key: 'soil', label: t.fields.tabSoil, children: <FieldSoilAnalysisTab fieldId={id!} /> },
+              { key: 'prescription', label: t.fields.tabPrescription, children: <FieldPrescriptionTab fieldId={id!} /> },
+              { key: 'inspection', label: t.fields.tabInspection, children: <FieldInspectionTab fieldId={id!} /> },
+            ]} />
+          ),
         },
       ]} />
 
@@ -549,7 +514,7 @@ export default function FieldDetail() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={assignForm} layout="vertical" className={s.spaced3}>
+        <Form form={assignForm} layout="vertical" className={s.cardGap}>
           <Form.Item name="cropType" label={t.fields.crop} rules={[{ required: true, message: t.common.required }]}>
             <Select options={cropOptions} />
           </Form.Item>
@@ -572,7 +537,7 @@ export default function FieldDetail() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={planForm} layout="vertical" className={s.spaced3}>
+        <Form form={planForm} layout="vertical" className={s.cardGap}>
           <Form.Item name="plannedCrop" label={t.fields.plannedCrop} rules={[{ required: true, message: t.common.required }]}>
             <Select options={cropOptions} />
           </Form.Item>
@@ -595,7 +560,7 @@ export default function FieldDetail() {
         confirmLoading={saving}
         width={600}
       >
-        <Form form={leaseForm} layout="vertical" className={s.spaced3}>
+        <Form form={leaseForm} layout="vertical" className={s.cardGap}>
           <Form.Item name="ownerName" label={t.lease.ownerName} rules={[{ required: true, message: t.common.required }]}>
             <Input />
           </Form.Item>
@@ -639,7 +604,7 @@ export default function FieldDetail() {
         cancelText={t.common.cancel}
         confirmLoading={saving}
       >
-        <Form form={payForm} layout="vertical" className={s.spaced3}>
+        <Form form={payForm} layout="vertical" className={s.cardGap}>
           <Form.Item name="year" label={t.lease.year} rules={[{ required: true, message: t.common.required }]}>
             <InputNumber min={2000} max={2100} className={s.fullWidth} />
           </Form.Item>

@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, Alert, Spin, Typography, Slider } from 'antd';
+import { GlobalOutlined } from '@ant-design/icons';
 import { MapContainer, TileLayer, ImageOverlay, useMap } from 'react-leaflet';
 import type { LatLngBoundsExpression } from 'leaflet';
 import { useTranslation } from '../../i18n';
 import { getFieldNdvi, getFieldNdviDates, reportNdviProblem } from '../../api/satellite';
 import type { NdviData } from '../../api/satellite';
+import EmptyState from '../../components/EmptyState';
 import s from './FieldNdviTab.module.css';
 
 interface Props {
@@ -166,11 +168,9 @@ export default function FieldNdviTab({ fieldId }: Props) {
 
   if (error || !ndvi || !ndvi.bounds) {
     return (
-      <Alert
-        type="info"
-        showIcon
+      <EmptyState
         message={t.fields.ndviNoData}
-        className={s.spaced}
+        icon={<GlobalOutlined style={{ fontSize: 24, color: 'var(--text-tertiary)' }} />}
       />
     );
   }
@@ -179,13 +179,12 @@ export default function FieldNdviTab({ fieldId }: Props) {
   // a functional-looking placeholder map.
   if (!ndvi.configured) {
     return (
-      <Alert
-        type="warning"
-        showIcon
-        message={t.fields.ndviNotConfiguredTitle}
-        description={t.fields.ndviNotConfiguredDescription}
-        className={s.spaced}
-      />
+      <div className={s.emptyWrapper}>
+        <EmptyState
+          message={t.fields.ndviNotConfiguredTitle}
+        />
+        <p className={s.configHint}>{t.fields.ndviNotConfiguredDescription}</p>
+      </div>
     );
   }
 

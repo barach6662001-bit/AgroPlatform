@@ -506,6 +506,8 @@ const uk = {
     prescriptionLoadError: 'Помилка завантаження карти',
     prescriptionExportError: 'Помилка експорту CSV',
     tabInspection: 'Обстеження',
+    tabAgronomy: 'Агрономія',
+    tabPrecision: 'Точне землеробство',
     addInspection: 'Додати обстеження',
     noInspections: 'Ще немає записів обстеження',
     inspectionDate: 'Дата обстеження',

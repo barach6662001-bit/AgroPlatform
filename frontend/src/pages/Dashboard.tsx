@@ -155,7 +155,9 @@ export default function Dashboard() {
               <div className={s.kpiIcon}>{kpi.icon}</div>
             </div>
             <div className={s.kpiValue} style={{
-              color: kpi.colored ? (kpi.val >= 0 ? 'var(--success)' : 'var(--error)') : undefined,
+              color: kpi.colored
+                ? (kpi.val > 0 ? 'var(--success)' : kpi.val < 0 ? 'var(--error)' : 'var(--text-secondary)')
+                : undefined,
             }}>
               {typeof kpi.val === 'number' ? formatUA(kpi.val) : kpi.val}
               {kpi.unit && <span className={s.kpiUnit}>{kpi.unit}</span>}

@@ -30,12 +30,13 @@
 
 .heroGradient {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 60%;
-  height: 60%;
-  background: radial-gradient(ellipse at top right, var(--brand-muted) 0%, transparent 70%);
+  top: -10%;
+  right: -10%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(ellipse at top right, rgba(34, 197, 94, 0.08) 0%, transparent 60%);
   pointer-events: none;
+  z-index: 0;
 }
 
 .heroGradient::after {
@@ -46,6 +47,17 @@
   width: 450px;
   height: 450px;
   background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%);
+}
+
+.heroIllustration {
+  margin-bottom: 32px;
+  opacity: 0.8;
+}
+
+.fieldSvg {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
 }
 
 .upper {
