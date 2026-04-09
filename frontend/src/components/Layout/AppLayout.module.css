@@ -1,30 +1,30 @@
-.flex_center {
+.toolbarItem {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.bordered {
+.flagIcon {
   width: 20px;
   height: 14px;
   object-fit: cover;
   border-radius: 2px;
 }
 
-.flex {
+.appShell {
   display: flex;
   height: 100vh;
   background: var(--bg-app);
   overflow: hidden;
 }
 
-.padded {
+.sidebarNav {
   flex: 1;
   overflow: auto;
   padding: 8px 0;
 }
 
-.flex_center_centered {
+.userAvatar {
   width: 28px;
   height: 28px;
   background: var(--brand-muted);
@@ -39,12 +39,12 @@
   flex-shrink: 0;
 }
 
-.block8 {
+.userMeta {
   overflow: hidden;
   flex: 1;
 }
 
-.text12 {
+.userName {
   font-size: 12px;
   color: var(--text-primary);
   font-weight: 500;
@@ -53,19 +53,19 @@
   text-overflow: ellipsis;
 }
 
-.text11 {
+.userRole {
   font-size: 11px;
   color: var(--text-tertiary);
 }
 
-.flex_col {
+.mainArea {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.flex_center_between {
+.topbar {
   height: 56px;
   flex-shrink: 0;
   background: var(--bg-surface);
@@ -77,28 +77,28 @@
   gap: 12px;
 }
 
-.text18 {
+.menuIcon {
   font-size: 18px;
   color: var(--text-secondary);
 }
 
-.padded1 {
+.topbarBtn {
   padding: 4px 8px;
   height: auto;
 }
 
-.text16 {
+.collapseIcon {
   font-size: 16px;
   color: var(--text-secondary);
 }
 
-.padded2 {
+.topbarAction {
   color: var(--text-secondary);
   padding: 4px 8px;
   height: 32px;
 }
 
-.spaced {
+.langFlag {
   width: 20px;
   height: 14px;
   object-fit: cover;
@@ -106,19 +106,65 @@
   margin-right: 4px;
 }
 
-.text13 {
+.topbarLabel {
   font-size: 13px;
   font-weight: 500;
 }
 
-.text131 {
+.logoutBtn {
   color: var(--text-secondary);
   font-size: 13px;
   height: 32px;
 }
 
-.padded3 {
+.pageArea {
   flex: 1;
   overflow: auto;
   padding: 24px 28px;
+}
+
+/* Sidebar shell */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.2s ease;
+}
+.sidebarCollapsed {
+  width: 64px;
+}
+
+.logoWrap {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: flex-start;
+}
+.logoWrapCollapsed {
+  padding: 16px 0;
+  justify-content: center;
+}
+
+.userSection {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+}
+.userSectionCollapsed {
+  padding: 12px 0;
+  justify-content: center;
+}
+
+.kbdHint {
+  opacity: 0.5;
+  font-size: 11px;
 }

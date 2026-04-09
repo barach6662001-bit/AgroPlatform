@@ -9,6 +9,9 @@ import {
   WarningOutlined,
   CloseCircleOutlined,
   InfoCircleOutlined,
+  AimOutlined,
+  LineChartOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import {
   XAxis,
@@ -101,7 +104,7 @@ export default function Dashboard() {
       dataIndex: 'name',
       key: 'name',
       ellipsis: true,
-      render: (v: string) => <Text style={{ color: 'var(--text-primary)' }}>{v}</Text>,
+      render: (v: string) => <Text className={s.fieldName}>{v}</Text>,
     },
     {
       title: t.fields.currentCrop,
@@ -109,32 +112,30 @@ export default function Dashboard() {
       key: 'currentCrop',
       render: (crop: string | undefined) =>
         crop
-          ? <Tag color="green" style={{ borderRadius: 4, fontSize: 11 }}>{t.crops[crop as keyof typeof t.crops] || crop}</Tag>
-          : <Tag style={{ borderRadius: 4, fontSize: 11, color: 'var(--text-secondary)', border: '1px solid var(--border)', background: 'transparent' }}>{t.fields.notSeeded}</Tag>,
+          ? <Tag color="green" className={s.cropTag}>{t.crops[crop as keyof typeof t.crops] || crop}</Tag>
+          : <Tag className={s.emptyTag}>{t.fields.notSeeded}</Tag>,
     },
     {
       title: t.fields.area,
       dataIndex: 'areaHectares',
       key: 'areaHectares',
-      render: (v: number) => <Text style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{v.toFixed(1)} ha</Text>,
+      render: (v: number) => <Text className={s.areaValue}>{v.toFixed(1)} ha</Text>,
     },
   ];
 
-  // 5 KPI cards
+  // 4 KPI cards with icons
   const kpiCards = isAccountant
     ? [
-        { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴' },
-        { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true },
-        { label: t.dashboard.monthlyExpenses, val: monthlyExpenses, unit: '₴' },
-        { label: t.dashboard.totalArea, val: data.totalAreaHectares, unit: 'га' },
-        { label: t.dashboard.totalMachines, val: data.totalMachines, unit: '', sub: `${data.activeMachines} ${t.dashboard.activeCount}` },
+        { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴', icon: <BankOutlined /> },
+        { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true, icon: <LineChartOutlined /> },
+        { label: t.dashboard.monthlyExpenses, val: monthlyExpenses, unit: '₴', icon: <DollarOutlined /> },
+        { label: t.dashboard.totalArea, val: data.totalAreaHectares, unit: 'га', icon: <AimOutlined /> },
       ]
     : [
-        { label: t.dashboard.totalArea, val: data.totalAreaHectares, unit: 'га' },
-        { label: t.dashboard.monthlyExpenses, val: monthlyExpenses, unit: '₴' },
-        { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴' },
-        { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true },
-        { label: t.dashboard.totalMachines, val: data.totalMachines, unit: '', sub: `${data.activeMachines} ${t.dashboard.activeCount}` },
+        { label: t.dashboard.totalArea, val: data.totalAreaHectares, unit: 'га', icon: <AimOutlined /> },
+        { label: t.dashboard.monthlyExpenses, val: monthlyExpenses, unit: '₴', icon: <DollarOutlined /> },
+        { label: t.dashboard.monthlyRevenue, val: monthlyRevenue, unit: '₴', icon: <BankOutlined /> },
+        { label: t.dashboard.monthlyProfit, val: monthlyProfit, unit: '₴', colored: true, icon: <LineChartOutlined /> },
       ];
 
   return (
@@ -145,25 +146,27 @@ export default function Dashboard() {
         <WeatherWidget />
       </div>
 
-      {/* 5 KPI Cards */}
+      {/* 4 KPI Cards */}
       <div className={s.kpiGrid}>
         {kpiCards.map((kpi, i) => (
           <div key={i} className={s.kpiCard}>
-            <div className={s.kpiLabel}>{kpi.label}</div>
+            <div className={s.kpiHeader}>
+              <div className={s.kpiLabel}>{kpi.label}</div>
+              <div className={s.kpiIcon}>{kpi.icon}</div>
+            </div>
             <div className={s.kpiValue} style={{
               color: kpi.colored ? (kpi.val >= 0 ? 'var(--success)' : 'var(--error)') : undefined,
             }}>
               {typeof kpi.val === 'number' ? formatUA(kpi.val) : kpi.val}
               {kpi.unit && <span className={s.kpiUnit}>{kpi.unit}</span>}
             </div>
-            {kpi.sub && <div className={s.kpiSub}>{kpi.sub}</div>}
           </div>
         ))}
       </div>
 
       {/* Alerts */}
       {(data.underRepairMachines > 0 || data.pendingOperations > 0) && (
-        <div style={{ marginBottom: 20 }}>
+        <div className={s.alertsGap}>
           <AlertsPanel
             underRepairMachines={data.underRepairMachines}
             pendingOperations={data.pendingOperations}
@@ -175,24 +178,24 @@ export default function Dashboard() {
       <div className={s.quickActions}>
         {isWarehouseOp ? (
           <>
-            <Button block icon={<BankOutlined />} onClick={() => navigate('/warehouses')}>{t.nav.warehouses}</Button>
-            <Button block icon={<ToolOutlined />} onClick={() => navigate('/warehouses/movements')}>{t.nav.movements}</Button>
-            <Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>{t.dashboard.quickFuel}</Button>
-            <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button>
+            <div className={s.quickAction} onClick={() => navigate('/warehouses')}><BankOutlined className={s.quickActionIcon} />{t.nav.warehouses}</div>
+            <div className={s.quickAction} onClick={() => navigate('/warehouses/movements')}><ToolOutlined className={s.quickActionIcon} />{t.nav.movements}</div>
+            <div className={s.quickAction} onClick={() => navigate('/fuel')}><FireOutlined className={s.quickActionIcon} />{t.dashboard.quickFuel}</div>
+            <div className={s.quickAction} onClick={() => navigate('/economics')}><DollarOutlined className={s.quickActionIcon} />{t.dashboard.quickCost}</div>
           </>
         ) : isAccountant ? (
           <>
-            <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button>
-            <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics/pnl')}>{t.nav.pnl}</Button>
-            <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>{t.dashboard.quickOperation}</Button>
-            <Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>{t.dashboard.quickGrain}</Button>
+            <div className={s.quickAction} onClick={() => navigate('/economics')}><DollarOutlined className={s.quickActionIcon} />{t.dashboard.quickCost}</div>
+            <div className={s.quickAction} onClick={() => navigate('/economics/pnl')}><DollarOutlined className={s.quickActionIcon} />{t.nav.pnl}</div>
+            <div className={s.quickAction} onClick={() => navigate('/operations')}><ToolOutlined className={s.quickActionIcon} />{t.dashboard.quickOperation}</div>
+            <div className={s.quickAction} onClick={() => navigate('/grain')}><BankOutlined className={s.quickActionIcon} />{t.dashboard.quickGrain}</div>
           </>
         ) : (
           <>
-            <Button block icon={<ToolOutlined />} onClick={() => navigate('/operations')}>{t.dashboard.quickOperation}</Button>
-            <Button block icon={<FireOutlined />} onClick={() => navigate('/fuel')}>{t.dashboard.quickFuel}</Button>
-            <Button block icon={<BankOutlined />} onClick={() => navigate('/grain')}>{t.dashboard.quickGrain}</Button>
-            <Button block icon={<DollarOutlined />} onClick={() => navigate('/economics')}>{t.dashboard.quickCost}</Button>
+            <div className={s.quickAction} onClick={() => navigate('/operations')}><ToolOutlined className={s.quickActionIcon} />{t.dashboard.quickOperation}</div>
+            <div className={s.quickAction} onClick={() => navigate('/fuel')}><FireOutlined className={s.quickActionIcon} />{t.dashboard.quickFuel}</div>
+            <div className={s.quickAction} onClick={() => navigate('/grain')}><BankOutlined className={s.quickActionIcon} />{t.dashboard.quickGrain}</div>
+            <div className={s.quickAction} onClick={() => navigate('/economics')}><DollarOutlined className={s.quickActionIcon} />{t.dashboard.quickCost}</div>
           </>
         )}
       </div>
@@ -202,45 +205,56 @@ export default function Dashboard() {
         {/* Left: Fields status */}
         <Col xs={24} xl={14}>
           <Card
-            title={<Text strong style={{ color: 'var(--text-primary)' }}>{t.dashboard.fieldsStatus}</Text>}
+            title={<Text strong className={s.cardTitle}>{t.dashboard.fieldsStatus}</Text>}
             styles={{ body: { padding: 0 } }}
           >
-            <Table
-              dataSource={fields}
-              columns={fieldColumns}
-              rowKey="id"
-              size="small"
-              pagination={false}
-              locale={{ emptyText: <Text style={{ color: 'var(--text-secondary)' }}>{t.dashboard.noFieldsData}</Text> }}
-              scroll={{ x: true }}
-            />
+            {fields.length === 0 ? (
+              <div className={s.onboardingCard}>
+                <div className={s.onboardingIcon}>🌾</div>
+                <h3 className={s.onboardingTitle}>{t.dashboard.getStarted}</h3>
+                <p className={s.onboardingDesc}>{t.dashboard.addFirstField}</p>
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/fields')}>
+                  {t.fields.addField}
+                </Button>
+              </div>
+            ) : (
+              <Table
+                dataSource={fields}
+                columns={fieldColumns}
+                rowKey="id"
+                size="small"
+                pagination={false}
+                locale={{ emptyText: <Text className={s.emptyText}>{t.dashboard.noFieldsData}</Text> }}
+                scroll={{ x: true }}
+              />
+            )}
           </Card>
         </Col>
 
         {/* Right: Operations Timeline + Activity Feed */}
         <Col xs={24} xl={10}>
           <Card
-            title={<Text strong style={{ color: 'var(--text-primary)' }}>{t.dashboard.recentOperations}</Text>}
-            style={{ marginBottom: 16 }}
+            title={<Text strong className={s.cardTitle}>{t.dashboard.recentOperations}</Text>}
+            className={s.cardGap}
           >
             <OperationsTimeline operations={operations.slice(0, 6)} />
           </Card>
 
           <Card
-            title={<Text strong style={{ color: 'var(--text-primary)' }}>{t.dashboard.activityFeed}</Text>}
+            title={<Text strong className={s.cardTitle}>{t.dashboard.activityFeed}</Text>}
           >
             {notifications.length === 0 ? (
-              <Text style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{t.dashboard.noActivity}</Text>
+              <Text className={s.emptyText}>{t.dashboard.noActivity}</Text>
             ) : (
               <List
                 dataSource={notifications.slice(0, 6)}
                 split={false}
                 renderItem={(n) => (
-                  <List.Item style={{ padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
+                  <List.Item className={s.activityItem}>
                     <Space>
                       {notifIcon(n.type)}
-                      <Text type="secondary" style={{ fontSize: 11 }}>{dayjs(n.createdAtUtc).format('HH:mm')}</Text>
-                      <Text style={{ fontSize: 13 }}>{n.title}</Text>
+                      <Text type="secondary" className={s.activityTime}>{dayjs(n.createdAtUtc).format('HH:mm')}</Text>
+                      <Text className={s.activityTitle}>{n.title}</Text>
                     </Space>
                   </List.Item>
                 )}
@@ -252,7 +266,7 @@ export default function Dashboard() {
 
       {/* Cost Trend Chart */}
       {costTrendData.length > 0 && (
-        <Card title={t.dashboard.costTrend} style={{ marginTop: 20 }}>
+        <Card title={t.dashboard.costTrend} className={s.chartCard}>
           <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={costTrendData} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />

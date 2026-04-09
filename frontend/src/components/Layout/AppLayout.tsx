@@ -80,8 +80,8 @@ export default function AppLayout() {
   const langMenuItems = languages.map(lang => ({
     key: lang.code,
     label: (
-      <div className={s.flex_center}>
-        <img src={lang.flag} alt={lang.shortLabel} className={s.bordered} />
+      <div className={s.toolbarItem}>
+        <img src={lang.flag} alt={lang.shortLabel} className={s.flagIcon} />
         <span>{lang.label}</span>
       </div>
     ),
@@ -90,54 +90,31 @@ export default function AppLayout() {
   const userInitial = email ? email.charAt(0).toUpperCase() : '?';
 
   return (
-    <div className={s.flex}>
+    <div className={s.appShell}>
       {/* Sidebar — desktop and tablet */}
       {!isMobile && (
-        <aside style={{
-          width: sidebarCollapsed ? 64 : 220,
-          flexShrink: 0,
-          background: 'var(--bg-surface)',
-          borderRight: '1px solid var(--border)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          transition: 'width 0.2s ease',
-        }}>
+        <aside className={`${s.sidebar} ${sidebarCollapsed ? s.sidebarCollapsed : ''}`}>
           {/* Logo */}
-          <div style={{
-            padding: sidebarCollapsed ? '16px 0' : '16px 20px',
-            borderBottom: '1px solid var(--border)',
-            display: 'flex',
-            alignItems: 'center',
-            flexShrink: 0,
-            justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
-          }}>
+          <div className={`${s.logoWrap} ${sidebarCollapsed ? s.logoWrapCollapsed : ''}`}>
             <Logo size={32} variant={sidebarCollapsed ? 'icon' : 'full'} />
           </div>
 
           {/* Navigation */}
-          <div className={s.padded}>
+          <div className={s.sidebarNav}>
             <Sidebar collapsed={sidebarCollapsed} />
           </div>
 
           {/* User info at bottom */}
-          <div style={{
-            padding: sidebarCollapsed ? '12px 0' : '12px 16px',
-            borderTop: '1px solid var(--border)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
-          }}>
-            <div className={s.flex_center_centered}>
+          <div className={`${s.userSection} ${sidebarCollapsed ? s.userSectionCollapsed : ''}`}>
+            <div className={s.userAvatar}>
               {userInitial}
             </div>
             {!sidebarCollapsed && (
-              <div className={s.block8}>
-                <div className={s.text12}>
+              <div className={s.userMeta}>
+                <div className={s.userName}>
                   {email}
                 </div>
-                <div className={s.text11}>{role}</div>
+                <div className={s.userRole}>{role}</div>
               </div>
             )}
           </div>
@@ -145,36 +122,36 @@ export default function AppLayout() {
       )}
 
       {/* Main area */}
-      <div className={s.flex_col}>
+      <div className={s.mainArea}>
         {/* Topbar */}
-        <header className={s.flex_center_between}>
+        <header className={s.topbar}>
           {isMobile ? (
             <Button
               type="text"
-              icon={<MenuOutlined className={s.text18} />}
+              icon={<MenuOutlined className={s.menuIcon} />}
               onClick={() => setDrawerOpen(true)}
-              className={s.padded1}
+              className={s.topbarBtn}
             />
           ) : (
             <Button
               type="text"
               icon={sidebarCollapsed
-                ? <MenuUnfoldOutlined className={s.text16} />
-                : <MenuFoldOutlined className={s.text16} />
+                ? <MenuUnfoldOutlined className={s.collapseIcon} />
+                : <MenuFoldOutlined className={s.collapseIcon} />
               }
               onClick={() => setSidebarCollapsed(prev => !prev)}
-              className={s.padded1}
+              className={s.topbarBtn}
             />
           )}
 
-          <div className={s.flex_center}>
+          <div className={s.toolbarItem}>
             <Button
               type="text"
               icon={<SearchOutlined />}
               onClick={openSearch}
-              className={s.padded2}
+              className={s.topbarAction}
             >
-              {!isMobile && <span className={s.text13}>{t.search.trigger} <kbd style={{ opacity: 0.5, fontSize: 11 }}>⌘K</kbd></span>}
+              {!isMobile && <span className={s.topbarLabel}>{t.search.trigger} <kbd className={s.kbdHint}>⌘K</kbd></span>}
             </Button>
             <FarmSwitcher />
             <OfflineIndicator />
@@ -187,10 +164,10 @@ export default function AppLayout() {
             >
               <Button
                 type="text"
-                className={s.padded2}
+                className={s.topbarAction}
               >
-                <img src={currentLang?.flag} alt={currentLang?.shortLabel} className={s.spaced} />
-                <span className={s.text13}>
+                <img src={currentLang?.flag} alt={currentLang?.shortLabel} className={s.langFlag} />
+                <span className={s.topbarLabel}>
                   {currentLang?.shortLabel}
                 </span>
               </Button>
@@ -199,14 +176,14 @@ export default function AppLayout() {
               type="text"
               icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />}
               onClick={toggleTheme}
-              className={s.padded2}
+              className={s.topbarAction}
             />
             <NotificationBell />
             <Button
               type="text"
               icon={<LogoutOutlined />}
               onClick={handleLogout}
-              className={s.text131}
+              className={s.logoutBtn}
             >
               {!isMobile && t.auth.logout}
             </Button>
@@ -214,7 +191,7 @@ export default function AppLayout() {
         </header>
 
         {/* Page content */}
-        <main className={s.padded3}>
+        <main className={s.pageArea}>
           <div className="page-content">
             <Outlet />
           </div>

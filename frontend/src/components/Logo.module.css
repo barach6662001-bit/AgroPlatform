@@ -15,3 +15,15 @@
 .colored {
   color: var(--brand);
 }
+
+.brandName {
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.brandTagline {
+  color: var(--text-tertiary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}

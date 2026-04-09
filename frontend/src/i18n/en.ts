@@ -4,6 +4,8 @@ const en: Translations = {
   app: {
     name: '🌾 Agrotech',
     subtitle: 'Smart Farm Management',
+    brandName: 'AgroTech',
+    brandTagline: 'Management Platform',
   },
   nav: {
     dashboard: 'Dashboard',
@@ -154,6 +156,8 @@ const en: Translations = {
     loginSubtitle: 'Enter your credentials',
     copyright: '© 2026 AgroTech. All rights reserved.',
     platformSubtitle: 'Farm Management Platform',
+    proofCompanies: 'enterprises',
+    proofHectares: 'hectares managed',
     sessionExpired: 'Session expired',
     sessionExpiredDesc: 'Please log in again.',
   },
@@ -266,6 +270,8 @@ const en: Translations = {
     totalMachines: 'Machinery',
     activeCount: 'active',
     welcome: 'Welcome to AgroTech!',
+    getStarted: 'Get started',
+    addFirstField: 'Add your first field to see your enterprise analytics.',
   },
   operationTypes: {
     Sowing: 'Sowing',
@@ -1540,6 +1546,16 @@ const en: Translations = {
     featureEconomicsDesc: 'Costs, budgets, marginality, season comparison, break-even point.',
     featureFleet: 'Machinery & GPS',
     featureFleetDesc: 'Equipment tracking, GPS tracks, fuel, maintenance, consumption norms.',
+    featureHR: 'HR & workforce',
+    featureHRDesc: 'Staffing, payroll, leave management, time tracking.',
+    featureSecurity: 'Security & audit',
+    featureSecurityDesc: 'Roles, permissions, full action audit log, multi-tenancy.',
+    badge: '#1 platform for agribusiness',
+    ctaStart: 'Start for free',
+    featuresTitle: 'Everything to manage your farm enterprise',
+    proofCompanies: 'enterprises',
+    proofHectares: 'hectares managed',
+    proofUptime: 'uptime SLA',
     footerText: '© {year} AgroPlatform. All rights reserved.',
   },
   search: {

@@ -81,50 +81,50 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   }, [location.pathname]);
 
   const fieldsChildren = [
-    { key: '/fields', label: t.nav.fields, style: { padding: '4px 8px' } },
-    { key: '/fields/rotation-advisor', label: t.nav.cropRotationAdvisor, style: { padding: '4px 8px' } },
+    { key: '/fields', label: t.nav.fields },
+    { key: '/fields/rotation-advisor', label: t.nav.cropRotationAdvisor },
   ];
 
   const operationsChildren = [
-    { key: '/operations', label: t.nav.operations, style: { padding: '4px 8px' } },
-    { key: '/machinery', label: t.nav.machinery, style: { padding: '4px 8px' } },
-    { key: '/fleet', label: t.nav.fleet, style: { padding: '4px 8px' } },
+    { key: '/operations', label: t.nav.operations },
+    { key: '/machinery', label: t.nav.machinery },
+    { key: '/fleet', label: t.nav.fleet },
   ];
 
   const storageChildren = [
-    { key: '/warehouses', label: t.nav.warehouses, style: { padding: '4px 8px' } },
-    { key: '/warehouses/items', label: t.nav.materials, style: { padding: '4px 8px' } },
-    { key: '/warehouses/movements', label: t.nav.movements, style: { padding: '4px 8px' } },
-    { key: '/warehouses/inventory', label: t.nav.inventory, style: { padding: '4px 8px' } },
-    { key: '/warehouses/import', label: t.nav.import, style: { padding: '4px 8px' } },
-    { key: '/storage', label: t.nav.grainModule, style: { padding: '4px 8px' } },
-    { key: '/fuel', label: t.nav.fuelStation, style: { padding: '4px 8px' } },
+    { key: '/warehouses', label: t.nav.warehouses },
+    { key: '/warehouses/items', label: t.nav.materials },
+    { key: '/warehouses/movements', label: t.nav.movements },
+    { key: '/warehouses/inventory', label: t.nav.inventory },
+    { key: '/warehouses/import', label: t.nav.import },
+    { key: '/storage', label: t.nav.grainModule },
+    { key: '/fuel', label: t.nav.fuelStation },
   ];
 
   const hrChildren = [
-    { key: '/hr/employees', label: t.nav.employees, style: { padding: '4px 8px' } },
-    { key: '/hr/worklogs', label: t.nav.workLogs, style: { padding: '4px 8px' } },
-    { key: '/hr/salary', label: t.nav.salary, style: { padding: '4px 8px' } },
+    { key: '/hr/employees', label: t.nav.employees },
+    { key: '/hr/worklogs', label: t.nav.workLogs },
+    { key: '/hr/salary', label: t.nav.salary },
   ];
 
   const financeChildren = [
-    { key: '/economics', label: t.nav.costs, style: { padding: '4px 8px' } },
-    { key: '/economics/analytics', label: t.nav.costAnalytics, style: { padding: '4px 8px' } },
-    { key: '/economics/pnl', label: t.nav.pnl, style: { padding: '4px 8px' } },
-    { key: '/economics/budget', label: t.nav.budget, style: { padding: '4px 8px' } },
-    { key: '/economics/marginality', label: t.nav.marginality, style: { padding: '4px 8px' } },
-    { key: '/economics/season-comparison', label: t.nav.seasonComparison, style: { padding: '4px 8px' } },
-    { key: '/economics/break-even', label: t.nav.breakEven, style: { padding: '4px 8px' } },
-    { key: '/fields/leases', label: t.nav.leases, style: { padding: '4px 8px' } },
-    { key: '/sales', label: t.nav.sales, style: { padding: '4px 8px' } },
+    { key: '/economics', label: t.nav.costs },
+    { key: '/economics/pnl', label: t.nav.pnl },
+    { key: '/economics/budget', label: t.nav.budget },
+    { key: '/fields/leases', label: t.nav.leases },
+    { key: '/sales', label: t.nav.sales },
   ];
 
   const analyticsChildren = [
-    { key: '/analytics/efficiency', label: t.nav.efficiency, style: { padding: '4px 8px' } },
-    { key: '/analytics/resources', label: t.nav.resources, style: { padding: '4px 8px' } },
-    { key: '/analytics/marginality', label: t.nav.marginality, style: { padding: '4px 8px' } },
-    { key: '/sales/analytics', label: t.nav.revenueAnalytics, style: { padding: '4px 8px' } },
-    { key: '/analytics/salary-fuel', label: t.nav.salaryFuelAnalytics, style: { padding: '4px 8px' } },
+    { key: '/analytics/efficiency', label: t.nav.efficiency },
+    { key: '/analytics/resources', label: t.nav.resources },
+    { key: '/analytics/marginality', label: t.nav.marginality },
+    { key: '/economics/analytics', label: t.nav.costAnalytics },
+    { key: '/economics/marginality', label: t.nav.marginality },
+    { key: '/economics/season-comparison', label: t.nav.seasonComparison },
+    { key: '/economics/break-even', label: t.nav.breakEven },
+    { key: '/sales/analytics', label: t.nav.revenueAnalytics },
+    { key: '/analytics/salary-fuel', label: t.nav.salaryFuelAnalytics },
   ];
 
   const allLeafItems = [
@@ -151,20 +151,18 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   ];
 
   const menuItems = [
-    { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined />, style: { padding: '4px 8px' } },
+    { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined /> },
     { type: 'divider' as const },
     ...(canFields ? [{
       key: 'fields-group',
       label: t.nav.fields,
       icon: <AimOutlined />,
-      style: { padding: '4px 8px' },
       children: fieldsChildren,
     }] : []),
     ...(canMachinery ? [{
       key: 'operations-group',
       label: t.nav.operationsGroup,
       icon: <ToolOutlined />,
-      style: { padding: '4px 8px' },
       children: operationsChildren,
     }] : []),
     { type: 'divider' as const },
@@ -172,14 +170,12 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       key: 'storage-group',
       label: t.nav.storageLogistics,
       icon: <InboxOutlined />,
-      style: { padding: '4px 8px' },
       children: storageChildren,
     }] : []),
     ...(canHR ? [{
       key: 'hr-group',
       label: t.nav.hr,
       icon: <TeamOutlined />,
-      style: { padding: '4px 8px' },
       children: hrChildren,
     }] : []),
     { type: 'divider' as const },
@@ -187,14 +183,12 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       key: 'finance-group',
       label: t.nav.finance,
       icon: <DollarOutlined />,
-      style: { padding: '4px 8px' },
       children: financeChildren,
     }] : []),
     ...(canAnalytics ? [{
       key: 'analytics-group',
       label: t.nav.analytics,
       icon: <LineChartOutlined />,
-      style: { padding: '4px 8px' },
       children: analyticsChildren,
     }] : []),
     ...(canAdmin
@@ -204,16 +198,15 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
             key: 'settings-group',
             label: t.nav.settings,
             icon: <SettingOutlined />,
-            style: { padding: '4px 8px' },
             children: [
-              { key: '/settings/users', label: t.nav.users, style: { padding: '4px 8px' } },
-              { key: '/admin/role-permissions', label: t.nav.rolePermissions, style: { padding: '4px 8px' } },
-              { key: '/admin/approvals', label: t.nav.approvals, style: { padding: '4px 8px' } },
-              { key: '/admin/approval-rules', label: t.nav.approvalRules, style: { padding: '4px 8px' } },
-              { key: '/settings/audit', label: t.nav.auditLog, style: { padding: '4px 8px' } },
-              { key: '/admin/api-keys', label: t.nav.apiKeys, style: { padding: '4px 8px' } },
+              { key: '/settings/users', label: t.nav.users },
+              { key: '/admin/role-permissions', label: t.nav.rolePermissions },
+              { key: '/admin/approvals', label: t.nav.approvals },
+              { key: '/admin/approval-rules', label: t.nav.approvalRules },
+              { key: '/settings/audit', label: t.nav.auditLog },
+              { key: '/admin/api-keys', label: t.nav.apiKeys },
               ...(isSuperAdmin
-                ? [{ key: '/superadmin/companies', label: t.nav.companies, style: { padding: '4px 8px' } }]
+                ? [{ key: '/superadmin/companies', label: t.nav.companies }]
                 : []),
             ],
           },
@@ -246,16 +239,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
         }}
         className={s.bg}
       />
-      {!collapsed && (
-        <div className={s.padded}>
-          <span className={s.text11}>
-            v1.0.0 · Agrotech Platform
-          </span>
-          <span className={s.text10}>
-            {import.meta.env.MODE}
-          </span>
-        </div>
-      )}
+
     </div>
   );
 }

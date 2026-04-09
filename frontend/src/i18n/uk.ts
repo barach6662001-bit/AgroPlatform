@@ -2,6 +2,8 @@ const uk = {
   app: {
     name: '🌾 Агротех',
     subtitle: 'Розумне управління агробізнесом',
+    brandName: 'АгроТех',
+    brandTagline: 'Платформа управління',
   },
   nav: {
     dashboard: 'Головна',
@@ -152,6 +154,8 @@ const uk = {
     loginSubtitle: 'Введіть ваші облікові дані',
     copyright: '© 2026 АгроТех. Всі права захищені.',
     platformSubtitle: 'Farm Management Platform',
+    proofCompanies: 'підприємств',
+    proofHectares: 'гектарів під управлінням',
     sessionExpired: 'Сесія закінчилася',
     sessionExpiredDesc: 'Будь ласка, увійдіть знову.',
   },
@@ -264,6 +268,8 @@ const uk = {
     totalMachines: 'Техніка',
     activeCount: 'активно',
     welcome: 'Вітаємо в AgroTech!',
+    getStarted: 'Почніть роботу',
+    addFirstField: 'Додайте перше поле, щоб побачити аналітику вашого підприємства.',
   },
   operationTypes: {
     Sowing: 'Посів',
@@ -1538,6 +1544,16 @@ const uk = {
     featureEconomicsDesc: 'Витрати, бюджети, маржинальність, сезонне порівняння, точка беззбитковості.',
     featureFleet: 'Техніка та GPS',
     featureFleetDesc: 'Облік техніки, GPS-треки, паливо, ТО, нормативи витрат.',
+    featureHR: 'Кадри та HR',
+    featureHRDesc: 'Штатний розклад, нарахування, відпустки, облік робочого часу.',
+    featureSecurity: 'Безпека та аудит',
+    featureSecurityDesc: 'Ролі, дозволи, аудит-лог кожної дії, мультитенантність.',
+    badge: 'Платформа #1 для агробізнесу',
+    ctaStart: 'Почати безкоштовно',
+    featuresTitle: 'Все для управління агропідприємством',
+    proofCompanies: 'підприємств',
+    proofHectares: 'гектарів під управлінням',
+    proofUptime: 'аптайм SLA',
     footerText: '© {year} AgroPlatform. Усі права захищено.',
   },
   search: {
