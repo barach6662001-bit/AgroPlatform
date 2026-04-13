@@ -14,6 +14,7 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from 'recharts';
+import { chartConfig, chartColors, chartPalette } from '../../components/charts/chartTheme';
 import { getCostAnalytics } from '../../api/economics';
 import type { CostAnalyticsDto, EconomicsByCategoryDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
@@ -32,10 +33,7 @@ const MONTH_SHORT: Record<number, string> = {
   7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec',
 };
 
-const PIE_COLORS = [
-  '#4096ff', 'var(--success)', 'var(--warning)', 'var(--error)', '#722ed1',
-  '#13c2c2', '#eb2f96', '#fa8c16', '#a0d911', 'var(--info)',
-];
+const PIE_COLORS = chartPalette;
 
 const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
 
@@ -175,7 +173,7 @@ export default function CostAnalytics() {
               <Card title={t.economics.analyticsByMonth}>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={barData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                     <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                     <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 12 }} />
                     <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />

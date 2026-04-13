@@ -10,6 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getSeasonComparison } from '../../api/economics';
 import type { SeasonComparisonDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
@@ -195,7 +196,7 @@ export default function SeasonComparison() {
             <Card title={t.economics.seasonChartTitle} className={s.spaced2}>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                   <XAxis dataKey="name" tick={{ fontSize: 13 }} />
                   <YAxis tickFormatter={(v) => fmt(v as number)} tick={{ fontSize: 12 }} />
                   <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />

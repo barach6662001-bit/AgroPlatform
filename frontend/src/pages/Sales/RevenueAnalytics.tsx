@@ -5,6 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell,
 } from 'recharts';
+import { chartConfig, chartColors, chartPalette } from '../../components/charts/chartTheme';
 import { getSalesAnalytics } from '../../api/sales';
 import type { SalesAnalyticsDto, ProductRevenueDto, BuyerRevenueDto, MonthlyRevenueDto } from '../../types/sales';
 import PageHeader from '../../components/PageHeader';
@@ -21,7 +22,7 @@ const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTH_NAMES_UK = ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер', 'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру'];
 
-const PIE_COLORS = ['#58A6FF', 'var(--success)', 'var(--warning)', '#a371f7', 'var(--error)', '#ffa657', '#56d364', '#79c0ff'];
+const PIE_COLORS = chartPalette;
 
 const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
 
@@ -220,7 +221,7 @@ export default function RevenueAnalytics() {
                         ))}
                       </Pie>
                       <Tooltip
-                        contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                        contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
                         formatter={(v: number) => [`${fmt(v)} UAH`, t.sales.revenueAmount]}
                       />
                       <Legend wrapperStyle={{ color: 'var(--text-secondary)', fontSize: 12 }} />
@@ -240,11 +241,11 @@ export default function RevenueAnalytics() {
                 {buyerChartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={260}>
                     <BarChart data={buyerChartData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+                      <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} horizontal={false} />
                       <XAxis type="number" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                       <YAxis type="category" dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} width={90} />
                       <Tooltip
-                        contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                        contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
                         formatter={(v: number) => [`${fmt(v)} UAH`]}
                       />
                       <Bar dataKey={t.sales.revenueAmount} fill="#58A6FF" radius={[0, 4, 4, 0]} />
@@ -266,7 +267,7 @@ export default function RevenueAnalytics() {
             {monthlyChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={monthlyChartData} margin={{ top: 5, right: 20, left: 20, bottom: 40 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                   <XAxis
                     dataKey="name"
                     tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
@@ -276,7 +277,7 @@ export default function RevenueAnalytics() {
                   />
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                   <Tooltip
-                    contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                    contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
                     formatter={(v: number) => [`${fmt(v)} UAH`]}
                   />
                   <Legend wrapperStyle={{ color: 'var(--text-secondary)' }} />

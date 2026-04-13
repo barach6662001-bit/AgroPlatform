@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { InputNumber, Button, Select, message, Space, Tag, Row, Col, Card, Statistic } from 'antd';
 import { SaveOutlined, DownloadOutlined, DollarOutlined, RiseOutlined, FallOutlined, PercentageOutlined } from '@ant-design/icons';
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getBudgets, upsertBudget, exportBudgets, getBudgetPlanVsFact, type BudgetDto, type BudgetPlanVsFactDto } from '../../api/budgets';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
@@ -234,10 +235,10 @@ export default function BudgetPage() {
       <Card title={t.economics.plChartTitle} style={{ marginBottom: 24 }}>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
             <XAxis dataKey="name" />
             <YAxis />
-            <Tooltip />
+            <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} labelStyle={chartConfig.tooltip.labelStyle} cursor={chartConfig.tooltip.cursor} />
             <Legend />
             <Bar dataKey="planned" name={t.economics.plColPlan} fill="#1890ff" />
             <Bar dataKey="actual" name={t.economics.plColFact} fill="#52c41a" />

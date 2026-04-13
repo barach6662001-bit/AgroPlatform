@@ -8,6 +8,7 @@ import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
 } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getMachineById, addWorkLog } from '../../api/machinery';
 import { getMaintenanceRecords, addMaintenanceRecord, exportMaintenanceRecords, type MaintenanceRecordDto } from '../../api/maintenance';
 import { getFuelTransactions } from '../../api/fuel';
@@ -300,10 +301,10 @@ export default function MachineDetail() {
           <div className={s.spaced1}>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={workChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                 <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                 <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }} />
+                <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} />
                 <Line type="monotone" dataKey={t.machinery.hours} stroke="var(--info)" strokeWidth={2} dot={{ fill: 'var(--info)', r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
@@ -324,10 +325,10 @@ export default function MachineDetail() {
           <div className={s.spaced1}>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={fuelChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                 <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                 <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }} />
+                <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} />
                 <Bar dataKey={t.machinery.liters} fill="var(--warning)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

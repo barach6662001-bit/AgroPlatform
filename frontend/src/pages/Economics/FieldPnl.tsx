@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Table, InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space, Button } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { DollarOutlined, RiseOutlined, TrophyOutlined, PrinterOutlined } from '@ant-design/icons';
 import { getFieldPnl } from '../../api/economics';
 import type { FieldPnlDto } from '../../types/economics';
@@ -236,7 +237,7 @@ export default function FieldPnl() {
         >
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 60 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
               <XAxis
                 dataKey="name"
                 tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
@@ -246,7 +247,7 @@ export default function FieldPnl() {
               />
               <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
               />
               <Legend wrapperStyle={{ color: 'var(--text-secondary)' }} />
               <Bar dataKey={t.economics.totalCostsSum} fill="var(--error)" radius={[4, 4, 0, 0]} />

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, Col, Row, Select, Statistic, Empty, message, Tag } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, DollarOutlined, RiseOutlined } from '@ant-design/icons';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getAnalyticsMarginality } from '../../api/analytics';
 import type { MarginalityRowDto, MarginalitySummaryDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
@@ -160,7 +161,7 @@ export default function MarginalityDashboard() {
             <Card title={t.economics.costsVsRevenue} className={s.spaced1}>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                   <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                   <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 12 }} />
                   <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />

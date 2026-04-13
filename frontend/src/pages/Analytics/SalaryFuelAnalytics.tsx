@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getSalaryFuelAnalytics } from '../../api/analytics';
 import type { SalaryFuelAnalyticsDto, FuelByMachineDto, SalaryByEmployeeDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
@@ -157,7 +158,7 @@ export default function SalaryFuelAnalytics() {
               <Card title={t.analytics.salaryByMonth}>
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={salaryChartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                     <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                     <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 11 }} />
                     <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />
@@ -170,7 +171,7 @@ export default function SalaryFuelAnalytics() {
               <Card title={t.analytics.fuelByMonth}>
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={fuelChartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                     <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                     <YAxis tickFormatter={(v) => fmtDec(v)} tick={{ fontSize: 11 }} />
                     <Tooltip formatter={(v: number) => `${fmtDec(v)} л`} />

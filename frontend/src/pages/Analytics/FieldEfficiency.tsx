@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getFieldEfficiency } from '../../api/analytics';
 import type { FieldEfficiencyDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
@@ -99,7 +100,7 @@ export default function FieldEfficiency() {
                 data={chartData}
                 margin={{ top: 10, right: 40, left: 120, bottom: 10 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="name" width={110} />
                 <Tooltip formatter={(v: number) => `${v.toFixed(2)} UAH`} />
