@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatUAH, formatNumber } from '../../utils/format';
 import { Table, InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space, Button } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { chartConfig, chartColors } from '../../components/charts/chartTheme';
@@ -94,7 +95,7 @@ export default function FieldPnl() {
       key: 'totalCosts',
       sorter: (a: FieldPnlDto, b: FieldPnlDto) => a.totalCosts - b.totalCosts,
       render: (v: number) => (
-        <span className={s.colored}>{v.toLocaleString()} UAH</span>
+        <span className={s.colored}>{formatUAH(v)}</span>
       ),
     },
     {
@@ -116,14 +117,14 @@ export default function FieldPnl() {
           return (
             <span>
               <span className={s.text11}>{t.economics.estimatedRevenueLabel}</span>
-              <span className={s.colored1}>{v.toLocaleString()} UAH</span>
+              <span className={s.colored1}>{formatUAH(v)}</span>
             </span>
           );
         }
         return (
           <span>
             <span className={s.text111}>{t.economics.actualRevenue}</span>
-            <span className={s.colored2}>{v.toLocaleString()} UAH</span>
+            <span className={s.colored2}>{formatUAH(v)}</span>
           </span>
         );
       },
@@ -137,7 +138,7 @@ export default function FieldPnl() {
       render: (v: number | undefined) => {
         if (v == null) return <span className={s.colored1}>—</span>;
         const color = v >= 0 ? 'var(--success)' : 'var(--error)';
-        return <strong style={{ color }}>{v.toLocaleString()} UAH</strong>;
+        return <strong style={{ color }}>{formatUAH(v)}</strong>;
       },
     },
     {
@@ -273,12 +274,12 @@ export default function FieldPnl() {
                 <strong>{t.economics.total}</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={1}>
-                <strong className={s.colored}>{totalCosts.toLocaleString()} UAH</strong>
+                <strong className={s.colored}>{formatUAH(totalCosts)}</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={2} />
               <Table.Summary.Cell index={3}>
                 {pricePerTonne && (
-                  <strong className={s.colored2}>{totalRevenue.toLocaleString()} UAH</strong>
+                  <strong className={s.colored2}>{formatUAH(totalRevenue)}</strong>
                 )}
               </Table.Summary.Cell>
               <Table.Summary.Cell index={4} />

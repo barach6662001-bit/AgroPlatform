@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatUAH, formatNumber } from '../../utils/format';
 import { InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { chartConfig, chartColors } from '../../components/charts/chartTheme';
@@ -84,13 +85,13 @@ export default function BreakEvenCalculator() {
       dataIndex: 'totalCosts',
       key: 'totalCosts',
       sorter: (a: BreakEvenDto, b: BreakEvenDto) => a.totalCosts - b.totalCosts,
-      render: (v: number) => <span className={s.colored}>{v.toLocaleString()} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{formatUAH(v)}</span>,
     },
     {
       title: t.economics.breakEvenPrice,
       dataIndex: 'pricePerTonne',
       key: 'pricePerTonne',
-      render: (v: number) => `${v.toLocaleString()} UAH/т`,
+      render: (v: number) => `${formatUAH(v)}/т`,
     },
     {
       title: t.economics.breakEvenYield,

@@ -7,6 +7,7 @@ import type { SaleDto } from '../../types/sales';
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import KpiCard from '../../components/ui/KpiCard';
@@ -218,7 +219,7 @@ export default function SalesList() {
 
   return (
     <div>
-      <PageHeader title={t.sales.title} subtitle={t.sales.subtitle} />
+      <PageHeader title={t.sales.title} subtitle={t.sales.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.sales }]} />} />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 16 }}>
         <KpiCard label={t.sales.totalRevenue ?? 'Загальний дохід'} value={`${totalRevenue.toLocaleString('uk-UA')} ₴`} />

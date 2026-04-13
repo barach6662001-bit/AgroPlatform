@@ -1,5 +1,6 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import EmptyState from '../../components/EmptyState';
+import TableSkeleton from '../../components/TableSkeleton';
 import { useEffect, useState } from 'react';
 import { Tag, Button, Space, Select, message, Modal, Form, Input, InputNumber, DatePicker } from 'antd';
 import { EyeOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
@@ -15,6 +16,7 @@ import type { EmployeeDto } from '../../types/hr';
 import type { MachineDto } from '../../types/machinery';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
@@ -182,7 +184,7 @@ export default function OperationsList() {
 
   return (
     <div>
-      <PageHeader title={t.operations.title} subtitle={t.operations.subtitle} />
+      <PageHeader title={t.operations.title} subtitle={t.operations.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.operationsGroup, path: '/operations' }, { label: t.nav.operations }]} />} />
       <Space style={{ marginBottom: 16 }}>
         <Select
           placeholder={t.operations.typeFilter}
@@ -215,6 +217,9 @@ export default function OperationsList() {
           {t.common.export}
         </Button>
       </Space>
+      {loading && !result ? (
+        <TableSkeleton rows={8} />
+      ) : (
       <DataTable
         dataSource={result?.items ?? []}
         columns={columns}
@@ -235,6 +240,7 @@ export default function OperationsList() {
           />,
         }}
       />
+      )}
 
       <Modal
         title={t.operations.createOperation}

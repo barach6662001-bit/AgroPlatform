@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatUAH, formatNumber } from '../../utils/format';
 import { Card, Col, Row, Select, Statistic, Empty, message } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, DollarOutlined } from '@ant-design/icons';
 import {
@@ -35,7 +36,7 @@ const MONTH_SHORT: Record<number, string> = {
 
 const PIE_COLORS = chartPalette;
 
-const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+
 
 export default function CostAnalytics() {
   const { t } = useTranslation();
@@ -67,7 +68,7 @@ export default function CostAnalytics() {
       title: t.economics.amount,
       dataIndex: 'amount',
       key: 'amount',
-      render: (v: number) => `${fmt(Math.abs(v))} UAH`,
+      render: (v: number) => formatUAH(Math.abs(v)),
       sorter: (a: EconomicsByCategoryDto, b: EconomicsByCategoryDto) => Math.abs(b.amount) - Math.abs(a.amount),
     },
     { title: t.economics.count, dataIndex: 'count', key: 'count' },
@@ -104,7 +105,7 @@ export default function CostAnalytics() {
               prefix={<ArrowDownOutlined />}
               valueStyle={{ color: 'var(--error)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -117,7 +118,7 @@ export default function CostAnalytics() {
               prefix={<ArrowUpOutlined />}
               valueStyle={{ color: 'var(--success)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -130,7 +131,7 @@ export default function CostAnalytics() {
               prefix={<DollarOutlined />}
               valueStyle={{ color: ((data?.totalRevenue ?? 0) - (data?.totalCosts ?? 0)) >= 0 ? 'var(--success)' : 'var(--error)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -160,7 +161,7 @@ export default function CostAnalytics() {
                           <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />
+                      <Tooltip formatter={(v: number) => formatUAH(v)} />
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
@@ -175,8 +176,8 @@ export default function CostAnalytics() {
                   <BarChart data={barData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
                     <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                     <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 12 }} />
-                    <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />
+                    <YAxis tickFormatter={(v) => formatNumber(v)} tick={{ fontSize: 12 }} />
+                    <Tooltip formatter={(v: number) => formatUAH(v)} />
                     <Legend />
                     <Bar dataKey={t.economics.totalCostsSum} fill="#ff7875" />
                     <Bar dataKey={t.economics.revenue} fill="#73d13d" />

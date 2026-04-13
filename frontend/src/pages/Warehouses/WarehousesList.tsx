@@ -6,6 +6,7 @@ import { getWarehouses, createWarehouse } from '../../api/warehouses';
 import type { WarehouseDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import s from './WarehousesList.module.css';
@@ -85,7 +86,7 @@ export default function WarehousesList() {
 
   return (
     <div>
-      <PageHeader title={t.warehouses.title} subtitle={t.warehouses.subtitle} />
+      <PageHeader title={t.warehouses.title} subtitle={t.warehouses.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.storageLogistics, path: '/warehouses' }, { label: t.nav.warehouses }]} />} />
       <Space className={s.spaced}>
         {canCreate && (
           <Button

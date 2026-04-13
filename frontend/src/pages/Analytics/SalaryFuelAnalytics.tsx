@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatUAH, formatNumber } from '../../utils/format';
 import { Card, Col, Row, Select, Statistic, Empty, message } from 'antd';
 import { DollarOutlined, FireOutlined } from '@ant-design/icons';
 import {
@@ -26,7 +27,7 @@ const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
 
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+
 const fmtDec = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 2 });
 
 export default function SalaryFuelAnalytics() {
@@ -76,7 +77,7 @@ export default function SalaryFuelAnalytics() {
       title: t.analytics.amount,
       dataIndex: 'totalAmount',
       key: 'totalAmount',
-      render: (v: number) => `${fmt(v)} UAH`,
+      render: (v: number) => formatUAH(v),
       sorter: (a: SalaryByEmployeeDto, b: SalaryByEmployeeDto) => a.totalAmount - b.totalAmount,
     },
   ];
@@ -110,7 +111,7 @@ export default function SalaryFuelAnalytics() {
               prefix={<DollarOutlined />}
               valueStyle={{ color: 'var(--success)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -160,8 +161,8 @@ export default function SalaryFuelAnalytics() {
                   <BarChart data={salaryChartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
                     <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                     <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                    <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 11 }} />
-                    <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />
+                    <YAxis tickFormatter={(v) => formatNumber(v)} tick={{ fontSize: 11 }} />
+                    <Tooltip formatter={(v: number) => formatUAH(v)} />
                     <Bar dataKey={t.analytics.totalSalary} fill="#73d13d" />
                   </BarChart>
                 </ResponsiveContainer>

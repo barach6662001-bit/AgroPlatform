@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatUAH, formatNumber } from '../../utils/format';
 import { Card, Col, Row, Select, Statistic, Empty, message, Tag } from 'antd';
 import {
   BarChart,
@@ -25,7 +26,7 @@ const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   return { value: y, label: String(y) };
 });
 
-const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+
 
 export default function SeasonComparison() {
   const { t } = useTranslation();
@@ -69,14 +70,14 @@ export default function SeasonComparison() {
       title: t.economics.seasonRevenue,
       dataIndex: 'totalRevenue',
       key: 'totalRevenue',
-      render: (v: number) => `${fmt(v)} UAH`,
+      render: (v: number) => formatUAH(v),
       sorter: (a: SeasonComparisonDto, b: SeasonComparisonDto) => a.totalRevenue - b.totalRevenue,
     },
     {
       title: t.economics.seasonCosts,
       dataIndex: 'totalCosts',
       key: 'totalCosts',
-      render: (v: number) => `${fmt(v)} UAH`,
+      render: (v: number) => formatUAH(v),
       sorter: (a: SeasonComparisonDto, b: SeasonComparisonDto) => a.totalCosts - b.totalCosts,
     },
     {
@@ -84,7 +85,7 @@ export default function SeasonComparison() {
       dataIndex: 'margin',
       key: 'margin',
       render: (v: number) => (
-        <Tag color={v >= 0 ? 'success' : 'error'}>{fmt(v)} UAH</Tag>
+        <Tag color={v >= 0 ? 'success' : 'error'}>{formatUAH(v)}</Tag>
       ),
       sorter: (a: SeasonComparisonDto, b: SeasonComparisonDto) => a.margin - b.margin,
     },
@@ -100,19 +101,19 @@ export default function SeasonComparison() {
       title: t.economics.seasonAreaHa,
       dataIndex: 'areaHa',
       key: 'areaHa',
-      render: (v?: number) => (v != null ? fmt(v) : '—'),
+      render: (v?: number) => (v != null ? formatNumber(v) : '—'),
     },
     {
       title: t.economics.seasonCostPerHa,
       dataIndex: 'costPerHa',
       key: 'costPerHa',
-      render: (v?: number) => (v != null ? `${fmt(v)} UAH` : '—'),
+      render: (v?: number) => (v != null ? formatUAH(v) : '—'),
     },
     {
       title: t.economics.seasonRevenuePerHa,
       dataIndex: 'revenuePerHa',
       key: 'revenuePerHa',
-      render: (v?: number) => (v != null ? `${fmt(v)} UAH` : '—'),
+      render: (v?: number) => (v != null ? formatUAH(v) : '—'),
     },
   ];
 
@@ -162,7 +163,7 @@ export default function SeasonComparison() {
                     suffix="UAH"
                     valueStyle={{ color: 'var(--success)' }}
                     loading={loading}
-                    formatter={(v) => fmt(Number(v))}
+                    formatter={(v) => formatNumber(Number(v))}
                   />
                 </Card>
               </Col>
@@ -174,7 +175,7 @@ export default function SeasonComparison() {
                     suffix="UAH"
                     valueStyle={{ color: bestYear.margin >= 0 ? 'var(--success)' : 'var(--error)' }}
                     loading={loading}
-                    formatter={(v) => fmt(Number(v))}
+                    formatter={(v) => formatNumber(Number(v))}
                   />
                 </Card>
               </Col>
@@ -198,8 +199,8 @@ export default function SeasonComparison() {
                 <BarChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 8 }}>
                   <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                   <XAxis dataKey="name" tick={{ fontSize: 13 }} />
-                  <YAxis tickFormatter={(v) => fmt(v as number)} tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />
+                  <YAxis tickFormatter={(v) => formatNumber(v as number)} tick={{ fontSize: 12 }} />
+                  <Tooltip formatter={(v: number) => formatUAH(v)} />
                   <Legend />
                   <Bar dataKey={t.economics.seasonRevenue} fill="#73d13d" />
                   <Bar dataKey={t.economics.seasonCosts} fill="#ff7875" />

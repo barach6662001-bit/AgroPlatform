@@ -9,6 +9,7 @@ import {
   type NotificationDto,
 } from '../../api/notifications';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
 import s from './NotificationsPage.module.css';
@@ -110,7 +111,7 @@ export default function NotificationsPage() {
 
   return (
     <div>
-      <PageHeader title={t.notifications.title} />
+      <PageHeader title={t.notifications.title} breadcrumbs={<Breadcrumbs items={[{ label: t.notifications.title }]} />} />
       {permissionState === 'default' && (
         <Alert
           className={s.spaced}

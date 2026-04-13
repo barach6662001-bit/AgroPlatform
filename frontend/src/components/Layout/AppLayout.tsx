@@ -10,6 +10,7 @@ import FarmSwitcher from './FarmSwitcher';
 import OfflineIndicator from '../OfflineIndicator';
 import Logo from '../Logo';
 import CommandPalette from '../CommandPalette';
+import { PageTransition } from '../PageTransition';
 import { useAuthStore } from '../../stores/authStore';
 import { revokeRefreshToken } from '../../api/auth';
 import { useThemeStore } from '../../stores/themeStore';
@@ -196,7 +197,9 @@ export default function AppLayout() {
         {/* Page content */}
         <main className={s.pageArea}>
           <div className="page-content">
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </div>
         </main>
       </div>

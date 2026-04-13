@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatUAH, formatNumber } from '../../utils/format';
 import { InputNumber, Button, Select, message, Space, Tag, Row, Col, Card, Statistic } from 'antd';
 import { SaveOutlined, DownloadOutlined, DollarOutlined, RiseOutlined, FallOutlined, PercentageOutlined } from '@ant-design/icons';
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts';
@@ -112,7 +113,7 @@ export default function BudgetPage() {
       render: (_: unknown, row: { category: string }) => {
         const factEntry = planVsFact.find((c) => c.category === row.category);
         const fact = factEntry?.factAmount ?? 0;
-        return <span style={{ color: fact > 0 ? '#E6EDF3' : '#8B949E' }}>{fact.toLocaleString()} UAH</span>;
+        return <span style={{ color: fact > 0 ? '#E6EDF3' : '#8B949E' }}>{formatUAH(fact)}</span>;
       },
     },
     {

@@ -8,6 +8,7 @@ import type { BudgetDto } from '../../api/budgets';
 import type { CostRecordDto, CostSummaryDto, MaterialKpiItem, CostCategory } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import PLTable from '../../components/PLTable';
 import MaterialKpiCards from '../../components/MaterialKpiCards';
 import TableSkeleton from '../../components/TableSkeleton';
@@ -194,7 +195,7 @@ export default function CostRecords() {
 
   return (
     <div>
-      <PageHeader title={t.economics.title} subtitle={t.economics.subtitle} />
+      <PageHeader title={t.economics.title} subtitle={t.economics.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.costs }]} />} />
 
       <div style={{ marginBottom: 24 }}>
         <MaterialKpiCards items={kpiItems} loading={loading} />

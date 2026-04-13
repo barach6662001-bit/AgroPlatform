@@ -6,6 +6,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from '../../api/hr';
 import type { EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
@@ -151,6 +152,7 @@ export default function EmployeeList() {
       {/* button styles handled by CSS */}
       <PageHeader
         title={t.hr.employeesTitle}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.hr, path: '/hr/employees' }, { label: t.nav.employees }]} />}
         actions={
           <Space>
             {canWrite && (

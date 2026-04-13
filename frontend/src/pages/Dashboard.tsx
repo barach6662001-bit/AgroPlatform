@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Card, message, Typography, Tag, Button } from 'antd';
-import TableSkeleton from '../components/TableSkeleton';
+import { KpiSkeleton, ChartSkeleton, TableSkeleton as TableSkeletonNew } from '../components/Skeletons';
 import { Clipboard, Fuel, Wheat, Receipt } from 'lucide-react';
 import {
   PlusOutlined,
@@ -67,7 +67,7 @@ export default function Dashboard() {
     return <Navigate to="/onboarding" replace />;
   }
 
-  if (loading) return <TableSkeleton rows={8} />;
+  if (loading) return <><KpiSkeleton count={4} /><ChartSkeleton /><TableSkeletonNew /></>;
   if (!data) return null;
 
   const isWarehouseOp = role === 'WarehouseOperator';

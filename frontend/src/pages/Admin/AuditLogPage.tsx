@@ -137,7 +137,9 @@ export default function AuditLogPage() {
             setPageSize(size);
           },
           showSizeChanger: true,
-          showTotal: (total) => `Total: ${total}`,
+          pageSizeOptions: ['10', '20', '50'],
+          showTotal: (total: number, range: [number, number]) =>
+            `Показано ${range[0]}-${range[1]} з ${total}`,
         }}
         loading={loading}
       />

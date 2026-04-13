@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatUAH, formatNumber } from '../../utils/format';
 import { Card, Col, Row, Select, Statistic, Empty, message, Tag } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, DollarOutlined, RiseOutlined } from '@ant-design/icons';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -16,7 +17,7 @@ const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   return { value: y, label: String(y) };
 });
 
-const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+
 
 export default function MarginalityDashboard() {
   const { t } = useTranslation();
@@ -50,14 +51,14 @@ export default function MarginalityDashboard() {
       title: t.economics.revenue,
       dataIndex: 'revenue',
       key: 'revenue',
-      render: (v: number) => `${fmt(v)} UAH`,
+      render: (v: number) => formatUAH(v),
       sorter: (a: MarginalityRowDto, b: MarginalityRowDto) => a.revenue - b.revenue,
     },
     {
       title: t.economics.totalCostsSum,
       dataIndex: 'costs',
       key: 'costs',
-      render: (v: number) => `${fmt(v)} UAH`,
+      render: (v: number) => formatUAH(v),
       sorter: (a: MarginalityRowDto, b: MarginalityRowDto) => a.costs - b.costs,
     },
     {
@@ -65,7 +66,7 @@ export default function MarginalityDashboard() {
       dataIndex: 'margin',
       key: 'margin',
       render: (v: number) => (
-        <Tag color={v >= 0 ? 'success' : 'error'}>{fmt(v)} UAH</Tag>
+        <Tag color={v >= 0 ? 'success' : 'error'}>{formatUAH(v)}</Tag>
       ),
       sorter: (a: MarginalityRowDto, b: MarginalityRowDto) => a.margin - b.margin,
     },
@@ -109,7 +110,7 @@ export default function MarginalityDashboard() {
               prefix={<DollarOutlined />}
               valueStyle={{ color: 'var(--success)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -122,7 +123,7 @@ export default function MarginalityDashboard() {
               prefix={<ArrowDownOutlined />}
               valueStyle={{ color: 'var(--error)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -135,7 +136,7 @@ export default function MarginalityDashboard() {
               prefix={marginPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
               valueStyle={{ color: marginPositive ? 'var(--success)' : 'var(--error)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -163,8 +164,8 @@ export default function MarginalityDashboard() {
                 <BarChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 8 }}>
                   <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                   <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                  <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />
+                  <YAxis tickFormatter={(v) => formatNumber(v)} tick={{ fontSize: 12 }} />
+                  <Tooltip formatter={(v: number) => formatUAH(v)} />
                   <Legend />
                   <Bar dataKey={t.economics.totalCostsSum} fill="#ff7875" />
                   <Bar dataKey={t.economics.revenue} fill="#73d13d" />

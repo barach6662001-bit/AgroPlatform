@@ -9,6 +9,7 @@ import type { MachineDto, MachineryType, MachineryStatus } from '../../types/mac
 import type { PaginatedResult } from '../../types/common';
 import type { EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
@@ -190,7 +191,7 @@ export default function MachineryList() {
 
   return (
     <div>
-      <PageHeader title={t.machinery.title} subtitle={t.machinery.subtitle} />
+      <PageHeader title={t.machinery.title} subtitle={t.machinery.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.operationsGroup, path: '/operations' }, { label: t.nav.machinery }]} />} />
       <Space className={s.spaced}>
         <Input
           placeholder={t.machinery.searchPlaceholder}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatUAH, formatNumber } from '../../utils/format';
 import { Card, Col, Row, Select, Statistic, Empty, message, Tag } from 'antd';
 import { DollarOutlined, ShoppingOutlined, UserOutlined, TrophyOutlined } from '@ant-design/icons';
 import {
@@ -24,7 +25,7 @@ const MONTH_NAMES_UK = ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Че�
 
 const PIE_COLORS = chartPalette;
 
-const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+
 
 export default function RevenueAnalytics() {
   const { t, lang } = useTranslation();
@@ -72,7 +73,7 @@ export default function RevenueAnalytics() {
       dataIndex: 'totalAmount',
       key: 'totalAmount',
       sorter: (a: ProductRevenueDto, b: ProductRevenueDto) => a.totalAmount - b.totalAmount,
-      render: (v: number) => <span className={s.colored}>{fmt(v)} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{formatUAH(v)}</span>,
     },
     {
       title: t.sales.quantity,
@@ -93,7 +94,7 @@ export default function RevenueAnalytics() {
       dataIndex: 'totalAmount',
       key: 'totalAmount',
       sorter: (a: BuyerRevenueDto, b: BuyerRevenueDto) => a.totalAmount - b.totalAmount,
-      render: (v: number) => <span className={s.colored}>{fmt(v)} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{formatUAH(v)}</span>,
     },
     {
       title: t.sales.salesCount,
@@ -113,7 +114,7 @@ export default function RevenueAnalytics() {
       title: t.sales.totalAmount,
       dataIndex: 'totalAmount',
       key: 'totalAmount',
-      render: (v: number) => <span className={s.colored}>{fmt(v)} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{formatUAH(v)}</span>,
     },
     {
       title: t.sales.salesCount,
@@ -153,7 +154,7 @@ export default function RevenueAnalytics() {
               suffix="UAH"
               valueStyle={{ color: 'var(--success)' }}
               prefix={<DollarOutlined />}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -222,7 +223,7 @@ export default function RevenueAnalytics() {
                       </Pie>
                       <Tooltip
                         contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
-                        formatter={(v: number) => [`${fmt(v)} UAH`, t.sales.revenueAmount]}
+                        formatter={(v: number) => [formatUAH(v), t.sales.revenueAmount]}
                       />
                       <Legend wrapperStyle={{ color: 'var(--text-secondary)', fontSize: 12 }} />
                     </PieChart>
@@ -246,7 +247,7 @@ export default function RevenueAnalytics() {
                       <YAxis type="category" dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} width={90} />
                       <Tooltip
                         contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
-                        formatter={(v: number) => [`${fmt(v)} UAH`]}
+                        formatter={(v: number) => [formatUAH(v)]}
                       />
                       <Bar dataKey={t.sales.revenueAmount} fill="#58A6FF" radius={[0, 4, 4, 0]} />
                     </BarChart>
@@ -278,7 +279,7 @@ export default function RevenueAnalytics() {
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                   <Tooltip
                     contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
-                    formatter={(v: number) => [`${fmt(v)} UAH`]}
+                    formatter={(v: number) => [formatUAH(v)]}
                   />
                   <Legend wrapperStyle={{ color: 'var(--text-secondary)' }} />
                   <Bar dataKey={t.sales.revenueAmount} fill="var(--success)" radius={[4, 4, 0, 0]} />

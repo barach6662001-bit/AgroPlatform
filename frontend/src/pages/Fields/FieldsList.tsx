@@ -8,6 +8,7 @@ import { getCadastreParcel } from '../../api/cadastre';
 import type { CadastreParcelResult } from '../../api/cadastre';
 import type { FieldDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import FieldMap from '../../components/Map/FieldMap';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
@@ -195,7 +196,7 @@ export default function FieldsList() {
 
   return (
     <div>
-      <PageHeader title={t.fields.title} subtitle={t.fields.subtitle} />
+      <PageHeader title={t.fields.title} subtitle={t.fields.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.fields }]} />} />
       <Space className={s.spaced}>
         <Input
           placeholder={t.fields.searchPlaceholder}
