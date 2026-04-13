@@ -1,6 +1,5 @@
 import { Form, Input, Button, Dropdown, message } from 'antd';
 import { User, Lock } from 'lucide-react';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
@@ -12,7 +11,6 @@ export default function Login() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
   const { t, lang, setLang } = useTranslation();
-  const [demoLoading, setDemoLoading] = useState(false);
 
   const onFinish = async (values: { email: string; password: string }) => {
     try {
@@ -22,20 +20,6 @@ export default function Login() {
       navigate(data.requirePasswordChange ? '/change-password' : '/');
     } catch {
       message.error(t.auth.loginError);
-    }
-  };
-
-  const handleDemoLogin = async () => {
-    setDemoLoading(true);
-    try {
-      const data = await login({ email: 'demo@agro.local', password: 'DemoPass1' });
-      setAuth(data.token, data.email, data.role, data.tenantId, data.requirePasswordChange, data.hasCompletedOnboarding, data.firstName, data.lastName, data.refreshToken);
-      message.success(t.auth.welcomeMessage);
-      navigate(data.requirePasswordChange ? '/change-password' : '/');
-    } catch {
-      message.error(t.auth.loginError);
-    } finally {
-      setDemoLoading(false);
     }
   };
 
@@ -52,18 +36,15 @@ export default function Login() {
 
   return (
     <div className={s.loginPage}>
-      {/* Card */}
       <div className={s.loginCard}>
-        {/* Logo area */}
-        <div className={s.logoArea}>
-          <Logo size={28} variant="full" />
-          <div className={s.brandSubtitle}>ПЛАТФОРМА УПРАВЛІННЯ</div>
-        </div>
+        {/* Logo */}
+        <Logo size={28} variant="full" />
 
-        {/* Form header */}
+        {/* Title */}
         <h3 className={s.formTitle}>{t.auth.loginTitle}</h3>
         <p className={s.formSubtitle}>{t.auth.loginSubtitle}</p>
 
+        {/* Form: email + password + submit */}
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item
             name="email"
@@ -92,33 +73,14 @@ export default function Login() {
               {t.auth.login}
             </Button>
           </Form.Item>
-          <div className={s.forgotLink}>{t.auth.forgotPassword}</div>
         </Form>
 
-        {/* Divider */}
-        <div className={s.divider}>
-          <span className={s.dividerText}>{t.auth.or ?? 'або'}</span>
-        </div>
-
-        {/* Demo button */}
-        <Button
-          block
-          size="large"
-          loading={demoLoading}
-          onClick={handleDemoLogin}
-          className={s.demoButton}
-        >
-          {t.auth.demoLogin ?? 'Увійти як Demo'} →
-        </Button>
-
-        {/* Stats bar */}
-        <div className={s.statsBar}>
-          350.5 га · 5 од. техніки · 12+ підприємств
-        </div>
+        {/* Forgot password */}
+        <div className={s.forgotLink}>{t.auth.forgotPassword}</div>
       </div>
 
-      {/* Language switcher — bottom left */}
-      <div className={s.langSwitcher}>
+      {/* Language switcher — bottom left corner */}
+      <div className={s.langCorner}>
         <Dropdown
           menu={{
             items: langMenuItems,
@@ -133,8 +95,8 @@ export default function Login() {
         </Dropdown>
       </div>
 
-      {/* Copyright — bottom right */}
-      <div className={s.copyright}>{t.auth.copyright}</div>
+      {/* Copyright — bottom right corner */}
+      <div className={s.copyrightCorner}>{t.auth.copyright}</div>
     </div>
   );
 }
