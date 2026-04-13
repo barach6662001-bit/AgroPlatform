@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, Popup, Polygon, Tooltip } from 'react-leaflet';
 import { useMap } from 'react-leaflet';
 import type { GeoJsonObject } from 'geojson';
-import { Empty, Switch } from 'antd';
+import { Switch } from 'antd';
 import L from 'leaflet';
 import type { FieldDto } from '../../types/field';
 import { useTranslation } from '../../i18n';
+import { fieldBoundaries, MAP_CENTER, MAP_ZOOM } from '../../data/fieldBoundaries';
 import CadastreLayer from './CadastreLayer';
+import 'leaflet/dist/leaflet.css';
 import s from './FieldMap.module.css';
 
 interface FieldWithGeoJson extends FieldDto {
@@ -15,7 +17,9 @@ interface FieldWithGeoJson extends FieldDto {
 
 interface FieldMapProps {
   fields: FieldWithGeoJson[];
-  height?: number;
+  height?: number | string;
+  onFieldClick?: (fieldName: string) => void;
+  selectedField?: string;
 }
 
 interface ParsedField {
@@ -49,7 +53,7 @@ function FitBoundsToFields({ features }: { features: ParsedField[] }) {
   return null;
 }
 
-export default function FieldMap({ fields, height = 500 }: FieldMapProps) {
+export default function FieldMap({ fields, height = 500, onFieldClick, selectedField }: FieldMapProps) {
   const { t } = useTranslation();
   const [showCadastre, setShowCadastre] = useState(false);
 
@@ -63,16 +67,11 @@ export default function FieldMap({ fields, height = 500 }: FieldMapProps) {
     }
   });
 
-  if (parsedFields.length === 0) {
-    return (
-      <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-subtle)', borderRadius: 4 }}>
-        <Empty description={t.fields.noCoordinates} />
-      </div>
-    );
-  }
+  const hasBoundaries = fieldBoundaries.length > 0;
+  const hasGeoJson = parsedFields.length > 0;
 
   return (
-    <div>
+    <div style={{ height, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
       <div className={s.flex_center}>
         <Switch
           size="small"
@@ -85,16 +84,52 @@ export default function FieldMap({ fields, height = 500 }: FieldMapProps) {
         </label>
       </div>
       <MapContainer
-        style={{ height, width: '100%' }}
-        center={[48.5, 35.0]}
-        zoom={10}
+        center={hasBoundaries ? MAP_CENTER : [48.5, 35.0]}
+        zoom={hasBoundaries ? MAP_ZOOM : 10}
+        style={{ height: '100%', width: '100%', background: '#060B14' }}
+        zoomControl={true}
       >
+        {/* Dark satellite-style tile layer */}
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
         />
         <CadastreLayer enabled={showCadastre} />
-        <FitBoundsToFields features={parsedFields} />
+
+        {/* Demo field polygons from static data */}
+        {fieldBoundaries.map((field) => (
+          <Polygon
+            key={field.fieldName}
+            positions={field.coordinates.map(([lng, lat]) => [lat, lng] as [number, number])}
+            pathOptions={{
+              color: field.color,
+              fillColor: field.color,
+              fillOpacity: selectedField === field.fieldName ? 0.5 : 0.25,
+              weight: selectedField === field.fieldName ? 3 : 1.5,
+              opacity: 0.8,
+            }}
+            eventHandlers={{
+              click: () => onFieldClick?.(field.fieldName),
+              mouseover: (e) => {
+                e.target.setStyle({ fillOpacity: 0.4, weight: 2.5 });
+              },
+              mouseout: (e) => {
+                if (selectedField !== field.fieldName) {
+                  e.target.setStyle({ fillOpacity: 0.25, weight: 1.5 });
+                }
+              },
+            }}
+          >
+            <Tooltip sticky>
+              <div style={{ padding: '4px 0' }}>
+                <strong>{field.fieldName}</strong>
+              </div>
+            </Tooltip>
+          </Polygon>
+        ))}
+
+        {/* Real DB GeoJSON fields */}
+        {hasGeoJson && <FitBoundsToFields features={parsedFields} />}
         {parsedFields.map(({ field, geo }) => (
           <GeoJSON
             key={field.id}

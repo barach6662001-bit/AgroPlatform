@@ -21,18 +21,123 @@ import { useAuthStore } from '../../stores/authStore';
 import s from './FieldsList.module.css';
 import DataTable from '../../components/ui/DataTable';
 
+interface FieldDetailPanelProps {
+  fieldName: string;
+  fields: FieldDto[];
+  t: ReturnType<typeof useTranslation>['t'];
+}
+
+function FieldDetailPanel({ fieldName, fields, t }: FieldDetailPanelProps) {
+  const field = fields.find(f => f.name === fieldName);
+  if (!field) {
+    return (
+      <div>
+        <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{fieldName}</h3>
+        <p style={{ fontSize: 13, color: '#6b7b9a' }}>{t.fields.noCoordinates}</p>
+      </div>
+    );
+  }
+
+  const ownershipLabels: Record<number, string> = {
+    0: t.fields.ownershipOwnLand,
+    1: t.fields.ownershipLease,
+    2: t.fields.ownershipShareLease,
+  };
+
+  return (
+    <div>
+      <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{field.name}</h3>
+      <p style={{ fontSize: 13, color: '#6b7b9a', marginBottom: 20 }}>
+        {field.soilType || t.fields.soilType}
+      </p>
+
+      {/* Stats grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+        <div style={{ background: '#111A2E', borderRadius: 8, padding: 12 }}>
+          <div style={{ fontSize: 11, color: '#6b7b9a', marginBottom: 4 }}>{t.fields.area.toUpperCase()}</div>
+          <div style={{ fontSize: 18, fontWeight: 600 }}>{field.areaHectares} га</div>
+        </div>
+        <div style={{ background: '#111A2E', borderRadius: 8, padding: 12 }}>
+          <div style={{ fontSize: 11, color: '#6b7b9a', marginBottom: 4 }}>{t.fields.currentCrop.toUpperCase()}</div>
+          <div style={{ fontSize: 18, fontWeight: 600 }}>
+            {field.currentCrop ? (t.crops[field.currentCrop as keyof typeof t.crops] || field.currentCrop) : '—'}
+          </div>
+        </div>
+        <div style={{ background: '#111A2E', borderRadius: 8, padding: 12 }}>
+          <div style={{ fontSize: 11, color: '#6b7b9a', marginBottom: 4 }}>{t.fields.ownershipType.toUpperCase()}</div>
+          <div style={{ fontSize: 14 }}>{ownershipLabels[field.ownershipType] ?? '—'}</div>
+        </div>
+        <div style={{ background: '#111A2E', borderRadius: 8, padding: 12 }}>
+          <div style={{ fontSize: 11, color: '#6b7b9a', marginBottom: 4 }}>{t.fields.cadastralNumber.toUpperCase()}</div>
+          <div style={{ fontSize: 12, fontFamily: 'monospace' }}>{field.cadastralNumber || '—'}</div>
+        </div>
+      </div>
+
+      {/* NDVI placeholder */}
+      <div style={{
+        background: '#111A2E',
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 16,
+        border: '1px dashed #253350',
+      }}>
+        <div style={{ fontSize: 12, color: '#6b7b9a', marginBottom: 8 }}>{t.fields.ndviIndex}</div>
+        <div style={{ fontSize: 24, fontWeight: 600, color: '#22C55E' }}>0.72</div>
+        <div style={{ fontSize: 11, color: '#6b7b9a' }}>{t.fields.ndviStatusGood} · {t.fields.ndviUpdated}</div>
+        {/* Color bar */}
+        <div style={{
+          marginTop: 8,
+          height: 6,
+          borderRadius: 3,
+          background: 'linear-gradient(90deg, #EF4444 0%, #F59E0B 30%, #22C55E 60%, #065F46 100%)',
+          position: 'relative',
+        }}>
+          <div style={{
+            position: 'absolute',
+            left: '72%',
+            top: -3,
+            width: 12,
+            height: 12,
+            borderRadius: '50%',
+            background: '#22C55E',
+            border: '2px solid #060B14',
+          }} />
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        <a href={`/fields/${field.id}`} style={{
+          flex: 1,
+          textAlign: 'center',
+          padding: '8px 16px',
+          background: 'rgba(34, 197, 94, 0.1)',
+          color: '#22C55E',
+          borderRadius: 8,
+          border: '1px solid rgba(34, 197, 94, 0.2)',
+          fontSize: 13,
+          textDecoration: 'none',
+        }}>
+          {t.fields.details} →
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function FieldsList() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
   const [form] = Form.useForm();
   const [editRecord, setEditRecord] = useState<FieldDto | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editSaving, setEditSaving] = useState(false);
   const [editForm] = Form.useForm();
+  const [selectedField, setSelectedField] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { hasPermission } = useRole();
@@ -238,7 +343,35 @@ export default function FieldsList() {
       </Space>
 
       {viewMode === 'map' ? (
-        <FieldMap fields={result?.items ?? []} height={500} />
+        <div style={{ display: 'flex', gap: 16, height: 'calc(100vh - 200px)' }}>
+          {/* Map takes 65% */}
+          <div style={{ flex: '0 0 65%' }}>
+            <FieldMap
+              fields={result?.items ?? []}
+              height="100%"
+              onFieldClick={setSelectedField}
+              selectedField={selectedField}
+            />
+          </div>
+
+          {/* Side panel takes 35% */}
+          <div style={{
+            flex: '0 0 35%',
+            background: '#0C1222',
+            borderRadius: 12,
+            border: '1px solid rgba(255,255,255,0.06)',
+            padding: 20,
+            overflowY: 'auto',
+          }}>
+            {selectedField ? (
+              <FieldDetailPanel fieldName={selectedField} fields={result?.items ?? []} t={t} />
+            ) : (
+              <div style={{ color: '#6b7b9a', textAlign: 'center', paddingTop: 40 }}>
+                {t.fields.selectFieldOnMap}
+              </div>
+            )}
+          </div>
+        </div>
       ) : isLoading ? (
         <TableSkeleton rows={8} />
       ) : (
