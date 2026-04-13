@@ -26,7 +26,7 @@
 }
 
 .bg :global(.ant-menu-item:hover) {
-  background: rgba(255, 255, 255, 0.04) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
