@@ -241,8 +241,8 @@ export default function BudgetPage() {
             <YAxis />
             <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} labelStyle={chartConfig.tooltip.labelStyle} cursor={chartConfig.tooltip.cursor} />
             <Legend />
-            <Bar dataKey="planned" name={t.economics.plColPlan} fill="#1890ff" />
-            <Bar dataKey="actual" name={t.economics.plColFact} fill="#52c41a" />
+            <Bar dataKey="planned" name={t.economics.plColPlan} fill="#3B82F6" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="actual" name={t.economics.plColFact} fill="#22C55E" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </Card>

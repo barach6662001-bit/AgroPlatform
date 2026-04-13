@@ -101,11 +101,11 @@ export default function FieldEfficiency() {
                 margin={{ top: 10, right: 40, left: 120, bottom: 10 }}
               >
                 <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
-                <XAxis type="number" />
-                <YAxis type="category" dataKey="name" width={110} />
-                <Tooltip formatter={(v: number) => `${v.toFixed(2)} UAH`} />
+                <XAxis type="number" tick={{ fill: '#6b7b9a', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" width={110} tick={{ fill: '#6b7b9a', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} formatter={(v: number) => `${v.toFixed(2)} UAH`} />
                 <Legend />
-                <Bar dataKey={t.analytics.totalCost} fill="#0D9488" />
+                <Bar dataKey={t.analytics.totalCost} fill="#14B8A6" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}

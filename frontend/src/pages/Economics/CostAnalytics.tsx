@@ -153,6 +153,7 @@ export default function CostAnalytics() {
                         nameKey="name"
                         cx="50%"
                         cy="50%"
+                        innerRadius="60%"
                         outerRadius={90}
                         label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                         labelLine={false}
@@ -161,7 +162,7 @@ export default function CostAnalytics() {
                           <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(v: number) => formatUAH(v)} />
+                      <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} formatter={(v: number) => formatUAH(v)} />
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
@@ -175,12 +176,12 @@ export default function CostAnalytics() {
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={barData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
                     <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tickFormatter={(v) => formatNumber(v)} tick={{ fontSize: 12 }} />
-                    <Tooltip formatter={(v: number) => formatUAH(v)} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7b9a' }} axisLine={false} tickLine={false} />
+                    <YAxis tickFormatter={(v) => formatNumber(v)} tick={{ fontSize: 11, fill: '#6b7b9a' }} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} formatter={(v: number) => formatUAH(v)} />
                     <Legend />
-                    <Bar dataKey={t.economics.totalCostsSum} fill="#ff7875" />
-                    <Bar dataKey={t.economics.revenue} fill="#73d13d" />
+                    <Bar dataKey={t.economics.totalCostsSum} fill="#EF4444" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey={t.economics.revenue} fill="#22C55E" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </Card>

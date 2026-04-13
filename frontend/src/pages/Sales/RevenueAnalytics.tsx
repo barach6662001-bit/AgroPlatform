@@ -249,7 +249,7 @@ export default function RevenueAnalytics() {
                         contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
                         formatter={(v: number) => [formatUAH(v)]}
                       />
-                      <Bar dataKey={t.sales.revenueAmount} fill="#58A6FF" radius={[0, 4, 4, 0]} />
+                      <Bar dataKey={t.sales.revenueAmount} fill="#3B82F6" radius={[0, 4, 4, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (

@@ -177,15 +177,16 @@ export default function Dashboard() {
                   <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }} stroke="var(--border)" />
-              <YAxis stroke="var(--border)" tick={{ fill: 'var(--text-tertiary)', fontSize: 11 }} width={60} tickFormatter={(v: number) => formatUA(v)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7b9a' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#6b7b9a', fontSize: 11 }} axisLine={false} tickLine={false} width={60} tickFormatter={(v: number) => formatUA(v)} />
               <Tooltip
                 contentStyle={{
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border)',
+                  background: '#111A2E',
+                  border: '1px solid #253350',
                   borderRadius: 8,
                   fontSize: 13,
+                  color: '#ededed',
                 }}
               />
               <Area type="monotone" dataKey="cost" stroke="#EF4444" fill="url(#costGrad)" name={t.dashboard.costsUAH} strokeWidth={2} />

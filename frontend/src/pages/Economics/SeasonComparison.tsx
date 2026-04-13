@@ -198,13 +198,13 @@ export default function SeasonComparison() {
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 8 }}>
                   <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
-                  <XAxis dataKey="name" tick={{ fontSize: 13 }} />
-                  <YAxis tickFormatter={(v) => formatNumber(v as number)} tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={(v: number) => formatUAH(v)} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7b9a' }} axisLine={false} tickLine={false} />
+                  <YAxis tickFormatter={(v) => formatNumber(v as number)} tick={{ fontSize: 11, fill: '#6b7b9a' }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} formatter={(v: number) => formatUAH(v)} />
                   <Legend />
-                  <Bar dataKey={t.economics.seasonRevenue} fill="#73d13d" />
-                  <Bar dataKey={t.economics.seasonCosts} fill="#ff7875" />
-                  <Bar dataKey={t.economics.seasonMargin} fill="#4096ff" />
+                  <Bar dataKey={t.economics.seasonRevenue} fill="#22C55E" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey={t.economics.seasonCosts} fill="#EF4444" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey={t.economics.seasonMargin} fill="#3B82F6" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </Card>

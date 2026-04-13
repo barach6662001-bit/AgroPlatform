@@ -83,11 +83,11 @@ export default function ResourceConsumption() {
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 60 }}>
                 <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
-                <XAxis dataKey="name" angle={-30} textAnchor="end" interval={0} />
-                <YAxis />
+                <XAxis dataKey="name" angle={-30} textAnchor="end" interval={0} tick={{ fill: '#6b7b9a', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#6b7b9a', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} labelStyle={chartConfig.tooltip.labelStyle} cursor={chartConfig.tooltip.cursor} />
                 <Legend />
-                <Bar dataKey={t.analytics.totalQuantity} fill="#0D9488" />
+                <Bar dataKey={t.analytics.totalQuantity} fill="#14B8A6" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
