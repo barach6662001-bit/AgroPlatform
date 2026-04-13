@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-page-bg, #0B1220);
+  background: var(--color-page-bg, #060B14);
   position: relative;
 }
 
@@ -35,7 +35,7 @@
 .loginCard {
   width: 420px;
   max-width: 90vw;
-  background: var(--color-card-bg, #0F1629);
+  background: var(--color-card-bg, #0C1222);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
   padding: 40px 36px;

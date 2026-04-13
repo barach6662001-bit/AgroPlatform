@@ -21,31 +21,31 @@ export const chartPalette = [
 export const chartConfig = {
   grid: {
     strokeDasharray: '3 3',
-    stroke: 'rgba(255,255,255,0.04)',
+    stroke: 'rgba(255,255,255,0.06)',
     vertical: false as const,
   },
   xAxis: {
     fontSize: 11,
-    fill: 'rgba(255,255,255,0.35)',
+    fill: '#6b7b9a',
     tickLine: false as const,
     axisLine: false as const,
   },
   yAxis: {
     fontSize: 11,
-    fill: 'rgba(255,255,255,0.35)',
+    fill: '#6b7b9a',
     tickLine: false as const,
     axisLine: false as const,
     width: 80,
   },
   tooltip: {
     contentStyle: {
-      background: '#1A2332',
-      border: '1px solid rgba(255,255,255,0.1)',
+      background: '#111A2E',
+      border: '1px solid #253350',
       borderRadius: '8px',
       padding: '12px',
       boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
       fontSize: '12px',
-      color: 'rgba(255,255,255,0.92)',
+      color: '#ededed',
     },
     itemStyle: {
       color: 'rgba(255,255,255,0.85)',
@@ -69,7 +69,7 @@ export const chartConfig = {
     activeDot: {
       r: 4,
       fill: '#22C55E',
-      stroke: '#0B1220',
+      stroke: '#060B14',
       strokeWidth: 2,
     },
   },

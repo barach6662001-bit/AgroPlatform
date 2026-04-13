@@ -3,13 +3,13 @@ import type { ThemeConfig } from 'antd';
 
 export const darkTheme: ThemeConfig = {
   token: {
-    colorBgBase:          '#0B1220',
-    colorBgContainer:     '#0F1629',
-    colorBgElevated:      '#141B2D',
-    colorBgLayout:        '#0B1220',
-    colorBgSpotlight:     '#141B2D',
-    colorBorder:          'rgba(255, 255, 255, 0.06)',
-    colorBorderSecondary: 'rgba(255, 255, 255, 0.12)',
+    colorBgBase:          '#060B14',
+    colorBgContainer:     '#0C1222',
+    colorBgElevated:      '#111A2E',
+    colorBgLayout:        '#060B14',
+    colorBgSpotlight:     '#111A2E',
+    colorBorder:          '#1E2A45',
+    colorBorderSecondary: '#253350',
     colorTextBase:        'rgba(255, 255, 255, 0.92)',
     colorText:            'rgba(255, 255, 255, 0.92)',
     colorTextSecondary:   'rgba(255, 255, 255, 0.55)',
@@ -37,17 +37,17 @@ export const darkTheme: ThemeConfig = {
   },
   components: {
     Layout: {
-      siderBg:      '#0A0E14',
-      headerBg:     '#0B1220',
-      bodyBg:       '#0B1220',
-      triggerBg:    '#141B2D',
-      triggerColor: 'rgba(255, 255, 255, 0.55)',
+      siderBg:      '#0C1222',
+      headerBg:     '#0C1222',
+      bodyBg:       '#060B14',
+      triggerBg:    '#1A2540',
+      triggerColor: '#a1a1a1',
     },
     Menu: {
-      darkItemBg:            'transparent',
-      darkSubMenuItemBg:     'transparent',
+      darkItemBg:            '#0C1222',
+      darkSubMenuItemBg:     '#0C1222',
       darkItemSelectedBg:    'rgba(34, 197, 94, 0.08)',
-      darkItemHoverBg:       'rgba(255, 255, 255, 0.04)',
+      darkItemHoverBg:       '#1A2540',
       darkItemColor:         'rgba(255, 255, 255, 0.55)',
       darkItemSelectedColor: '#22C55E',
       darkItemHoverColor:    'rgba(255, 255, 255, 0.85)',
@@ -56,19 +56,19 @@ export const darkTheme: ThemeConfig = {
       itemMarginInline:      8,
     },
     Card: {
-      colorBgContainer:     '#0F1629',
-      colorBorderSecondary: 'rgba(255, 255, 255, 0.06)',
+      colorBgContainer:     '#0C1222',
+      colorBorderSecondary: '#1E2A45',
       borderRadiusLG:       12,
       paddingLG:            20,
       boxShadow:            'none',
     },
     Table: {
       colorBgContainer:   'transparent',
-      headerBg:           'rgba(255, 255, 255, 0.02)',
+      headerBg:           '#0C1222',
       headerColor:        'rgba(255, 255, 255, 0.4)',
       headerSortActiveBg: 'rgba(255, 255, 255, 0.04)',
-      rowHoverBg:         'rgba(255, 255, 255, 0.03)',
-      borderColor:        'rgba(255, 255, 255, 0.04)',
+      rowHoverBg:         '#111A2E',
+      borderColor:        '#1E2A45',
       colorText:          'rgba(255, 255, 255, 0.85)',
       colorTextHeading:   'rgba(255, 255, 255, 0.4)',
     },
@@ -80,16 +80,16 @@ export const darkTheme: ThemeConfig = {
       primaryColor:            '#000000',
       borderRadius:            8,
       borderRadiusSM:          6,
-      defaultBg:               'rgba(255, 255, 255, 0.06)',
+      defaultBg:               '#111A2E',
       defaultColor:            'rgba(255, 255, 255, 0.8)',
-      defaultBorderColor:      'rgba(255, 255, 255, 0.1)',
-      defaultHoverBg:          'rgba(255, 255, 255, 0.1)',
+      defaultBorderColor:      '#253350',
+      defaultHoverBg:          '#1A2540',
       defaultHoverColor:       'rgba(255, 255, 255, 0.92)',
       defaultHoverBorderColor: 'rgba(255, 255, 255, 0.2)',
     },
     Input: {
-      colorBgContainer:     '#111827',
-      colorBorder:          'rgba(255, 255, 255, 0.1)',
+      colorBgContainer:     '#111A2E',
+      colorBorder:          '#253350',
       colorText:            'rgba(255, 255, 255, 0.92)',
       colorTextPlaceholder: 'rgba(255, 255, 255, 0.35)',
       hoverBorderColor:     'rgba(255, 255, 255, 0.2)',
@@ -97,33 +97,33 @@ export const darkTheme: ThemeConfig = {
       activeShadow:         '0 0 0 3px rgba(34, 197, 94, 0.1)',
     },
     Select: {
-      colorBgContainer:     '#111827',
-      colorBorder:          'rgba(255, 255, 255, 0.1)',
+      colorBgContainer:     '#111A2E',
+      colorBorder:          '#253350',
       colorText:            'rgba(255, 255, 255, 0.92)',
       colorTextPlaceholder: 'rgba(255, 255, 255, 0.35)',
       optionSelectedBg:     'rgba(34, 197, 94, 0.08)',
-      optionActiveBg:       'rgba(255, 255, 255, 0.04)',
-      colorBgElevated:      '#141B2D',
+      optionActiveBg:       '#1A2540',
+      colorBgElevated:      '#0C1222',
     },
     Modal: {
-      colorBgElevated: '#0F1629',
-      colorBorder:     'rgba(255, 255, 255, 0.06)',
+      colorBgElevated: '#0C1222',
+      colorBorder:     '#1E2A45',
       titleColor:      'rgba(255, 255, 255, 0.92)',
     },
     Drawer: {
-      colorBgElevated: '#0F1629',
+      colorBgElevated: '#0C1222',
     },
     Dropdown: {
-      colorBgElevated:    '#141B2D',
+      colorBgElevated:    '#0C1222',
       colorText:          'rgba(255, 255, 255, 0.85)',
-      controlItemBgHover: 'rgba(255, 255, 255, 0.04)',
+      controlItemBgHover: '#1A2540',
     },
     Tooltip: {
-      colorBgSpotlight:    '#1A2332',
+      colorBgSpotlight:    '#1A2540',
       colorTextLightSolid: 'rgba(255, 255, 255, 0.92)',
     },
     Pagination: {
-      colorBgContainer: '#141B2D',
+      colorBgContainer: '#111A2E',
       colorText:        'rgba(255, 255, 255, 0.55)',
       itemActiveBg:     'rgba(34, 197, 94, 0.08)',
     },
@@ -132,14 +132,14 @@ export const darkTheme: ThemeConfig = {
       titleFontSize:   11,
     },
     Badge: {
-      colorBgContainer: '#0F1629',
+      colorBgContainer: '#0C1222',
     },
     Tag: {
-      defaultBg:    'rgba(255, 255, 255, 0.06)',
+      defaultBg:    '#1A2540',
       defaultColor: 'rgba(255, 255, 255, 0.55)',
     },
     Divider: {
-      colorSplit: 'rgba(255, 255, 255, 0.04)',
+      colorSplit: '#1E2A45',
     },
     Spin: {
       colorPrimary: '#22C55E',
@@ -158,11 +158,11 @@ export const darkTheme: ThemeConfig = {
       colorInfoBorder:    'rgba(59, 130, 246, 0.2)',
     },
     DatePicker: {
-      colorBgContainer:     '#111827',
-      colorBorder:          'rgba(255, 255, 255, 0.1)',
+      colorBgContainer:     '#111A2E',
+      colorBorder:          '#253350',
       colorText:            'rgba(255, 255, 255, 0.92)',
       colorTextPlaceholder: 'rgba(255, 255, 255, 0.35)',
-      colorBgElevated:      '#141B2D',
+      colorBgElevated:      '#0C1222',
     },
     Form: {
       labelColor:    'rgba(255, 255, 255, 0.6)',
@@ -182,11 +182,11 @@ export const darkTheme: ThemeConfig = {
       colorTextDisabled: 'rgba(255, 255, 255, 0.35)',
     },
     Notification: {
-      colorBgElevated: '#141B2D',
+      colorBgElevated: '#0C1222',
       colorText:       'rgba(255, 255, 255, 0.92)',
     },
     Message: {
-      colorBgElevated: '#141B2D',
+      colorBgElevated: '#0C1222',
       colorText:       'rgba(255, 255, 255, 0.92)',
     },
   },
@@ -194,12 +194,12 @@ export const darkTheme: ThemeConfig = {
 };
 
 export const CHART_COLORS = [
-  '#22C55E', // green (primary)
+  '#22C55E', // green — primary
   '#3B82F6', // blue
   '#F59E0B', // amber
-  '#8B5CF6', // violet
-  '#EC4899', // pink
-  '#06B6D4', // cyan
+  '#A855F7', // purple
+  '#14B8A6', // teal
   '#F97316', // orange
-  '#6366F1', // indigo
+  '#EC4899', // pink
+  '#0EA5E9', // sky
 ];

@@ -8,21 +8,21 @@
 
 :root {
   /* Backgrounds — blue-tinted deep dark palette */
-  --bg-app:        #0B1220;
-  --bg-surface:    #0F1629;
-  --bg-elevated:   #141B2D;
-  --bg-overlay:    #1A2332;
-  --bg-subtle:     #111827;
-  --bg-base:       #0A0F1A;
-  --bg-hover:      #1A2332;
+  --bg-app:        #060B14;
+  --bg-surface:    #0C1222;
+  --bg-elevated:   #111A2E;
+  --bg-overlay:    #1A2540;
+  --bg-subtle:     #111A2E;
+  --bg-base:       #060B14;
+  --bg-hover:      #1A2540;
 
   /* Card-specific */
   --card-bg:       rgba(255, 255, 255, 0.03);
   --card-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
 
   /* Borders */
-  --border:        rgba(255, 255, 255, 0.06);
-  --border-strong: rgba(255, 255, 255, 0.12);
+  --border:        #1E2A45;
+  --border-strong: #253350;
   --border-focus:  #22c55e;
 
   /* Text — opacity-based for consistency */
