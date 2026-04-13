@@ -13,21 +13,22 @@ function LogoIcon({ size }: { size: number }) {
       fill="none"
       width={size}
       height={size}
-      className={s.block0}
+      style={{ display: 'block' }}
     >
-      <rect width="32" height="32" rx="8" fill="var(--bg-surface)" />
-      {/* Leaf / grain shape */}
+      {/* Background — dark rounded square */}
+      <rect width="32" height="32" rx="8" fill="var(--brand, #22C55E)" />
+
+      {/* Stylized "A" letterform — represents both Agriculture and Analytics */}
       <path
-        d="M16 5C10 11 8 17 11 23C13 19 14.5 16 16 14C17.5 16 19 19 21 23C24 17 22 11 16 5Z"
-        fill="var(--brand)"
-        opacity="0.9"
+        d="M16 6L8 26h4l1.5-5h5L20 26h4L16 6zm-1.2 12L16 12.5 17.2 18h-2.4z"
+        fill="white"
+        opacity="0.95"
       />
-      {/* Stem */}
-      <line x1="16" y1="14" x2="16" y2="28" stroke="var(--brand)" strokeWidth="1.5" opacity="0.5" />
-      {/* Data dots — subtle tech reference */}
-      <circle cx="12.5" cy="17.5" r="1.5" fill="var(--bg-surface)" opacity="0.8" />
-      <circle cx="16" cy="19.5" r="1.5" fill="var(--bg-surface)" opacity="0.8" />
-      <circle cx="19.5" cy="17.5" r="1.5" fill="var(--bg-surface)" opacity="0.8" />
+
+      {/* Three horizontal data lines — subtle tech reference */}
+      <line x1="10" y1="28" x2="14" y2="28" stroke="white" strokeWidth="1" opacity="0.3" strokeLinecap="round" />
+      <line x1="16" y1="28" x2="18" y2="28" stroke="white" strokeWidth="1" opacity="0.2" strokeLinecap="round" />
+      <line x1="20" y1="28" x2="22" y2="28" stroke="white" strokeWidth="1" opacity="0.15" strokeLinecap="round" />
     </svg>
   );
 }
