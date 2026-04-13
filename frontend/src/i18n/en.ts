@@ -1368,6 +1368,7 @@ const en: Translations = {
     analyticsSubtitle: 'Revenue by products, buyers, and months',
     totalRevenue: 'Total Revenue',
     salesCount: 'Sales Count',
+    avgDeal: 'Average Deal',
     byProduct: 'By Product',
     byBuyer: 'By Buyer',
     byMonth: 'By Month',

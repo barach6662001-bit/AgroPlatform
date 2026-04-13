@@ -75,8 +75,8 @@ export default function FleetMap() {
       )}
 
       <MapContainer
-        center={[49.0, 32.0]}
-        zoom={6}
+        center={[49.585, 34.555]}
+        zoom={13}
         className={s.fullWidth}
       >
         <TileLayer

@@ -157,7 +157,7 @@ export default function BudgetPage() {
   const totalExecution = totalPlanned > 0 ? (totalActual / totalPlanned) * 100 : 0;
 
   const chartData = CATEGORIES.map((cat) => ({
-    name: cat,
+    name: t.costCategories[cat as keyof typeof t.costCategories] || cat,
     planned: pendingAmounts[cat] ?? 0,
     actual: planVsFact.find((p) => p.category === cat)?.factAmount ?? 0,
   }));

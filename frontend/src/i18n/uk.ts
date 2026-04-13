@@ -1398,6 +1398,7 @@ const uk = {
     analyticsSubtitle: 'Доходи за продуктами, покупцями та місяцями',
     totalRevenue: 'Загальний дохід',
     salesCount: 'Кількість угод',
+    avgDeal: 'Середній чек',
     byProduct: 'За продуктом',
     byBuyer: 'За покупцем',
     byMonth: 'По місяцях',

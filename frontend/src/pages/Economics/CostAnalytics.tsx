@@ -53,7 +53,7 @@ export default function CostAnalytics() {
 
   const pieData = (data?.byCategory ?? [])
     .filter((c) => c.amount > 0)
-    .map((c) => ({ name: c.category, value: c.amount }));
+    .map((c) => ({ name: t.costCategories[c.category as keyof typeof t.costCategories] || c.category, value: c.amount }));
 
   const barData = (data?.byMonth ?? []).map((m) => ({
     name: MONTH_SHORT[m.month],
@@ -62,7 +62,7 @@ export default function CostAnalytics() {
   }));
 
   const tableColumns = [
-    { title: t.economics.category, dataIndex: 'category', key: 'category' },
+    { title: t.economics.category, dataIndex: 'category', key: 'category', render: (v: string) => t.costCategories[v as keyof typeof t.costCategories] || v },
     {
       title: t.economics.amount,
       dataIndex: 'amount',

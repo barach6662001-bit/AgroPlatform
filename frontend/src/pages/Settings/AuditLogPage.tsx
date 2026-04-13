@@ -121,7 +121,7 @@ export default function AuditLogPage() {
       key: 'userId',
       width: 200,
       ellipsis: true,
-      render: (v?: string) => v ?? '—',
+      render: (v?: string) => v ? <span style={{ color: 'var(--text-tertiary)', fontSize: 12 }}>{v.substring(0, 8)}…</span> : '—',
     },
     {
       title: t.auditLog.action,

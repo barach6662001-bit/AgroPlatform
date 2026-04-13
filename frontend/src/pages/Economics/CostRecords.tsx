@@ -247,7 +247,7 @@ export default function CostRecords() {
         <Button icon={<DownloadOutlined />} loading={exporting} onClick={handleExport}>
           {t.warehouses_export.exportCosts}
         </Button>
-        <Button icon={<PrinterOutlined />} onClick={() => printReport(t.economics.title || 'Витрати', `<table><thead><tr><th>Дата</th><th>Категорія</th><th>Сума</th><th>Опис</th></tr></thead><tbody>${records.map(r => `<tr><td>${r.date}</td><td>${r.category}</td><td>${r.amount}</td><td>${r.description || ''}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
+        <Button icon={<PrinterOutlined />} onClick={() => printReport(t.economics.title || 'Витрати', `<table><thead><tr><th>Дата</th><th>Категорія</th><th>Сума</th><th>Опис</th></tr></thead><tbody>${records.map(r => `<tr><td>${r.date}</td><td>${t.costCategories[r.category as keyof typeof t.costCategories] || r.category}</td><td>${r.amount}</td><td>${r.description || ''}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
       </Space>
 
       {loading && !result ? (
