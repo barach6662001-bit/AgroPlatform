@@ -12,6 +12,106 @@
   background: transparent;
 }
 
+/* Menu item styling overrides */
+.bg :global(.ant-menu-item) {
+  height: 36px;
+  line-height: 36px;
+  padding: 0 12px !important;
+  border-radius: 8px;
+  margin: 2px 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+  transition: all 100ms ease;
+}
+
+.bg :global(.ant-menu-item:hover) {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.bg :global(.ant-menu-item-selected) {
+  background: rgba(34, 197, 94, 0.08) !important;
+  color: #22C55E !important;
+  font-weight: 500;
+  border-inline-end: none !important;
+  position: relative;
+}
+
+.bg :global(.ant-menu-item-selected::before) {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: #22C55E;
+  border-radius: 0 1px 1px 0;
+}
+
+/* Submenu title (group headers) */
+.bg :global(.ant-menu-submenu-title) {
+  height: 36px !important;
+  line-height: 36px !important;
+  padding: 0 12px !important;
+  border-radius: 8px;
+  margin: 2px 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+  transition: all 100ms ease;
+}
+
+.bg :global(.ant-menu-submenu-title:hover) {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Active submenu title */
+.bg :global(.ant-menu-submenu-selected > .ant-menu-submenu-title) {
+  color: #22C55E !important;
+  font-weight: 500;
+}
+
+/* Submenu expand arrow */
+.bg :global(.ant-menu-submenu-arrow) {
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+
+/* Sub-items (children) */
+.bg :global(.ant-menu-item-only-child) {
+  padding-left: 40px !important;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.bg :global(.ant-menu-item-only-child:hover) {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.bg :global(.ant-menu-item-only-child.ant-menu-item-selected) {
+  color: #22C55E !important;
+}
+
+/* Icon gap */
+.bg :global(.ant-menu-item .ant-menu-item-icon),
+.bg :global(.ant-menu-submenu-title .ant-menu-item-icon) {
+  margin-inline-end: 10px !important;
+}
+
+/* Lucide icon vertical alignment */
+.bg :global(.ant-menu-item .ant-menu-item-icon + span),
+.bg :global(.ant-menu-submenu-title .ant-menu-item-icon + span) {
+  vertical-align: middle;
+}
+
+/* Section dividers */
+.bg :global(.ant-menu-item-divider) {
+  border-color: rgba(255, 255, 255, 0.04) !important;
+  margin: 8px 0 !important;
+}
+
 .sectionLabel {
   font-size: 10px;
   font-weight: 600;

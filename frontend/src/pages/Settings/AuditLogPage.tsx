@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Table, Select, DatePicker, Input, Button, Row, Col, message, Tag, Space, Drawer, Typography } from 'antd';
+import { Select, DatePicker, Input, Button, Row, Col, message, Tag, Space, Drawer, Typography } from 'antd';
 import { SearchOutlined, ReloadOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getAuditLogs } from '../../api/audit';
@@ -8,6 +8,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import s from './AuditLogPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { RangePicker } = DatePicker;
 
@@ -67,7 +68,7 @@ export default function AuditLogPage() {
   const [actionFilter, setActionFilter] = useState<string | undefined>();
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
   const [page, setPage] = useState(1);
-  const pageSize = 50;
+  const [pageSize, setPageSize] = useState(20);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -120,7 +121,7 @@ export default function AuditLogPage() {
       key: 'userId',
       width: 200,
       ellipsis: true,
-      render: (v?: string) => v ?? '—',
+      render: (v?: string) => v ? <span style={{ color: 'var(--text-tertiary)', fontSize: 12 }}>{v.substring(0, 8)}…</span> : '—',
     },
     {
       title: t.auditLog.action,
@@ -228,7 +229,7 @@ export default function AuditLogPage() {
         </Row>
       </div>
 
-      <Table
+      <DataTable
         rowKey="id"
         columns={columns}
         dataSource={data?.items ?? []}
@@ -237,9 +238,11 @@ export default function AuditLogPage() {
           current: page,
           pageSize,
           total: data?.totalCount ?? 0,
-          onChange: setPage,
-          showSizeChanger: false,
-          showTotal: (total) => `${t.auditLog.total}: ${total}`,
+          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+          showSizeChanger: true,
+          pageSizeOptions: ['10', '20', '50'],
+          showTotal: (total: number, range: [number, number]) =>
+            `Показано ${range[0]}-${range[1]} з ${total}`,
         }}
         scroll={{ x: 900 }}
         size="small"
@@ -278,7 +281,7 @@ export default function AuditLogPage() {
               </div>
             </div>
 
-            <Table
+            <DataTable
               rowKey="key"
               size="small"
               pagination={false}

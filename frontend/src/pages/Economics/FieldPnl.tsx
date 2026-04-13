@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { formatUAH, formatNumber } from '../../utils/format';
 import { Table, InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space, Button } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { DollarOutlined, RiseOutlined, TrophyOutlined, PrinterOutlined } from '@ant-design/icons';
 import { getFieldPnl } from '../../api/economics';
 import type { FieldPnlDto } from '../../types/economics';
@@ -9,6 +11,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { printReport } from '../../utils/printReport';
 import s from './FieldPnl.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -92,7 +95,7 @@ export default function FieldPnl() {
       key: 'totalCosts',
       sorter: (a: FieldPnlDto, b: FieldPnlDto) => a.totalCosts - b.totalCosts,
       render: (v: number) => (
-        <span className={s.colored}>{v.toLocaleString()} UAH</span>
+        <span className={s.colored}>{formatUAH(v)}</span>
       ),
     },
     {
@@ -114,14 +117,14 @@ export default function FieldPnl() {
           return (
             <span>
               <span className={s.text11}>{t.economics.estimatedRevenueLabel}</span>
-              <span className={s.colored1}>{v.toLocaleString()} UAH</span>
+              <span className={s.colored1}>{formatUAH(v)}</span>
             </span>
           );
         }
         return (
           <span>
             <span className={s.text111}>{t.economics.actualRevenue}</span>
-            <span className={s.colored2}>{v.toLocaleString()} UAH</span>
+            <span className={s.colored2}>{formatUAH(v)}</span>
           </span>
         );
       },
@@ -135,7 +138,7 @@ export default function FieldPnl() {
       render: (v: number | undefined) => {
         if (v == null) return <span className={s.colored1}>—</span>;
         const color = v >= 0 ? 'var(--success)' : 'var(--error)';
-        return <strong style={{ color }}>{v.toLocaleString()} UAH</strong>;
+        return <strong style={{ color }}>{formatUAH(v)}</strong>;
       },
     },
     {
@@ -235,7 +238,7 @@ export default function FieldPnl() {
         >
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 60 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
               <XAxis
                 dataKey="name"
                 tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
@@ -245,7 +248,7 @@ export default function FieldPnl() {
               />
               <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
               />
               <Legend wrapperStyle={{ color: 'var(--text-secondary)' }} />
               <Bar dataKey={t.economics.totalCostsSum} fill="var(--error)" radius={[4, 4, 0, 0]} />
@@ -259,7 +262,7 @@ export default function FieldPnl() {
       {data.length === 0 && !loading ? (
         <Empty description={<span className={s.colored1}>{t.economics.pnlNoRevenue}</span>} />
       ) : (
-        <Table
+        <DataTable
           dataSource={data}
           columns={columns}
           rowKey="fieldId"
@@ -271,12 +274,12 @@ export default function FieldPnl() {
                 <strong>{t.economics.total}</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={1}>
-                <strong className={s.colored}>{totalCosts.toLocaleString()} UAH</strong>
+                <strong className={s.colored}>{formatUAH(totalCosts)}</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={2} />
               <Table.Summary.Cell index={3}>
                 {pricePerTonne && (
-                  <strong className={s.colored2}>{totalRevenue.toLocaleString()} UAH</strong>
+                  <strong className={s.colored2}>{formatUAH(totalRevenue)}</strong>
                 )}
               </Table.Summary.Cell>
               <Table.Summary.Cell index={4} />

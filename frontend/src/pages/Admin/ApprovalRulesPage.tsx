@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Table, Button, App, Spin, Modal, Form, Input, InputNumber, Select, Space, Popconfirm } from 'antd';
+import { Button, App, Spin, Modal, Form, Input, InputNumber, Select, Space, Popconfirm } from 'antd';
 import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useTranslation } from '../../i18n';
+import DataTable from '../../components/ui/DataTable';
 import {
   getApprovalRules,
   createApprovalRule,
@@ -139,7 +140,7 @@ export default function ApprovalRulesPage() {
           {t.approvalRules.create}
         </Button>
       </div>
-      <Table
+      <DataTable
         dataSource={data}
         columns={columns}
         rowKey="id"

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Tag, Select, message, Typography } from 'antd';
+import { Tag, Select, message, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { getRotationAdvice } from '../../api/fields';
 import type { RotationAdviceDto } from '../../types/field';
@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './CropRotationAdvisor.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { Text } = Typography;
 
@@ -107,7 +108,7 @@ export default function CropRotationAdvisor() {
           ]}
         />
       </div>
-      <Table<RotationAdviceDto>
+      <DataTable<RotationAdviceDto>
         rowKey="fieldId"
         columns={columns}
         dataSource={data}

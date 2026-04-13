@@ -2,15 +2,13 @@ import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
 import TableSkeleton from '../../components/TableSkeleton';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Card, Descriptions, Table, Button, message, Row, Col,
-  Statistic, Badge, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag,
-} from 'antd';
+import { Card, Descriptions, Button, message, Row, Col, Statistic, Badge, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag,  } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined, ToolOutlined, DownloadOutlined } from '@ant-design/icons';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
 } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getMachineById, addWorkLog } from '../../api/machinery';
 import { getMaintenanceRecords, addMaintenanceRecord, exportMaintenanceRecords, type MaintenanceRecordDto } from '../../api/maintenance';
 import { getFuelTransactions } from '../../api/fuel';
@@ -22,6 +20,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
 import s from './MachineDetail.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const statusColors: Record<string, string> = {
   Active: 'success', UnderRepair: 'warning', Decommissioned: 'error',
@@ -291,7 +290,7 @@ export default function MachineDetail() {
 
       {/* Work Log Table + Chart */}
       <Card title={t.machinery.workLog} className={s.spaced1}>
-        <Table
+        <DataTable
           dataSource={machine.recentWorkLogs}
           columns={workLogColumns}
           rowKey="id"
@@ -302,10 +301,10 @@ export default function MachineDetail() {
           <div className={s.spaced1}>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={workChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                 <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                 <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }} />
+                <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} />
                 <Line type="monotone" dataKey={t.machinery.hours} stroke="var(--info)" strokeWidth={2} dot={{ fill: 'var(--info)', r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
@@ -315,7 +314,7 @@ export default function MachineDetail() {
 
       {/* Fuel Log Table + Chart */}
       <Card title={t.machinery.fuelLog} className={s.spaced1}>
-        <Table
+        <DataTable
           dataSource={fuelTransactions.filter((tx) => tx.transactionType === 'Issue')}
           columns={fuelLogColumns}
           rowKey="id"
@@ -326,10 +325,10 @@ export default function MachineDetail() {
           <div className={s.spaced1}>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={fuelChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                 <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                 <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }} />
+                <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} />
                 <Bar dataKey={t.machinery.liters} fill="var(--warning)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -347,7 +346,7 @@ export default function MachineDetail() {
           </Button>
         }
       >
-        <Table
+        <DataTable
           dataSource={maintenanceRecords}
           columns={maintenanceColumns}
           rowKey="id"

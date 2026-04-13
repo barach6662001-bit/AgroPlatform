@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, message } from 'antd';
+import { message } from 'antd';
 import TableSkeleton from '../../components/TableSkeleton';
 import {
   BarChart,
@@ -11,12 +11,14 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getFieldEfficiency } from '../../api/analytics';
 import type { FieldEfficiencyDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './FieldEfficiency.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 export default function FieldEfficiency() {
   const [data, setData] = useState<FieldEfficiencyDto[]>([]);
@@ -84,7 +86,7 @@ export default function FieldEfficiency() {
         <TableSkeleton />
       ) : (
         <>
-          <Table
+          <DataTable
             dataSource={data}
             columns={columns}
             rowKey="fieldId"
@@ -98,7 +100,7 @@ export default function FieldEfficiency() {
                 data={chartData}
                 margin={{ top: 10, right: 40, left: 120, bottom: 10 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="name" width={110} />
                 <Tooltip formatter={(v: number) => `${v.toFixed(2)} UAH`} />

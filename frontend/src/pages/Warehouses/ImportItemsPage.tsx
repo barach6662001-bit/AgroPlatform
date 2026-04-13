@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload, Button, Table, message, Alert, Space, Tag, Card } from 'antd';
+import { Upload, Button, message, Alert, Space, Tag, Card } from 'antd';
 import { UploadOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import type { UploadFile } from 'antd/es/upload';
 import apiClient from '../../api/axios';
@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './ImportItemsPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 interface ImportRow {
   name: string;
@@ -139,7 +140,7 @@ export default function ImportItemsPage() {
             message={`${t.importItems.valid}: ${parseResult.validCount}, ${t.importItems.errors}: ${parseResult.errorCount}`}
             className={s.spaced}
           />
-          <Table
+          <DataTable
             dataSource={parseResult.rows}
             columns={columns}
             rowKey="rowNumber"

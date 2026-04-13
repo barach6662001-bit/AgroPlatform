@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { Table, Button, Space, Tag, Input, message, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
+import { Button, Space, Tag, Input, message, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
 import { PlusOutlined, SearchOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -8,6 +8,7 @@ import { getCadastreParcel } from '../../api/cadastre';
 import type { CadastreParcelResult } from '../../api/cadastre';
 import type { FieldDto } from '../../types/field';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import FieldMap from '../../components/Map/FieldMap';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
@@ -17,6 +18,7 @@ import { exportToCsv } from '../../utils/exportCsv';
 import { useFieldsQuery } from '../../hooks/useFieldsQuery';
 import { useAuthStore } from '../../stores/authStore';
 import s from './FieldsList.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 export default function FieldsList() {
   const [search, setSearch] = useState('');
@@ -194,7 +196,7 @@ export default function FieldsList() {
 
   return (
     <div>
-      <PageHeader title={t.fields.title} subtitle={t.fields.subtitle} />
+      <PageHeader title={t.fields.title} subtitle={t.fields.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.fields }]} />} />
       <Space className={s.spaced}>
         <Input
           placeholder={t.fields.searchPlaceholder}
@@ -239,7 +241,7 @@ export default function FieldsList() {
       ) : isLoading ? (
         <TableSkeleton rows={8} />
       ) : (
-        <Table
+        <DataTable
           dataSource={result?.items ?? []}
           columns={columns}
           rowKey="id"

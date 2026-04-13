@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Select, Statistic, Table, Empty, message, Tag } from 'antd';
+import { formatUAH, formatNumber } from '../../utils/format';
+import { Card, Col, Row, Select, Statistic, Empty, message, Tag } from 'antd';
 import { DollarOutlined, ShoppingOutlined, UserOutlined, TrophyOutlined } from '@ant-design/icons';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell,
 } from 'recharts';
+import { chartConfig, chartColors, chartPalette } from '../../components/charts/chartTheme';
 import { getSalesAnalytics } from '../../api/sales';
 import type { SalesAnalyticsDto, ProductRevenueDto, BuyerRevenueDto, MonthlyRevenueDto } from '../../types/sales';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './RevenueAnalytics.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -20,9 +23,9 @@ const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTH_NAMES_UK = ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер', 'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру'];
 
-const PIE_COLORS = ['#58A6FF', 'var(--success)', 'var(--warning)', '#a371f7', 'var(--error)', '#ffa657', '#56d364', '#79c0ff'];
+const PIE_COLORS = chartPalette;
 
-const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+
 
 export default function RevenueAnalytics() {
   const { t, lang } = useTranslation();
@@ -70,7 +73,7 @@ export default function RevenueAnalytics() {
       dataIndex: 'totalAmount',
       key: 'totalAmount',
       sorter: (a: ProductRevenueDto, b: ProductRevenueDto) => a.totalAmount - b.totalAmount,
-      render: (v: number) => <span className={s.colored}>{fmt(v)} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{formatUAH(v)}</span>,
     },
     {
       title: t.sales.quantity,
@@ -91,7 +94,7 @@ export default function RevenueAnalytics() {
       dataIndex: 'totalAmount',
       key: 'totalAmount',
       sorter: (a: BuyerRevenueDto, b: BuyerRevenueDto) => a.totalAmount - b.totalAmount,
-      render: (v: number) => <span className={s.colored}>{fmt(v)} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{formatUAH(v)}</span>,
     },
     {
       title: t.sales.salesCount,
@@ -111,7 +114,7 @@ export default function RevenueAnalytics() {
       title: t.sales.totalAmount,
       dataIndex: 'totalAmount',
       key: 'totalAmount',
-      render: (v: number) => <span className={s.colored}>{fmt(v)} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{formatUAH(v)}</span>,
     },
     {
       title: t.sales.salesCount,
@@ -151,7 +154,7 @@ export default function RevenueAnalytics() {
               suffix="UAH"
               valueStyle={{ color: 'var(--success)' }}
               prefix={<DollarOutlined />}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -219,8 +222,8 @@ export default function RevenueAnalytics() {
                         ))}
                       </Pie>
                       <Tooltip
-                        contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                        formatter={(v: number) => [`${fmt(v)} UAH`, t.sales.revenueAmount]}
+                        contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
+                        formatter={(v: number) => [formatUAH(v), t.sales.revenueAmount]}
                       />
                       <Legend wrapperStyle={{ color: 'var(--text-secondary)', fontSize: 12 }} />
                     </PieChart>
@@ -239,12 +242,12 @@ export default function RevenueAnalytics() {
                 {buyerChartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={260}>
                     <BarChart data={buyerChartData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+                      <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} horizontal={false} />
                       <XAxis type="number" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                       <YAxis type="category" dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} width={90} />
                       <Tooltip
-                        contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                        formatter={(v: number) => [`${fmt(v)} UAH`]}
+                        contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
+                        formatter={(v: number) => [formatUAH(v)]}
                       />
                       <Bar dataKey={t.sales.revenueAmount} fill="#58A6FF" radius={[0, 4, 4, 0]} />
                     </BarChart>
@@ -265,7 +268,7 @@ export default function RevenueAnalytics() {
             {monthlyChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={monthlyChartData} margin={{ top: 5, right: 20, left: 20, bottom: 40 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                   <XAxis
                     dataKey="name"
                     tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
@@ -275,8 +278,8 @@ export default function RevenueAnalytics() {
                   />
                   <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                   <Tooltip
-                    contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                    formatter={(v: number) => [`${fmt(v)} UAH`]}
+                    contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
+                    formatter={(v: number) => [formatUAH(v)]}
                   />
                   <Legend wrapperStyle={{ color: 'var(--text-secondary)' }} />
                   <Bar dataKey={t.sales.revenueAmount} fill="var(--success)" radius={[4, 4, 0, 0]} />
@@ -294,7 +297,7 @@ export default function RevenueAnalytics() {
                 title={<span className={s.colored2}>{t.sales.byProduct}</span>}
                 className={s.spaced2}
               >
-                <Table
+                <DataTable
                   dataSource={data?.byProduct ?? []}
                   columns={productColumns}
                   rowKey="product"
@@ -309,7 +312,7 @@ export default function RevenueAnalytics() {
                 title={<span className={s.colored2}>{t.sales.byBuyer}</span>}
                 className={s.spaced2}
               >
-                <Table
+                <DataTable
                   dataSource={data?.byBuyer ?? []}
                   columns={buyerColumns}
                   rowKey="buyerName"
@@ -325,7 +328,7 @@ export default function RevenueAnalytics() {
             title={<span className={s.colored2}>{t.sales.byMonth}</span>}
             className={s.bg}
           >
-            <Table
+            <DataTable
               dataSource={data?.byMonth ?? []}
               columns={monthlyColumns}
               rowKey={(r: MonthlyRevenueDto) => `${r.year}-${r.month}`}

@@ -1,6 +1,6 @@
 import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
-import { Table, Select, Space, message, Tag, Button, Modal, Form, InputNumber, DatePicker, Input, Alert } from 'antd';
+import { Select, Space, message, Tag, Button, Modal, Form, InputNumber, DatePicker, Input, Alert } from 'antd';
 import { PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import apiClient from '../../api/axios';
@@ -15,6 +15,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
 import s from './WarehouseItems.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 export default function WarehouseItems() {
   const [searchParams] = useSearchParams();
@@ -337,7 +338,7 @@ export default function WarehouseItems() {
           {t.warehouses_export.exportBalances}
         </Button>
       </Space>
-      <Table
+      <DataTable
         dataSource={result?.items ?? []}
         columns={columns}
         rowKey={(r) => `${r.warehouseId}-${r.itemId}-${r.batchId ?? ''}`}

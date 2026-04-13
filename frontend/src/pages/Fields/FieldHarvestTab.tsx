@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Table, Tag, Tooltip, Select, Space, message } from 'antd';
+import { Alert, Button, Tag, Tooltip, Select, Space, message } from 'antd';
 import { SyncOutlined } from '@ant-design/icons';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import dayjs from 'dayjs';
@@ -9,6 +9,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
 import s from './FieldHarvestTab.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 interface Props {
   fieldId: string;
@@ -104,7 +105,7 @@ export default function FieldHarvestTab({ fieldId }: Props) {
           placeholder={t.fields.allYears}
         />
       </Space>
-      <Table
+      <DataTable
         dataSource={data}
         columns={columns}
         rowKey="id"

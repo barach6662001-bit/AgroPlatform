@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Menu } from 'antd';
 import {
-  DashboardOutlined, AimOutlined, InboxOutlined, ToolOutlined,
-  DollarOutlined, LineChartOutlined, TeamOutlined, SettingOutlined,
-} from '@ant-design/icons';
+  LayoutDashboard, Map, Factory, Warehouse, Users,
+  Banknote, BarChart3, Settings,
+} from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
@@ -148,44 +148,44 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   ];
 
   const menuItems = [
-    { key: '/', label: t.nav.dashboard, icon: <DashboardOutlined /> },
+    { key: '/', label: t.nav.dashboard, icon: <LayoutDashboard size={16} strokeWidth={1.5} /> },
     { type: 'divider' as const },
     ...(canFields ? [{
       key: 'fields-group',
       label: t.nav.fields,
-      icon: <AimOutlined />,
+      icon: <Map size={16} strokeWidth={1.5} />,
       children: fieldsChildren,
     }] : []),
     ...(canMachinery ? [{
       key: 'operations-group',
       label: t.nav.operationsGroup,
-      icon: <ToolOutlined />,
+      icon: <Factory size={16} strokeWidth={1.5} />,
       children: operationsChildren,
     }] : []),
     { type: 'divider' as const },
     ...(canWarehouses ? [{
       key: 'storage-group',
       label: t.nav.storageLogistics,
-      icon: <InboxOutlined />,
+      icon: <Warehouse size={16} strokeWidth={1.5} />,
       children: storageChildren,
     }] : []),
     ...(canHR ? [{
       key: 'hr-group',
       label: t.nav.hr,
-      icon: <TeamOutlined />,
+      icon: <Users size={16} strokeWidth={1.5} />,
       children: hrChildren,
     }] : []),
     { type: 'divider' as const },
     ...(canEconomics ? [{
       key: 'finance-group',
       label: t.nav.finance,
-      icon: <DollarOutlined />,
+      icon: <Banknote size={16} strokeWidth={1.5} />,
       children: financeChildren,
     }] : []),
     ...(canAnalytics ? [{
       key: 'analytics-group',
       label: t.nav.analytics,
-      icon: <LineChartOutlined />,
+      icon: <BarChart3 size={16} strokeWidth={1.5} />,
       children: analyticsChildren,
     }] : []),
     ...(canAdmin
@@ -194,7 +194,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
           {
             key: 'settings-group',
             label: t.nav.settings,
-            icon: <SettingOutlined />,
+            icon: <Settings size={16} strokeWidth={1.5} />,
             children: [
               { key: '/settings/users', label: t.nav.users },
               { key: '/admin/role-permissions', label: t.nav.rolePermissions },

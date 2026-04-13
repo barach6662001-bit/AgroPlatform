@@ -1,27 +1,44 @@
-.padded {
+.card {
   padding: 20px 24px;
   background: var(--bg-surface);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
+  transition: border-color 150ms ease;
 }
 
-.upper {
+.card:hover {
+  border-color: var(--border-strong);
+}
+
+.hero {
+  border-top: 2px solid transparent;
+  border-image: linear-gradient(90deg, #22C55E, #3B82F6) 1;
+  border-image-slice: 1 1 0 1;
+}
+
+.label {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.04em;
   color: var(--text-secondary);
   margin-bottom: 8px;
 }
 
-.text28 {
+.value {
   font-size: 28px;
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
-.spaced {
-  color: var(--text-tertiary);
-  margin-left: 4px;
+.valueHero {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }

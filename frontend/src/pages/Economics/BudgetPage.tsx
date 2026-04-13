@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Table, InputNumber, Button, Select, message, Space, Tag, Row, Col, Card, Statistic } from 'antd';
+import { formatUAH, formatNumber } from '../../utils/format';
+import { InputNumber, Button, Select, message, Space, Tag, Row, Col, Card, Statistic } from 'antd';
 import { SaveOutlined, DownloadOutlined, DollarOutlined, RiseOutlined, FallOutlined, PercentageOutlined } from '@ant-design/icons';
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getBudgets, upsertBudget, exportBudgets, getBudgetPlanVsFact, type BudgetDto, type BudgetPlanVsFactDto } from '../../api/budgets';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import DataTable from '../../components/ui/DataTable';
 
 const CATEGORIES = ['Seeds', 'Fertilizers', 'Pesticides', 'Fuel', 'Labor', 'Equipment', 'Other'];
 
@@ -110,7 +113,7 @@ export default function BudgetPage() {
       render: (_: unknown, row: { category: string }) => {
         const factEntry = planVsFact.find((c) => c.category === row.category);
         const fact = factEntry?.factAmount ?? 0;
-        return <span style={{ color: fact > 0 ? '#E6EDF3' : '#8B949E' }}>{fact.toLocaleString()} UAH</span>;
+        return <span style={{ color: fact > 0 ? '#E6EDF3' : '#8B949E' }}>{formatUAH(fact)}</span>;
       },
     },
     {
@@ -155,7 +158,7 @@ export default function BudgetPage() {
   const totalExecution = totalPlanned > 0 ? (totalActual / totalPlanned) * 100 : 0;
 
   const chartData = CATEGORIES.map((cat) => ({
-    name: cat,
+    name: t.costCategories[cat as keyof typeof t.costCategories] || cat,
     planned: pendingAmounts[cat] ?? 0,
     actual: planVsFact.find((p) => p.category === cat)?.factAmount ?? 0,
   }));
@@ -222,7 +225,7 @@ export default function BudgetPage() {
           </Card>
         </Col>
       </Row>
-      <Table
+      <DataTable
         dataSource={tableData}
         columns={columns}
         rowKey="category"
@@ -233,10 +236,10 @@ export default function BudgetPage() {
       <Card title={t.economics.plChartTitle} style={{ marginBottom: 24 }}>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
             <XAxis dataKey="name" />
             <YAxis />
-            <Tooltip />
+            <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} labelStyle={chartConfig.tooltip.labelStyle} cursor={chartConfig.tooltip.cursor} />
             <Legend />
             <Bar dataKey="planned" name={t.economics.plColPlan} fill="#1890ff" />
             <Bar dataKey="actual" name={t.economics.plColFact} fill="#52c41a" />

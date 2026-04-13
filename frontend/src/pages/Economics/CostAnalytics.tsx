@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Select, Statistic, Table, Empty, message } from 'antd';
+import { formatUAH, formatNumber } from '../../utils/format';
+import { Card, Col, Row, Select, Statistic, Empty, message } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, DollarOutlined } from '@ant-design/icons';
 import {
   PieChart,
@@ -14,12 +15,14 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from 'recharts';
+import { chartConfig, chartColors, chartPalette } from '../../components/charts/chartTheme';
 import { getCostAnalytics } from '../../api/economics';
 import type { CostAnalyticsDto, EconomicsByCategoryDto } from '../../types/economics';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './CostAnalytics.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -31,12 +34,9 @@ const MONTH_SHORT: Record<number, string> = {
   7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec',
 };
 
-const PIE_COLORS = [
-  '#4096ff', 'var(--success)', 'var(--warning)', 'var(--error)', '#722ed1',
-  '#13c2c2', '#eb2f96', '#fa8c16', '#a0d911', 'var(--info)',
-];
+const PIE_COLORS = chartPalette;
 
-const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+
 
 export default function CostAnalytics() {
   const { t } = useTranslation();
@@ -54,7 +54,7 @@ export default function CostAnalytics() {
 
   const pieData = (data?.byCategory ?? [])
     .filter((c) => c.amount > 0)
-    .map((c) => ({ name: c.category, value: c.amount }));
+    .map((c) => ({ name: t.costCategories[c.category as keyof typeof t.costCategories] || c.category, value: c.amount }));
 
   const barData = (data?.byMonth ?? []).map((m) => ({
     name: MONTH_SHORT[m.month],
@@ -63,12 +63,12 @@ export default function CostAnalytics() {
   }));
 
   const tableColumns = [
-    { title: t.economics.category, dataIndex: 'category', key: 'category' },
+    { title: t.economics.category, dataIndex: 'category', key: 'category', render: (v: string) => t.costCategories[v as keyof typeof t.costCategories] || v },
     {
       title: t.economics.amount,
       dataIndex: 'amount',
       key: 'amount',
-      render: (v: number) => `${fmt(Math.abs(v))} UAH`,
+      render: (v: number) => formatUAH(Math.abs(v)),
       sorter: (a: EconomicsByCategoryDto, b: EconomicsByCategoryDto) => Math.abs(b.amount) - Math.abs(a.amount),
     },
     { title: t.economics.count, dataIndex: 'count', key: 'count' },
@@ -105,7 +105,7 @@ export default function CostAnalytics() {
               prefix={<ArrowDownOutlined />}
               valueStyle={{ color: 'var(--error)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -118,7 +118,7 @@ export default function CostAnalytics() {
               prefix={<ArrowUpOutlined />}
               valueStyle={{ color: 'var(--success)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -131,7 +131,7 @@ export default function CostAnalytics() {
               prefix={<DollarOutlined />}
               valueStyle={{ color: ((data?.totalRevenue ?? 0) - (data?.totalCosts ?? 0)) >= 0 ? 'var(--success)' : 'var(--error)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -161,7 +161,7 @@ export default function CostAnalytics() {
                           <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />
+                      <Tooltip formatter={(v: number) => formatUAH(v)} />
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
@@ -174,10 +174,10 @@ export default function CostAnalytics() {
               <Card title={t.economics.analyticsByMonth}>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={barData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                     <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 12 }} />
-                    <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />
+                    <YAxis tickFormatter={(v) => formatNumber(v)} tick={{ fontSize: 12 }} />
+                    <Tooltip formatter={(v: number) => formatUAH(v)} />
                     <Legend />
                     <Bar dataKey={t.economics.totalCostsSum} fill="#ff7875" />
                     <Bar dataKey={t.economics.revenue} fill="#73d13d" />
@@ -189,7 +189,7 @@ export default function CostAnalytics() {
 
           {(data?.byCategory ?? []).length > 0 && (
             <Card title={t.economics.analyticsByCategory}>
-              <Table<EconomicsByCategoryDto>
+              <DataTable<EconomicsByCategoryDto>
                 dataSource={data?.byCategory}
                 columns={tableColumns}
                 rowKey="category"

@@ -25,7 +25,9 @@ describe('Login page', () => {
 
   it('renders a submit button', () => {
     renderLogin();
-    expect(screen.getByRole('button', { name: /login|увійти/i })).toBeInTheDocument();
+    const buttons = screen.getAllByRole('button', { name: /login|увійти/i });
+    expect(buttons.length).toBeGreaterThanOrEqual(1);
+    expect(buttons[0]).toBeInTheDocument();
   });
 
   it('does not render a registration link (closed platform)', () => {

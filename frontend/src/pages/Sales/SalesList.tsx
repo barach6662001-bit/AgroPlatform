@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Table, Space, DatePicker, message, Button, Modal, Form, Input, InputNumber, Select, Card, Statistic, Row, Col } from 'antd';
-import { PlusOutlined, EditOutlined, ShoppingOutlined, DollarOutlined } from '@ant-design/icons';
+import { Space, DatePicker, message, Button, Modal, Form, Input, InputNumber, Select } from 'antd';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { getSales, createSale, updateSale, deleteSale } from '../../api/sales';
 import { getFields } from '../../api/fields';
 import type { SaleDto } from '../../types/sales';
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
+import KpiCard from '../../components/ui/KpiCard';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
+import DataTable from '../../components/ui/DataTable';
 
 const { RangePicker } = DatePicker;
 
@@ -108,6 +111,8 @@ export default function SalesList() {
 
   const totalQuantity = result?.items.reduce((sum, s) => sum + s.quantity, 0) ?? 0;
   const totalCount = result?.totalCount ?? 0;
+  const totalRevenue = result?.items.reduce((sum, s) => sum + s.totalAmount, 0) ?? 0;
+  const avgDeal = totalCount > 0 ? totalRevenue / totalCount : 0;
 
   const columns = [
     {
@@ -214,29 +219,14 @@ export default function SalesList() {
 
   return (
     <div>
-      <PageHeader title={t.sales.title} subtitle={t.sales.subtitle} />
+      <PageHeader title={t.sales.title} subtitle={t.sales.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.sales }]} />} />
 
-      <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} md={8}>
-          <Card size="small">
-            <Statistic
-              title={t.sales.totalSales}
-              value={totalCount}
-              prefix={<ShoppingOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={8}>
-          <Card size="small">
-            <Statistic
-              title={t.sales.totalQuantity}
-              value={totalQuantity}
-              precision={2}
-              prefix={<DollarOutlined />}
-            />
-          </Card>
-        </Col>
-      </Row>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 16 }}>
+        <KpiCard label={t.sales.totalRevenue ?? 'Загальний дохід'} value={`${totalRevenue.toLocaleString('uk-UA')} ₴`} />
+        <KpiCard label={t.sales.totalSales} value={String(totalCount)} />
+        <KpiCard label={t.sales.avgDeal ?? 'Середній чек'} value={`${avgDeal.toLocaleString('uk-UA', { maximumFractionDigits: 0 })} ₴`} />
+        <KpiCard label={t.sales.totalQuantity} value={`${totalQuantity.toLocaleString('uk-UA', { maximumFractionDigits: 2 })} т`} />
+      </div>
 
       <Space style={{ marginBottom: 16 }} wrap>
         <Input
@@ -262,7 +252,7 @@ export default function SalesList() {
       {loading && !result ? (
         <TableSkeleton rows={8} />
       ) : (
-        <Table
+        <DataTable
           dataSource={result?.items ?? []}
           columns={columns}
           rowKey="id"

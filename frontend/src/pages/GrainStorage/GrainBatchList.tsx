@@ -1,10 +1,7 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Table, Badge, message, Button, Space, Modal, Form, Input, Select,
-  DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography, Tabs, Tag, Tooltip,
-} from 'antd';
+import { Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography, Tabs, Tag, Tooltip,  } from 'antd';
 import {
   PlusOutlined, ExportOutlined, DownloadOutlined, SwapOutlined,
   ScissorOutlined, EditOutlined, DeleteOutlined,
@@ -25,6 +22,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
 import s from './GrainBatchList.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const QUICK_GRAIN_TYPES = ['Пшениця озима', 'Кукурудза', 'Соняшник'];
 const LAST_GRAIN_KEY = 'lastGrainType';
@@ -586,7 +584,7 @@ export default function GrainBatchList() {
             key: 'batches',
             label: t.grain.batchList,
             children: (
-              <Table
+              <DataTable
                 dataSource={result?.items ?? []}
                 columns={batchColumns}
                 rowKey="id"
@@ -624,7 +622,7 @@ export default function GrainBatchList() {
                     onChange={v => { setLedgerTypeFilter(v); setLedgerPage(1); }}
                   />
                 </Space>
-                <Table
+                <DataTable
                   dataSource={ledgerResult?.items ?? []}
                   columns={[
                     {
@@ -902,7 +900,7 @@ export default function GrainBatchList() {
         footer={null}
         width={900}
       >
-        <Table
+        <DataTable
           dataSource={movements}
           columns={movementColumns}
           rowKey="id"

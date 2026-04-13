@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Card, Table, Button, message, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag,
-} from 'antd';
+import { Card, Button, message, Modal, Form, Input, InputNumber, DatePicker, Space, Select, Tag,  } from 'antd';
 import TableSkeleton from '../../components/TableSkeleton';
 import { ArrowLeftOutlined, PlusOutlined, DownloadOutlined } from '@ant-design/icons';
 import { getMaintenanceRecords, addMaintenanceRecord, exportMaintenanceRecords, type MaintenanceRecordDto } from '../../api/maintenance';
@@ -11,6 +9,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { formatDate } from '../../utils/dateFormat';
 import s from './MaintenancePage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const MAINTENANCE_TYPES = ['Scheduled', 'Repair', 'Inspection'];
 
@@ -145,7 +144,7 @@ export default function MaintenancePage() {
       />
 
       <Card>
-        <Table
+        <DataTable
           dataSource={records}
           columns={columns}
           rowKey="id"

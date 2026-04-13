@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, DatePicker, Space, message } from 'antd';
+import { DatePicker, Space, message } from 'antd';
 import TableSkeleton from '../../components/TableSkeleton';
 import {
   BarChart,
@@ -11,12 +11,14 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getResourceConsumption } from '../../api/analytics';
 import type { ResourceConsumptionDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './ResourceConsumption.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { RangePicker } = DatePicker;
 
@@ -70,7 +72,7 @@ export default function ResourceConsumption() {
         <TableSkeleton />
       ) : (
         <>
-          <Table
+          <DataTable
             dataSource={data}
             columns={columns}
             rowKey="itemId"
@@ -80,10 +82,10 @@ export default function ResourceConsumption() {
           {chartData.length > 0 && (
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 60 }}>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                 <XAxis dataKey="name" angle={-30} textAnchor="end" interval={0} />
                 <YAxis />
-                <Tooltip />
+                <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} labelStyle={chartConfig.tooltip.labelStyle} cursor={chartConfig.tooltip.cursor} />
                 <Legend />
                 <Bar dataKey={t.analytics.totalQuantity} fill="#0D9488" />
               </BarChart>

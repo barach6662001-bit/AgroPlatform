@@ -23,13 +23,27 @@ export default function DataTable<T extends object>({
     return <TableSkeleton rows={rest.pagination ? 10 : 5} />;
   }
 
+  const paginationConfig = rest.pagination === false
+    ? false
+    : {
+        showSizeChanger: true,
+        showTotal: (total: number, range: [number, number]) =>
+          `Показано ${range[0]}-${range[1]} з ${total}`,
+        pageSizeOptions: ['10', '20', '50'],
+        ...(typeof rest.pagination === 'object' ? rest.pagination : {}),
+      };
+
   return (
     <Table<T>
       loading={loading}
+      className={`data-table ${rest.className || ''}`}
+      size="middle"
       style={{
         ['--cell-padding' as string]: densityPadding[density],
+        ...rest.style,
       }}
       {...rest}
+      pagination={paginationConfig}
     />
   );
 }

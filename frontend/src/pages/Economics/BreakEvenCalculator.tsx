@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Table, InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space } from 'antd';
+import { formatUAH, formatNumber } from '../../utils/format';
+import { InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { CalculatorOutlined, RiseOutlined, WarningOutlined } from '@ant-design/icons';
 import { getBreakEven } from '../../api/economics';
 import type { BreakEvenDto } from '../../types/economics';
@@ -8,6 +10,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './BreakEvenCalculator.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -82,13 +85,13 @@ export default function BreakEvenCalculator() {
       dataIndex: 'totalCosts',
       key: 'totalCosts',
       sorter: (a: BreakEvenDto, b: BreakEvenDto) => a.totalCosts - b.totalCosts,
-      render: (v: number) => <span className={s.colored}>{v.toLocaleString()} UAH</span>,
+      render: (v: number) => <span className={s.colored}>{formatUAH(v)}</span>,
     },
     {
       title: t.economics.breakEvenPrice,
       dataIndex: 'pricePerTonne',
       key: 'pricePerTonne',
-      render: (v: number) => `${v.toLocaleString()} UAH/т`,
+      render: (v: number) => `${formatUAH(v)}/т`,
     },
     {
       title: t.economics.breakEvenYield,
@@ -184,7 +187,7 @@ export default function BreakEvenCalculator() {
         >
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 60 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
               <XAxis
                 dataKey="name"
                 tick={{ fill: 'var(--text-secondary)', fontSize: 11 }}
@@ -194,7 +197,7 @@ export default function BreakEvenCalculator() {
               />
               <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} unit=" т/га" />
               <Tooltip
-                contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
               />
               <Bar dataKey={t.economics.breakEvenYield} fill="#d29922" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -206,7 +209,7 @@ export default function BreakEvenCalculator() {
       {pricePerTonne && pricePerTonne > 0 && data.length === 0 && !loading ? (
         <Empty description={<span className={s.colored1}>{t.common.noData}</span>} />
       ) : (
-        <Table
+        <DataTable
           dataSource={data}
           columns={columns}
           rowKey="fieldId"

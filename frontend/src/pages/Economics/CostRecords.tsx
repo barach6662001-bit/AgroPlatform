@@ -8,6 +8,7 @@ import type { BudgetDto } from '../../api/budgets';
 import type { CostRecordDto, CostSummaryDto, MaterialKpiItem, CostCategory } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import PLTable from '../../components/PLTable';
 import MaterialKpiCards from '../../components/MaterialKpiCards';
 import TableSkeleton from '../../components/TableSkeleton';
@@ -19,6 +20,7 @@ import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { formatDate } from '../../utils/dateFormat';
 import apiClient from '../../api/axios';
 import { enqueueOperation } from '../../utils/offlineQueue';
+import DataTable from '../../components/ui/DataTable';
 
 const { RangePicker } = DatePicker;
 
@@ -193,7 +195,7 @@ export default function CostRecords() {
 
   return (
     <div>
-      <PageHeader title={t.economics.title} subtitle={t.economics.subtitle} />
+      <PageHeader title={t.economics.title} subtitle={t.economics.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.costs }]} />} />
 
       <div style={{ marginBottom: 24 }}>
         <MaterialKpiCards items={kpiItems} loading={loading} />
@@ -246,13 +248,13 @@ export default function CostRecords() {
         <Button icon={<DownloadOutlined />} loading={exporting} onClick={handleExport}>
           {t.warehouses_export.exportCosts}
         </Button>
-        <Button icon={<PrinterOutlined />} onClick={() => printReport(t.economics.title || 'Витрати', `<table><thead><tr><th>Дата</th><th>Категорія</th><th>Сума</th><th>Опис</th></tr></thead><tbody>${records.map(r => `<tr><td>${r.date}</td><td>${r.category}</td><td>${r.amount}</td><td>${r.description || ''}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
+        <Button icon={<PrinterOutlined />} onClick={() => printReport(t.economics.title || 'Витрати', `<table><thead><tr><th>Дата</th><th>Категорія</th><th>Сума</th><th>Опис</th></tr></thead><tbody>${records.map(r => `<tr><td>${r.date}</td><td>${t.costCategories[r.category as keyof typeof t.costCategories] || r.category}</td><td>${r.amount}</td><td>${r.description || ''}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
       </Space>
 
       {loading && !result ? (
         <TableSkeleton rows={10} />
       ) : (
-        <Table
+        <DataTable
           dataSource={records}
           columns={columns}
           rowKey="id"

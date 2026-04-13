@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Select, Statistic, Table, Empty, message } from 'antd';
+import { formatUAH, formatNumber } from '../../utils/format';
+import { Card, Col, Row, Select, Statistic, Empty, message } from 'antd';
 import { DollarOutlined, FireOutlined } from '@ant-design/icons';
 import {
   BarChart,
@@ -10,12 +11,14 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
 import { getSalaryFuelAnalytics } from '../../api/analytics';
 import type { SalaryFuelAnalyticsDto, FuelByMachineDto, SalaryByEmployeeDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './SalaryFuelAnalytics.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -24,7 +27,7 @@ const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
 
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const fmt = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 0 });
+
 const fmtDec = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits: 2 });
 
 export default function SalaryFuelAnalytics() {
@@ -74,7 +77,7 @@ export default function SalaryFuelAnalytics() {
       title: t.analytics.amount,
       dataIndex: 'totalAmount',
       key: 'totalAmount',
-      render: (v: number) => `${fmt(v)} UAH`,
+      render: (v: number) => formatUAH(v),
       sorter: (a: SalaryByEmployeeDto, b: SalaryByEmployeeDto) => a.totalAmount - b.totalAmount,
     },
   ];
@@ -108,7 +111,7 @@ export default function SalaryFuelAnalytics() {
               prefix={<DollarOutlined />}
               valueStyle={{ color: 'var(--success)' }}
               loading={loading}
-              formatter={(v) => fmt(Number(v))}
+              formatter={(v) => formatNumber(Number(v))}
             />
           </Card>
         </Col>
@@ -156,10 +159,10 @@ export default function SalaryFuelAnalytics() {
               <Card title={t.analytics.salaryByMonth}>
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={salaryChartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                     <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                    <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 11 }} />
-                    <Tooltip formatter={(v: number) => `${fmt(v)} UAH`} />
+                    <YAxis tickFormatter={(v) => formatNumber(v)} tick={{ fontSize: 11 }} />
+                    <Tooltip formatter={(v: number) => formatUAH(v)} />
                     <Bar dataKey={t.analytics.totalSalary} fill="#73d13d" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -169,7 +172,7 @@ export default function SalaryFuelAnalytics() {
               <Card title={t.analytics.fuelByMonth}>
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={fuelChartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                     <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                     <YAxis tickFormatter={(v) => fmtDec(v)} tick={{ fontSize: 11 }} />
                     <Tooltip formatter={(v: number) => `${fmtDec(v)} л`} />
@@ -182,7 +185,7 @@ export default function SalaryFuelAnalytics() {
 
           {(data?.fuelByMachine ?? []).length > 0 && (
             <Card title={t.analytics.fuelByMachine} className={s.spaced1}>
-              <Table<FuelByMachineDto>
+              <DataTable<FuelByMachineDto>
                 dataSource={data?.fuelByMachine}
                 columns={fuelByMachineColumns}
                 rowKey="machineId"
@@ -195,7 +198,7 @@ export default function SalaryFuelAnalytics() {
 
           {(data?.salaryByEmployee ?? []).length > 0 && (
             <Card title={t.analytics.salaryByEmployee}>
-              <Table<SalaryByEmployeeDto>
+              <DataTable<SalaryByEmployeeDto>
                 dataSource={data?.salaryByEmployee}
                 columns={salaryByEmployeeColumns}
                 rowKey="employeeId"

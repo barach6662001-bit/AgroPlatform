@@ -64,7 +64,7 @@ export default function ProfilePage() {
             {email || '—'}
           </Descriptions.Item>
           <Descriptions.Item label={t.profile.firstName}>
-            {firstName || '—'}
+            {firstName || email?.split('@')[0] || '—'}
           </Descriptions.Item>
           <Descriptions.Item label={t.profile.lastName}>
             {lastName || '—'}

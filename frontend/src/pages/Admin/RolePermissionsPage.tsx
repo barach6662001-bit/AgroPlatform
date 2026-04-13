@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Table, Checkbox, Button, App, Spin, Alert } from 'antd';
+import { Checkbox, Button, App, Spin, Alert } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { useTranslation } from '../../i18n';
 import s from './RolePermissionsPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 import {
   getRolePermissions,
   getAvailableRoles,
@@ -167,7 +168,7 @@ export default function RolePermissionsPage() {
           {t.rolePermissions.save}
         </Button>
       </div>
-      <Table
+      <DataTable
         columns={columns}
         dataSource={dataSource}
         pagination={false}

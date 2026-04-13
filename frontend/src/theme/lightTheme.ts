@@ -15,7 +15,7 @@ export const lightTheme: ThemeConfig = {
     colorTextTertiary:    '#a3a3a3',
     colorTextQuaternary:  '#d4d4d4',
     colorPrimary:         '#16a34a',
-    colorSuccess:         '#10b981',
+    colorSuccess:         '#16a34a',
     colorError:           '#ef4444',
     colorWarning:         '#f59e0b',
     colorInfo:            '#3b82f6',
@@ -23,12 +23,12 @@ export const lightTheme: ThemeConfig = {
     colorLinkHover:       '#2563eb',
     borderRadius:         8,
     borderRadiusLG:       12,
-    borderRadiusSM:       4,
+    borderRadiusSM:       6,
     fontFamily:           "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-    fontSize:             14,
-    fontSizeLG:           16,
+    fontSize:             13,
+    fontSizeLG:           15,
     lineHeight:           1.5,
-    controlHeight:        34,
+    controlHeight:        36,
     controlHeightLG:      40,
     boxShadow:            '0 1px 2px rgba(0,0,0,0.05)',
     boxShadowSecondary:   '0 2px 4px rgba(0,0,0,0.06)',
@@ -125,7 +125,7 @@ export const lightTheme: ThemeConfig = {
     },
     Statistic: {
       contentFontSize: 28,
-      titleFontSize:   12,
+      titleFontSize:   11,
     },
     Badge: {
       colorBgContainer: '#ffffff',
@@ -141,7 +141,7 @@ export const lightTheme: ThemeConfig = {
       colorPrimary: '#16a34a',
     },
     Progress: {
-      colorSuccess: '#10b981',
+      colorSuccess: '#16a34a',
     },
     Alert: {
       colorSuccessBg:     'rgba(16, 185, 129, 0.06)',

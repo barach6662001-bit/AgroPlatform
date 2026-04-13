@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Table, Select, Button, message, Card, Radio, Form, Input, Row, Col, Typography, Divider, Alert, Modal, Space } from 'antd';
+import { Select, Button, message, Card, Radio, Form, Input, Row, Col, Typography, Divider, Alert, Modal, Space } from 'antd';
 import { SaveOutlined, DatabaseOutlined } from '@ant-design/icons';
 import apiClient from '../../api/axios';
 import { getUsers, updateUserRole, resetUserPassword } from '../../api/users';
 import { getCurrentTenant, updateCurrentTenant } from '../../api/tenants';
 import type { UserDto } from '../../types/users';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation, languages } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import s from './UsersPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { Text } = Typography;
 
@@ -176,7 +178,7 @@ export default function UsersPage() {
 
   return (
     <div>
-      <PageHeader title={t.settings.usersTitle} subtitle={t.settings.usersSubtitle} />
+      <PageHeader title={t.settings.usersTitle} subtitle={t.settings.usersSubtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.settings, path: '/settings/users' }, { label: t.nav.users }]} />} />
 
       <Card title={t.settings.companyInfo} className={s.spaced}>
         <Form layout="vertical" form={companyForm} onFinish={handleSaveCompany}>
@@ -250,7 +252,7 @@ export default function UsersPage() {
         </Card>
       )}
 
-      <Table
+      <DataTable
         dataSource={users}
         columns={columns}
         rowKey="id"

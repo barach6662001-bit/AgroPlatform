@@ -1,6 +1,6 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag, Typography } from 'antd';
+import { Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import type { MachineDto, MachineryType, MachineryStatus } from '../../types/mac
 import type { PaginatedResult } from '../../types/common';
 import type { EmployeeDto } from '../../types/hr';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
@@ -17,6 +18,7 @@ import { useFleetHub } from '../../hooks/useFleetHub';
 import { getEmployees } from '../../api/hr';
 import EmptyState from '../../components/EmptyState';
 import s from './MachineryList.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 
 const { Text } = Typography;
@@ -189,7 +191,7 @@ export default function MachineryList() {
 
   return (
     <div>
-      <PageHeader title={t.machinery.title} subtitle={t.machinery.subtitle} />
+      <PageHeader title={t.machinery.title} subtitle={t.machinery.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.operationsGroup, path: '/operations' }, { label: t.nav.machinery }]} />} />
       <Space className={s.spaced}>
         <Input
           placeholder={t.machinery.searchPlaceholder}
@@ -242,7 +244,7 @@ export default function MachineryList() {
       {loading && !result ? (
         <TableSkeleton rows={8} />
       ) : (
-        <Table
+        <DataTable
           dataSource={result?.items ?? []}
           columns={columns}
           rowKey="id"
