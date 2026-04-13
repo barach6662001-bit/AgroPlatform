@@ -160,10 +160,10 @@ export default function SalaryFuelAnalytics() {
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={salaryChartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
                     <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                    <YAxis tickFormatter={(v) => formatNumber(v)} tick={{ fontSize: 11 }} />
-                    <Tooltip formatter={(v: number) => formatUAH(v)} />
-                    <Bar dataKey={t.analytics.totalSalary} fill="#73d13d" />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7b9a' }} axisLine={false} tickLine={false} />
+                    <YAxis tickFormatter={(v) => formatNumber(v)} tick={{ fontSize: 11, fill: '#6b7b9a' }} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} formatter={(v: number) => formatUAH(v)} />
+                    <Bar dataKey={t.analytics.totalSalary} fill="#22C55E" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </Card>
@@ -173,10 +173,10 @@ export default function SalaryFuelAnalytics() {
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={fuelChartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
                     <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                    <YAxis tickFormatter={(v) => fmtDec(v)} tick={{ fontSize: 11 }} />
-                    <Tooltip formatter={(v: number) => `${fmtDec(v)} л`} />
-                    <Bar dataKey={t.analytics.totalFuel} fill="#ffa940" />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7b9a' }} axisLine={false} tickLine={false} />
+                    <YAxis tickFormatter={(v) => fmtDec(v)} tick={{ fontSize: 11, fill: '#6b7b9a' }} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} formatter={(v: number) => `${fmtDec(v)} л`} />
+                    <Bar dataKey={t.analytics.totalFuel} fill="#F97316" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </Card>

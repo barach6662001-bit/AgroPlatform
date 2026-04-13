@@ -199,7 +199,7 @@ export default function BreakEvenCalculator() {
               <Tooltip
                 contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor}
               />
-              <Bar dataKey={t.economics.breakEvenYield} fill="#d29922" radius={[4, 4, 0, 0]} />
+              <Bar dataKey={t.economics.breakEvenYield} fill="#F59E0B" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>

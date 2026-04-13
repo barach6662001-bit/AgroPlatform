@@ -10,6 +10,7 @@ interface Props {
   prefix?: string;
   suffix?: string;
   hero?: boolean;
+  accentColor?: string;
 }
 
 function parseNumeric(value: string | number): { num: number; suffix: string; decimals: number } | null {
@@ -25,13 +26,17 @@ function parseNumeric(value: string | number): { num: number; suffix: string; de
   return { num, suffix: match[2] ? ' ' + match[2] : '', decimals: decimalPart ? decimalPart.length : 0 };
 }
 
-export default function KpiCard({ label, value, trend, delta, deltaLabel, prefix, suffix, hero }: Props) {
+export default function KpiCard({ label, value, trend, delta, deltaLabel, prefix, suffix, hero, accentColor }: Props) {
   const trendColor = trend && trend.value >= 0 ? 'var(--success)' : 'var(--error)';
   const trendIcon = trend ? (trend.value >= 0 ? '↑' : '↓') : '';
   const parsed = parseNumeric(value);
+  const accent = accentColor ?? '#22C55E';
 
   return (
-    <div className={`${s.card} ${hero ? s.hero : ''}`}>
+    <div
+      className={`${s.card} ${hero ? s.hero : ''}`}
+      style={{ '--kpi-accent': accent } as React.CSSProperties}
+    >
       <div className={s.label}>
         {label}
       </div>

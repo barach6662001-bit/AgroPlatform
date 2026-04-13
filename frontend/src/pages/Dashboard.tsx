@@ -27,6 +27,7 @@ import KpiCard from '../components/ui/KpiCard';
 import { useTranslation } from '../i18n';
 import { useAuthStore } from '../stores/authStore';
 import { formatUA } from '../utils/numberFormat';
+import { getCropTagStyle } from '../utils/cropTagColors';
 import {
   useDashboardQuery,
   useDashboardFieldsQuery,
@@ -97,7 +98,7 @@ export default function Dashboard() {
       key: 'currentCrop',
       render: (crop: string | undefined) =>
         crop
-          ? <Tag color="green" className={s.cropTag}>{t.crops[crop as keyof typeof t.crops] || crop}</Tag>
+          ? <Tag style={getCropTagStyle(t.crops[crop as keyof typeof t.crops] || crop)} className={s.cropTag}>{t.crops[crop as keyof typeof t.crops] || crop}</Tag>
           : <Tag className={s.emptyTag}>{t.fields.notSeeded}</Tag>,
     },
     {
@@ -139,13 +140,14 @@ export default function Dashboard() {
 
       {/* Row 2 — KPI Cards */}
       <div className={s.kpiGrid}>
-        <KpiCard label={t.dashboard.totalArea} value={`${formatUA(data.totalAreaHectares)} га`} />
-        <KpiCard label={t.dashboard.seasonExpenses ?? t.dashboard.monthlyExpenses} value={`${formatUA(expenses)} ₴`} />
-        <KpiCard label={t.dashboard.seasonRevenue ?? t.dashboard.monthlyRevenue} value={`${formatUA(revenue)} ₴`} />
+        <KpiCard label={t.dashboard.totalArea} value={`${formatUA(data.totalAreaHectares)} га`} accentColor="#22C55E" />
+        <KpiCard label={t.dashboard.seasonExpenses ?? t.dashboard.monthlyExpenses} value={`${formatUA(expenses)} ₴`} accentColor="#EF4444" />
+        <KpiCard label={t.dashboard.seasonRevenue ?? t.dashboard.monthlyRevenue} value={`${formatUA(revenue)} ₴`} accentColor="#3B82F6" />
         <KpiCard
           label={t.dashboard.seasonProfit ?? t.dashboard.monthlyProfit}
           value={`${formatUA(profit)} ₴`}
           hero
+          accentColor="#F59E0B"
           delta={revenue > 0 ? `${((profit / revenue) * 100).toFixed(1)}%` : undefined}
           deltaLabel={t.dashboard.margin ?? 'маржа'}
         />
@@ -175,15 +177,16 @@ export default function Dashboard() {
                   <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--text-tertiary)' }} stroke="var(--border)" />
-              <YAxis stroke="var(--border)" tick={{ fill: 'var(--text-tertiary)', fontSize: 11 }} width={60} tickFormatter={(v: number) => formatUA(v)} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7b9a' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#6b7b9a', fontSize: 11 }} axisLine={false} tickLine={false} width={60} tickFormatter={(v: number) => formatUA(v)} />
               <Tooltip
                 contentStyle={{
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border)',
+                  background: '#111A2E',
+                  border: '1px solid #253350',
                   borderRadius: 8,
                   fontSize: 13,
+                  color: '#ededed',
                 }}
               />
               <Area type="monotone" dataKey="cost" stroke="#EF4444" fill="url(#costGrad)" name={t.dashboard.costsUAH} strokeWidth={2} />
