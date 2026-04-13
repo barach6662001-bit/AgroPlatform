@@ -1,5 +1,5 @@
 import { Button, Dropdown } from 'antd';
-import { LogoutOutlined, MenuOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SunOutlined, MoonOutlined, SearchOutlined } from '@ant-design/icons';
+import { Menu as MenuIcon, PanelLeftClose, PanelLeftOpen, Sun, Moon, Search, LogOut } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -128,7 +128,7 @@ export default function AppLayout() {
           {isMobile ? (
             <Button
               type="text"
-              icon={<MenuOutlined className={s.menuIcon} />}
+              icon={<MenuIcon size={18} />}
               onClick={() => setDrawerOpen(true)}
               className={s.topbarBtn}
             />
@@ -136,8 +136,8 @@ export default function AppLayout() {
             <Button
               type="text"
               icon={sidebarCollapsed
-                ? <MenuUnfoldOutlined className={s.collapseIcon} />
-                : <MenuFoldOutlined className={s.collapseIcon} />
+                ? <PanelLeftOpen size={16} />
+                : <PanelLeftClose size={16} />
               }
               onClick={() => setSidebarCollapsed(prev => !prev)}
               className={s.topbarBtn}
@@ -147,14 +147,16 @@ export default function AppLayout() {
           <div className={s.toolbarItem}>
             <Button
               type="text"
-              icon={<SearchOutlined />}
+              icon={<Search size={16} />}
               onClick={openSearch}
               className={s.topbarAction}
+              style={{ width: 'auto' }}
             >
               {!isMobile && <span className={s.topbarLabel}>{t.search.trigger} <kbd className={s.kbdHint}>⌘K</kbd></span>}
             </Button>
             <FarmSwitcher />
             <OfflineIndicator />
+            <div className={s.toolbarDivider} />
             <Dropdown
               menu={{
                 items: langMenuItems,
@@ -174,14 +176,15 @@ export default function AppLayout() {
             </Dropdown>
             <Button
               type="text"
-              icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />}
+              icon={theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
               onClick={toggleTheme}
               className={s.topbarAction}
             />
             <NotificationBell />
+            <div className={s.toolbarDivider} />
             <Button
               type="text"
-              icon={<LogoutOutlined />}
+              icon={<LogOut size={16} />}
               onClick={handleLogout}
               className={s.logoutBtn}
             >
