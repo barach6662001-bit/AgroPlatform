@@ -11,6 +11,7 @@ body {
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.5;
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -123,25 +124,29 @@ a, button, [role="button"],
   background: transparent !important;
   color: var(--text-primary) !important;
 }
-.ant-table-thead > tr > th {
-  background: var(--bg-surface) !important;
+.ant-table-thead > tr > th,
+.ant-table-thead > tr > td {
+  background: rgba(255, 255, 255, 0.02) !important;
   border-bottom: 1px solid var(--border) !important;
-  color: var(--text-secondary) !important;
+  border-right: none !important;
+  color: var(--text-tertiary) !important;
   font-size: 11px !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.6px !important;
-  padding: 10px 16px !important;
+  letter-spacing: 0.06em !important;
+  padding: 12px 16px !important;
 }
 .ant-table-tbody > tr > td {
   background: transparent !important;
-  border-bottom: 1px solid var(--border) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-right: none !important;
   color: var(--text-primary) !important;
   padding: 12px 16px !important;
   font-size: 13px !important;
+  transition: background var(--transition-fast) !important;
 }
 .ant-table-tbody > tr:hover > td {
-  background: var(--bg-elevated) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
 }
 .ant-table-tbody > tr:last-child > td {
   border-bottom: none !important;
@@ -157,37 +162,49 @@ a, button, [role="button"],
   border-radius: var(--radius-md) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  height: 34px !important;
+  height: 36px !important;
   padding: 0 14px !important;
-  transition: all 0.15s ease !important;
+  transition: all var(--transition-base) !important;
   box-shadow: none !important;
 }
 .ant-btn-primary {
-  background: var(--brand) !important;
-  border-color: var(--brand) !important;
+  background: linear-gradient(180deg, #22C55E 0%, #16A34A 100%) !important;
+  border: none !important;
   color: #000 !important;
   font-weight: 600 !important;
 }
 .ant-btn-primary:hover {
-  background: var(--brand-hover) !important;
-  border-color: var(--brand-hover) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: var(--shadow-glow) !important;
+  filter: brightness(1.1) !important;
+  transform: translateY(-0.5px) !important;
+}
+.ant-btn-primary:active {
+  transform: scale(0.98) !important;
 }
 .ant-btn-default {
-  background: var(--bg-elevated) !important;
-  border-color: var(--border-strong) !important;
-  color: var(--text-primary) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--border-strong) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 .ant-btn-default:hover {
-  background: var(--bg-overlay) !important;
-  border-color: var(--border-focus) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--border-hover) !important;
   color: var(--text-primary) !important;
 }
 .ant-btn-dangerous {
-  background: var(--error-bg) !important;
-  border-color: rgba(239,68,68,0.3) !important;
+  background: transparent !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
   color: var(--error) !important;
+}
+.ant-btn-dangerous:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+.btn-danger {
+  background: transparent !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  color: var(--error) !important;
+}
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
 }
 
 /* Inputs */
@@ -208,7 +225,7 @@ a, button, [role="button"],
 .ant-select-focused .ant-select-selector,
 .ant-picker-focused {
   border-color: var(--border-focus) !important;
-  box-shadow: 0 0 0 2px rgba(74,158,255,0.15) !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1) !important;
 }
 .ant-input::placeholder,
 .ant-select-selection-placeholder {
@@ -417,41 +434,12 @@ a, button, [role="button"],
   outline-offset: 2px !important;
 }
 
-/* Table header font-size upgrade (11px → 12px for readability) */
-.ant-table-thead > tr > th {
-  font-size: 12px !important;
-}
-
-/* Tags minimum font-size (11px → 12px) */
-.ant-tag {
-  font-size: 12px !important;
-}
-
-/* KPI card style */
-.kpi-card {
-  background: var(--bg-surface) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-lg) !important;
-  padding: 20px 24px;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.15s ease;
-}
-
-/* Section header */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-/* Typography utilities */
+/* Page title typography */
 .page-title {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
-  letter-spacing: -0.3px;
+  letter-spacing: -0.01em;
   margin: 0;
 }
 
