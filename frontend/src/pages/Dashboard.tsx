@@ -27,6 +27,7 @@ import KpiCard from '../components/ui/KpiCard';
 import { useTranslation } from '../i18n';
 import { useAuthStore } from '../stores/authStore';
 import { formatUA } from '../utils/numberFormat';
+import { getCropTagStyle } from '../utils/cropTagColors';
 import {
   useDashboardQuery,
   useDashboardFieldsQuery,
@@ -97,7 +98,7 @@ export default function Dashboard() {
       key: 'currentCrop',
       render: (crop: string | undefined) =>
         crop
-          ? <Tag color="green" className={s.cropTag}>{t.crops[crop as keyof typeof t.crops] || crop}</Tag>
+          ? <Tag style={getCropTagStyle(t.crops[crop as keyof typeof t.crops] || crop)} className={s.cropTag}>{t.crops[crop as keyof typeof t.crops] || crop}</Tag>
           : <Tag className={s.emptyTag}>{t.fields.notSeeded}</Tag>,
     },
     {
@@ -139,13 +140,14 @@ export default function Dashboard() {
 
       {/* Row 2 — KPI Cards */}
       <div className={s.kpiGrid}>
-        <KpiCard label={t.dashboard.totalArea} value={`${formatUA(data.totalAreaHectares)} га`} />
-        <KpiCard label={t.dashboard.seasonExpenses ?? t.dashboard.monthlyExpenses} value={`${formatUA(expenses)} ₴`} />
-        <KpiCard label={t.dashboard.seasonRevenue ?? t.dashboard.monthlyRevenue} value={`${formatUA(revenue)} ₴`} />
+        <KpiCard label={t.dashboard.totalArea} value={`${formatUA(data.totalAreaHectares)} га`} accentColor="#22C55E" />
+        <KpiCard label={t.dashboard.seasonExpenses ?? t.dashboard.monthlyExpenses} value={`${formatUA(expenses)} ₴`} accentColor="#EF4444" />
+        <KpiCard label={t.dashboard.seasonRevenue ?? t.dashboard.monthlyRevenue} value={`${formatUA(revenue)} ₴`} accentColor="#3B82F6" />
         <KpiCard
           label={t.dashboard.seasonProfit ?? t.dashboard.monthlyProfit}
           value={`${formatUA(profit)} ₴`}
           hero
+          accentColor="#F59E0B"
           delta={revenue > 0 ? `${((profit / revenue) * 100).toFixed(1)}%` : undefined}
           deltaLabel={t.dashboard.margin ?? 'маржа'}
         />

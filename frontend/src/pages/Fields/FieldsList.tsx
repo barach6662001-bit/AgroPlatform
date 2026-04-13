@@ -15,6 +15,7 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { exportToCsv } from '../../utils/exportCsv';
+import { getCropTagStyle } from '../../utils/cropTagColors';
 import { useFieldsQuery } from '../../hooks/useFieldsQuery';
 import { useAuthStore } from '../../stores/authStore';
 import s from './FieldsList.module.css';
@@ -148,7 +149,7 @@ export default function FieldsList() {
     { title: t.fields.soilType, dataIndex: 'soilType', key: 'soilType', render: (v: string) => v || '—' },
     {
       title: t.fields.currentCrop, dataIndex: 'currentCrop', key: 'currentCrop',
-      render: (v: string, r: FieldDto) => v ? <Tag color="green">{t.crops[v as keyof typeof t.crops] || v}{r.currentCropYear ? ` (${r.currentCropYear})` : ''}</Tag> : <Tag>{t.fields.notSeeded}</Tag>,
+      render: (v: string, r: FieldDto) => v ? <Tag style={getCropTagStyle(t.crops[v as keyof typeof t.crops] || v)}>{t.crops[v as keyof typeof t.crops] || v}{r.currentCropYear ? ` (${r.currentCropYear})` : ''}</Tag> : <Tag>{t.fields.notSeeded}</Tag>,
     },
     {
       title: t.fields.ownershipType,
