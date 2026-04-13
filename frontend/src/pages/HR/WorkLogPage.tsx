@@ -15,6 +15,7 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import DataTable from '../../components/ui/DataTable';
 
 export default function WorkLogPage() {
   const now = new Date();
@@ -227,7 +228,7 @@ export default function WorkLogPage() {
       {loading && workLogs.length === 0 ? (
         <TableSkeleton rows={8} />
       ) : (
-        <Table
+        <DataTable
           columns={columns}
           dataSource={workLogs}
           rowKey="id"

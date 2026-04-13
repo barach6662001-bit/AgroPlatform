@@ -1,8 +1,6 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import {
-  Table, Button, Modal, Form, Input, InputNumber, Select, Space, Tag, message,
-} from 'antd';
+import { Button, Modal, Form, Input, InputNumber, Select, Space, Tag, message,  } from 'antd';
 import { PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from '../../api/hr';
@@ -13,6 +11,7 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import DataTable from '../../components/ui/DataTable';
 
 export default function EmployeeList() {
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
@@ -182,7 +181,7 @@ export default function EmployeeList() {
       {loading && employees.length === 0 ? (
         <TableSkeleton rows={8} />
       ) : (
-        <Table
+        <DataTable
           columns={columns}
           dataSource={employees}
           rowKey="id"

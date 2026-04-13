@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { Table, Button, Space, Tag, Input, message, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
+import { Button, Space, Tag, Input, message, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
 import { PlusOutlined, SearchOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -17,6 +17,7 @@ import { exportToCsv } from '../../utils/exportCsv';
 import { useFieldsQuery } from '../../hooks/useFieldsQuery';
 import { useAuthStore } from '../../stores/authStore';
 import s from './FieldsList.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 export default function FieldsList() {
   const [search, setSearch] = useState('');
@@ -239,7 +240,7 @@ export default function FieldsList() {
       ) : isLoading ? (
         <TableSkeleton rows={8} />
       ) : (
-        <Table
+        <DataTable
           dataSource={result?.items ?? []}
           columns={columns}
           rowKey="id"

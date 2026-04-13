@@ -1,6 +1,6 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag, Typography } from 'antd';
+import { Button, Space, Select, Input, message, Modal, Form, InputNumber, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { EyeOutlined, SearchOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,7 @@ import { useFleetHub } from '../../hooks/useFleetHub';
 import { getEmployees } from '../../api/hr';
 import EmptyState from '../../components/EmptyState';
 import s from './MachineryList.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 
 const { Text } = Typography;
@@ -242,7 +243,7 @@ export default function MachineryList() {
       {loading && !result ? (
         <TableSkeleton rows={8} />
       ) : (
-        <Table
+        <DataTable
           dataSource={result?.items ?? []}
           columns={columns}
           rowKey="id"

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Modal, Form, Input, Select, DatePicker, Popconfirm, Space, message, Tag } from 'antd';
+import { Button, Modal, Form, Input, Select, DatePicker, Popconfirm, Space, message, Tag } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getFieldInspections, createFieldInspection, deleteFieldInspection } from '../../api/fields';
@@ -7,6 +7,7 @@ import type { FieldInspectionDto } from '../../types/field';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import DataTable from '../../components/ui/DataTable';
 
 interface Props {
   fieldId: string;
@@ -136,7 +137,7 @@ export default function FieldInspectionTab({ fieldId }: Props) {
         </Space>
       )}
 
-      <Table
+      <DataTable
         dataSource={data}
         columns={columns}
         rowKey="id"

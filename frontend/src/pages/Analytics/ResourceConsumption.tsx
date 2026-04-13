@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, DatePicker, Space, message } from 'antd';
+import { DatePicker, Space, message } from 'antd';
 import TableSkeleton from '../../components/TableSkeleton';
 import {
   BarChart,
@@ -17,6 +17,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './ResourceConsumption.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { RangePicker } = DatePicker;
 
@@ -70,7 +71,7 @@ export default function ResourceConsumption() {
         <TableSkeleton />
       ) : (
         <>
-          <Table
+          <DataTable
             dataSource={data}
             columns={columns}
             rowKey="itemId"

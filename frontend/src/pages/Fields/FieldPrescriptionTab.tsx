@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Select, Table, Tag, Space, DatePicker, Alert, Spin, message } from 'antd';
+import { Button, Select, Tag, Space, DatePicker, Alert, Spin, message } from 'antd';
 import { DownloadOutlined, ReloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getPrescriptionMap, exportPrescriptionMap } from '../../api/fields';
@@ -7,6 +7,7 @@ import type { PrescriptionMapDto, PrescriptionZoneDto } from '../../types/field'
 import { useTranslation } from '../../i18n';
 import EmptyState from '../../components/EmptyState';
 import s from './FieldPrescriptionTab.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 interface Props {
   fieldId: string;
@@ -161,7 +162,7 @@ export default function FieldPrescriptionTab({ fieldId }: Props) {
       ) : !hasData ? (
         <EmptyState message={t.fields.prescriptionNoData} />
       ) : (
-        <Table<PrescriptionZoneDto>
+        <DataTable<PrescriptionZoneDto>
           dataSource={data?.zones ?? []}
           columns={columns}
           rowKey={(r) => r.zoneId ?? r.zoneName}

@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Card, Col, Row, Progress, Tag, Table, Select, Switch, Alert, Space,
-  Typography, Tooltip, Badge, Button, message,
-} from 'antd';
+import { Card, Col, Row, Progress, Tag, Select, Switch, Alert, Space, Typography, Tooltip, Badge, Button, message,  } from 'antd';
 import {
   WarningOutlined, CheckCircleOutlined, DatabaseOutlined,
   ArrowRightOutlined,
@@ -15,6 +12,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './GrainStorageOverview.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { Text } = Typography;
 
@@ -324,7 +322,7 @@ export default function GrainStorageOverview() {
 
                 {/* Batch table */}
                 {storage.batches.length > 0 && (
-                  <Table<GrainBatchSummaryDto>
+                  <DataTable<GrainBatchSummaryDto>
                     dataSource={storage.batches}
                     columns={batchColumns(t)}
                     rowKey="id"

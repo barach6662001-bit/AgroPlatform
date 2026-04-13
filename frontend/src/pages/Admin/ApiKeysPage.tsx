@@ -8,26 +8,13 @@ interface CreateApiKeyFormValues {
   webhookEventTypes?: string[];
 }
 
-import {
-  Table,
-  Button,
-  Modal,
-  Form,
-  Input,
-  Select,
-  DatePicker,
-  InputNumber,
-  message,
-  Space,
-  Tag,
-  Card,
-  Alert,
-} from 'antd';
+import { Button, Modal, Form, Input, Select, DatePicker, InputNumber, message, Space, Tag, Card, Alert,  } from 'antd';
 import { PlusOutlined, CopyOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getApiKeys, createApiKey, revokeApiKey, ApiKeyDto, CreateApiKeyResponse } from '../../api/apiKeys';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import s from './ApiKeysPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 export const ApiKeysPage: React.FC = () => {
   const [keys, setKeys] = useState<ApiKeyDto[]>([]);
@@ -166,7 +153,7 @@ export const ApiKeysPage: React.FC = () => {
           type="info"
           className={s.spaced}
         />
-        <Table
+        <DataTable
           columns={columns}
           dataSource={keys}
           loading={loading}

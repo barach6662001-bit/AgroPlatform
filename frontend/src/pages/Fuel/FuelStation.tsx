@@ -1,9 +1,6 @@
 import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
-import {
-  Button, Card, Col, DatePicker, Form, Input, InputNumber,
-  message, Modal, Progress, Row, Select, Space, Table, Tag, Typography,
-} from 'antd';
+import { Button, Card, Col, DatePicker, Form, Input, InputNumber, message, Modal, Progress, Row, Select, Space, Tag, Typography,  } from 'antd';
 import { PlusOutlined, ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import {
@@ -23,6 +20,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { formatDate } from '../../utils/dateFormat';
 import s from './FuelStation.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { Option } = Select;
 
@@ -318,7 +316,7 @@ export default function FuelStation() {
           ))}
         </Select>
       </div>
-      <Table
+      <DataTable
         dataSource={transactions}
         columns={txColumns}
         rowKey="id"

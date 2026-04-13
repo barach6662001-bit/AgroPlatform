@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, InputNumber, Button, Select, message, Space, Tag, Row, Col, Card, Statistic } from 'antd';
+import { InputNumber, Button, Select, message, Space, Tag, Row, Col, Card, Statistic } from 'antd';
 import { SaveOutlined, DownloadOutlined, DollarOutlined, RiseOutlined, FallOutlined, PercentageOutlined } from '@ant-design/icons';
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts';
 import { getBudgets, upsertBudget, exportBudgets, getBudgetPlanVsFact, type BudgetDto, type BudgetPlanVsFactDto } from '../../api/budgets';
@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import DataTable from '../../components/ui/DataTable';
 
 const CATEGORIES = ['Seeds', 'Fertilizers', 'Pesticides', 'Fuel', 'Labor', 'Equipment', 'Other'];
 
@@ -222,7 +223,7 @@ export default function BudgetPage() {
           </Card>
         </Col>
       </Row>
-      <Table
+      <DataTable
         dataSource={tableData}
         columns={columns}
         rowKey="category"

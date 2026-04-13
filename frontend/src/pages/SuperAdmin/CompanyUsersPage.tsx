@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Tag, Space, Modal, Form, Input, Select, message, Popconfirm } from 'antd';
+import { Button, Tag, Space, Modal, Form, Input, Select, message, Popconfirm } from 'antd';
 import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 import s from './CompanyUsersPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 import {
   getCompanyUsers,
   createUser,
@@ -213,7 +214,7 @@ export default function CompanyUsersPage() {
         </Button>
       </div>
 
-      <Table
+      <DataTable
         dataSource={users}
         columns={columns}
         rowKey="id"

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Table, Tag, Button, message, Row, Col, Modal, Form, Select, Input, InputNumber, Space, DatePicker, Tabs, Typography } from 'antd';
+import { Card, Descriptions, Tag, Button, message, Row, Col, Modal, Form, Select, Input, InputNumber, Space, DatePicker, Tabs, Typography } from 'antd';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { ArrowLeftOutlined, PlusOutlined, SaveOutlined, DownloadOutlined, DollarOutlined, ExportOutlined, ReloadOutlined } from '@ant-design/icons';
@@ -26,6 +26,7 @@ import FieldSoilAnalysisTab from './FieldSoilAnalysisTab';
 import FieldPrescriptionTab from './FieldPrescriptionTab';
 import FieldInspectionTab from './FieldInspectionTab';
 import s from './FieldDetail.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 export default function FieldDetail() {
   const { id } = useParams<{ id: string }>();
@@ -330,7 +331,7 @@ export default function FieldDetail() {
               </Row>
 
               <Card title={t.fields.cropHistory} className={s.cardGap}>
-                <Table
+                <DataTable
                   dataSource={field.cropHistory}
                   columns={historyColumns}
                   rowKey="id"
@@ -340,7 +341,7 @@ export default function FieldDetail() {
               </Card>
 
               <Card title={t.fields.rotationPlans} className={s.cardGap}>
-                <Table
+                <DataTable
                   dataSource={field.rotationPlans}
                   columns={planColumns}
                   rowKey="id"
@@ -373,7 +374,7 @@ export default function FieldDetail() {
                       )}
                     </div>
                   ) : (
-                    <Table
+                    <DataTable
                       dataSource={leases}
                       rowKey="id"
                       pagination={false}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Badge, message, Button, Space, Modal, Form, Input, Select } from 'antd';
+import { Badge, message, Button, Space, Modal, Form, Input, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getWarehouses, createWarehouse } from '../../api/warehouses';
@@ -9,6 +9,7 @@ import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import s from './WarehousesList.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 export default function WarehousesList() {
   const [result, setResult] = useState<PaginatedResult<WarehouseDto> | null>(null);
@@ -96,7 +97,7 @@ export default function WarehousesList() {
           </Button>
         )}
       </Space>
-      <Table
+      <DataTable
         dataSource={result?.items ?? []}
         columns={columns}
         rowKey="id"

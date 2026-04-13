@@ -9,6 +9,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { printReport } from '../../utils/printReport';
 import s from './FieldPnl.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -259,7 +260,7 @@ export default function FieldPnl() {
       {data.length === 0 && !loading ? (
         <Empty description={<span className={s.colored1}>{t.economics.pnlNoRevenue}</span>} />
       ) : (
-        <Table
+        <DataTable
           dataSource={data}
           columns={columns}
           rowKey="fieldId"

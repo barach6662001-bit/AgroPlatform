@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Select, Statistic, Table, Empty, message, Tag } from 'antd';
+import { Card, Col, Row, Select, Statistic, Empty, message, Tag } from 'antd';
 import { DollarOutlined, ShoppingOutlined, UserOutlined, TrophyOutlined } from '@ant-design/icons';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -11,6 +11,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './RevenueAnalytics.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -294,7 +295,7 @@ export default function RevenueAnalytics() {
                 title={<span className={s.colored2}>{t.sales.byProduct}</span>}
                 className={s.spaced2}
               >
-                <Table
+                <DataTable
                   dataSource={data?.byProduct ?? []}
                   columns={productColumns}
                   rowKey="product"
@@ -309,7 +310,7 @@ export default function RevenueAnalytics() {
                 title={<span className={s.colored2}>{t.sales.byBuyer}</span>}
                 className={s.spaced2}
               >
-                <Table
+                <DataTable
                   dataSource={data?.byBuyer ?? []}
                   columns={buyerColumns}
                   rowKey="buyerName"
@@ -325,7 +326,7 @@ export default function RevenueAnalytics() {
             title={<span className={s.colored2}>{t.sales.byMonth}</span>}
             className={s.bg}
           >
-            <Table
+            <DataTable
               dataSource={data?.byMonth ?? []}
               columns={monthlyColumns}
               rowKey={(r: MonthlyRevenueDto) => `${r.year}-${r.month}`}

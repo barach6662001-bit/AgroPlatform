@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Space, DatePicker, message, Button, Modal, Form, Input, InputNumber, Select, Card, Statistic, Row, Col } from 'antd';
+import { Space, DatePicker, message, Button, Modal, Form, Input, InputNumber, Select, Card, Statistic, Row, Col } from 'antd';
 import { PlusOutlined, EditOutlined, ShoppingOutlined, DollarOutlined } from '@ant-design/icons';
 import { getSales, createSale, updateSale, deleteSale } from '../../api/sales';
 import { getFields } from '../../api/fields';
@@ -12,6 +12,7 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
+import DataTable from '../../components/ui/DataTable';
 
 const { RangePicker } = DatePicker;
 
@@ -262,7 +263,7 @@ export default function SalesList() {
       {loading && !result ? (
         <TableSkeleton rows={8} />
       ) : (
-        <Table
+        <DataTable
           dataSource={result?.items ?? []}
           columns={columns}
           rowKey="id"

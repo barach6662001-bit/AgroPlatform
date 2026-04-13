@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Table, Tag, Space, Select, message, Button, Modal, Form, Input,
-  InputNumber, DatePicker, Card, Typography, Radio, Progress,
-} from 'antd';
+import { Tag, Space, Select, message, Button, Modal, Form, Input, InputNumber, DatePicker, Card, Typography, Radio, Progress,  } from 'antd';
 import { PlusOutlined, DollarOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { getLeaseSummary, createLease, addLeasePayment, getLeases, updateLease } from '../../api/leases';
@@ -18,6 +15,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
 import s from './LeasePage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { Text } = Typography;
 
@@ -294,7 +292,7 @@ export default function LeasePage() {
         </Space>
       </Card>
 
-      <Table
+      <DataTable
         dataSource={summary}
         columns={columns}
         rowKey="landLeaseId"
@@ -306,7 +304,7 @@ export default function LeasePage() {
             const payments = record.payments || [];
             if (!payments.length) return <Text type="secondary">Виплат ще не було</Text>;
             return (
-              <Table
+              <DataTable
                 size="small"
                 dataSource={payments}
                 columns={[

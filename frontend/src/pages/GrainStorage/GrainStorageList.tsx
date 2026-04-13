@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Table, Button, Modal, Form, Input, InputNumber, Switch, Space,
-  message, Popconfirm, Tag,
-} from 'antd';
+import { Button, Modal, Form, Input, InputNumber, Switch, Space, message, Popconfirm, Tag,  } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +10,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import s from './GrainStorageList.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 export default function GrainStorageList() {
   const { t } = useTranslation();
@@ -199,7 +197,7 @@ export default function GrainStorageList() {
         }
       />
 
-      <Table
+      <DataTable
         rowKey="id"
         dataSource={storages}
         columns={columns}

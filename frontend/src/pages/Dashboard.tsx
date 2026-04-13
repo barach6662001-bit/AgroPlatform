@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Row, Col, Card, message, Typography, Table, Tag, List, Button, Space } from 'antd';
+import { Row, Col, Card, message, Typography, Tag, List, Button, Space } from 'antd';
 import TableSkeleton from '../components/TableSkeleton';
 import {
   ToolOutlined,
@@ -42,6 +42,7 @@ import {
   useDashboardOperationsQuery,
 } from '../hooks/useDashboardQuery';
 import s from './Dashboard.module.css';
+import DataTable from '../components/ui/DataTable';
 
 dayjs.extend(relativeTime);
 
@@ -220,7 +221,7 @@ export default function Dashboard() {
                 </Button>
               </div>
             ) : (
-              <Table
+              <DataTable
                 dataSource={fields}
                 columns={fieldColumns}
                 rowKey="id"

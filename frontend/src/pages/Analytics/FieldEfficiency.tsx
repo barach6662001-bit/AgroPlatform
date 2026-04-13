@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, message } from 'antd';
+import { message } from 'antd';
 import TableSkeleton from '../../components/TableSkeleton';
 import {
   BarChart,
@@ -17,6 +17,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './FieldEfficiency.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 export default function FieldEfficiency() {
   const [data, setData] = useState<FieldEfficiencyDto[]>([]);
@@ -84,7 +85,7 @@ export default function FieldEfficiency() {
         <TableSkeleton />
       ) : (
         <>
-          <Table
+          <DataTable
             dataSource={data}
             columns={columns}
             rowKey="fieldId"

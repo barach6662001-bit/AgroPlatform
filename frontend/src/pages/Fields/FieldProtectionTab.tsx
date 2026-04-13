@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Modal, Form, Input, InputNumber, Select, DatePicker, Space, message } from 'antd';
+import { Button, Modal, Form, Input, InputNumber, Select, DatePicker, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getFieldProtections, createFieldProtection, deleteFieldProtection } from '../../api/fields';
@@ -11,6 +11,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
 import s from './FieldProtectionTab.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 interface Props {
   fieldId: string;
@@ -123,7 +124,7 @@ export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
           </Button>
         )}
       </Space>
-      <Table
+      <DataTable
         dataSource={data}
         columns={columns}
         rowKey="id"

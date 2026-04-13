@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Table, Button, App, Spin, Tag, Space, Modal, Input } from 'antd';
+import { Button, App, Spin, Tag, Space, Modal, Input } from 'antd';
 import { CheckOutlined, CloseOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useTranslation } from '../../i18n';
 import {
@@ -11,6 +11,7 @@ import {
 } from '../../api/approvals';
 import dayjs from 'dayjs';
 import s from './PendingApprovalsPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const ACTION_TYPE_LABELS: Record<number, string> = {
   0: 'IssueStock',
@@ -169,7 +170,7 @@ export default function PendingApprovalsPage() {
           <Button icon={<ReloadOutlined />} onClick={load} />
         </Space>
       </div>
-      <Table
+      <DataTable
         dataSource={data}
         columns={columns}
         rowKey="id"

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Select, Statistic, Table, Empty, message, Tag } from 'antd';
+import { Card, Col, Row, Select, Statistic, Empty, message, Tag } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, DollarOutlined, RiseOutlined } from '@ant-design/icons';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getMarginality } from '../../api/economics';
@@ -8,6 +8,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './MarginalityDashboard.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -173,7 +174,7 @@ export default function MarginalityDashboard() {
 
           {(data?.byProduct ?? []).length > 0 && (
             <Card title={t.economics.margByProduct} className={s.spaced1}>
-              <Table<MarginalityRowDto>
+              <DataTable<MarginalityRowDto>
                 dataSource={data?.byProduct}
                 columns={columns}
                 rowKey="label"
@@ -186,7 +187,7 @@ export default function MarginalityDashboard() {
 
           {(data?.byField ?? []).length > 0 && (
             <Card title={t.economics.margByField}>
-              <Table<MarginalityRowDto>
+              <DataTable<MarginalityRowDto>
                 dataSource={data?.byField}
                 columns={columns}
                 rowKey="label"

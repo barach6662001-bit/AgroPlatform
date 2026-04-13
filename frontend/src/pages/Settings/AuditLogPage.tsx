@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Table, Select, DatePicker, Input, Button, Row, Col, message, Tag, Space, Drawer, Typography } from 'antd';
+import { Select, DatePicker, Input, Button, Row, Col, message, Tag, Space, Drawer, Typography } from 'antd';
 import { SearchOutlined, ReloadOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getAuditLogs } from '../../api/audit';
@@ -8,6 +8,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import s from './AuditLogPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { RangePicker } = DatePicker;
 
@@ -228,7 +229,7 @@ export default function AuditLogPage() {
         </Row>
       </div>
 
-      <Table
+      <DataTable
         rowKey="id"
         columns={columns}
         dataSource={data?.items ?? []}
@@ -278,7 +279,7 @@ export default function AuditLogPage() {
               </div>
             </div>
 
-            <Table
+            <DataTable
               rowKey="key"
               size="small"
               pagination={false}

@@ -1,6 +1,6 @@
 import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
-import { Table, Select, DatePicker, message, Tag, Space } from 'antd';
+import { Select, DatePicker, message, Tag, Space } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
 import { getStockMovements, getWarehouses, getWarehouseItems } from '../../api/warehouses';
 import type { StockMoveDto, WarehouseDto, WarehouseItemDto } from '../../types/warehouse';
@@ -10,6 +10,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { formatDate } from '../../utils/dateFormat';
 import s from './StockMovements.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { RangePicker } = DatePicker;
 
@@ -164,7 +165,7 @@ export default function StockMovements() {
         <RangePicker onChange={handleDateChange} />
       </Space>
 
-      <Table
+      <DataTable
         dataSource={moves}
         columns={columns}
         rowKey="id"

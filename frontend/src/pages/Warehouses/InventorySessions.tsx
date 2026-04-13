@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Modal, Form, Select, Input, Space, message, Tag, Progress, InputNumber, Descriptions } from 'antd';
+import { Button, Modal, Form, Select, Input, Space, message, Tag, Progress, InputNumber, Descriptions } from 'antd';
 import { PlusOutlined, EyeOutlined, CheckOutlined, SendOutlined } from '@ant-design/icons';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
@@ -20,6 +20,7 @@ import type { InventorySessionDto, InventorySessionDetailDto } from '../../types
 import type { WarehouseDto } from '../../types/warehouse';
 import type { PaginatedResult } from '../../types/common';
 import s from './InventorySessions.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const STATUS_COLORS: Record<number, string> = {
   0: 'default',
@@ -295,7 +296,7 @@ export default function InventorySessions() {
         )}
       </Space>
 
-      <Table
+      <DataTable
         dataSource={result?.items ?? []}
         columns={columns}
         rowKey="id"
@@ -372,7 +373,7 @@ export default function InventorySessions() {
                 {detail.countedLines}/{detail.totalLines} {t.inventorySessions.countedLines}
               </Descriptions.Item>
             </Descriptions>
-            <Table
+            <DataTable
               dataSource={detail.lines}
               columns={lineColumns}
               rowKey="id"

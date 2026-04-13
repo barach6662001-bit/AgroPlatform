@@ -1,7 +1,7 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import EmptyState from '../../components/EmptyState';
 import { useEffect, useState } from 'react';
-import { Table, Tag, Button, Space, Select, message, Modal, Form, Input, InputNumber, DatePicker } from 'antd';
+import { Tag, Button, Space, Select, message, Modal, Form, Input, InputNumber, DatePicker } from 'antd';
 import { EyeOutlined, PlusOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getOperations, createOperation, updateOperation, addMachinery } from '../../api/operations';
@@ -19,6 +19,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
 import { formatDate } from '../../utils/dateFormat';
+import DataTable from '../../components/ui/DataTable';
 
 const typeColors: Record<string, string> = {
   Sowing: 'green', Fertilizing: 'blue', PlantProtection: 'orange',
@@ -214,7 +215,7 @@ export default function OperationsList() {
           {t.common.export}
         </Button>
       </Space>
-      <Table
+      <DataTable
         dataSource={result?.items ?? []}
         columns={columns}
         rowKey="id"

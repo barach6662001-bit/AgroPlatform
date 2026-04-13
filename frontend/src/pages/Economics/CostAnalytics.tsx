@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Select, Statistic, Table, Empty, message } from 'antd';
+import { Card, Col, Row, Select, Statistic, Empty, message } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, DollarOutlined } from '@ant-design/icons';
 import {
   PieChart,
@@ -20,6 +20,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './CostAnalytics.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -189,7 +190,7 @@ export default function CostAnalytics() {
 
           {(data?.byCategory ?? []).length > 0 && (
             <Card title={t.economics.analyticsByCategory}>
-              <Table<EconomicsByCategoryDto>
+              <DataTable<EconomicsByCategoryDto>
                 dataSource={data?.byCategory}
                 columns={tableColumns}
                 rowKey="category"

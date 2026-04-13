@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import TableSkeleton from '../../components/TableSkeleton';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Card, Descriptions, Table, Tag, Button, message, Row, Col,
-  Space, Modal, Form, DatePicker, InputNumber, Select,
-} from 'antd';
+import { Card, Descriptions, Tag, Button, message, Row, Col, Space, Modal, Form, DatePicker, InputNumber, Select,  } from 'antd';
 import {
   ArrowLeftOutlined, CheckCircleOutlined, PlusOutlined,
   EditOutlined,
@@ -25,6 +22,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
+import DataTable from '../../components/ui/DataTable';
 
 export default function OperationDetail() {
   const { id } = useParams<{ id: string }>();
@@ -309,7 +307,7 @@ export default function OperationDetail() {
           ) : null
         }
       >
-        <Table
+        <DataTable
           dataSource={op.resources}
           columns={resourceColumns}
           rowKey="id"
@@ -330,7 +328,7 @@ export default function OperationDetail() {
           ) : null
         }
       >
-        <Table
+        <DataTable
           dataSource={op.machineryUsed}
           columns={machineryColumns}
           rowKey="id"

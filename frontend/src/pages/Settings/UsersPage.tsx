@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Select, Button, message, Card, Radio, Form, Input, Row, Col, Typography, Divider, Alert, Modal, Space } from 'antd';
+import { Select, Button, message, Card, Radio, Form, Input, Row, Col, Typography, Divider, Alert, Modal, Space } from 'antd';
 import { SaveOutlined, DatabaseOutlined } from '@ant-design/icons';
 import apiClient from '../../api/axios';
 import { getUsers, updateUserRole, resetUserPassword } from '../../api/users';
@@ -9,6 +9,7 @@ import PageHeader from '../../components/PageHeader';
 import { useTranslation, languages } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import s from './UsersPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const { Text } = Typography;
 
@@ -250,7 +251,7 @@ export default function UsersPage() {
         </Card>
       )}
 
-      <Table
+      <DataTable
         dataSource={users}
         columns={columns}
         rowKey="id"

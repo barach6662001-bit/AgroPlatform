@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Select, Statistic, Table, Empty, message } from 'antd';
+import { Card, Col, Row, Select, Statistic, Empty, message } from 'antd';
 import { DollarOutlined, FireOutlined } from '@ant-design/icons';
 import {
   BarChart,
@@ -16,6 +16,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './SalaryFuelAnalytics.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -182,7 +183,7 @@ export default function SalaryFuelAnalytics() {
 
           {(data?.fuelByMachine ?? []).length > 0 && (
             <Card title={t.analytics.fuelByMachine} className={s.spaced1}>
-              <Table<FuelByMachineDto>
+              <DataTable<FuelByMachineDto>
                 dataSource={data?.fuelByMachine}
                 columns={fuelByMachineColumns}
                 rowKey="machineId"
@@ -195,7 +196,7 @@ export default function SalaryFuelAnalytics() {
 
           {(data?.salaryByEmployee ?? []).length > 0 && (
             <Card title={t.analytics.salaryByEmployee}>
-              <Table<SalaryByEmployeeDto>
+              <DataTable<SalaryByEmployeeDto>
                 dataSource={data?.salaryByEmployee}
                 columns={salaryByEmployeeColumns}
                 rowKey="employeeId"

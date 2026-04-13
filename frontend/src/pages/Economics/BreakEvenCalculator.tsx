@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space } from 'antd';
+import { InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { CalculatorOutlined, RiseOutlined, WarningOutlined } from '@ant-design/icons';
 import { getBreakEven } from '../../api/economics';
@@ -8,6 +8,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './BreakEvenCalculator.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
   const y = 2020 + i;
@@ -206,7 +207,7 @@ export default function BreakEvenCalculator() {
       {pricePerTonne && pricePerTonne > 0 && data.length === 0 && !loading ? (
         <Empty description={<span className={s.colored1}>{t.common.noData}</span>} />
       ) : (
-        <Table
+        <DataTable
           dataSource={data}
           columns={columns}
           rowKey="fieldId"

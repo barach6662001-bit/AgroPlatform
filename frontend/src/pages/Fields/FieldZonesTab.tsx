@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, Table, Modal, Form, Input, Select, Space, message, Typography } from 'antd';
+import { Button, Modal, Form, Input, Select, Space, message, Typography } from 'antd';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { MapContainer, TileLayer } from 'react-leaflet';
@@ -14,6 +14,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
 import s from './FieldZonesTab.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const ZONE_COLORS = [
   '#e67e22', '#2ecc71', '#3498db', '#9b59b6', '#e74c3c',
@@ -270,7 +271,7 @@ export default function FieldZonesTab({ fieldId, field }: Props) {
         </MapContainer>
       </div>
 
-      <Table
+      <DataTable
         dataSource={zones}
         columns={columns}
         rowKey="id"

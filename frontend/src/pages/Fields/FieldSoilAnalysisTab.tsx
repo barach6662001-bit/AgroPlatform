@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Modal, Form, Input, InputNumber, DatePicker, Space, message } from 'antd';
+import { Button, Modal, Form, Input, InputNumber, DatePicker, Space, message } from 'antd';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getSoilAnalyses, createSoilAnalysis, updateSoilAnalysis, deleteSoilAnalysis } from '../../api/fields';
@@ -9,6 +9,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
 import s from './FieldSoilAnalysisTab.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 interface Props {
   fieldId: string;
@@ -157,7 +158,7 @@ export default function FieldSoilAnalysisTab({ fieldId }: Props) {
         )}
       </Space>
 
-      <Table
+      <DataTable
         dataSource={data}
         columns={columns}
         rowKey="id"

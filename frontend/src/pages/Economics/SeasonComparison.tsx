@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row, Select, Statistic, Table, Empty, message, Tag } from 'antd';
+import { Card, Col, Row, Select, Statistic, Empty, message, Tag } from 'antd';
 import {
   BarChart,
   Bar,
@@ -16,6 +16,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import s from './SeasonComparison.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
@@ -209,7 +210,7 @@ export default function SeasonComparison() {
 
           {data.length > 0 && (
             <Card>
-              <Table<SeasonComparisonDto>
+              <DataTable<SeasonComparisonDto>
                 dataSource={data}
                 columns={columns}
                 rowKey="year"

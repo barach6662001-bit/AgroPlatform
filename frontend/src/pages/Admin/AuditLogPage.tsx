@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Space, Spin, Select, message, Drawer, Collapse } from 'antd';
+import { Button, Space, Spin, Select, message, Drawer, Collapse } from 'antd';
 import { ReloadOutlined, EyeOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getAuditLog, type AuditEntryDto } from '../../api/audit';
 import s from './AuditLogPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 export default function AuditLogPage() {
   const [entries, setEntries] = useState<AuditEntryDto[]>([]);
@@ -124,7 +125,7 @@ export default function AuditLogPage() {
         </Space>
       </div>
 
-      <Table
+      <DataTable
         columns={columns}
         dataSource={entries.map((e) => ({ ...e, key: e.id }))}
         pagination={{

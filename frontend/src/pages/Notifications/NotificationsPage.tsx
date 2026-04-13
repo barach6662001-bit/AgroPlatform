@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Tag, Checkbox, Alert, message } from 'antd';
+import { Button, Space, Tag, Checkbox, Alert, message } from 'antd';
 import { InfoCircleOutlined, WarningOutlined, CloseCircleOutlined, BellOutlined } from '@ant-design/icons';
 import {
   getNotifications,
@@ -12,6 +12,7 @@ import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
 import s from './NotificationsPage.module.css';
+import DataTable from '../../components/ui/DataTable';
 
 const typeIcon = (type: string) => {
   if (type === 'warning') return <WarningOutlined className={s.colored} />;
@@ -150,7 +151,7 @@ export default function NotificationsPage() {
           Тільки непрочитані
         </Checkbox>
       </Space>
-      <Table
+      <DataTable
         dataSource={notifications}
         columns={columns}
         rowKey="id"
