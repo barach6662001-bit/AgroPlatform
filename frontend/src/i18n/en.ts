@@ -130,6 +130,8 @@ const en: Translations = {
     welcomeMessage: 'Welcome!',
     loginError: 'Invalid email or password',
     forgotPassword: 'Forgot your password? Contact your company administrator.',
+    or: 'or',
+    demoLogin: 'Login as Demo',
     registerSuccess: 'Registration successful!',
     registerError: 'Registration error. Please try again.',
     haveAccount: 'Already have an account? Log In',

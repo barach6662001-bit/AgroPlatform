@@ -128,6 +128,8 @@ const uk = {
     welcomeMessage: 'Ласкаво просимо!',
     loginError: 'Невірний email або пароль',
     forgotPassword: 'Забули пароль? Зверніться до адміністратора вашої компанії.',
+    or: 'або',
+    demoLogin: 'Увійти як Demo',
     registerSuccess: 'Реєстрація пройшла успішно!',
     registerError: 'Помилка реєстрації. Спробуйте ще раз.',
     haveAccount: 'Вже є акаунт? Увійти',
