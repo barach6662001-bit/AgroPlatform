@@ -12,7 +12,7 @@ export default function NotFound() {
       title={t.errors.notFound}
       subTitle={t.errors.notFoundDesc}
       extra={
-        <Button type="primary" onClick={() => navigate('/')}>
+        <Button type="primary" onClick={() => navigate('/dashboard')}>
           {t.errors.backHome}
         </Button>
       }

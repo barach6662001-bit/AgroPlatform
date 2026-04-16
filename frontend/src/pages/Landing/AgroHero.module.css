@@ -126,6 +126,36 @@
   pointer-events: none;
 }
 
+/* ─── Top-right login nav ─── */
+.topNav {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 20;
+}
+
+.btnLogin {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+  transition: background var(--transition-base), border-color var(--transition-base);
+  backdrop-filter: blur(8px);
+}
+
+.btnLogin:hover {
+  background: var(--brand-muted);
+  border-color: var(--brand-border);
+  color: var(--brand);
+}
+
 /* ─── Content layer ─── */
 .content {
   position: relative;

@@ -1,5 +1,5 @@
 import { motion, type Variants } from 'framer-motion';
-import { Sprout, Droplets, Sun, ArrowRight, PlayCircle } from 'lucide-react';
+import { Sprout, Droplets, Sun, ArrowRight, LogIn } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import s from './AgroHero.module.css';
 
@@ -79,6 +79,14 @@ export default function AgroHero({ onPrimaryClick, onSecondaryClick }: AgroHeroP
       <div className={s.shapeRing} />
       <div className={s.shapeSquare} />
 
+      {/* Top-right login nav */}
+      <div className={s.topNav}>
+        <button className={s.btnLogin} onClick={() => navigate('/login')}>
+          <LogIn size={15} />
+          Увійти
+        </button>
+      </div>
+
       {/* Main content */}
       <motion.div
         className={s.content}
@@ -114,8 +122,7 @@ export default function AgroHero({ onPrimaryClick, onSecondaryClick }: AgroHeroP
             <ArrowRight size={18} />
           </button>
           <button className={s.btnSecondary} onClick={handleSecondary}>
-            <PlayCircle size={18} />
-            Дивитись демо
+            Спробувати демо
           </button>
         </motion.div>
 

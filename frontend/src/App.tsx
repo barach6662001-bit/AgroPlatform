@@ -62,6 +62,12 @@ import SalaryFuelAnalytics from './pages/Analytics/SalaryFuelAnalytics';
 import ImportItemsPage from './pages/Warehouses/ImportItemsPage';
 import OnboardingWizard from './pages/Onboarding/OnboardingWizard';
 import LandingPage from './pages/Landing/LandingPage';
+import { useAuthStore } from './stores/authStore';
+
+function RootRoute() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />;
+}
 
 export default function App() {
   const { lang } = useTranslation();
@@ -83,6 +89,7 @@ export default function App() {
       <ErrorBoundary>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<RootRoute />} />
           <Route path="/login" element={<Login />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/access-denied" element={<AccessDenied />} />
@@ -98,7 +105,7 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/superadmin/companies" element={<CompaniesPage />} />
             <Route path="/superadmin/companies/:id/users" element={<CompanyUsersPage />} />
             <Route path="/fields" element={<FieldsList />} />
@@ -148,7 +155,7 @@ export default function App() {
             <Route path="/settings/audit" element={<SettingsAuditLogPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
