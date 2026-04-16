@@ -1,0 +1,113 @@
+/* PremiumTable — additional visual polish on top of DataTable */
+
+/* ── Header row ── */
+.premiumTable :global(.ant-table-thead > tr > th),
+.premiumTable :global(.ant-table-thead > tr > td) {
+  background: var(--bg-elevated) !important;
+  color: var(--text-tertiary) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 10px 16px !important;
+  white-space: nowrap;
+}
+
+.premiumTable :global(.ant-table-thead th.ant-table-column-sort) {
+  background: var(--bg-elevated) !important;
+}
+
+/* Sort icons */
+.premiumTable :global(.ant-table-column-sorter) {
+  color: var(--text-tertiary);
+}
+
+.premiumTable :global(.ant-table-column-sorter-up.active),
+.premiumTable :global(.ant-table-column-sorter-down.active) {
+  color: var(--brand) !important;
+}
+
+/* ── Body rows ── */
+.premiumTable :global(.ant-table-tbody > tr > td) {
+  padding: 12px 16px !important;
+  border-bottom: 1px solid var(--border) !important;
+  font-size: 13px;
+  color: var(--text-primary);
+  transition: background 80ms ease;
+}
+
+.premiumTable :global(.ant-table-tbody > tr.ant-table-row:hover > td) {
+  background: var(--bg-hover) !important;
+}
+
+/* ── Row selection ── */
+.premiumTable :global(.ant-table-tbody > tr.ant-table-row-selected > td) {
+  background: rgba(34, 197, 94, 0.05) !important;
+}
+
+/* ── Table background ── */
+.premiumTable :global(.ant-table) {
+  background: var(--bg-surface) !important;
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--border) !important;
+  overflow: hidden;
+}
+
+.premiumTable :global(.ant-table-container) {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ── Pagination ── */
+.premiumTable :global(.ant-pagination) {
+  margin: 12px 16px !important;
+}
+
+.premiumTable :global(.ant-pagination-item) {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.premiumTable :global(.ant-pagination-item a) {
+  color: var(--text-secondary) !important;
+  font-size: 12px;
+}
+
+.premiumTable :global(.ant-pagination-item-active) {
+  background: rgba(34, 197, 94, 0.1) !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+.premiumTable :global(.ant-pagination-item-active a) {
+  color: var(--brand) !important;
+}
+
+.premiumTable :global(.ant-pagination-prev .ant-pagination-item-link),
+.premiumTable :global(.ant-pagination-next .ant-pagination-item-link) {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+  color: var(--text-secondary) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* ── Empty state ── */
+.premiumTable :global(.ant-empty-description) {
+  color: var(--text-secondary) !important;
+  font-size: 13px;
+}
+
+/* ── Scroll ── */
+.premiumTable :global(.ant-table-body) {
+  overflow-y: auto;
+}
+
+/* ── Filter dropdowns ── */
+.premiumTable :global(.ant-table-filter-trigger) {
+  color: var(--text-tertiary);
+}
+
+.premiumTable :global(.ant-table-filter-trigger.active) {
+  color: var(--brand);
+}

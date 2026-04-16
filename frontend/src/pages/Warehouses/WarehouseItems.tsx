@@ -15,6 +15,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
 import s from './WarehouseItems.module.css';
+import PremiumTable from '../../components/PremiumTable/PremiumTable';
 import DataTable from '../../components/ui/DataTable';
 
 export default function WarehouseItems() {
@@ -338,7 +339,7 @@ export default function WarehouseItems() {
           {t.warehouses_export.exportBalances}
         </Button>
       </Space>
-      <DataTable
+      <PremiumTable
         dataSource={result?.items ?? []}
         columns={columns}
         rowKey={(r) => `${r.warehouseId}-${r.itemId}-${r.batchId ?? ''}`}

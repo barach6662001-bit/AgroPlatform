@@ -20,6 +20,7 @@ import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { formatDate } from '../../utils/dateFormat';
 import apiClient from '../../api/axios';
 import { enqueueOperation } from '../../utils/offlineQueue';
+import PremiumTable from '../../components/PremiumTable/PremiumTable';
 import DataTable from '../../components/ui/DataTable';
 
 const { RangePicker } = DatePicker;
@@ -254,7 +255,7 @@ export default function CostRecords() {
       {loading && !result ? (
         <TableSkeleton rows={10} />
       ) : (
-        <DataTable
+        <PremiumTable
           dataSource={records}
           columns={columns}
           rowKey="id"

@@ -21,6 +21,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
 import { formatDate } from '../../utils/dateFormat';
+import PremiumTable from '../../components/PremiumTable/PremiumTable';
 import DataTable from '../../components/ui/DataTable';
 
 const typeColors: Record<string, string> = {
@@ -220,7 +221,7 @@ export default function OperationsList() {
       {loading && !result ? (
         <TableSkeleton rows={8} />
       ) : (
-      <DataTable
+      <PremiumTable
         dataSource={result?.items ?? []}
         columns={columns}
         rowKey="id"

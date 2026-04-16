@@ -4,6 +4,7 @@ import { ReloadOutlined, EyeOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getAuditLog, type AuditEntryDto } from '../../api/audit';
 import s from './AuditLogPage.module.css';
+import PremiumTable from '../../components/PremiumTable/PremiumTable';
 import DataTable from '../../components/ui/DataTable';
 
 export default function AuditLogPage() {
@@ -125,7 +126,7 @@ export default function AuditLogPage() {
         </Space>
       </div>
 
-      <DataTable
+      <PremiumTable
         columns={columns}
         dataSource={entries.map((e) => ({ ...e, key: e.id }))}
         pagination={{

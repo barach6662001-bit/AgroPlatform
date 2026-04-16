@@ -14,6 +14,7 @@ import KpiCard from '../../components/ui/KpiCard';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
+import PremiumTable from '../../components/PremiumTable/PremiumTable';
 import DataTable from '../../components/ui/DataTable';
 
 const { RangePicker } = DatePicker;
@@ -252,7 +253,7 @@ export default function SalesList() {
       {loading && !result ? (
         <TableSkeleton rows={8} />
       ) : (
-        <DataTable
+        <PremiumTable
           dataSource={result?.items ?? []}
           columns={columns}
           rowKey="id"

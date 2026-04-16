@@ -10,6 +10,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import s from './WarehousesList.module.css';
+import PremiumTable from '../../components/PremiumTable/PremiumTable';
 import DataTable from '../../components/ui/DataTable';
 
 export default function WarehousesList() {
@@ -98,7 +99,7 @@ export default function WarehousesList() {
           </Button>
         )}
       </Space>
-      <DataTable
+      <PremiumTable
         dataSource={result?.items ?? []}
         columns={columns}
         rowKey="id"

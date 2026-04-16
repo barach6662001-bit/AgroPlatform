@@ -18,6 +18,7 @@ import { useFleetHub } from '../../hooks/useFleetHub';
 import { getEmployees } from '../../api/hr';
 import EmptyState from '../../components/EmptyState';
 import s from './MachineryList.module.css';
+import PremiumTable from '../../components/PremiumTable/PremiumTable';
 import DataTable from '../../components/ui/DataTable';
 
 
@@ -244,7 +245,7 @@ export default function MachineryList() {
       {loading && !result ? (
         <TableSkeleton rows={8} />
       ) : (
-        <DataTable
+        <PremiumTable
           dataSource={result?.items ?? []}
           columns={columns}
           rowKey="id"
