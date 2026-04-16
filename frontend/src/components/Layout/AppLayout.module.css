@@ -14,29 +14,96 @@
 .appShell {
   display: flex;
   height: 100vh;
-  background: var(--bg-app);
+  background: var(--bg-page);
   overflow: hidden;
+}
+
+/* ── Sidebar shell ── */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 200ms ease;
+}
+
+.sidebarCollapsed {
+  width: 64px;
 }
 
 .sidebarNav {
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 4px 8px;
 }
 
+/* ── Logo area ── */
+.logoWrap {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.logoWrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16px;
+  right: 16px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--brand) 0%, transparent 80%);
+  opacity: 0.2;
+}
+
+.logoWrapCollapsed {
+  padding: 16px 0;
+  justify-content: center;
+}
+
+/* ── User section at bottom ── */
+.userSection {
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+  cursor: default;
+  transition: background 120ms ease;
+}
+
+.userSection:hover {
+  background: var(--bg-hover);
+}
+
+.userSectionCollapsed {
+  padding: 10px 0;
+  justify-content: center;
+}
+
 .userAvatar {
-  width: 28px;
-  height: 28px;
-  background: var(--color-primary, var(--brand));
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-hover) 100%);
   border: none;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  color: #fff;
-  font-weight: 600;
+  font-size: 12px;
+  color: #000;
+  font-weight: 700;
   flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(34,197,94,0.15);
 }
 
 .userMeta {
@@ -45,7 +112,7 @@
 }
 
 .userName {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-primary);
   font-weight: 500;
   white-space: nowrap;
@@ -54,10 +121,14 @@
 }
 
 .userRole {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-tertiary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
+/* ── Main area ── */
 .mainArea {
   flex: 1;
   display: flex;
@@ -65,48 +136,54 @@
   overflow: hidden;
 }
 
+/* ── Topbar / Header ── */
 .topbar {
-  height: 48px;
+  height: 52px;
   flex-shrink: 0;
-  background: var(--color-page-bg, var(--bg-app));
-  border-bottom: 1px solid var(--border-default, var(--border));
+  background: rgba(6, 11, 20, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  gap: 12px;
-}
-
-.menuIcon {
-  font-size: 18px;
-  color: var(--text-secondary);
+  padding: 0 20px 0 16px;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .topbarBtn {
   padding: 4px 8px;
   height: 32px;
   width: 32px;
+  color: var(--text-secondary) !important;
 }
 
-.collapseIcon {
-  font-size: 16px;
-  color: var(--text-secondary);
+.topbarBtn:hover {
+  color: var(--text-primary) !important;
+  background: rgba(255,255,255,0.06) !important;
 }
 
 .topbarAction {
-  color: var(--text-secondary);
+  color: var(--text-secondary) !important;
   padding: 4px 8px;
   height: 32px;
-  width: 32px;
+  min-width: 32px;
+  width: auto !important;
+  border-radius: var(--radius-md) !important;
+  transition: background 120ms ease, color 120ms ease;
 }
 
 .topbarAction:hover {
-  color: var(--text-primary);
+  color: var(--text-primary) !important;
+  background: rgba(255,255,255,0.06) !important;
 }
 
 .langFlag {
-  width: 20px;
-  height: 14px;
+  width: 18px;
+  height: 13px;
   object-fit: cover;
   border-radius: 2px;
   margin-right: 4px;
@@ -115,76 +192,48 @@
 .topbarLabel {
   font-size: 13px;
   font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.kbdHint {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-left: 4px;
+  font-family: var(--font-mono);
 }
 
 .logoutBtn {
-  color: var(--text-secondary);
+  color: var(--text-secondary) !important;
   font-size: 13px;
   height: 32px;
+  transition: color 120ms ease;
 }
 
 .logoutBtn:hover {
-  color: var(--text-primary) !important;
+  color: var(--error) !important;
+  background: var(--error-bg) !important;
 }
 
 .toolbarDivider {
   width: 1px;
   height: 20px;
-  background: var(--border-default, var(--border));
-  margin: 0 8px;
+  background: var(--border);
   flex-shrink: 0;
 }
 
+/* ── Page area ── */
 .pageArea {
   flex: 1;
   overflow: auto;
   padding: 24px 28px;
 }
 
-/* Sidebar shell */
-.sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  background: #0C1222;
-  border-right: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: 1px 0 12px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: width 0.2s ease;
-}
-.sidebarCollapsed {
-  width: 64px;
-}
-
-.logoWrap {
-  padding: 12px 16px 16px;
-  border-bottom: 1px solid var(--border-default, var(--border));
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  justify-content: flex-start;
-}
-.logoWrapCollapsed {
-  padding: 16px 0;
-  justify-content: center;
-}
-
-.userSection {
-  padding: 12px;
-  border-top: 1px solid var(--border-default, var(--border));
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: flex-start;
-}
-.userSectionCollapsed {
-  padding: 12px 0;
-  justify-content: center;
-}
-
-.kbdHint {
-  opacity: 0.5;
-  font-size: 11px;
+@media (max-width: 768px) {
+  .pageArea { padding: 16px; }
 }
