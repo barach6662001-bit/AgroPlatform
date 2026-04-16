@@ -63,6 +63,10 @@ const en: Translations = {
     inventory: 'Inventory',
     superAdmin: 'Administration',
     companies: 'Companies',
+    overview: 'Overview',
+    team: 'Team',
+    warehouse: 'Warehouse',
+    revenueUAH: 'Revenue',
   },
   common: {
     cancel: 'Cancel',

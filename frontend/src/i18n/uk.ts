@@ -61,6 +61,10 @@ const uk = {
     import: 'Імпорт',
     superAdmin: 'Адміністрування',
     companies: 'Компанії',
+    overview: 'Огляд',
+    team: 'Команда',
+    warehouse: 'Склад',
+    revenueUAH: 'Дохід',
   },
   common: {
     cancel: 'Скасувати',
