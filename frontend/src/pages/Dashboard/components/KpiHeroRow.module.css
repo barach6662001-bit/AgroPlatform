@@ -1,0 +1,79 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.5fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1200px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px)  { .grid { grid-template-columns: 1fr; } }
+
+.card {
+  position: relative;
+  padding: 20px 24px 18px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  cursor: default;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.hero {
+  border-color: rgba(var(--kpi-accent, #22C55E), 0.2);
+}
+
+.accentBar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--kpi-accent, #22C55E) 0%, transparent 80%);
+  opacity: 0.85;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero .value {
+  font-size: 32px;
+}
+
+.delta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.deltaValue {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--kpi-accent, #22C55E);
+  font-variant-numeric: tabular-nums;
+}
+
+.deltaLabel {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
