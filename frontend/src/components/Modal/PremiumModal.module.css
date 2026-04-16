@@ -1,0 +1,91 @@
+/* Premium Modal */
+.modal :global(.ant-modal-content) {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-lg) !important;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Gradient accent bar on top */
+.modal :global(.ant-modal-content::before) {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--modal-accent, #22C55E) 0%, transparent 70%);
+  z-index: 1;
+}
+
+.modal :global(.ant-modal-header) {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 18px 24px 14px !important;
+  margin-bottom: 0 !important;
+}
+
+.modal :global(.ant-modal-title) {
+  color: var(--text-primary) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+.modal :global(.ant-modal-body) {
+  padding: 20px 24px !important;
+}
+
+.modal :global(.ant-modal-footer) {
+  padding: 12px 24px 20px !important;
+  border-top: 1px solid var(--border) !important;
+  background: transparent !important;
+}
+
+.modal :global(.ant-modal-close) {
+  color: var(--text-tertiary) !important;
+  top: 12px;
+  right: 16px;
+}
+
+.modal :global(.ant-modal-close:hover) {
+  color: var(--text-primary) !important;
+  background: var(--bg-hover) !important;
+}
+
+/* Backdrop blur */
+:global(.ant-modal-mask) {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Form items inside modal */
+.modal :global(.ant-form-item-label > label) {
+  color: var(--text-secondary) !important;
+  font-size: 13px !important;
+}
+
+/* Buttons inside modal footer */
+.modal :global(.ant-btn-primary) {
+  background: var(--brand) !important;
+  border-color: var(--brand) !important;
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+
+.modal :global(.ant-btn-primary:hover) {
+  background: var(--brand-hover) !important;
+  border-color: var(--brand-hover) !important;
+}
+
+.modal :global(.ant-btn-default) {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+  color: var(--text-secondary) !important;
+}
+
+.modal :global(.ant-btn-default:hover) {
+  border-color: var(--border-hover) !important;
+  color: var(--text-primary) !important;
+}
