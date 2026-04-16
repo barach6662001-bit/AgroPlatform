@@ -88,10 +88,21 @@ export default function Dashboard() {
     },
   ];
 
-  const costTrendData = data.costTrend.map((item) => ({
-    name: `${item.year}-${String(item.month).padStart(2, '0')}`,
-    cost: item.totalAmount,
-  }));
+  // Build chart data: merge cost and revenue by month key
+  const revenueTrendMap = new Map(
+    (data.revenueTrend ?? []).map((item) => [
+      `${item.year}-${String(item.month).padStart(2, '0')}`,
+      item.totalAmount,
+    ])
+  );
+  const costTrendData = data.costTrend.map((item) => {
+    const key = `${item.year}-${String(item.month).padStart(2, '0')}`;
+    return {
+      name: key,
+      cost: item.totalAmount,
+      revenue: revenueTrendMap.get(key) ?? 0,
+    };
+  });
 
   const quickActions = isWarehouseOp
     ? [
@@ -141,6 +152,7 @@ export default function Dashboard() {
           data={costTrendData}
           title={t.dashboard.costTrend}
           costLabel={t.dashboard.costsUAH}
+          revenueLabel={t.dashboard.revenueUAH ?? t.dashboard.seasonRevenue ?? 'Дохід'}
         />
       )}
 

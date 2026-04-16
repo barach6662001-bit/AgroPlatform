@@ -8,7 +8,7 @@ import { useAuthStore } from '../../stores/authStore';
 export default function ProfilePage() {
   const { t, lang, setLang } = useTranslation();
   const { isAdmin, isManager, isWarehouseOperator, isAccountant } = useRole();
-  const { token, email: storedEmail } = useAuthStore();
+  const { token, email: storedEmail, firstName: storedFirstName, lastName: storedLastName } = useAuthStore();
 
   // Derive current role string from the hook flags
   const roleKey = isAdmin
@@ -21,22 +21,22 @@ export default function ProfilePage() {
     ? 'Accountant'
     : 'Unknown';
 
-  // Decode additional claims (firstName, lastName) from JWT; use store email as primary source
+  // Use authStore as primary source; fall back to JWT claims
   let email = storedEmail ?? '';
-  let firstName = '';
-  let lastName = '';
+  let firstName = storedFirstName ?? '';
+  let lastName = storedLastName ?? '';
   try {
-    if (token) {
+    if (token && (!firstName || !lastName)) {
       const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
       email = email || (
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ??
         payload['email'] ??
         '');
-      firstName =
+      firstName = firstName ||
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] ??
         payload['firstName'] ??
         '';
-      lastName =
+      lastName = lastName ||
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] ??
         payload['lastName'] ??
         '';
@@ -44,6 +44,7 @@ export default function ProfilePage() {
   } catch {
     // Token parse failed — leave empty
   }
+  const displayName = [firstName, lastName].filter(Boolean).join(' ') || email.split('@')[0];
 
   return (
     <div>
@@ -64,7 +65,7 @@ export default function ProfilePage() {
             {email || '—'}
           </Descriptions.Item>
           <Descriptions.Item label={t.profile.firstName}>
-            {firstName || email?.split('@')[0] || '—'}
+            {firstName || displayName || '—'}
           </Descriptions.Item>
           <Descriptions.Item label={t.profile.lastName}>
             {lastName || '—'}
