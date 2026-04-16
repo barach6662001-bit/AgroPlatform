@@ -513,3 +513,126 @@ a, button, [role="button"],
 @media (max-width: 768px) {
   .ant-table-wrapper { overflow-x: auto; }
 }
+
+/* ─── Phase 8: Premium polish ─────────────────────────────────────────────── */
+
+/* Card lift on hover */
+.ant-card {
+  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease !important;
+}
+.ant-card:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-color: var(--border-hover) !important;
+}
+
+/* Tag hover */
+.ant-tag {
+  transition: opacity 120ms ease !important;
+}
+.ant-tag:hover { opacity: 0.8; }
+
+/* Primary button glow on hover */
+.ant-btn-primary:hover {
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.25) !important;
+}
+
+/* Form submit success shake on error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes badgeScaleIn {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.shake { animation: shake 300ms ease; }
+.count-up { animation: countUp 200ms ease; }
+.badge-scale-in { animation: badgeScaleIn 200ms ease; }
+
+/* Better page transitions — fade + slide from bottom */
+.page-enter {
+  animation: fadeInUp 250ms ease forwards;
+}
+
+/* Recharts premium style */
+.recharts-cartesian-grid-horizontal line {
+  stroke: rgba(255,255,255,0.04) !important;
+  stroke-dasharray: 4 4 !important;
+}
+.recharts-cartesian-grid-vertical line {
+  display: none !important;
+}
+.recharts-text.recharts-cartesian-axis-tick-value tspan {
+  fill: rgba(255,255,255,0.35) !important;
+  font-size: 11px !important;
+  font-family: var(--font-sans) !important;
+}
+
+/* Empty state improvements */
+.ant-empty-image { opacity: 0.4; }
+.ant-empty-description {
+  color: var(--text-secondary) !important;
+  font-size: 13px !important;
+}
+
+/* Notification bell dot */
+.ant-badge-count {
+  min-width: 16px !important;
+  height: 16px !important;
+  line-height: 16px !important;
+  font-size: 10px !important;
+  border-radius: 8px !important;
+}
+
+/* Input number controls */
+.ant-input-number-handler-wrap {
+  background: var(--bg-elevated) !important;
+  border-left: 1px solid var(--border) !important;
+}
+.ant-input-number-handler {
+  color: var(--text-tertiary) !important;
+  border-color: var(--border) !important;
+}
+.ant-input-number-handler:hover {
+  color: var(--brand) !important;
+  background: var(--brand-muted) !important;
+}
+
+/* Date picker premium */
+.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+  background: var(--brand) !important;
+  color: #000 !important;
+}
+.ant-picker-cell:hover .ant-picker-cell-inner {
+  background: var(--bg-hover) !important;
+}
+.ant-picker-panel-container {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+.ant-picker-header {
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+.ant-picker-header-view button {
+  color: var(--text-primary) !important;
+}
+.ant-picker-content th {
+  color: var(--text-tertiary) !important;
+  font-size: 11px !important;
+}
+.ant-picker-cell-in-view { color: var(--text-primary) !important; }
+.ant-picker-cell:not(.ant-picker-cell-in-view) { color: var(--text-tertiary) !important; }

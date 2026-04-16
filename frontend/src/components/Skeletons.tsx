@@ -1,17 +1,14 @@
 import { Skeleton } from 'antd';
+import s from './Skeletons.module.css';
 
 export function KpiSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${count}, 1fr)`, gap: '16px' }}>
+    <div className={s.kpiGrid} style={{ gridTemplateColumns: `repeat(${count}, 1fr)` }}>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} style={{
-          background: 'var(--color-card-bg)',
-          border: '1px solid var(--border-default)',
-          borderRadius: '12px',
-          padding: '20px',
-        }}>
-          <Skeleton.Input active size="small" style={{ width: 80, marginBottom: 12 }} />
-          <Skeleton.Input active size="large" style={{ width: 140 }} />
+        <div key={i} className={s.kpiCard}>
+          <div className={s.shimmerBar} style={{ width: 64, height: 10, marginBottom: 12 }} />
+          <div className={s.shimmerBar} style={{ width: 120, height: 28 }} />
+          <div className={s.shimmerBar} style={{ width: 80, height: 10, marginTop: 10 }} />
         </div>
       ))}
     </div>
@@ -20,28 +17,18 @@ export function KpiSkeleton({ count = 4 }: { count?: number }) {
 
 export function TableSkeleton({ rows = 6, columns = 5 }: { rows?: number; columns?: number }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(${columns}, 1fr)`,
-        gap: '16px',
-        padding: '12px 16px',
-        borderBottom: '1px solid var(--border-default)',
-      }}>
+    <div className={s.tableWrap}>
+      {/* Header row */}
+      <div className={s.tableHeader} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
         {Array.from({ length: columns }).map((_, i) => (
-          <Skeleton.Input key={i} active size="small" style={{ width: '70%', height: 12 }} />
+          <div key={i} className={s.shimmerBar} style={{ width: '60%', height: 10 }} />
         ))}
       </div>
+      {/* Body rows */}
       {Array.from({ length: rows }).map((_, r) => (
-        <div key={r} style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
-          gap: '16px',
-          padding: '14px 16px',
-          borderBottom: '1px solid rgba(255,255,255,0.04)',
-        }}>
+        <div key={r} className={s.tableRow} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
           {Array.from({ length: columns }).map((_, c) => (
-            <Skeleton.Input key={c} active size="small" style={{ width: '65%', height: 14 }} />
+            <div key={c} className={s.shimmerBar} style={{ width: `${50 + Math.random() * 35}%`, height: 13 }} />
           ))}
         </div>
       ))}
@@ -51,18 +38,24 @@ export function TableSkeleton({ rows = 6, columns = 5 }: { rows?: number; column
 
 export function ChartSkeleton({ height = 280 }: { height?: number }) {
   return (
-    <div style={{
-      background: 'var(--color-card-bg)',
-      border: '1px solid var(--border-default)',
-      borderRadius: '12px',
-      height,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
-      <Skeleton.Node active style={{ width: '90%', height: height - 60 }}>
-        <span />
-      </Skeleton.Node>
+    <div className={s.chartCard} style={{ height }}>
+      <div className={s.shimmerBar} style={{ width: 160, height: 16, marginBottom: 20 }} />
+      <div className={s.shimmerChart} style={{ height: height - 80 }} />
     </div>
   );
 }
+
+export function MapSkeleton({ height = 500 }: { height?: number }) {
+  return (
+    <div className={s.mapCard} style={{ height }}>
+      <div className={s.mapGrid}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className={`${s.shimmerBar} ${s.mapBlock}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Forwarded Ant Skeleton for one-off use
+export { Skeleton };

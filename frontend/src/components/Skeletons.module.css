@@ -1,0 +1,106 @@
+/* Shimmer animation */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmerBar {
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 0%,
+    rgba(255,255,255,0.06) 40%,
+    var(--bg-elevated) 80%
+  );
+  background-size: 200% auto;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* KPI skeleton */
+.kpiGrid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpiCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+}
+
+/* Table skeleton */
+.tableWrap {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: grid;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+
+.tableRow {
+  display: grid;
+  gap: 16px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+
+.tableRow:last-child { border-bottom: none; }
+
+/* Chart skeleton */
+.chartCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.shimmerChart {
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 0%,
+    rgba(255,255,255,0.04) 40%,
+    var(--bg-elevated) 80%
+  );
+  background-size: 200% auto;
+  animation: shimmer 1.8s linear infinite;
+  flex: 1;
+}
+
+/* Map skeleton */
+.mapCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mapGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  grid-template-rows: repeat(2, 60px);
+  gap: 8px;
+  opacity: 0.4;
+}
+
+.mapBlock {
+  border-radius: var(--radius-md);
+  height: 60px;
+}

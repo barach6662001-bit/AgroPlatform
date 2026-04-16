@@ -10,7 +10,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import s from './WarehousesList.module.css';
-import DataTable from '../../components/ui/DataTable';
+import PremiumTable from '../../components/PremiumTable/PremiumTable';
 
 export default function WarehousesList() {
   const [result, setResult] = useState<PaginatedResult<WarehouseDto> | null>(null);
@@ -98,7 +98,7 @@ export default function WarehousesList() {
           </Button>
         )}
       </Space>
-      <DataTable
+      <PremiumTable
         dataSource={result?.items ?? []}
         columns={columns}
         rowKey="id"

@@ -7,7 +7,8 @@ export function PageTransition({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setIsVisible(false);
-    const timer = setTimeout(() => setIsVisible(true), 10);
+    // Small delay ensures the fade-out is visible before fade-in
+    const timer = setTimeout(() => setIsVisible(true), 20);
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
@@ -15,8 +16,9 @@ export function PageTransition({ children }: { children: ReactNode }) {
     <div
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(4px)',
-        transition: 'opacity 200ms ease, transform 200ms ease',
+        transform: isVisible ? 'translateY(0)' : 'translateY(8px)',
+        transition: 'opacity 220ms ease, transform 220ms ease',
+        willChange: 'opacity, transform',
       }}
     >
       {children}

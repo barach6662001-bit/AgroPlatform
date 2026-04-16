@@ -39,13 +39,13 @@ export const chartConfig = {
   },
   tooltip: {
     contentStyle: {
-      background: '#111A2E',
-      border: '1px solid #253350',
+      background: 'var(--bg-elevated, #111A2E)',
+      border: '1px solid rgba(255,255,255,0.12)',
       borderRadius: '8px',
-      padding: '12px',
-      boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+      padding: '10px 14px',
+      boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
       fontSize: '12px',
-      color: '#ededed',
+      color: 'rgba(255,255,255,0.92)',
     },
     itemStyle: {
       color: 'rgba(255,255,255,0.85)',
@@ -53,11 +53,11 @@ export const chartConfig = {
       padding: '2px 0',
     },
     labelStyle: {
-      color: 'rgba(255,255,255,0.55)',
+      color: 'rgba(255,255,255,0.45)',
       fontSize: '11px',
       marginBottom: '4px',
     },
-    cursor: { stroke: 'rgba(255,255,255,0.1)' },
+    cursor: { stroke: 'rgba(255,255,255,0.06)' },
   },
   bar: {
     radius: [4, 4, 0, 0] as [number, number, number, number],

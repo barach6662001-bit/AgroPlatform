@@ -176,6 +176,24 @@
   margin-bottom: 24px;
 }
 
+/* ── Timeline card ── */
+.timelineCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  transition: border-color 150ms ease;
+}
+
+.timelineCard:hover { border-color: var(--border-hover); }
+
+.timelineHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 @media (max-width: 1024px) {
   .contentGrid { grid-template-columns: 1fr; }
 }

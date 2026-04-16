@@ -12,6 +12,7 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
+import PremiumTable from '../../components/PremiumTable/PremiumTable';
 import DataTable from '../../components/ui/DataTable';
 
 export default function EmployeeList() {
@@ -183,7 +184,7 @@ export default function EmployeeList() {
       {loading && employees.length === 0 ? (
         <TableSkeleton rows={8} />
       ) : (
-        <DataTable
+        <PremiumTable
           columns={columns}
           dataSource={employees}
           rowKey="id"
