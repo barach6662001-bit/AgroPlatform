@@ -20,7 +20,7 @@ export default function FieldStatusCard({ fields, onAddField }: Props) {
       <div className={s.header}>
         <span className={s.title}>{t.dashboard.fieldsStatus}</span>
         <button className={s.viewAll} onClick={() => navigate('/fields')}>
-          {t.dashboard.viewAll ?? 'Усі поля'} <ArrowRight size={12} />
+          {'Усі поля'} <ArrowRight size={12} />
         </button>
       </div>
 

@@ -30,7 +30,7 @@ export default function FieldCard({ field }: Props) {
         <svg viewBox="0 0 80 60" className={s.thumbSvg}>
           <polygon
             points="40,8 72,22 65,52 15,52 8,22"
-            fill={cropStyle?.background ?? 'rgba(34,197,94,0.12)'}
+            fill={cropStyle ? String(cropStyle.background) : 'rgba(34,197,94,0.12)'}
             stroke={cropStyle ? String(cropStyle.color) : '#22C55E'}
             strokeWidth="1.5"
             strokeOpacity="0.6"

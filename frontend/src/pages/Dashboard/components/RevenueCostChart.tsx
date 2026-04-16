@@ -18,12 +18,18 @@ interface Props {
   revenueLabel?: string;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipEntry {
+  color: string;
+  name: string;
+  value: number;
+}
+
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: TooltipEntry[]; label?: string }) => {
   if (!active || !payload?.length) return null;
   return (
     <div className={s.tooltip}>
       <div className={s.tooltipLabel}>{label}</div>
-      {payload.map((entry: any, i: number) => (
+      {payload.map((entry: TooltipEntry, i: number) => (
         <div key={i} className={s.tooltipRow}>
           <span className={s.tooltipDot} style={{ background: entry.color }} />
           <span className={s.tooltipName}>{entry.name}:</span>

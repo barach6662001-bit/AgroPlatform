@@ -122,7 +122,7 @@ export default function FieldSidePanel({ fieldName, fields, onEdit, onExport }: 
       <div className={s.secondaryActions}>
         {onEdit && (
           <button className={s.btnSecondary} onClick={() => onEdit(field)}>
-            <Edit2 size={13} /> {t.common.edit}
+            <Edit2 size={13} /> {'Редагувати'}
           </button>
         )}
         {onExport && (

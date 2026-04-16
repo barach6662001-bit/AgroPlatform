@@ -16,7 +16,6 @@ import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
 import s from './WarehouseItems.module.css';
 import PremiumTable from '../../components/PremiumTable/PremiumTable';
-import DataTable from '../../components/ui/DataTable';
 
 export default function WarehouseItems() {
   const [searchParams] = useSearchParams();
