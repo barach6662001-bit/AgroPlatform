@@ -32,14 +32,14 @@ export default function ProfilePage() {
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ??
         payload['email'] ??
         '');
-      firstName = firstName ||
+      firstName = firstName || (
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] ??
         payload['firstName'] ??
-        '';
-      lastName = lastName ||
+        '');
+      lastName = lastName || (
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] ??
         payload['lastName'] ??
-        '';
+        '');
     }
   } catch {
     // Token parse failed — leave empty

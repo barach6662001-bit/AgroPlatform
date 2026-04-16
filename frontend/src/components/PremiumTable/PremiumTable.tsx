@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import React from 'react';
 import type { TableProps, TableColumnType } from 'antd';
 import DataTable from '../ui/DataTable';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
@@ -49,12 +50,17 @@ function MobileCardList<T extends object>({
     return String((record as Record<string, unknown>)[rowKey] ?? idx);
   }
 
-  function renderCell(col: ResponsiveColumn<T>, record: T) {
+  function renderCell(col: ResponsiveColumn<T>, record: T): React.ReactNode {
     const raw = col.dataIndex
       ? (record as Record<string, unknown>)[String(col.dataIndex)]
       : undefined;
     if (col.render) {
-      return col.render(raw, record, 0);
+      const result = col.render(raw as never, record, 0);
+      // Strip RenderedCell wrapper if needed
+      if (result !== null && typeof result === 'object' && 'children' in (result as object) && 'props' in (result as object)) {
+        return (result as { children: React.ReactNode }).children;
+      }
+      return result as React.ReactNode;
     }
     return raw != null ? String(raw) : '—';
   }

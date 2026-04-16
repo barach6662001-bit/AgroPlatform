@@ -67,7 +67,7 @@ export default function WarehousePage() {
     <div>
       <PageHeader
         title={t.nav.storageLogistics ?? 'Склад і логістика'}
-        subtitle={t.warehouses?.warehouseOverview ?? 'Управління складами, запасами та рухами'}
+        subtitle="Управління складами, запасами та рухами"
       />
       <Tabs
         activeKey={activeTab}

@@ -83,7 +83,7 @@ export default function Dashboard() {
   if (marginNum < 0) {
     actionItems.push({
       id: 'margin',
-      text: 'Від'ємна маржинальність — перевірте витрати',
+      text: "Від\u2019ємна маржинальність — перевірте витрати",
       route: '/finance?tab=analytics&dim=category',
       severity: 'critical',
     });

@@ -67,7 +67,7 @@ export default function FinancePage() {
     <div>
       <PageHeader
         title={t.nav.finance ?? 'Фінанси'}
-        subtitle={t.finance?.subtitle ?? 'Витрати, доходи, бюджет та аналітика'}
+        subtitle="Витрати, доходи, бюджет та аналітика"
       />
       <Tabs
         activeKey={activeTab}

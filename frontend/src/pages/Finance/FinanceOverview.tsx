@@ -71,7 +71,7 @@ export default function FinanceOverview() {
           data={trendData}
           title={t.dashboard.costTrend ?? 'Динаміка витрат та доходів'}
           costLabel={t.dashboard.costsUAH ?? 'Витрати'}
-          revenueLabel={t.dashboard.revenueUAH ?? t.dashboard.seasonRevenue ?? 'Дохід'}
+          revenueLabel={t.dashboard.seasonRevenue ?? 'Дохід'}
         />
       )}
     </div>

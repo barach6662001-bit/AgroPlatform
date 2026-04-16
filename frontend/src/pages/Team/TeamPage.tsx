@@ -55,7 +55,7 @@ export default function TeamPage() {
     <div>
       <PageHeader
         title={t.nav.hr ?? 'Команда'}
-        subtitle={t.hr?.teamSubtitle ?? 'Співробітники, табель і зарплата'}
+        subtitle="Співробітники, табель і зарплата"
       />
       <Tabs
         activeKey={activeTab}

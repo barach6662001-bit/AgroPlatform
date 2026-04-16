@@ -61,7 +61,7 @@ export default function OperationsHubPage() {
     <div>
       <PageHeader
         title={t.nav.operationsGroup ?? 'Операції'}
-        subtitle={t.operations?.opsSubtitle ?? 'Операції, техніка, карта парку та паливо'}
+        subtitle="Операції, техніка, карта парку та паливо"
       />
       <Tabs
         activeKey={activeTab}
