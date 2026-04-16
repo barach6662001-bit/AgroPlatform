@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
-import { Button, Space, Tag, Input, message, Modal, Form, InputNumber, Segmented, Select, Spin } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, UnorderedListOutlined, GlobalOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Button, Space, Tag, Input, message, Modal, Form, InputNumber, Select, Spin } from 'antd';
+import { SearchOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { deleteField, createField, updateField } from '../../api/fields';
@@ -20,6 +20,10 @@ import { useFieldsQuery } from '../../hooks/useFieldsQuery';
 import { useAuthStore } from '../../stores/authStore';
 import s from './FieldsList.module.css';
 import DataTable from '../../components/ui/DataTable';
+import FieldSidePanel from './components/FieldSidePanel';
+import FieldCard from './components/FieldCard';
+import FieldsToolbar from './components/FieldsToolbar';
+import type { ViewMode } from './components/FieldsToolbar';
 
 interface FieldDetailPanelProps {
   fieldName: string;
@@ -131,7 +135,7 @@ export default function FieldsList() {
   const [pageSize, setPageSize] = useState(15);
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('map');
+  const [viewMode, setViewMode] = useState<ViewMode>('map');
   const [form] = Form.useForm();
   const [editRecord, setEditRecord] = useState<FieldDto | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -303,48 +307,29 @@ export default function FieldsList() {
   return (
     <div>
       <PageHeader title={t.fields.title} subtitle={t.fields.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.fields }]} />} />
-      <Space className={s.spaced}>
-        <Input
-          placeholder={t.fields.searchPlaceholder}
-          prefix={<SearchOutlined />}
-          value={search}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className={s.block1}
-        />
-        {canCreate && (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setModalOpen(true)}
-          >
-            {t.fields.addField}
-          </Button>
-        )}
-        <Button
-          icon={<DownloadOutlined />}
-          onClick={() => exportToCsv('fields', result?.items ?? [], [
-            { key: 'name', title: t.fields.name },
-            { key: 'cadastralNumber', title: t.fields.cadastralNumber },
-            { key: 'areaHectares', title: t.fields.area },
-            { key: 'currentCrop', title: t.fields.currentCrop },
-            { key: 'soilType', title: t.fields.soilType },
-          ])}
-        >
-          {t.common.export}
-        </Button>
-        <Segmented
-          value={viewMode}
-          onChange={(v) => setViewMode(v as 'list' | 'map')}
-          options={[
-            { value: 'list', icon: <UnorderedListOutlined />, label: t.fields.listView },
-            { value: 'map', icon: <GlobalOutlined />, label: t.fields.mapView },
-          ]}
-        />
-      </Space>
+
+      <FieldsToolbar
+        search={search}
+        onSearchChange={handleSearchChange}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        canCreate={canCreate}
+        onAdd={() => setModalOpen(true)}
+        onExport={() => exportToCsv('fields', result?.items ?? [], [
+          { key: 'name', title: t.fields.name },
+          { key: 'cadastralNumber', title: t.fields.cadastralNumber },
+          { key: 'areaHectares', title: t.fields.area },
+          { key: 'currentCrop', title: t.fields.currentCrop },
+          { key: 'soilType', title: t.fields.soilType },
+        ])}
+        loading={loading}
+        addLabel={t.fields.addField}
+        exportLabel={t.common.export}
+      />
 
       {viewMode === 'map' ? (
         <div style={{ display: 'flex', gap: 16, height: 'calc(100vh - 200px)' }}>
-          {/* Map takes 65% */}
+          {/* Map — 65% */}
           <div style={{ flex: '0 0 65%' }}>
             <FieldMap
               fields={result?.items ?? []}
@@ -353,25 +338,38 @@ export default function FieldsList() {
               selectedField={selectedField}
             />
           </div>
-
-          {/* Side panel takes 35% */}
+          {/* Premium side panel — 35% */}
           <div style={{
             flex: '0 0 35%',
-            background: '#0C1222',
-            borderRadius: 12,
-            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'var(--bg-surface)',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--border)',
             padding: 20,
             overflowY: 'auto',
           }}>
-            {selectedField ? (
-              <FieldDetailPanel fieldName={selectedField} fields={result?.items ?? []} t={t} />
-            ) : (
-              <div style={{ color: '#6b7b9a', textAlign: 'center', paddingTop: 40 }}>
-                {t.fields.selectFieldOnMap}
-              </div>
-            )}
+            <FieldSidePanel
+              fieldName={selectedField}
+              fields={result?.items ?? []}
+              onEdit={(field) => {
+                setEditRecord(field);
+                editForm.setFieldsValue({ ...field, currentCrop: field.currentCrop ?? undefined, currentCropYear: field.currentCropYear ?? new Date().getFullYear() });
+                setEditModalOpen(true);
+              }}
+            />
           </div>
         </div>
+
+      ) : viewMode === 'grid' ? (
+        isLoading ? (
+          <TableSkeleton rows={8} />
+        ) : (
+          <div className={s.cardGrid}>
+            {(result?.items ?? []).map(field => (
+              <FieldCard key={field.id} field={field} />
+            ))}
+          </div>
+        )
+
       ) : isLoading ? (
         <TableSkeleton rows={8} />
       ) : (
