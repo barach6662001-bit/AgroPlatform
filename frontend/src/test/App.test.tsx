@@ -42,9 +42,9 @@ describe('App', () => {
     expect(container).toBeTruthy();
   });
 
-  it('shows the login page when the user is not authenticated', async () => {
+  it('shows the landing page when the user is not authenticated', async () => {
     render(<App />);
-    // ProtectedRoute redirects unauthenticated users to /login
-    expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
+    // RootRoute renders LandingPage (with AgroHero) for unauthenticated users
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
   });
 });

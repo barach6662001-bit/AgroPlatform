@@ -12,7 +12,7 @@ export default function AccessDenied() {
       title={t.accessDenied.title}
       subTitle={t.accessDenied.subtitle}
       extra={
-        <Button type="primary" onClick={() => navigate('/')}>
+        <Button type="primary" onClick={() => navigate('/dashboard')}>
           {t.accessDenied.backHome}
         </Button>
       }

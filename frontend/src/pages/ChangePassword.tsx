@@ -30,7 +30,7 @@ export default function ChangePassword() {
         data.refreshToken
       );
       message.success(t.auth.passwordChanged);
-      navigate('/');
+      navigate('/dashboard');
     } catch {
       message.error(t.auth.passwordChangeError);
     }

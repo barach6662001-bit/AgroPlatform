@@ -148,7 +148,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   ];
 
   const menuItems = [
-    { key: '/', label: t.nav.dashboard, icon: <LayoutDashboard size={16} strokeWidth={1.5} /> },
+    { key: '/dashboard', label: t.nav.dashboard, icon: <LayoutDashboard size={16} strokeWidth={1.5} /> },
     { type: 'divider' as const },
     ...(canFields ? [{
       key: 'fields-group',

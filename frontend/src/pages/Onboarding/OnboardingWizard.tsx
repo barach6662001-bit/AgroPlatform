@@ -206,7 +206,7 @@ export default function OnboardingWizard() {
               title={t.onboarding.completeTitle}
               subTitle={t.onboarding.completeSubtitle}
               extra={[
-                <Button type="primary" key="dashboard" onClick={() => navigate('/')}>
+                <Button type="primary" key="dashboard" onClick={() => navigate('/dashboard')}>
                   {t.onboarding.goToDashboard}
                 </Button>,
                 <Button key="warehouses" onClick={() => navigate('/warehouses/items')}>

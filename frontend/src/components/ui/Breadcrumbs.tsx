@@ -16,7 +16,7 @@ export default function Breadcrumbs({ items }: Props) {
   const breadcrumbItems = [
     {
       title: (
-        <Link to="/">
+        <Link to="/dashboard">
           <HomeOutlined />
         </Link>
       ),
