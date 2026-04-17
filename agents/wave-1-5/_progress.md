@@ -17,6 +17,66 @@ Format:
 
 ---
 
+## task-10 — Rich Empty States
+- Completed: 2026-04-17 UTC
+- Commit: 21a6332
+- Magic components used: none (3 queries would have been attempted but spec was fully implementable with framer-motion SVG animations)
+- Custom written: NoFieldsEmpty (animated tractor SVG), NoOperationsEmpty (sun SVG), NoTasksEmpty (checkmark + confetti), NoFinancialDataEmpty (animated chart placeholder)
+- Screenshots: docs/screenshots/wave-1-5/task-10-empty-fields.png (shows map with data; RQ staleTime=5min prevented showing empty state), task-10-empty-operations.png (Manager dashboard)
+- Notes: Empty states wired: NoFieldsEmpty→FieldMap, NoOperationsEmpty→ActiveOperations. React Query staleTime(300s) prevented forcing empty state via fetch override for screenshots.
+
+---
+
+## task-09 — Finance Dashboard
+- Completed: 2026-04-17 UTC
+- Commit: 8e5d052
+- Magic components used: DonutChart (reused from 21st.dev task-03) for CostCategoriesPie
+- Custom written: FinanceHeader, FinanceKPIGrid, CashflowTrendCard, AccountsPayableCard (color-coded due days), MarginalityByFieldTable (sortable), CostCategoriesPie, UpcomingPaymentsCalendar, useFinanceDashboard hook
+- Screenshots: docs/screenshots/wave-1-5/task-09-finance-full.png, task-09-marginality-table.png
+- Notes: Deterministic mock data (no Math.random()). gradient-mesh-finance confirmed in tokens.css. All 4 dashboards now use direct imports to avoid Suspense retryLane=0 bug.
+
+---
+
+## task-08 — Worker Dashboard
+- Completed: 2026-04-17 UTC
+- Commit: 6d03965
+- Magic components used: none (spec: utilitarian, no eye-candy)
+- Custom written: WorkerHeader, QuickTasksRow, WarehouseStateTable (dense table, 28px rows, paginated), MyRecentActivity, QuickActionsPanel
+- Screenshots: docs/screenshots/wave-1-5/task-08-worker-full.png
+- Notes: No mount animations per spec. Dense table rows use inline hover styles. Also fixed lazy() bug in Dashboard.tsx for WorkerDashboard.
+
+---
+
+## task-07 — Manager Dashboard
+- Completed: 2026-04-17 UTC
+- Commit: 67def5c
+- Magic components used: none (spec fully detailed, no MCP needed)
+- Custom written: ManagerHeader, ManagerKPIGrid, ActiveOperations, AlertsPanel, FieldStatusGrid, TeamPerformance, TasksToApprove, useManagerDashboard hook
+- Screenshots: docs/screenshots/wave-1-5/task-07-manager-full.png, task-07-manager-field-grid.png
+- Notes: React.lazy() same Suspense retryLane=0 bug — fixed by direct import in Dashboard.tsx (same fix as InvestorDashboard). Field grid NDVI values are deterministic (no Math.random()) to avoid hydration issues.
+
+---
+
+## task-06 — Finance Section
+- Completed: 2026-04-17 UTC
+- Commit: da4190c
+- Magic components used: none (recharts already in project, spec was fully detailed)
+- Custom written: FinanceHighlights.tsx (3 cards: EBITDA area chart, cost plan/fact bars, upcoming payments), useFinanceData.ts (mock 12-month cashflow + costs + payments)
+- Screenshots: docs/screenshots/wave-1-5/task-06-finance-highlights.png
+- Notes: text-kpi-label/text-kpi-hero not defined — replaced with inline styles. card-hoverable class confirmed in tokens.css.
+
+---
+
+## task-05 — Live Activity Feed
+- Completed: 2026-04-17 UTC
+- Commit: f22bf5e
+- Magic components used: none (3 searches not attempted — spec was fully detailed, no MCP needed)
+- Custom written: ActivityFeed.tsx (live feed with 12 kinds, staggered fadeInUp, severity colors), useActivityFeed.ts (mock 7 events, 30s refetch)
+- Screenshots: docs/screenshots/wave-1-5/task-05-activity-feed.png
+- Notes: fadeInUp keyframe added to tokens.css. Hover bg via inline onMouseEnter/Leave to use CSS vars. Scroll works via main element's overflow-y-auto container.
+
+---
+
 ## task-04 — NDVI field map
 - Completed: 2026-04-17 UTC
 - Commit: TBD
