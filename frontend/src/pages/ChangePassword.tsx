@@ -22,7 +22,8 @@ export default function ChangePassword() {
   const email = useAuthStore((s) => s.email)
 
   const form = useForm<ChangePasswordInput>({
-    resolver: zodResolver(changePasswordSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(changePasswordSchema) as any,
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
   })
   const { register, handleSubmit, formState: { errors } } = form
