@@ -29,7 +29,6 @@ src/components/ui/DateCell.tsx
 src/components/ui/FilterBar.tsx
 src/components/ui/FormField.tsx
 src/hooks/useOfflineSync.ts
-src/pages/AccessDenied.tsx
 src/pages/Admin/ApiKeysPage.tsx
 src/pages/Admin/ApprovalRulesPage.tsx
 src/pages/Admin/AuditLogPage.tsx
@@ -76,7 +75,6 @@ src/pages/Landing/LandingPage.tsx
 src/pages/Machinery/MachineDetail.tsx
 src/pages/Machinery/MachineryList.tsx
 src/pages/Machinery/MaintenancePage.tsx
-src/pages/NotFound.tsx
 src/pages/Notifications/NotificationsPage.tsx
 src/pages/Onboarding/OnboardingWizard.tsx
 src/pages/Operations/OperationDetail.tsx
@@ -85,7 +83,6 @@ src/pages/Ops/OperationsHubPage.tsx
 src/pages/Profile/ProfilePage.tsx
 src/pages/Sales/RevenueAnalytics.tsx
 src/pages/Sales/SalesList.tsx
-src/pages/ServerError.tsx
 src/pages/Settings/AuditLogPage.tsx
 src/pages/Settings/UsersPage.tsx
 src/pages/SuperAdmin/CompaniesPage.tsx

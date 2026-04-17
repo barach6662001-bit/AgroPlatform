@@ -1,21 +1,4 @@
-import { Result, Button } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../i18n';
-
+import { ErrorPage } from '@/components/error/error-page'
 export default function NotFound() {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-
-  return (
-    <Result
-      status="404"
-      title={t.errors.notFound}
-      subTitle={t.errors.notFoundDesc}
-      extra={
-        <Button type="primary" onClick={() => navigate('/dashboard')}>
-          {t.errors.backHome}
-        </Button>
-      }
-    />
-  );
+  return <ErrorPage code="404" />
 }

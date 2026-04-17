@@ -51,6 +51,8 @@ import LandingPage from './pages/Landing/LandingPage';
 import { useAuthStore } from './stores/authStore';
 import DesignSystemPreview from './pages/__design-system';
 import { KeyboardShortcutsDialog } from '@/components/shell/keyboard-shortcuts-dialog';
+import { AppErrorBoundary } from '@/components/error/error-boundary';
+import Maintenance from './pages/Maintenance';
 
 function RootRoute() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -77,14 +79,17 @@ export default function App() {
     >
       <ErrorBoundary>
         <BrowserRouter>
+          <AppErrorBoundary>
           <KeyboardShortcutsDialog />
           <Routes>
             <Route path="/__design-system" element={<DesignSystemPreview />} />
             <Route path="/" element={<RootRoute />} />
             <Route path="/login" element={<Login />} />
             <Route path="/select-tenant" element={<SelectTenant />} />
+            <Route path="/maintenance" element={<Maintenance />} />
             <Route path="/landing" element={<LandingPage />} />
             <Route path="/access-denied" element={<AccessDenied />} />
+            <Route path="/not-found" element={<NotFound />} />
             <Route path="/change-password" element={
               <ProtectedRoute>
                 <ChangePassword />
@@ -173,11 +178,12 @@ export default function App() {
               <Route path="/hr/salary" element={<Navigate to="/team?tab=salary" replace />} />
 
               {/* Catch-all */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<Navigate to="/not-found" replace />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </AppErrorBoundary>
         </BrowserRouter>
       </ErrorBoundary>
     </ConfigProvider>
