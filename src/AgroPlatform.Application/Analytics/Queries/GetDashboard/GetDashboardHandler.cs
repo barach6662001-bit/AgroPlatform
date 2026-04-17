@@ -101,13 +101,26 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
             .ToDictionary(x => x.Category.ToString(), x => x.Total);
 
         dto.CostTrend = await _context.CostRecords
-            .Where(c => c.Date >= cutoff)
+            .Where(c => c.Date >= cutoff && c.Amount > 0)
             .GroupBy(c => new { c.Date.Year, c.Date.Month })
             .Select(g => new MonthlyCostTrendDto
             {
                 Year = g.Key.Year,
                 Month = g.Key.Month,
                 TotalAmount = g.Sum(c => c.Amount)
+            })
+            .OrderBy(t => t.Year)
+            .ThenBy(t => t.Month)
+            .ToListAsync(cancellationToken);
+
+        dto.RevenueTrend = await _context.Sales
+            .Where(s => s.Date >= cutoff)
+            .GroupBy(s => new { s.Date.Year, s.Date.Month })
+            .Select(g => new MonthlyCostTrendDto
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                TotalAmount = g.Sum(s => s.TotalAmount)
             })
             .OrderBy(t => t.Year)
             .ThenBy(t => t.Month)
