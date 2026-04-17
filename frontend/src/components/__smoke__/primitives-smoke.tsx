@@ -1,4 +1,7 @@
 import * as React from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -8,7 +11,10 @@ import { Separator } from '@/components/ui/separator'
 import { DataTable } from '@/components/data-table/data-table'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { toast } from 'sonner'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import { exampleSchema, type ExampleInput } from '@/domain/validation/example.schema'
 import type { ColumnDef } from '@tanstack/react-table'
 
 type SmokeRow = { name: string; qty: number; status: string }
@@ -28,6 +34,60 @@ const smokeColumns: ColumnDef<SmokeRow>[] = [
     </Badge>
   )},
 ]
+
+function SmokeForm() {
+  const form = useForm<ExampleInput>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(exampleSchema) as any,
+    defaultValues: { name: '', email: '', role: 'operator', notify: false },
+  })
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(v => toast.success('Submitted', { description: JSON.stringify(v) }))}
+        className="space-y-4 max-w-md"
+      >
+        <FormField control={form.control} name="name" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Name</FormLabel>
+            <FormControl><Input {...field} /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <FormField control={form.control} name="email" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Email</FormLabel>
+            <FormControl><Input type="email" {...field} /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <FormField control={form.control} name="role" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Role</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+              <SelectContent>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="manager">Manager</SelectItem>
+                <SelectItem value="operator">Operator</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <FormField control={form.control} name="notify" render={({ field }) => (
+          <FormItem className="flex items-center gap-2">
+            <FormControl>
+              <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+            </FormControl>
+            <FormLabel className="!mt-0">Notify by email</FormLabel>
+          </FormItem>
+        )} />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
+  )
+}
 
 export function PrimitivesSmoke() {
   return (
@@ -72,6 +132,8 @@ export function PrimitivesSmoke() {
             Toast
           </Button>
         </div>
+        <Separator />
+        <SmokeForm />
         <Separator />
         <DataTable columns={smokeColumns} data={smokeData} />
       </CardContent>
