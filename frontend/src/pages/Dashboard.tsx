@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import InvestorDashboard from './dashboards/InvestorDashboard';
+import ManagerDashboard from './dashboards/ManagerDashboard';
 
-const ManagerDashboard = lazy(() => import('./dashboards/ManagerDashboard'));
 const WorkerDashboard = lazy(() => import('./dashboards/WorkerDashboard'));
 const FinanceDashboard = lazy(() => import('./dashboards/FinanceDashboard'));
 
@@ -11,7 +11,7 @@ type Role = 'SuperAdmin' | 'CompanyAdmin' | 'Manager' | 'WarehouseOperator' | 'A
 export default function Dashboard() {
   const role = (useAuthStore((s) => s.role) ?? 'CompanyAdmin') as Role;
 
-  if (role === 'Manager') return <Suspense fallback={<DashboardShimmer />}><ManagerDashboard /></Suspense>;
+  if (role === 'Manager') return <ManagerDashboard />;
   if (role === 'WarehouseOperator') return <Suspense fallback={<DashboardShimmer />}><WorkerDashboard /></Suspense>;
   if (role === 'Accountant') return <Suspense fallback={<DashboardShimmer />}><FinanceDashboard /></Suspense>;
 
