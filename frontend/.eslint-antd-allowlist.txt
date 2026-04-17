@@ -1,7 +1,6 @@
 src/App.tsx
 src/api/axios.ts
 src/components/BalancePreview.tsx
-src/components/CommandPalette.tsx
 src/components/DeleteConfirmButton.tsx
 src/components/EmptyState.tsx
 src/components/ErrorBoundary/ErrorBoundary.tsx
