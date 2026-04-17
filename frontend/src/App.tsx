@@ -13,6 +13,7 @@ import AppLayout from './components/Layout/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import Login from './pages/Login';
+import SelectTenant from './pages/SelectTenant';
 import ChangePassword from './pages/ChangePassword';
 import Dashboard from './pages/Dashboard';
 import CompaniesPage from './pages/SuperAdmin/CompaniesPage';
@@ -79,6 +80,7 @@ export default function App() {
             <Route path="/__design-system" element={<DesignSystemPreview />} />
             <Route path="/" element={<RootRoute />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/select-tenant" element={<SelectTenant />} />
             <Route path="/landing" element={<LandingPage />} />
             <Route path="/access-denied" element={<AccessDenied />} />
             <Route path="/change-password" element={

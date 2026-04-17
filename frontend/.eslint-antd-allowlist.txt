@@ -40,7 +40,6 @@ src/pages/Analytics/FieldEfficiency.tsx
 src/pages/Analytics/MarginalityDashboard.tsx
 src/pages/Analytics/ResourceConsumption.tsx
 src/pages/Analytics/SalaryFuelAnalytics.tsx
-src/pages/ChangePassword.tsx
 src/pages/Dashboard.tsx
 src/pages/Economics/BreakEvenCalculator.tsx
 src/pages/Economics/BudgetPage.tsx
@@ -75,7 +74,6 @@ src/pages/HR/EmployeeList.tsx
 src/pages/HR/SalaryPage.tsx
 src/pages/HR/WorkLogPage.tsx
 src/pages/Landing/LandingPage.tsx
-src/pages/Login.tsx
 src/pages/Machinery/MachineDetail.tsx
 src/pages/Machinery/MachineryList.tsx
 src/pages/Machinery/MaintenancePage.tsx
