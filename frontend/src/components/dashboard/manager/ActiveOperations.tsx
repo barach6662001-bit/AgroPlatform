@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useManagerDashboard } from '@/hooks/useManagerDashboard';
+import { NoOperationsEmpty } from '@/components/state/empty-states/NoOperationsEmpty';
 
 const STATUS_COLOR = {
   ok: 'var(--accent-emerald-500)',
@@ -21,6 +22,7 @@ export function ActiveOperations() {
         <span className="text-xs" style={{ color: 'var(--fg-tertiary)' }}>{ops.length} активних</span>
       </div>
 
+      {ops.length === 0 && <NoOperationsEmpty />}
       <div className="space-y-3">
         {ops.map((op, i) => {
           const color = STATUS_COLOR[op.status];

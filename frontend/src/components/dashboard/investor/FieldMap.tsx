@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { MapContainer, TileLayer, Polygon, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useFieldsStatus } from '@/hooks/useFieldsStatus';
+import { NoFieldsEmpty } from '@/components/state/empty-states/NoFieldsEmpty';
 
 function ndviToColor(ndvi: number): string {
   if (ndvi < 0.3) return '#7f1d1d';
@@ -30,15 +31,7 @@ export function FieldMap() {
   }
 
   if (fields.length === 0) {
-    return (
-      <div className="rounded-xl border h-[500px] flex flex-col items-center justify-center text-center p-6"
-        style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-surface)' }}>
-        <div className="font-medium mb-2" style={{ color: 'var(--fg-primary)' }}>Немає полів</div>
-        <p className="text-sm max-w-xs" style={{ color: 'var(--fg-tertiary)' }}>
-          Додайте перше поле щоб побачити супутникову мапу з NDVI-аналітикою
-        </p>
-      </div>
-    );
+    return <NoFieldsEmpty />;
   }
 
   const allBounds = fields.flatMap((f) => f.polygon);
