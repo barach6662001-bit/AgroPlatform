@@ -2,6 +2,16 @@ import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 
+vi.mock('react-leaflet', () => ({
+  MapContainer: () => null,
+  TileLayer: () => null,
+  Polygon: () => null,
+  Popup: () => null,
+  useMap: () => ({ fitBounds: vi.fn() }),
+}));
+
+vi.mock('leaflet/dist/leaflet.css', () => ({}));
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation(query => ({
@@ -33,6 +43,18 @@ if (typeof window.ResizeObserver === 'undefined') {
     observe() {}
     unobserve() {}
     disconnect() {}
+  };
+}
+
+if (typeof window.IntersectionObserver === 'undefined') {
+  window.IntersectionObserver = class IntersectionObserver {
+    readonly root = null;
+    readonly rootMargin = '';
+    readonly thresholds: ReadonlyArray<number> = [];
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords(): IntersectionObserverEntry[] { return []; }
   };
 }
 
