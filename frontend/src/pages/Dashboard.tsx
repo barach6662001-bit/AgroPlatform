@@ -14,6 +14,7 @@ import {
   useDashboardOperationsQuery,
 } from '../hooks/useDashboardQuery';
 import SeasonHealthCard from './Dashboard/components/SeasonHealthCard';
+import { HeroSection } from '@/components/dashboard/investor/HeroSection';
 import RevenueCostChart from './Dashboard/components/RevenueCostChart';
 import FieldStatusCard from './Dashboard/components/FieldStatusCard';
 import OperationsTimeline from './Dashboard/components/OperationsTimeline';
@@ -54,8 +55,22 @@ export default function Dashboard() {
     return <Navigate to="/onboarding" replace />;
   }
 
-  if (loading) return <><KpiSkeleton count={4} /><ChartSkeleton /><TableSkeletonNew /></>;
-  if (!data) return null;
+  // HeroSection renders with mock fallback regardless of backend state
+  if (loading) {
+    return (
+      <div className="page-enter">
+        <div className="mb-6"><HeroSection /></div>
+        <KpiSkeleton count={4} /><ChartSkeleton /><TableSkeletonNew />
+      </div>
+    );
+  }
+  if (!data) {
+    return (
+      <div className="page-enter">
+        <div className="mb-6"><HeroSection /></div>
+      </div>
+    );
+  }
 
   const expenses = data.totalCosts || data.monthlyExpenses;
   const revenue = data.totalRevenue || data.monthlyRevenue;
@@ -115,6 +130,11 @@ export default function Dashboard() {
 
   return (
     <div className="page-enter">
+      {/* Wave 1.5 Hero Section */}
+      <div className="mb-6">
+        <HeroSection />
+      </div>
+
       {/* Header + Weather */}
       <div className={s.flex_between_wrap}>
         <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
