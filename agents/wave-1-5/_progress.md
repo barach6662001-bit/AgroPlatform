@@ -17,6 +17,20 @@ Format:
 
 ---
 
+## task-03 — complete InvestorDashboard layout
+- Completed: 2026-04-17 UTC
+- Commit: TBD
+- Magic components used:
+  - 21st/DonutChart (adapted for: MarginalityBreakdown with culture colors + center animated total)
+- Custom written:
+  - SecondaryStats (3 queries failed; custom SVG semi-circle gauges + fuel/team cards)
+  - MarginalityBreakdown (uses DonutChart from 21st.dev + custom horizontal bars)
+  - placeholders.tsx (FieldMap/ActivityFeed/FinanceSection slots for later tasks)
+- Screenshots: agents/wave-1-5/task-03-{investor-full,secondary-stats,marginality-final}.png
+- Notes: Semi-circle gauge uses framer-motion animated strokeDashoffset on SVG arc path. MarginalityBreakdown donut center shows animated total on hover. All culture colors via CSS vars.
+
+---
+
 ## task-02 — role-based dashboard router
 - Completed: 2026-04-17 UTC
 - Commit: TBD
