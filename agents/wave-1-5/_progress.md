@@ -17,6 +17,40 @@ Format:
 
 ---
 
+## task-11 — Playwright QA + PR
+- Completed: 2026-04-17 UTC
+- Commit: c1d41bb
+- Screenshots: 10 final shots in docs/screenshots/wave-1-5/final/ (investor hero/feed/full/mobile, manager full/mobile, worker full/mobile, finance full/mobile)
+- Build: JS 1025kB gzip, CSS 36kB gzip — passes ✓
+- TypeScript: clean ✓
+- PR: see below
+
+---
+
+## Wave 1.5 complete
+
+- Tasks: 12 / 12 ✅ (task-00 through task-11)
+- Commits: 12 feature commits + 1 chore
+- Magic MCP components used: 1 (DonutChart from 21st.dev, used in MarginalityBreakdown + CostCategoriesPie)
+- Custom-written fallbacks: all other components (SeasonBanner, KPICard, HeroSection, FieldMap, ActivityFeed, SecondaryStats, MarginalityBreakdown, FinanceHighlights, ManagerDashboard x7, WorkerDashboard x5, FinanceDashboard x7, empty states x4)
+- Bundle: JS ~1025kB gzip (pre-existing single chunk), CSS 36kB gzip
+- New dependencies: framer-motion, leaflet, react-leaflet (added in Wave 1.5)
+- Screenshots: 10 final shots across all 4 roles + mobile
+- Dashboards working for all 4 roles:
+  - CompanyAdmin/SuperAdmin/Viewer → Investor ✓
+  - Manager → Manager ✓
+  - WarehouseOperator → Worker ✓
+  - Accountant → Finance ✓
+- Follow-ups:
+  - Backend: 4 dashboard API endpoints (/api/dashboard/{summary,fields-status,activity,manager,worker,finance-view})
+  - Backend: real NDVI data via Sentinel-2 (Wave 3)
+  - SignalR for live activity feed
+  - Light mode polish (Wave 2)
+  - Mapbox GL upgrade
+  - Wire real tenant context from authStore
+
+---
+
 ## task-10 — Rich Empty States
 - Completed: 2026-04-17 UTC
 - Commit: 21a6332
