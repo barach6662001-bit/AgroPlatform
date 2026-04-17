@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Menu } from 'antd';
 import {
-  LayoutDashboard, Map, Cog, Warehouse, Users,
-  Banknote, Settings,
+  LayoutDashboard, Map, Factory, Warehouse, Users,
+  Banknote, BarChart3, Settings,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
@@ -11,28 +11,38 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { useThemeStore } from '../../stores/themeStore';
 import s from './Sidebar.module.css';
 
-const groupKeys = new Set(['settings-group']);
+const groupKeys = new Set([
+  'fields-group', 'operations-group', 'storage-group',
+  'hr-group', 'finance-group', 'analytics-group',
+  'settings-group',
+]);
 
-const routeToKey: Array<[string, string]> = [
-  ['/fields', '/fields'],
-  ['/operations', '/operations'],
-  ['/warehouse', '/warehouse'],
-  ['/finance', '/finance'],
-  ['/team', '/team'],
+const routeToGroup: Array<[string, string]> = [
+  ['/fields/rotation-advisor', 'fields-group'],
+  ['/fields/leases', 'finance-group'],
+  ['/fields', 'fields-group'],
+  ['/operations', 'operations-group'],
+  ['/machinery', 'operations-group'],
+  ['/fleet', 'operations-group'],
+  ['/warehouses', 'storage-group'],
+  ['/storage', 'storage-group'],
+  ['/fuel', 'storage-group'],
+  ['/economics', 'finance-group'],
+  ['/sales', 'finance-group'],
+  ['/hr', 'hr-group'],
+  ['/analytics', 'analytics-group'],
   ['/settings', 'settings-group'],
   ['/admin', 'settings-group'],
   ['/superadmin', 'settings-group'],
 ];
 
-function getSelectedKey(pathname: string): string {
-  // Exact match for dashboard
-  if (pathname === '/dashboard') return '/dashboard';
-  for (const [prefix, key] of routeToKey) {
-    if (pathname === prefix || pathname.startsWith(prefix + '/') || pathname.startsWith(prefix + '?')) {
-      return key;
+function getGroupForPath(pathname: string): string | null {
+  for (const [prefix, group] of routeToGroup) {
+    if (pathname === prefix || pathname.startsWith(prefix + '/')) {
+      return group;
     }
   }
-  return '/dashboard';
+  return null;
 }
 
 interface SidebarProps {
@@ -50,77 +60,166 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const canFields      = hasPermission('Fields.View');
   const canMachinery   = hasPermission('Machinery.View');
   const canWarehouses  = hasPermission('Warehouses.View');
+  const canGrain       = hasPermission('GrainStorage.View');
+  const canFuel        = hasPermission('Fuel.View');
   const canSales       = hasPermission('Sales.View');
   const canEconomics   = hasPermission('Economics.View');
   const canHR          = hasPermission('HR.View');
+  const canAnalytics   = hasPermission('Analytics.View');
   const canAdmin       = hasPermission('Admin.Manage');
 
   const [openKeys, setOpenKeys] = useState<string[]>(() => {
-    const key = getSelectedKey(location.pathname);
-    return key === 'settings-group' ? ['settings-group'] : [];
+    const group = getGroupForPath(location.pathname);
+    return group ? [group] : [];
   });
 
   useEffect(() => {
-    const key = getSelectedKey(location.pathname);
-    if (key === 'settings-group' && !openKeys.includes('settings-group')) {
-      setOpenKeys((prev) => [...prev, 'settings-group']);
+    const group = getGroupForPath(location.pathname);
+    if (group && !openKeys.includes(group)) {
+      setOpenKeys((prev) => [...prev, group]);
     }
   }, [location.pathname]);
 
-  const selectedKey = getSelectedKey(location.pathname);
+  const fieldsChildren = [
+    { key: '/fields', label: t.nav.fields },
+    { key: '/fields/rotation-advisor', label: t.nav.cropRotationAdvisor },
+  ];
+
+  const operationsChildren = [
+    { key: '/operations', label: t.nav.operations },
+    { key: '/machinery', label: t.nav.machinery },
+    { key: '/fleet', label: t.nav.fleet },
+  ];
+
+  const storageChildren = [
+    { key: '/warehouses', label: t.nav.warehouses },
+    { key: '/warehouses/items', label: t.nav.materials },
+    { key: '/storage', label: t.nav.grainModule },
+    { key: '/fuel', label: t.nav.fuelStation },
+  ];
+
+  const hrChildren = [
+    { key: '/hr/employees', label: t.nav.employees },
+    { key: '/hr/worklogs', label: t.nav.workLogs },
+    { key: '/hr/salary', label: t.nav.salary },
+  ];
+
+  const financeChildren = [
+    { key: '/economics', label: t.nav.costs },
+    { key: '/economics/pnl', label: t.nav.pnl },
+    { key: '/economics/budget', label: t.nav.budget },
+    { key: '/fields/leases', label: t.nav.leases },
+    { key: '/sales', label: t.nav.sales },
+  ];
+
+  const analyticsChildren = [
+    { key: '/analytics/efficiency', label: t.nav.efficiency },
+    { key: '/analytics/resources', label: t.nav.resources },
+    { key: '/analytics/marginality', label: t.nav.marginality },
+    { key: '/economics/analytics', label: t.nav.costAnalytics },
+    { key: '/economics/marginality', label: t.nav.marginality },
+    { key: '/economics/season-comparison', label: t.nav.seasonComparison },
+    { key: '/economics/break-even', label: t.nav.breakEven },
+    { key: '/sales/analytics', label: t.nav.revenueAnalytics },
+    { key: '/analytics/salary-fuel', label: t.nav.salaryFuelAnalytics },
+  ];
+
+  const allLeafItems = [
+    { key: '/' },
+    ...fieldsChildren,
+    ...operationsChildren,
+    ...storageChildren,
+    ...financeChildren,
+    ...hrChildren,
+    ...analyticsChildren,
+    ...(isAdmin
+      ? [
+          { key: '/settings/users' },
+          { key: '/admin/role-permissions' },
+          { key: '/admin/approvals' },
+          { key: '/admin/approval-rules' },
+          { key: '/settings/audit' },
+          { key: '/admin/api-keys' },
+        ]
+      : []),
+    ...(isSuperAdmin
+      ? [{ key: '/superadmin/companies' }]
+      : []),
+  ];
 
   const menuItems = [
-    {
-      key: '/dashboard',
-      label: t.nav.dashboard,
-      icon: <LayoutDashboard size={16} strokeWidth={1.5} />,
-    },
+    { key: '/dashboard', label: t.nav.dashboard, icon: <LayoutDashboard size={16} strokeWidth={1.5} /> },
     { type: 'divider' as const },
     ...(canFields ? [{
-      key: '/fields',
+      key: 'fields-group',
       label: t.nav.fields,
       icon: <Map size={16} strokeWidth={1.5} />,
+      children: fieldsChildren,
     }] : []),
     ...(canMachinery ? [{
-      key: '/operations',
+      key: 'operations-group',
       label: t.nav.operationsGroup,
-      icon: <Cog size={16} strokeWidth={1.5} />,
+      icon: <Factory size={16} strokeWidth={1.5} />,
+      children: operationsChildren,
     }] : []),
     { type: 'divider' as const },
     ...(canWarehouses ? [{
-      key: '/warehouse',
-      label: t.nav.warehouse ?? t.nav.storageLogistics,
+      key: 'storage-group',
+      label: t.nav.storageLogistics,
       icon: <Warehouse size={16} strokeWidth={1.5} />,
+      children: storageChildren,
     }] : []),
     ...(canHR ? [{
-      key: '/team',
-      label: t.nav.team ?? t.nav.hr,
+      key: 'hr-group',
+      label: t.nav.hr,
       icon: <Users size={16} strokeWidth={1.5} />,
+      children: hrChildren,
     }] : []),
     { type: 'divider' as const },
-    ...((canEconomics || canSales) ? [{
-      key: '/finance',
+    ...(canEconomics ? [{
+      key: 'finance-group',
       label: t.nav.finance,
       icon: <Banknote size={16} strokeWidth={1.5} />,
+      children: financeChildren,
     }] : []),
-    ...(canAdmin ? [
-      { type: 'divider' as const },
-      {
-        key: 'settings-group',
-        label: t.nav.settings,
-        icon: <Settings size={16} strokeWidth={1.5} />,
-        children: [
-          { key: '/settings/users', label: t.nav.users },
-          { key: '/admin/role-permissions', label: t.nav.rolePermissions },
-          { key: '/admin/approvals', label: t.nav.approvals },
-          { key: '/admin/approval-rules', label: t.nav.approvalRules },
-          { key: '/settings/audit', label: t.nav.auditLog },
-          { key: '/admin/api-keys', label: t.nav.apiKeys },
-          ...(isSuperAdmin ? [{ key: '/superadmin/companies', label: t.nav.companies }] : []),
-        ],
-      },
-    ] : []),
+    ...(canAnalytics ? [{
+      key: 'analytics-group',
+      label: t.nav.analytics,
+      icon: <BarChart3 size={16} strokeWidth={1.5} />,
+      children: analyticsChildren,
+    }] : []),
+    ...(canAdmin
+      ? [
+          { type: 'divider' as const },
+          {
+            key: 'settings-group',
+            label: t.nav.settings,
+            icon: <Settings size={16} strokeWidth={1.5} />,
+            children: [
+              { key: '/settings/users', label: t.nav.users },
+              { key: '/admin/role-permissions', label: t.nav.rolePermissions },
+              { key: '/admin/approvals', label: t.nav.approvals },
+              { key: '/admin/approval-rules', label: t.nav.approvalRules },
+              { key: '/settings/audit', label: t.nav.auditLog },
+              { key: '/admin/api-keys', label: t.nav.apiKeys },
+              ...(isSuperAdmin
+                ? [{ key: '/superadmin/companies', label: t.nav.companies }]
+                : []),
+            ],
+          },
+        ]
+      : []),
   ];
+
+  const selectedKey =
+    allLeafItems
+      .slice()
+      .reverse()
+      .find(
+        (item) =>
+          location.pathname === item.key ||
+          (item.key !== '/' && location.pathname.startsWith(item.key))
+      )?.key ?? '/';
 
   return (
     <div className={s.flex_col}>
@@ -137,6 +236,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
         }}
         className={s.bg}
       />
+
     </div>
   );
 }

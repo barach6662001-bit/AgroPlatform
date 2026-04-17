@@ -11,8 +11,6 @@ interface Props {
   suffix?: string;
   hero?: boolean;
   accentColor?: string;
-  onClick?: () => void;
-  variant?: 'default' | 'compact' | 'hero';
 }
 
 function parseNumeric(value: string | number): { num: number; suffix: string; decimals: number } | null {
@@ -28,27 +26,21 @@ function parseNumeric(value: string | number): { num: number; suffix: string; de
   return { num, suffix: match[2] ? ' ' + match[2] : '', decimals: decimalPart ? decimalPart.length : 0 };
 }
 
-export default function KpiCard({ label, value, trend, delta, deltaLabel, prefix, suffix, hero, accentColor, onClick, variant }: Props) {
+export default function KpiCard({ label, value, trend, delta, deltaLabel, prefix, suffix, hero, accentColor }: Props) {
   const trendColor = trend && trend.value >= 0 ? 'var(--success)' : 'var(--error)';
   const trendIcon = trend ? (trend.value >= 0 ? '↑' : '↓') : '';
   const parsed = parseNumeric(value);
   const accent = accentColor ?? '#22C55E';
-  const isHero = hero || variant === 'hero';
-  const isCompact = variant === 'compact';
 
   return (
     <div
-      className={`${s.card} ${isHero ? s.hero : ''} ${isCompact ? s.compact : ''} ${onClick ? s.clickable : ''}`}
+      className={`${s.card} ${hero ? s.hero : ''}`}
       style={{ '--kpi-accent': accent } as React.CSSProperties}
-      onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
     >
       <div className={s.label}>
         {label}
       </div>
-      <div className={isHero ? s.valueHero : isCompact ? s.valueCompact : s.value}>
+      <div className={hero ? s.valueHero : s.value}>
         {prefix}
         {parsed ? (
           <CountUp

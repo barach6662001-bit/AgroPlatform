@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Space, DatePicker, message, Button, Modal, Form, Input, InputNumber, Select } from 'antd';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
-import { getSales, createSale, updateSale, deleteSale, getSalesAnalytics } from '../../api/sales';
+import { getSales, createSale, updateSale, deleteSale } from '../../api/sales';
 import { getFields } from '../../api/fields';
-import type { SaleDto, SalesAnalyticsDto } from '../../types/sales';
+import type { SaleDto } from '../../types/sales';
 import type { FieldDto } from '../../types/field';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
@@ -23,7 +23,6 @@ const UNITS = ['т', 'кг', 'л', 'шт'];
 
 export default function SalesList() {
   const [result, setResult] = useState<PaginatedResult<SaleDto> | null>(null);
-  const [analytics, setAnalytics] = useState<SalesAnalyticsDto | null>(null);
   const [fields, setFields] = useState<FieldDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState<string | undefined>();
@@ -63,7 +62,6 @@ export default function SalesList() {
 
   useEffect(() => {
     getFields({ pageSize: 200 }).then((r) => setFields(r.items)).catch(() => {});
-    getSalesAnalytics().then(setAnalytics).catch(() => {});
   }, []);
 
   const handleCreate = async () => {
@@ -113,8 +111,8 @@ export default function SalesList() {
   };
 
   const totalQuantity = result?.items.reduce((sum, s) => sum + s.quantity, 0) ?? 0;
-  const totalCount = analytics?.totalSalesCount ?? result?.totalCount ?? 0;
-  const totalRevenue = analytics?.totalRevenue ?? 0;
+  const totalCount = result?.totalCount ?? 0;
+  const totalRevenue = result?.items.reduce((sum, s) => sum + s.totalAmount, 0) ?? 0;
   const avgDeal = totalCount > 0 ? totalRevenue / totalCount : 0;
 
   const columns = [

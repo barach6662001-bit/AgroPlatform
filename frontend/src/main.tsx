@@ -6,12 +6,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import dayjs from 'dayjs';
 import 'dayjs/locale/uk';
 import 'leaflet/dist/leaflet.css';
-import './styles/index.css';
 import './theme/global.css';
 import './utils/leafletFix';
 import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary.tsx';
-import { ThemeProvider } from '@/components/theme-provider';
 
 registerSW({ immediate: false });
 
@@ -26,13 +24,11 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-      <QueryClientProvider client={queryClient}>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   </StrictMode>
 );

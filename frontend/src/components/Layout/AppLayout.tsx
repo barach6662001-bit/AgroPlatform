@@ -17,7 +17,7 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useTranslation, languages } from '../../i18n';
 import s from './AppLayout.module.css';
 
-const MOBILE_BREAKPOINT = 640;
+const MOBILE_BREAKPOINT = 768;
 const TABLET_BREAKPOINT = 1024;
 
 export default function AppLayout() {

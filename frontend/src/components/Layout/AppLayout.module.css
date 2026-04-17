@@ -234,36 +234,6 @@
   padding: 24px 28px;
 }
 
-/* ── Tablet: icon-only sidebar with hover expand ── */
-@media (min-width: 640px) and (max-width: 1023px) {
-  .sidebar {
-    position: relative;
-    z-index: 200;
-  }
-  .sidebar:hover {
-    width: 240px;
-    box-shadow: 4px 0 24px rgba(0,0,0,0.4);
-  }
-  .sidebar:not(:hover) .userMeta,
-  .sidebar:not(:hover) .topbarLabel {
-    display: none;
-  }
-}
-
-@media (max-width: 639px) {
+@media (max-width: 768px) {
   .pageArea { padding: 16px; }
-}
-
-@media (min-width: 640px) and (max-width: 1023px) {
-  .pageArea { padding: 20px 24px; }
-}
-
-/* Minimum touch target size for interactive elements on mobile */
-@media (max-width: 639px) {
-  .topbarBtn,
-  .topbarAction,
-  .logoutBtn {
-    min-height: 44px;
-    min-width: 44px;
-  }
 }

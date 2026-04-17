@@ -1,30 +1,27 @@
 import { useEffect } from 'react';
 import { message } from 'antd';
 import { KpiSkeleton, ChartSkeleton, TableSkeleton as TableSkeletonNew } from '../components/Skeletons';
+import { Clipboard, Fuel, Wheat, Receipt } from 'lucide-react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import type { FieldDto } from '../types/field';
 import type { AgroOperationDto } from '../types/operation';
 import PageHeader from '../components/PageHeader';
 import WeatherWidget from '../components/WeatherWidget';
+import AlertsPanel from '../components/dashboard/AlertsPanel';
 import { useTranslation } from '../i18n';
 import { useAuthStore } from '../stores/authStore';
+import { formatUA } from '../utils/numberFormat';
 import {
   useDashboardQuery,
   useDashboardFieldsQuery,
   useDashboardOperationsQuery,
 } from '../hooks/useDashboardQuery';
-import SeasonHealthCard from './Dashboard/components/SeasonHealthCard';
+import KpiHeroRow from './Dashboard/components/KpiHeroRow';
 import RevenueCostChart from './Dashboard/components/RevenueCostChart';
 import FieldStatusCard from './Dashboard/components/FieldStatusCard';
 import OperationsTimeline from './Dashboard/components/OperationsTimeline';
+import QuickActionsStrip from './Dashboard/components/QuickActionsStrip';
 import s from './Dashboard.module.css';
-
-function getSeasonDayOfYear(): number {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now.getTime() - start.getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
-}
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -57,61 +54,65 @@ export default function Dashboard() {
   if (loading) return <><KpiSkeleton count={4} /><ChartSkeleton /><TableSkeletonNew /></>;
   if (!data) return null;
 
+  const isWarehouseOp = role === 'WarehouseOperator';
+  const isAccountant = role === 'Accountant';
+
   const expenses = data.totalCosts || data.monthlyExpenses;
   const revenue = data.totalRevenue || data.monthlyRevenue;
   const profit = revenue - expenses;
-  const marginNum = revenue > 0 ? (profit / revenue) * 100 : 0;
+  const margin = revenue > 0 ? ((profit / revenue) * 100).toFixed(1) + '%' : undefined;
 
-  // Build contextual action items from real data
-  const actionItems: Array<{ id: string; text: string; route: string; severity: 'info' | 'warning' | 'critical' }> = [];
-  if (data.underRepairMachines > 0) {
-    actionItems.push({
-      id: 'machinery',
-      text: `${data.underRepairMachines} ${data.underRepairMachines === 1 ? 'одиниця техніки' : 'одиниці техніки'} на ремонті`,
-      route: '/operations?tab=machinery',
-      severity: 'warning',
-    });
-  }
-  if (data.pendingOperations > 0) {
-    actionItems.push({
-      id: 'pending',
-      text: `${data.pendingOperations} незавершених операцій`,
-      route: '/operations?tab=operations',
-      severity: 'info',
-    });
-  }
-  if (marginNum < 0) {
-    actionItems.push({
-      id: 'margin',
-      text: "Від\u2019ємна маржинальність — перевірте витрати",
-      route: '/finance?tab=analytics&dim=category',
-      severity: 'critical',
-    });
-  }
-  if (data.totalFields === 0) {
-    actionItems.push({
-      id: 'nofields',
-      text: 'Додайте поля для повної аналітики',
-      route: '/fields',
-      severity: 'info',
-    });
-  }
+  const kpiItems = [
+    {
+      label: t.dashboard.totalArea,
+      value: `${formatUA(data.totalAreaHectares)} га`,
+      accentColor: '#22C55E',
+    },
+    {
+      label: t.dashboard.seasonExpenses ?? t.dashboard.monthlyExpenses,
+      value: `${formatUA(expenses)} ₴`,
+      accentColor: '#EF4444',
+    },
+    {
+      label: t.dashboard.seasonRevenue ?? t.dashboard.monthlyRevenue,
+      value: `${formatUA(revenue)} ₴`,
+      accentColor: '#3B82F6',
+    },
+    {
+      label: t.dashboard.seasonProfit ?? t.dashboard.monthlyProfit,
+      value: `${formatUA(profit)} ₴`,
+      accentColor: '#F59E0B',
+      hero: true,
+      delta: margin,
+      deltaLabel: t.dashboard.margin ?? 'маржа',
+    },
+  ];
 
-  // Build chart data: merge cost and revenue by month key
-  const revenueTrendMap = new Map(
-    (data.revenueTrend ?? []).map((item) => [
-      `${item.year}-${String(item.month).padStart(2, '0')}`,
-      item.totalAmount,
-    ])
-  );
-  const costTrendData = data.costTrend.map((item) => {
-    const key = `${item.year}-${String(item.month).padStart(2, '0')}`;
-    return {
-      name: key,
-      cost: item.totalAmount,
-      revenue: revenueTrendMap.get(key) ?? 0,
-    };
-  });
+  const costTrendData = data.costTrend.map((item) => ({
+    name: `${item.year}-${String(item.month).padStart(2, '0')}`,
+    cost: item.totalAmount,
+  }));
+
+  const quickActions = isWarehouseOp
+    ? [
+        { label: t.dashboard.quickOperation, icon: <Clipboard size={16} />, color: '#3B82F6', route: '/operations' },
+        { label: t.dashboard.quickFuel, icon: <Fuel size={16} />, color: '#F59E0B', route: '/fuel' },
+        { label: t.dashboard.quickGrain ?? t.nav.grainModule, icon: <Wheat size={16} />, color: '#22C55E', route: '/storage' },
+        { label: t.dashboard.quickCost, icon: <Receipt size={16} />, color: '#8B5CF6', route: '/economics' },
+      ]
+    : isAccountant
+    ? [
+        { label: t.dashboard.quickCost, icon: <Receipt size={16} />, color: '#8B5CF6', route: '/economics' },
+        { label: t.nav.pnl, icon: <Receipt size={16} />, color: '#3B82F6', route: '/economics/pnl' },
+        { label: t.dashboard.quickOperation, icon: <Clipboard size={16} />, color: '#3B82F6', route: '/operations' },
+        { label: t.dashboard.quickGrain ?? t.nav.grainModule, icon: <Wheat size={16} />, color: '#22C55E', route: '/storage' },
+      ]
+    : [
+        { label: t.dashboard.quickOperation, icon: <Clipboard size={16} />, color: '#3B82F6', route: '/operations' },
+        { label: t.dashboard.quickFuel, icon: <Fuel size={16} />, color: '#F59E0B', route: '/fuel' },
+        { label: t.dashboard.quickGrain ?? t.nav.grainModule, icon: <Wheat size={16} />, color: '#22C55E', route: '/storage' },
+        { label: t.dashboard.quickCost, icon: <Receipt size={16} />, color: '#8B5CF6', route: '/economics' },
+      ];
 
   return (
     <div className="page-enter">
@@ -121,16 +122,18 @@ export default function Dashboard() {
         <WeatherWidget />
       </div>
 
-      {/* Season Health Hero */}
-      <SeasonHealthCard
-        revenue={revenue}
-        costs={expenses}
-        profit={profit}
-        margin={marginNum}
-        seasonDayOfYear={getSeasonDayOfYear()}
-        seasonYear={new Date().getFullYear()}
-        actionItems={actionItems}
-      />
+      {/* KPI Hero Row */}
+      <KpiHeroRow items={kpiItems} />
+
+      {/* Alerts */}
+      {(data.underRepairMachines > 0 || data.pendingOperations > 0) && (
+        <div className={s.alertsGap}>
+          <AlertsPanel
+            underRepairMachines={data.underRepairMachines}
+            pendingOperations={data.pendingOperations}
+          />
+        </div>
+      )}
 
       {/* Revenue/Cost Chart */}
       {costTrendData.length > 0 && (
@@ -138,11 +141,10 @@ export default function Dashboard() {
           data={costTrendData}
           title={t.dashboard.costTrend}
           costLabel={t.dashboard.costsUAH}
-          revenueLabel={t.dashboard.seasonRevenue ?? 'Дохід'}
         />
       )}
 
-      {/* Fields + Operations — below the fold */}
+      {/* Fields + Operations */}
       <div className={s.contentGrid}>
         <FieldStatusCard fields={fields} onAddField={() => navigate('/fields')} />
         <div className={s.timelineCard}>
@@ -152,6 +154,9 @@ export default function Dashboard() {
           <OperationsTimeline operations={operations.slice(0, 7)} />
         </div>
       </div>
+
+      {/* Quick Actions */}
+      <QuickActionsStrip actions={quickActions} />
     </div>
   );
 }
