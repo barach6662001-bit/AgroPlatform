@@ -48,6 +48,7 @@ import NotFound from './pages/NotFound';
 import OnboardingWizard from './pages/Onboarding/OnboardingWizard';
 import LandingPage from './pages/Landing/LandingPage';
 import { useAuthStore } from './stores/authStore';
+import DesignSystemPreview from './pages/__design-system';
 
 function RootRoute() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -75,6 +76,7 @@ export default function App() {
       <ErrorBoundary>
         <BrowserRouter>
           <Routes>
+            <Route path="/__design-system" element={<DesignSystemPreview />} />
             <Route path="/" element={<RootRoute />} />
             <Route path="/login" element={<Login />} />
             <Route path="/landing" element={<LandingPage />} />
