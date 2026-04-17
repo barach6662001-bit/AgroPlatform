@@ -1,11 +1,9 @@
 import { HeroSection } from '@/components/dashboard/investor/HeroSection';
 import { FieldMap } from '@/components/dashboard/investor/FieldMap';
+import { ActivityFeed } from '@/components/dashboard/investor/ActivityFeed';
 import { SecondaryStats } from '@/components/dashboard/investor/SecondaryStats';
 import { MarginalityBreakdown } from '@/components/dashboard/investor/MarginalityBreakdown';
-import {
-  ActivityFeedPlaceholder,
-  FinanceSectionPlaceholder,
-} from '@/components/dashboard/investor/placeholders';
+import { FinanceSectionPlaceholder } from '@/components/dashboard/investor/placeholders';
 
 export default function InvestorDashboard() {
   return (
@@ -21,7 +19,7 @@ export default function InvestorDashboard() {
           <div className="lg:col-span-2">
             <FieldMap />
           </div>
-          <ActivityFeedPlaceholder />
+          <ActivityFeed />
         </div>
 
         <SecondaryStats />
