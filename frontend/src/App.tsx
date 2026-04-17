@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from '@/components/ui/sonner';
 import { ConfigProvider } from 'antd';
 import ukUA from 'antd/locale/uk_UA';
 import enUS from 'antd/locale/en_US';
@@ -66,6 +67,7 @@ export default function App() {
   }, [theme]);
 
   return (
+    <>
     <ConfigProvider
       locale={lang === 'uk' ? ukUA : enUS}
       theme={theme === 'dark' ? darkTheme : lightTheme}
@@ -173,5 +175,7 @@ export default function App() {
         </BrowserRouter>
       </ErrorBoundary>
     </ConfigProvider>
+    <Toaster position="top-right" richColors={false} closeButton />
+    </>
   );
 }

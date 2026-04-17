@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { DataTable } from '@/components/data-table/data-table'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { toast } from 'sonner'
 import type { ColumnDef } from '@tanstack/react-table'
 
 type SmokeRow = { name: string; qty: number; status: string }
@@ -47,6 +50,27 @@ export function PrimitivesSmoke() {
           <Badge>default</Badge>
           <Badge variant="secondary">secondary</Badge>
           <Badge variant="outline">outline</Badge>
+        </div>
+        <Separator />
+        <div className="flex gap-2 flex-wrap">
+          <Dialog>
+            <DialogTrigger asChild><Button variant="outline">Open dialog</Button></DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle>Dialog</DialogTitle></DialogHeader>
+              <p className="text-fg-secondary text-sm">Body content.</p>
+            </DialogContent>
+          </Dialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild><Button variant="outline">Menu</Button></DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DropdownMenuItem>Duplicate</DropdownMenuItem>
+              <DropdownMenuItem className="text-danger">Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button variant="outline" onClick={() => toast.success('Saved', { description: '3 rows updated' })}>
+            Toast
+          </Button>
         </div>
         <Separator />
         <DataTable columns={smokeColumns} data={smokeData} />
