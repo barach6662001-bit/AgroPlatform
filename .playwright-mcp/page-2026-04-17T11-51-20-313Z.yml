@@ -1,0 +1,18 @@
+- generic [ref=e2]:
+  - generic [ref=e114]:
+    - generic [ref=e115]: "500"
+    - heading "Something went wrong" [level=1] [ref=e116]
+    - paragraph [ref=e117]: An unexpected error occurred. Try refreshing, or clear your data if the problem persists.
+    - generic [ref=e118]:
+      - button "Clear data & reload" [ref=e119] [cursor=pointer]
+      - button "Reload page" [ref=e120] [cursor=pointer]
+    - group [ref=e121]:
+      - generic "Error details (dev only)" [active] [ref=e122] [cursor=pointer]
+      - generic [ref=e123]:
+        - generic [ref=e124]: Cannot read properties of undefined (reading "id")
+        - generic [ref=e125]: "Error: Cannot read properties of undefined (reading \"id\") at FieldDetail (FieldDetail.tsx:58:18) at renderWithHooks (chunk-react-dom.js:14985) at updateFunctionComponent (chunk-react-dom.js:17356) at beginWork (chunk-react-dom.js:19063)"
+  - region "Notifications alt+T"
+  - generic [ref=e15]:
+    - img [ref=e17]
+    - button "Open Tanstack query devtools" [ref=e65] [cursor=pointer]:
+      - img [ref=e66]

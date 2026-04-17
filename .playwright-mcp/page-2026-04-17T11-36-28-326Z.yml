@@ -1,0 +1,109 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - complementary:
+          - generic:
+            - generic:
+              - generic: Overview
+              - navigation:
+                - generic:
+                  - link:
+                    - /url: /dashboard
+                    - img
+                    - generic: Dashboard
+                    - generic: G D
+          - generic:
+            - generic:
+              - generic: Synced 20s ago
+            - button:
+              - img
+              - generic: Collapse
+      - generic:
+        - banner:
+          - button:
+            - generic: demo-tenant
+            - img
+          - generic:
+            - navigation:
+              - generic:
+                - link:
+                  - /url: /dashboard
+                  - text: Home
+              - generic:
+                - img
+                - generic: Dashboard
+          - button:
+            - img
+            - generic: Search...
+            - generic: ⌘K
+          - button:
+            - img
+          - button:
+            - img
+          - button:
+            - generic:
+              - generic: DE
+            - generic: DE
+        - main
+    - region "Notifications alt+T"
+    - generic:
+      - generic:
+        - img
+      - button:
+        - img
+  - dialog [ref=e297]:
+    - generic [ref=e298]:
+      - generic [ref=e300]:
+        - img [ref=e301]
+        - combobox [expanded] [active] [ref=e304]
+      - listbox "Suggestions" [ref=e305]:
+        - generic [ref=e306]:
+          - generic [ref=e307]: Navigate
+          - group "Navigate" [ref=e308]:
+            - option "Go to Dashboard G D" [selected] [ref=e309]:
+              - img
+              - generic [ref=e310]: Go to Dashboard
+              - generic [ref=e311]: G D
+            - option "Go to Grain Storage G R" [ref=e312]:
+              - img
+              - generic [ref=e313]: Go to Grain Storage
+              - generic [ref=e314]: G R
+            - option "Go to Fuel" [ref=e315]:
+              - img
+              - generic [ref=e316]: Go to Fuel
+          - generic [ref=e317]: Actions
+          - group "Actions"
+          - generic [ref=e318]: Switch
+          - group "Switch" [ref=e319]:
+            - option "Switch company" [ref=e320]:
+              - img
+              - generic [ref=e321]: Switch company
+            - option "Toggle theme ⇧ L" [ref=e322]:
+              - img
+              - generic [ref=e323]: Toggle theme
+              - generic [ref=e324]: ⇧ L
+            - option "Toggle density ⇧ D" [ref=e325]:
+              - img
+              - generic [ref=e326]: Toggle density
+              - generic [ref=e327]: ⇧ D
+          - generic [ref=e328]: Help
+          - group "Help" [ref=e329]:
+            - option "Keyboard shortcuts ⌘ /" [ref=e330]:
+              - img
+              - generic [ref=e331]: Keyboard shortcuts
+              - generic [ref=e332]: ⌘ /
+            - option "Documentation" [ref=e333]:
+              - img
+              - generic [ref=e334]: Documentation
+            - option "Sign out ⌘ Q" [ref=e335]:
+              - img
+              - generic [ref=e336]: Sign out
+              - generic [ref=e337]: ⌘ Q
+      - generic [ref=e338]:
+        - generic [ref=e339]: ↑↓ navigate
+        - generic [ref=e340]: ⏎ select
+        - generic [ref=e341]: ESC close
+    - button "Close" [ref=e342] [cursor=pointer]:
+      - img [ref=e343]
+      - generic [ref=e346]: Close

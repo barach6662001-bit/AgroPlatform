@@ -1,0 +1,56 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - complementary [ref=e5]:
+        - generic [ref=e7]:
+          - generic [ref=e8]: Overview
+          - navigation "Overview" [ref=e9]:
+            - link "Dashboard G D" [ref=e11] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e13]
+              - generic [ref=e18]: Dashboard
+              - generic [ref=e19]: G D
+        - generic [ref=e20]:
+          - generic [ref=e23]: Synced just now
+          - button "Collapse sidebar" [ref=e24] [cursor=pointer]:
+            - img
+            - generic [ref=e25]: Collapse
+      - generic [ref=e26]:
+        - banner [ref=e27]:
+          - generic [ref=e28]:
+            - button "Пошук ⌘K" [ref=e29] [cursor=pointer]:
+              - img [ref=e31]
+              - generic [ref=e34]:
+                - text: Пошук
+                - generic [ref=e35]: ⌘K
+            - button "loading Синхронізація..." [disabled] [ref=e36]:
+              - generic:
+                - img "loading":
+                  - img
+              - generic: Синхронізація...
+            - button "UA UA" [ref=e38] [cursor=pointer]:
+              - img "UA" [ref=e39]
+              - generic [ref=e40]: UA
+            - button [ref=e41] [cursor=pointer]:
+              - img [ref=e43]
+            - button "bell" [ref=e46] [cursor=pointer]:
+              - img "bell" [ref=e48]:
+                - img [ref=e49]
+            - button "Вийти" [ref=e52] [cursor=pointer]:
+              - img [ref=e54]
+              - generic [ref=e57]: Вийти
+        - main [ref=e58]
+    - region "Notifications alt+T"
+    - generic [ref=e124]:
+      - img [ref=e126]
+      - button "Open Tanstack query devtools" [ref=e174] [cursor=pointer]:
+        - img [ref=e175]
+  - generic:
+    - generic [ref=e224]:
+      - img "exclamation-circle" [ref=e225]:
+        - img [ref=e226]
+      - generic [ref=e228]: Не вдалося завантажити список ферм
+    - generic [ref=e230]:
+      - img "exclamation-circle" [ref=e231]:
+        - img [ref=e232]
+      - generic [ref=e234]: Не вдалося завантажити список ферм

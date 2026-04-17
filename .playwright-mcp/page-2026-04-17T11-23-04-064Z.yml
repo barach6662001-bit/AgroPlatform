@@ -1,0 +1,95 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - complementary [ref=e5]:
+        - generic [ref=e7]:
+          - generic [ref=e8]: Overview
+          - navigation "Overview" [ref=e9]:
+            - link "Dashboard G D" [ref=e11] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e13]
+              - generic [ref=e18]: Dashboard
+              - generic [ref=e19]: G D
+        - generic [ref=e20]:
+          - generic [ref=e23]: Synced 20s ago
+          - button "Collapse sidebar" [ref=e24] [cursor=pointer]:
+            - img
+            - generic [ref=e25]: Collapse
+      - generic [ref=e26]:
+        - banner [ref=e27]:
+          - button "demo-tenant" [ref=e28] [cursor=pointer]:
+            - generic [ref=e29]: demo-tenant
+            - img
+          - navigation "Breadcrumb" [ref=e32]:
+            - link "Home" [ref=e34] [cursor=pointer]:
+              - /url: /dashboard
+            - generic [ref=e35]:
+              - img [ref=e36]
+              - generic [ref=e38]: Dashboard
+          - button "Search... ⌘K" [ref=e39] [cursor=pointer]:
+            - img [ref=e40]
+            - generic [ref=e43]: Search...
+            - generic [ref=e44]: ⌘K
+          - button "Notifications" [ref=e45] [cursor=pointer]:
+            - img
+          - button "Toggle theme" [ref=e46] [cursor=pointer]:
+            - img
+          - button "User menu" [expanded] [ref=e48] [cursor=pointer]:
+            - generic [ref=e50]: DE
+            - generic [ref=e51]: DE
+        - main [ref=e53]
+    - region "Notifications alt+T"
+    - generic [ref=e119]:
+      - img [ref=e121]
+      - button "Open Tanstack query devtools" [ref=e169] [cursor=pointer]:
+        - img [ref=e170]
+  - dialog [ref=e303]:
+    - generic [ref=e305]:
+      - generic [ref=e307]: DE
+      - generic [ref=e308]:
+        - generic [ref=e309]: Demo User
+        - generic [ref=e310]: demo@agroplatform.com
+        - generic [ref=e311]: CompanyAdmin · demo-tenant
+    - generic [ref=e312]:
+      - button "Profile" [active] [ref=e313] [cursor=pointer]:
+        - img [ref=e314]
+        - generic [ref=e317]: Profile
+      - button "Preferences" [ref=e318] [cursor=pointer]:
+        - img [ref=e319]
+        - generic [ref=e322]: Preferences
+    - generic [ref=e323]:
+      - generic [ref=e324]:
+        - generic [ref=e325]: Appearance
+        - generic [ref=e326]:
+          - button "light" [ref=e327] [cursor=pointer]
+          - button "dark" [ref=e328] [cursor=pointer]
+          - button "system" [ref=e329] [cursor=pointer]
+      - generic [ref=e330]:
+        - generic [ref=e331]: Density
+        - generic [ref=e332]:
+          - button "Compact" [ref=e333] [cursor=pointer]
+          - button "Comfortable" [ref=e334] [cursor=pointer]
+      - generic [ref=e335]:
+        - generic [ref=e336]: Language
+        - generic [ref=e337]:
+          - button "English" [ref=e338] [cursor=pointer]
+          - button "Українська" [ref=e339] [cursor=pointer]
+    - generic [ref=e340]:
+      - button "What's new 3" [ref=e341] [cursor=pointer]:
+        - img [ref=e342]
+        - generic [ref=e345]: What's new
+        - generic [ref=e346]: "3"
+      - button "Keyboard shortcuts ⌘ /" [ref=e347] [cursor=pointer]:
+        - img [ref=e348]
+        - generic [ref=e350]: Keyboard shortcuts
+        - generic [ref=e351]: ⌘ /
+      - button "Help & docs" [ref=e352] [cursor=pointer]:
+        - img [ref=e353]
+        - generic [ref=e355]: Help & docs
+      - button "Contact support" [ref=e356] [cursor=pointer]:
+        - img [ref=e357]
+        - generic [ref=e359]: Contact support
+    - button "Sign out ⌘ Q" [ref=e361] [cursor=pointer]:
+      - img [ref=e362]
+      - generic [ref=e365]: Sign out
+      - generic [ref=e366]: ⌘ Q

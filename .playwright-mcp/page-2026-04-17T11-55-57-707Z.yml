@@ -1,0 +1,84 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - complementary [ref=e5]:
+        - generic [ref=e7]:
+          - generic [ref=e8]: Overview
+          - navigation "Overview" [ref=e9]:
+            - link "Dashboard G D" [ref=e11] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e13]
+              - generic [ref=e18]: Dashboard
+              - generic [ref=e19]: G D
+        - generic [ref=e20]:
+          - generic [ref=e23]: Synced just now
+          - button "Collapse sidebar" [ref=e24] [cursor=pointer]:
+            - img
+            - generic [ref=e25]: Collapse
+      - generic [ref=e26]:
+        - banner [ref=e27]:
+          - button "tenant-1" [ref=e28] [cursor=pointer]:
+            - generic [ref=e29]: tenant-1
+            - img
+          - navigation "Breadcrumb" [ref=e32]:
+            - link "Home" [ref=e34] [cursor=pointer]:
+              - /url: /dashboard
+            - generic [ref=e35]:
+              - img [ref=e36]
+              - generic [ref=e38]: Dashboard
+          - button "Search... ⌘K" [ref=e39] [cursor=pointer]:
+            - img [ref=e40]
+            - generic [ref=e43]: Search...
+            - generic [ref=e44]: ⌘K
+          - button "Notifications" [ref=e45] [cursor=pointer]:
+            - img
+          - button "Toggle theme" [ref=e46] [cursor=pointer]:
+            - img
+          - button "User menu" [ref=e48] [cursor=pointer]:
+            - generic [ref=e50]: DE
+            - generic [ref=e51]: DE
+        - main [ref=e53]
+    - region "Notifications alt+T"
+    - generic [ref=e119]:
+      - img [ref=e121]
+      - button "Open Tanstack query devtools" [ref=e169] [cursor=pointer]:
+        - img [ref=e170]
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - alert:
+            - img "close-circle":
+              - img
+            - generic: Помилка сервера
+            - generic: Request failed with status code 500
+        - generic "Close":
+          - img "close":
+            - img
+    - generic [ref=e219]:
+      - alert [ref=e221]:
+        - img "close-circle" [ref=e222]:
+          - img [ref=e223]
+        - generic [ref=e225]: Помилка сервера
+        - generic [ref=e226]: Request failed with status code 500
+      - generic "Close" [ref=e227] [cursor=pointer]:
+        - img "close" [ref=e228]:
+          - img [ref=e229]
+    - generic [ref=e232]:
+      - alert [ref=e234]:
+        - img "close-circle" [ref=e235]:
+          - img [ref=e236]
+        - generic [ref=e238]: Помилка сервера
+        - generic [ref=e239]: Request failed with status code 500
+      - generic "Close" [ref=e240] [cursor=pointer]:
+        - img "close" [ref=e241]:
+          - img [ref=e242]
+    - generic [ref=e245]:
+      - alert [ref=e247]:
+        - img "close-circle" [ref=e248]:
+          - img [ref=e249]
+        - generic [ref=e251]: Помилка сервера
+        - generic [ref=e252]: Request failed with status code 500
+      - generic "Close" [ref=e253] [cursor=pointer]:
+        - img "close" [ref=e254]:
+          - img [ref=e255]
