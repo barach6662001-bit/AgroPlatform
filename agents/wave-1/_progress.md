@@ -84,3 +84,27 @@ Format:
 - Screenshots: docs/screenshots/wave-1/task-09-404-light.png, task-09-404-dark.png, task-09-403.png, task-09-500-dev.png, task-09-maintenance.png
 - AntD allowlist: removed AccessDenied.tsx, NotFound.tsx, ServerError.tsx (new total: 98)
 - Notes: Outer `<Route path="*" element={<NotFound />}>` was unreachable because the pathless layout route caught everything first. Fixed by adding explicit `/not-found` route outside layout + changing inner catch-all to redirect to /not-found. AppErrorBoundary renders inline HTML (no ErrorPage dependency) to avoid Router context issues. 500 screenshot taken by injecting error state via React fiber traversal.
+
+## task-10 — Polish, QA Sweep, and PR
+- Completed: 2026-04-17 13:00 UTC
+- Commit: 0422fe5
+- Screenshots: 25 screenshots in docs/screenshots/wave-1/final/ (desktop light/dark/rail/comfortable + mobile + error + interactive)
+- AntD allowlist: 109 → 98 (-11 files over Wave 1)
+- Notes: Found and fixed 3 bugs during QA: (1) usePermissions() never wired into AppLayout — permissions were never fetched; (2) Sidebar subscribed to hasPermission (stable ref) but not role — nav items never re-rendered after permissions loaded; (3) window.open() return type caused build error in command-registry.ts. Playwright route intercept **/api/** accidentally served JSON for Vite source files — fixed by using specific endpoint URL.
+
+---
+
+## Wave 1 complete
+
+- Tasks: 11 / 11 ✅
+- Commits: 13
+- AntD allowlist: 109 → 98 (delta: -11 files)
+- Bundle: JS 1,005 kB gz (3,435 kB raw), CSS 36 kB gz (158 kB raw)
+- New dependencies added: shadcn/ui primitives, cmdk, react-hotkeys-hook v5, next-themes, react-hook-form v7, zod v4, @hookform/resolvers v5
+- Screenshots: 25 final + ~40 task screenshots
+- Follow-ups logged:
+  - [backend] Magic link endpoint (task-05)
+  - [backend] 30-day refresh token option (task-05)
+  - [backend] Tenant list + switch-tenant endpoint (task-02/03)
+  - [frontend] Wire useIsFetching into SidebarSyncStatus for true sync indicator (task-01)
+  - [wave-2] Migrate Dashboard cards and operational modules to new design tokens
