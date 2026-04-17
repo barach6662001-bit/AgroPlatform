@@ -14,6 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
+import { DatePicker } from '@/components/ui/date-picker'
 import { exampleSchema, type ExampleInput } from '@/domain/validation/example.schema'
 import type { ColumnDef } from '@tanstack/react-table'
 
@@ -90,6 +91,7 @@ function SmokeForm() {
 }
 
 export function PrimitivesSmoke() {
+  const [d, setD] = React.useState<Date>()
   return (
     <Card className="p-4 max-w-2xl">
       <CardHeader><CardTitle>Smoke test</CardTitle></CardHeader>
@@ -133,6 +135,7 @@ export function PrimitivesSmoke() {
           </Button>
         </div>
         <Separator />
+        <DatePicker value={d} onChange={setD} />
         <SmokeForm />
         <Separator />
         <DataTable columns={smokeColumns} data={smokeData} />
