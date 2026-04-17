@@ -24,7 +24,7 @@ export default function Login() {
   const setAuth = useAuthStore((s) => s.setAuth)
 
   const form = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema) as any,
+    resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '', rememberMe: false },
   })
 
@@ -51,8 +51,9 @@ export default function Login() {
       }
       const lastRoute = localStorage.getItem('last-route') || '/dashboard'
       navigate(lastRoute)
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message ?? err?.message ?? 'Could not sign in. Check your credentials.')
+    } catch (err) {
+      const e = err as { response?: { data?: { message?: string } }; message?: string }
+      toast.error(e?.response?.data?.message ?? e?.message ?? 'Could not sign in. Check your credentials.')
     } finally {
       setLoading(false)
     }

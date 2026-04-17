@@ -22,7 +22,7 @@ export default function ChangePassword() {
   const email = useAuthStore((s) => s.email)
 
   const form = useForm<ChangePasswordInput>({
-    resolver: zodResolver(changePasswordSchema) as any,
+    resolver: zodResolver(changePasswordSchema),
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
   })
   const { register, handleSubmit, formState: { errors } } = form
