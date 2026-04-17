@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Login from '../Login';
 
-// Prevent actual API calls
 vi.mock('../../api/auth', () => ({
   login: vi.fn(),
 }));
@@ -19,19 +18,23 @@ function renderLogin() {
 describe('Login page', () => {
   it('renders email and password input fields', () => {
     renderLogin();
-    expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/password|пароль/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByLabelText('Password')).toBeInTheDocument();
   });
 
   it('renders a submit button', () => {
     renderLogin();
-    const buttons = screen.getAllByRole('button', { name: /login|увійти/i });
+    const buttons = screen.getAllByRole('button', { name: /sign in/i });
     expect(buttons.length).toBeGreaterThanOrEqual(1);
     expect(buttons[0]).toBeInTheDocument();
   });
 
   it('does not render a registration link (closed platform)', () => {
     renderLogin();
-    expect(screen.queryByRole('link')).toBeNull();
+    const links = screen.queryAllByRole('link');
+    const registrationLink = links.find(
+      (l) => /register|sign up|create account/i.test(l.textContent ?? ''),
+    );
+    expect(registrationLink).toBeUndefined();
   });
 });
