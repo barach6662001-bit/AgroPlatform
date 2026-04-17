@@ -5,12 +5,14 @@ import { Sidebar } from '@/components/shell/sidebar';
 import { Topbar } from '@/components/shell/topbar';
 import { PageTransition } from '../PageTransition';
 import { useAuthStore } from '../../stores/authStore';
+import { usePermissions } from '@/hooks/usePermissions';
 import CommandPalette from '../CommandPalette';
 import { useCommandShortcuts } from '@/hooks/useCommandShortcuts';
 import s from './AppLayout.module.css';
 
 export default function AppLayout() {
   useCommandShortcuts()
+  usePermissions()
 
   const { tenantId } = useAuthStore();
   const queryClient = useQueryClient();

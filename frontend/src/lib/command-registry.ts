@@ -89,7 +89,7 @@ export const commands: Command[] = [
     run: (c) => c.openShortcutsModal() },
   { id: 'help.docs', label: 'Documentation',
     category: 'help', icon: BookOpen,
-    run: () => window.open('https://docs.agroplatform.com', '_blank') },
+    run: () => { window.open('https://docs.agroplatform.com', '_blank') } },
   { id: 'help.logout', label: 'Sign out',
     category: 'help', icon: LogOut, shortcut: '⌘ Q',
     run: (c) => c.logout() },

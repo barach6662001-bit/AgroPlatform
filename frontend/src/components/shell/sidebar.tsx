@@ -12,6 +12,8 @@ export function Sidebar() {
   const collapsed = usePreferencesStore((s) => s.sidebarCollapsed)
   const toggle = usePreferencesStore((s) => s.toggleSidebar)
   const hasPermission = usePermissionsStore((s) => s.hasPermission)
+  // Subscribe to role so Sidebar re-renders when permissions load (hasPermission is a stable ref)
+  usePermissionsStore((s) => s.role)
 
   const canSee = (perm?: string) => !perm || hasPermission(perm)
 
