@@ -1,0 +1,23 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]: "403"
+    - heading "Access denied" [level=1] [ref=e5]
+    - paragraph [ref=e6]: You don't have permission to view this page. Ask your administrator if you think this is a mistake.
+    - generic [ref=e7]:
+      - button "Go back" [ref=e8] [cursor=pointer]:
+        - img
+        - text: Go back
+      - button "Go to dashboard" [ref=e9] [cursor=pointer]:
+        - text: Go to dashboard
+        - img
+    - generic [ref=e10]:
+      - img [ref=e11]
+      - generic [ref=e13]:
+        - text: Need help?
+        - link "Contact support" [ref=e14] [cursor=pointer]:
+          - /url: mailto:support@agroplatform.com
+  - region "Notifications alt+T"
+  - generic [ref=e15]:
+    - img [ref=e17]
+    - button "Open Tanstack query devtools" [ref=e65] [cursor=pointer]:
+      - img [ref=e66]

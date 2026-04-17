@@ -1,19 +1,9 @@
-import { Result, Button } from 'antd';
-import { useTranslation } from '../i18n';
-
+import { ErrorPage } from '@/components/error/error-page'
 export default function ServerError() {
-  const { t } = useTranslation();
-
   return (
-    <Result
-      status="500"
-      title={t.errors.serverError}
-      subTitle={t.errors.serverErrorDesc}
-      extra={
-        <Button type="primary" onClick={() => window.location.reload()}>
-          {t.errors.tryAgain}
-        </Button>
-      }
+    <ErrorPage
+      code="500"
+      primaryAction={{ label: 'Reload page', onClick: () => window.location.reload() }}
     />
-  );
+  )
 }

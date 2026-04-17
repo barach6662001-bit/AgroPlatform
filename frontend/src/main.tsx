@@ -12,6 +12,12 @@ import './utils/leafletFix';
 import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary.tsx';
 import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeBridge } from '@/components/theme-bridge';
+import { usePreferencesStore } from '@/stores/preferencesStore';
+
+// Apply saved density before first render
+const _initialDensity = usePreferencesStore.getState().density;
+document.documentElement.dataset.density = _initialDensity;
 
 registerSW({ immediate: false });
 
@@ -27,6 +33,7 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+      <ThemeBridge />
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary>
           <App />

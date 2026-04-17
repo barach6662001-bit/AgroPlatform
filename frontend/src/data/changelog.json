@@ -1,0 +1,23 @@
+[
+  {
+    "id": "2026-04-17-wave-1",
+    "date": "2026-04-17",
+    "title": "New app shell",
+    "body": "Redesigned sidebar, topbar, and command palette. Faster, denser, enterprise-ready.",
+    "category": "redesign"
+  },
+  {
+    "id": "2026-04-17-command-palette",
+    "date": "2026-04-17",
+    "title": "Command palette (⌘K)",
+    "body": "Jump anywhere or trigger any action from keyboard. Try pressing ⌘K.",
+    "category": "feature"
+  },
+  {
+    "id": "2026-04-17-keyboard-shortcuts",
+    "date": "2026-04-17",
+    "title": "Keyboard shortcuts",
+    "body": "Press ⌘/ to see the full list. Start with G D for dashboard.",
+    "category": "feature"
+  }
+]

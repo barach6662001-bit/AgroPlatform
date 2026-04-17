@@ -1,4 +1,6 @@
 import * as React from 'react'
+import { Package } from 'lucide-react'
+import { EmptyState, LoadingState, ErrorState } from '@/components/state'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -191,6 +193,39 @@ export default function DesignSystemPreview() {
 
           <Section title="Density comparison">
             <p className="text-sm text-fg-secondary">Compact (default): row h-7 · Comfortable: row h-9</p>
+          </Section>
+
+          <Section title="States">
+            <div className="space-y-6">
+              <div className="rounded border border-border-subtle">
+                <EmptyState
+                  icon={Package}
+                  title="No warehouses yet"
+                  description="Warehouses let you organize and track stored grain, fuel, and inputs."
+                  action={{ label: 'Add warehouse', onClick: () => {}, icon: Package }}
+                  learnMore={{ label: 'Learn more about warehouses', href: '#' }}
+                />
+              </div>
+              <div className="rounded border border-border-subtle p-4">
+                <p className="mb-3 text-sm font-medium text-fg-secondary">Loading — skeleton table</p>
+                <LoadingState variant="skeleton-table" rows={4} />
+              </div>
+              <div className="rounded border border-border-subtle p-4">
+                <p className="mb-3 text-sm font-medium text-fg-secondary">Loading — skeleton cards</p>
+                <LoadingState variant="skeleton-card" rows={3} />
+              </div>
+              <div className="rounded border border-border-subtle p-4">
+                <p className="mb-3 text-sm font-medium text-fg-secondary">Loading — spinner</p>
+                <LoadingState variant="spinner" />
+              </div>
+              <div className="rounded border border-border-subtle">
+                <ErrorState
+                  title="Could not load data"
+                  description="The server returned an error. Please try again."
+                  onRetry={() => {}}
+                />
+              </div>
+            </div>
           </Section>
         </main>
       </div>

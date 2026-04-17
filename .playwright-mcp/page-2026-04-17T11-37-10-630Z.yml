@@ -1,0 +1,205 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - complementary:
+          - generic:
+            - generic:
+              - generic: Overview
+              - navigation:
+                - generic:
+                  - link:
+                    - /url: /dashboard
+                    - img
+                    - generic: Dashboard
+                    - generic: G D
+          - generic:
+            - generic:
+              - generic: Synced 9s ago
+            - button:
+              - img
+              - generic: Collapse
+      - generic:
+        - banner:
+          - button:
+            - generic: demo-tenant
+            - img
+          - generic:
+            - navigation:
+              - generic:
+                - link:
+                  - /url: /dashboard
+                  - text: Home
+              - generic:
+                - img
+                - generic: Warehouse
+          - button:
+            - img
+            - generic: Search...
+            - generic: ⌘K
+          - button:
+            - img
+          - button:
+            - img
+          - button:
+            - generic:
+              - generic: DE
+            - generic: DE
+        - main:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - heading [level=1]: Склад і логістика
+                      - paragraph: Управління складами, запасами та рухами
+                - generic:
+                  - tablist:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - tab: Матеріали
+                        - generic:
+                          - tab: Склади
+                        - generic:
+                          - tab: Рухи
+                        - generic:
+                          - tab [selected]: Зерносховище
+                        - generic:
+                          - tab: Інвентаризація
+                  - generic:
+                    - generic:
+                      - tabpanel:
+                        - generic:
+                          - tablist:
+                            - generic:
+                              - generic:
+                                - generic:
+                                  - tab [selected]: Зерносховища
+                                - generic:
+                                  - tab: Партії зерна
+                                - generic:
+                                  - tab: Огляд сховищ
+                          - generic:
+                            - generic:
+                              - tabpanel:
+                                - generic:
+                                  - generic:
+                                    - generic:
+                                      - navigation:
+                                        - list:
+                                          - listitem:
+                                            - generic:
+                                              - link:
+                                                - /url: /dashboard
+                                                - img:
+                                                  - img
+                                          - listitem: /
+                                          - listitem:
+                                            - generic:
+                                              - link:
+                                                - /url: /warehouses
+                                                - text: Склад і логістика
+                                          - listitem: /
+                                          - listitem: Зерносховища
+                                    - generic:
+                                      - generic:
+                                        - heading [level=1]: Зерносховища
+                                        - paragraph: Управління зерносховищами
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - button:
+                                              - generic:
+                                                - img:
+                                                  - img
+                                              - generic: Прийняти зерно
+                                          - generic:
+                                            - button:
+                                              - generic:
+                                                - img:
+                                                  - img
+                                              - generic: Додати зерносховище
+                                  - generic:
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - table:
+                                                - rowgroup:
+                                                  - row:
+                                                    - columnheader: Назва
+                                                    - columnheader: Код
+                                                    - columnheader: Розташування
+                                                    - columnheader: Тип сховища
+                                                    - columnheader: Ємність (т)
+                                                    - columnheader: Зберігається (т)
+                                                    - columnheader: Партій
+                                                    - columnheader: Статус
+                                                    - columnheader: Дії
+                                                - rowgroup:
+                                                  - row:
+                                                    - cell: Немає зерносховищ
+    - region "Notifications alt+T"
+    - generic:
+      - generic:
+        - img
+      - button:
+        - img
+  - dialog [ref=e317]:
+    - generic [ref=e318]:
+      - generic [ref=e320]:
+        - img [ref=e321]
+        - combobox [expanded] [active] [ref=e324]
+      - listbox "Suggestions" [ref=e325]:
+        - generic [ref=e326]:
+          - generic [ref=e327]: Navigate
+          - group "Navigate" [ref=e328]:
+            - option "Go to Dashboard G D" [selected] [ref=e329]:
+              - img
+              - generic [ref=e330]: Go to Dashboard
+              - generic [ref=e331]: G D
+            - option "Go to Grain Storage G R" [ref=e332]:
+              - img
+              - generic [ref=e333]: Go to Grain Storage
+              - generic [ref=e334]: G R
+            - option "Go to Fuel" [ref=e335]:
+              - img
+              - generic [ref=e336]: Go to Fuel
+          - generic [ref=e337]: Actions
+          - group "Actions"
+          - generic [ref=e338]: Switch
+          - group "Switch" [ref=e339]:
+            - option "Switch company" [ref=e340]:
+              - img
+              - generic [ref=e341]: Switch company
+            - option "Toggle theme ⇧ L" [ref=e342]:
+              - img
+              - generic [ref=e343]: Toggle theme
+              - generic [ref=e344]: ⇧ L
+            - option "Toggle density ⇧ D" [ref=e345]:
+              - img
+              - generic [ref=e346]: Toggle density
+              - generic [ref=e347]: ⇧ D
+          - generic [ref=e348]: Help
+          - group "Help" [ref=e349]:
+            - option "Keyboard shortcuts ⌘ /" [ref=e350]:
+              - img
+              - generic [ref=e351]: Keyboard shortcuts
+              - generic [ref=e352]: ⌘ /
+            - option "Documentation" [ref=e353]:
+              - img
+              - generic [ref=e354]: Documentation
+            - option "Sign out ⌘ Q" [ref=e355]:
+              - img
+              - generic [ref=e356]: Sign out
+              - generic [ref=e357]: ⌘ Q
+      - generic [ref=e358]:
+        - generic [ref=e359]: ↑↓ navigate
+        - generic [ref=e360]: ⏎ select
+        - generic [ref=e361]: ESC close
+    - button "Close" [ref=e362] [cursor=pointer]:
+      - img [ref=e363]
+      - generic [ref=e366]: Close

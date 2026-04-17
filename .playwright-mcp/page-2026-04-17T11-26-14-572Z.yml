@@ -1,0 +1,63 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - banner [ref=e5]:
+        - button "Open navigation menu" [ref=e6] [cursor=pointer]:
+          - img
+        - button "demo-tenant" [ref=e7] [cursor=pointer]:
+          - generic [ref=e8]: demo-tenant
+          - img
+        - button "⌘K" [ref=e9] [cursor=pointer]:
+          - img [ref=e10]
+          - generic [ref=e13]: ⌘K
+        - button "Notifications" [ref=e14] [cursor=pointer]:
+          - img
+        - button "Toggle theme" [ref=e15] [cursor=pointer]:
+          - img
+        - button "User menu" [ref=e16] [cursor=pointer]:
+          - generic [ref=e18]: DE
+      - main [ref=e20]
+    - region "Notifications alt+T"
+    - generic [ref=e86]:
+      - img [ref=e88]
+      - button "Open Tanstack query devtools" [ref=e136] [cursor=pointer]:
+        - img [ref=e137]
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - alert:
+            - img "close-circle":
+              - img
+            - generic: Помилка сервера
+            - generic: Request failed with status code 500
+        - generic "Close":
+          - img "close":
+            - img
+    - generic [ref=e186]:
+      - alert [ref=e188]:
+        - img "close-circle" [ref=e189]:
+          - img [ref=e190]
+        - generic [ref=e192]: Помилка сервера
+        - generic [ref=e193]: Request failed with status code 500
+      - generic "Close" [ref=e194] [cursor=pointer]:
+        - img "close" [ref=e195]:
+          - img [ref=e196]
+    - generic [ref=e199]:
+      - alert [ref=e201]:
+        - img "close-circle" [ref=e202]:
+          - img [ref=e203]
+        - generic [ref=e205]: Помилка сервера
+        - generic [ref=e206]: Request failed with status code 500
+      - generic "Close" [ref=e207] [cursor=pointer]:
+        - img "close" [ref=e208]:
+          - img [ref=e209]
+    - generic [ref=e212]:
+      - alert [ref=e214]:
+        - img "close-circle" [ref=e215]:
+          - img [ref=e216]
+        - generic [ref=e218]: Помилка сервера
+        - generic [ref=e219]: Request failed with status code 500
+      - generic "Close" [ref=e220] [cursor=pointer]:
+        - img "close" [ref=e221]:
+          - img [ref=e222]
