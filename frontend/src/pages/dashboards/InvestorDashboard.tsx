@@ -3,7 +3,7 @@ import { FieldMap } from '@/components/dashboard/investor/FieldMap';
 import { ActivityFeed } from '@/components/dashboard/investor/ActivityFeed';
 import { SecondaryStats } from '@/components/dashboard/investor/SecondaryStats';
 import { MarginalityBreakdown } from '@/components/dashboard/investor/MarginalityBreakdown';
-import { FinanceSectionPlaceholder } from '@/components/dashboard/investor/placeholders';
+import { FinanceHighlights } from '@/components/dashboard/investor/FinanceHighlights';
 
 export default function InvestorDashboard() {
   return (
@@ -24,7 +24,7 @@ export default function InvestorDashboard() {
 
         <SecondaryStats />
 
-        <FinanceSectionPlaceholder />
+        <FinanceHighlights />
 
         <MarginalityBreakdown />
       </div>
