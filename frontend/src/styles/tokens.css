@@ -100,11 +100,6 @@
   --density-input-compact:     30px;
   --density-input-comfortable: 36px;
 
-  /* Active density vars — toggled by [data-density] on <html> */
-  --density-row-active:          var(--density-row-compact);
-  --density-input-active:        var(--density-input-compact);
-  --density-sidebar-item-active: 28px;
-
   /* ===== MOTION ============================================================= */
   --motion-fast:   100ms;
   --motion-normal: 150ms;
@@ -159,13 +154,6 @@
   --color-accent-default: 158 64% 45%;
   --color-accent-solid:   158 64% 42%;
   --color-accent-strong:  158 64% 36%;
-}
-
-/* ===== DENSITY OVERRIDES =================================================== */
-[data-density="comfortable"] {
-  --density-row-active:          var(--density-row-comfortable);
-  --density-input-active:        var(--density-input-comfortable);
-  --density-sidebar-item-active: 32px;
 }
 
 /* ===== GLOBAL DEFAULTS ===================================================== */

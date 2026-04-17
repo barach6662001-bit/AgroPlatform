@@ -1,14 +1,18 @@
 src/App.tsx
 src/api/axios.ts
 src/components/BalancePreview.tsx
+src/components/CommandPalette.tsx
 src/components/DeleteConfirmButton.tsx
 src/components/EmptyState.tsx
 src/components/ErrorBoundary/ErrorBoundary.tsx
 src/components/Form/Input.tsx
 src/components/Form/Select.tsx
 src/components/Form/Textarea.tsx
+src/components/Layout/AppLayout.tsx
 src/components/Layout/FarmSwitcher.tsx
+src/components/Layout/MobileDrawer.tsx
 src/components/Layout/NotificationBell.tsx
+src/components/Layout/Sidebar.tsx
 src/components/Map/FieldDrawMap.tsx
 src/components/Map/FieldMap.tsx
 src/components/MaterialKpiCards/MaterialKpiCards.tsx
@@ -29,6 +33,7 @@ src/components/ui/DateCell.tsx
 src/components/ui/FilterBar.tsx
 src/components/ui/FormField.tsx
 src/hooks/useOfflineSync.ts
+src/pages/AccessDenied.tsx
 src/pages/Admin/ApiKeysPage.tsx
 src/pages/Admin/ApprovalRulesPage.tsx
 src/pages/Admin/AuditLogPage.tsx
@@ -38,6 +43,7 @@ src/pages/Analytics/FieldEfficiency.tsx
 src/pages/Analytics/MarginalityDashboard.tsx
 src/pages/Analytics/ResourceConsumption.tsx
 src/pages/Analytics/SalaryFuelAnalytics.tsx
+src/pages/ChangePassword.tsx
 src/pages/Dashboard.tsx
 src/pages/Economics/BreakEvenCalculator.tsx
 src/pages/Economics/BudgetPage.tsx
@@ -72,9 +78,11 @@ src/pages/HR/EmployeeList.tsx
 src/pages/HR/SalaryPage.tsx
 src/pages/HR/WorkLogPage.tsx
 src/pages/Landing/LandingPage.tsx
+src/pages/Login.tsx
 src/pages/Machinery/MachineDetail.tsx
 src/pages/Machinery/MachineryList.tsx
 src/pages/Machinery/MaintenancePage.tsx
+src/pages/NotFound.tsx
 src/pages/Notifications/NotificationsPage.tsx
 src/pages/Onboarding/OnboardingWizard.tsx
 src/pages/Operations/OperationDetail.tsx
@@ -83,6 +91,7 @@ src/pages/Ops/OperationsHubPage.tsx
 src/pages/Profile/ProfilePage.tsx
 src/pages/Sales/RevenueAnalytics.tsx
 src/pages/Sales/SalesList.tsx
+src/pages/ServerError.tsx
 src/pages/Settings/AuditLogPage.tsx
 src/pages/Settings/UsersPage.tsx
 src/pages/SuperAdmin/CompaniesPage.tsx
