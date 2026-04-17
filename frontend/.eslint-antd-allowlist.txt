@@ -9,7 +9,6 @@ src/components/Form/Input.tsx
 src/components/Form/Select.tsx
 src/components/Form/Textarea.tsx
 src/components/Layout/FarmSwitcher.tsx
-src/components/Layout/MobileDrawer.tsx
 src/components/Layout/NotificationBell.tsx
 src/components/Map/FieldDrawMap.tsx
 src/components/Map/FieldMap.tsx
