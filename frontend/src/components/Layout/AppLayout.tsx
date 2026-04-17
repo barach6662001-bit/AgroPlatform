@@ -1,14 +1,13 @@
 import { Button, Dropdown } from 'antd';
-import { Menu as MenuIcon, PanelLeftClose, PanelLeftOpen, Sun, Moon, Search, LogOut } from 'lucide-react';
+import { Menu as MenuIcon, Sun, Moon, Search, LogOut } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import Sidebar from './Sidebar';
+import { Sidebar } from '@/components/shell/sidebar';
 import MobileDrawer from './MobileDrawer';
 import NotificationBell from './NotificationBell';
 import FarmSwitcher from './FarmSwitcher';
 import OfflineIndicator from '../OfflineIndicator';
-import Logo from '../Logo';
 import CommandPalette from '../CommandPalette';
 import { PageTransition } from '../PageTransition';
 import { useAuthStore } from '../../stores/authStore';
@@ -18,24 +17,18 @@ import { useTranslation, languages } from '../../i18n';
 import s from './AppLayout.module.css';
 
 const MOBILE_BREAKPOINT = 640;
-const TABLET_BREAKPOINT = 1024;
 
 export default function AppLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth < TABLET_BREAKPOINT);
-  const { email, role, logout, tenantId, refreshToken } = useAuthStore();
+  const { logout, tenantId, refreshToken } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const { t, lang, setLang } = useTranslation();
   const queryClient = useQueryClient();
-  // Tracks whether the component has mounted; initial value is undefined so we skip
-  // invalidation on the first render and only react to real farm-switch events.
   const prevTenantIdRef = useRef<string | null | undefined>(undefined);
 
-  // Invalidate all cached queries when the active farm (tenant) changes so that
-  // stale data from the previous farm is never shown to the user.
   useEffect(() => {
     if (prevTenantIdRef.current !== undefined && prevTenantIdRef.current !== tenantId) {
       queryClient.invalidateQueries();
@@ -48,12 +41,6 @@ export default function AppLayout() {
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
-  }, []);
-
-  useEffect(() => {
-    const h = () => setSidebarCollapsed(window.innerWidth < TABLET_BREAKPOINT);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
   }, []);
 
   const handleLogout = () => {
@@ -88,38 +75,13 @@ export default function AppLayout() {
     ),
   }));
 
-  const userInitial = email ? email.charAt(0).toUpperCase() : '?';
-
   return (
     <div className={s.appShell}>
-      {/* Sidebar — desktop and tablet */}
+      {/* Sidebar — desktop and tablet, new shadcn version */}
       {!isMobile && (
-        <aside className={`${s.sidebar} ${sidebarCollapsed ? s.sidebarCollapsed : ''}`}>
-          {/* Logo */}
-          <div className={`${s.logoWrap} ${sidebarCollapsed ? s.logoWrapCollapsed : ''}`}>
-            <Logo size={32} variant={sidebarCollapsed ? 'icon' : 'full'} />
-          </div>
-
-          {/* Navigation */}
-          <div className={s.sidebarNav}>
-            <Sidebar collapsed={sidebarCollapsed} />
-          </div>
-
-          {/* User info at bottom */}
-          <div className={`${s.userSection} ${sidebarCollapsed ? s.userSectionCollapsed : ''}`}>
-            <div className={s.userAvatar}>
-              {userInitial}
-            </div>
-            {!sidebarCollapsed && (
-              <div className={s.userMeta}>
-                <div className={s.userName}>
-                  {email}
-                </div>
-                <div className={s.userRole}>{role}</div>
-              </div>
-            )}
-          </div>
-        </aside>
+        <div className="hidden md:flex">
+          <Sidebar />
+        </div>
       )}
 
       {/* Main area */}
@@ -133,17 +95,7 @@ export default function AppLayout() {
               onClick={() => setDrawerOpen(true)}
               className={s.topbarBtn}
             />
-          ) : (
-            <Button
-              type="text"
-              icon={sidebarCollapsed
-                ? <PanelLeftOpen size={16} />
-                : <PanelLeftClose size={16} />
-              }
-              onClick={() => setSidebarCollapsed(prev => !prev)}
-              className={s.topbarBtn}
-            />
-          )}
+          ) : null}
 
           <div className={s.toolbarItem}>
             <Button

@@ -12,7 +12,6 @@ src/components/Layout/AppLayout.tsx
 src/components/Layout/FarmSwitcher.tsx
 src/components/Layout/MobileDrawer.tsx
 src/components/Layout/NotificationBell.tsx
-src/components/Layout/Sidebar.tsx
 src/components/Map/FieldDrawMap.tsx
 src/components/Map/FieldMap.tsx
 src/components/MaterialKpiCards/MaterialKpiCards.tsx

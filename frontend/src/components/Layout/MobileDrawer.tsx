@@ -1,5 +1,5 @@
 import { Drawer } from 'antd';
-import Sidebar from './Sidebar';
+import { Sidebar } from '@/components/shell/sidebar';
 import { useTranslation } from '../../i18n';
 import s from './MobileDrawer.module.css';
 
@@ -25,9 +25,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
       }}
       closeIcon={<span className={s.colored}>✕</span>}
     >
-      <div onClick={onClose}>
-        <Sidebar />
-      </div>
+      <Sidebar />
     </Drawer>
   );
 }
