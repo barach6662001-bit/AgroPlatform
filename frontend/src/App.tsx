@@ -50,6 +50,7 @@ import OnboardingWizard from './pages/Onboarding/OnboardingWizard';
 import LandingPage from './pages/Landing/LandingPage';
 import { useAuthStore } from './stores/authStore';
 import DesignSystemPreview from './pages/__design-system';
+import { KeyboardShortcutsDialog } from '@/components/shell/keyboard-shortcuts-dialog';
 
 function RootRoute() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -76,6 +77,7 @@ export default function App() {
     >
       <ErrorBoundary>
         <BrowserRouter>
+          <KeyboardShortcutsDialog />
           <Routes>
             <Route path="/__design-system" element={<DesignSystemPreview />} />
             <Route path="/" element={<RootRoute />} />
