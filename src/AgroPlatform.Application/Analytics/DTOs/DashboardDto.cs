@@ -33,5 +33,4 @@ public class DashboardDto
     public decimal MonthlyProfit { get; set; }
     public Dictionary<string, decimal> CostsByCategory { get; set; } = new();
     public List<MonthlyCostTrendDto> CostTrend { get; set; } = new();
-    public List<MonthlyCostTrendDto> RevenueTrend { get; set; } = new();
 }

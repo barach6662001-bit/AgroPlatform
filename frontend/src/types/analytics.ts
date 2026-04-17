@@ -56,7 +56,6 @@ export interface DashboardDto {
   monthlyProfit: number;
   costsByCategory: Record<string, number>;
   costTrend: MonthlyCostTrendDto[];
-  revenueTrend: MonthlyCostTrendDto[];
 }
 
 export interface MonthlyValueDto {

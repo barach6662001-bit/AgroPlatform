@@ -1,329 +1,163 @@
-/* =============================================================================
-   AgroPlatform Design Tokens — v1.0
-   Drop this file into src/styles/tokens.css and import it BEFORE Tailwind.
-   In your main stylesheet:
-     @import "./tokens.css";
-     @tailwind base;
-     @tailwind components;
-     @tailwind utilities;
-   ========================================================================== */
+/*
+ * Design System Tokens — "Command Center" palette
+ *
+ * Single source of truth for all CSS custom properties.
+ * :root = dark theme (current default) — navy deep dark.
+ * [data-theme="light"] = light theme overrides (activated by theme toggle).
+ */
 
 :root {
-  /* ===== NEUTRALS =========================================================== */
-  --color-bg-base:        240 10% 100%;
-  --color-bg-subtle:      240 10% 98%;
-  --color-bg-muted:       240 5%  96%;
-  --color-bg-elevated:    240 10% 100%;
-  --color-bg-inverse:     240 6%  10%;
+  /* ── Brand ── */
+  --brand:         #22C55E;
+  --brand-hover:   #16A34A;
+  --brand-glow:    rgba(34, 197, 94, 0.15);
+  --brand-muted:   rgba(34, 197, 94, 0.08);
+  --brand-border:  rgba(34, 197, 94, 0.2);
 
-  --color-border-subtle:  240 6%  90%;
-  --color-border-default: 240 5%  84%;
-  --color-border-strong:  240 5%  65%;
+  /* ── Backgrounds — navy ── */
+  --bg-page:       #060B14;
+  --bg-surface:    #0C1222;
+  --bg-elevated:   #111A2E;
+  --bg-hover:      #1A2540;
 
-  --color-text-primary:   240 10% 9%;
-  --color-text-secondary: 240 5%  35%;
-  --color-text-tertiary:  240 4%  46%;
-  --color-text-disabled:  240 5%  65%;
-  --color-text-inverse:   0   0%  100%;
+  /* Legacy aliases (keep for compatibility) */
+  --bg-app:        var(--bg-page);
+  --bg-overlay:    var(--bg-hover);
+  --bg-subtle:     var(--bg-elevated);
+  --bg-base:       var(--bg-page);
 
-  /* ===== BRAND ACCENT ======================================================= */
-  --color-accent-subtle:  152 76% 96%;
-  --color-accent-muted:   151 64% 89%;
-  --color-accent-default: 158 64% 52%;
-  --color-accent-solid:   161 94% 24%;
-  --color-accent-strong:  162 94% 17%;
-  --color-accent-fg:      0   0%  100%;
+  /* Card-specific */
+  --card-bg:       rgba(255, 255, 255, 0.03);
+  --card-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
 
-  /* ===== SEMANTIC =========================================================== */
-  --color-success-subtle: 152 76% 96%;
-  --color-success-solid:  142 72% 29%;
-  --color-success-fg:     0   0%  100%;
+  /* ── Text ── */
+  --text-primary:   rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-tertiary:  rgba(255, 255, 255, 0.35);
+  --text-disabled:  rgba(255, 255, 255, 0.2);
 
-  --color-warning-subtle: 48  100% 96%;
-  --color-warning-solid:  32  95%  44%;
-  --color-warning-fg:     0   0%   100%;
+  /* ── Borders ── */
+  --border:           rgba(255, 255, 255, 0.06);
+  --border-hover:     rgba(255, 255, 255, 0.12);
+  --border-strong:    rgba(255, 255, 255, 0.2);
+  --border-focus:     #22C55E;
 
-  --color-danger-subtle:  0   86%  97%;
-  --color-danger-solid:   0   74%  42%;
-  --color-danger-fg:      0   0%   100%;
+  /* ── Crop colors — vibrant ── */
+  --crop-wheat:      #FBBF24;
+  --crop-sunflower:  #F97316;
+  --crop-corn:       #22C55E;
+  --crop-rapeseed:   #A855F7;
+  --crop-barley:     #0EA5E9;
+  --crop-soy:        #14B8A6;
+  --crop-fallow:     #94A3B8;
 
-  --color-info-subtle:    214 95%  93%;
-  --color-info-solid:     217 91%  40%;
-  --color-info-fg:        0   0%   100%;
+  /* ── Semantic accents ── */
+  --accent-revenue:  #22C55E;
+  --accent-cost:     #EF4444;
+  --accent-info:     #3B82F6;
+  --accent-warning:  #F59E0B;
+  --accent-premium:  #A855F7;
 
-  /* ===== CHARTS ============================================================= */
-  --chart-1: 161 94% 24%;
-  --chart-2: 217 91% 40%;
-  --chart-3: 262 52% 47%;
-  --chart-4: 32  95% 44%;
-  --chart-5: 340 75% 45%;
-  --chart-6: 190 80% 36%;
-  --chart-7: 24  60% 42%;
-  --chart-8: 240 5%  35%;
+  /* Status colors */
+  --success:  #22C55E;
+  --warning:  #F59E0B;
+  --error:    #EF4444;
+  --info:     #3B82F6;
+  --neutral:  #6366F1;
 
-  /* ===== RADII ============================================================== */
-  --radius-sm:   2px;
-  --radius-md:   4px;
-  --radius-lg:   6px;
-  --radius-pill: 9999px;
+  /* Status muted backgrounds */
+  --success-bg: rgba(34, 197, 94, 0.08);
+  --warning-bg: rgba(245, 158, 11, 0.08);
+  --error-bg:   rgba(239, 68, 68, 0.08);
+  --info-bg:    rgba(59, 130, 246, 0.08);
 
-  /* ===== ELEVATION ========================================================== */
-  --shadow-flat:     none;
-  --shadow-elevated: inset 0 0 0 1px hsl(var(--color-border-subtle));
-  --shadow-overlay:  0 4px 16px -4px rgb(0 0 0 / 0.08),
-                     0 1px 2px    rgb(0 0 0 / 0.04),
-                     inset 0 0 0 1px hsl(var(--color-border-subtle));
+  /* ── Typography ── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-tabular: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* ===== TYPOGRAPHY ========================================================= */
-  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont,
-               'Segoe UI', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', 'SF Mono', Consolas, Menlo, monospace;
+  /* ── Spacing scale (4px grid) ── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
 
-  --text-2xs: 10px;
-  --text-xs:  11px;
-  --text-sm:  12px;
-  --text-base: 13px; /* DENSE BASE */
-  --text-md:  14px;
-  --text-lg:  16px;
-  --text-xl:  18px;
-  --text-2xl: 22px;
-  --text-3xl: 28px;
-  --text-4xl: 36px;
+  /* ── Radius ── */
+  --radius-xs:  4px;
+  --radius-sm:  6px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+  --radius-2xl: 24px;
 
-  --leading-tight:   1.25;
-  --leading-normal:  1.45;
-  --leading-relaxed: 1.6;
+  /* ── Shadows ── */
+  --shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md:   0 4px 16px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-lg:   0 16px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-glow: 0 0 20px rgba(34, 197, 94, 0.15);
+  --shadow-card: 0 0 0 1px rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.4);
 
-  /* ===== DENSITY ============================================================ */
-  --density-row-compact:       28px;
-  --density-row-comfortable:   36px;
-  --density-input-compact:     30px;
-  --density-input-comfortable: 36px;
+  /* ── Transitions ── */
+  --transition-fast: 100ms ease;
+  --transition-base: 150ms ease;
+  --transition-slow: 200ms ease;
 
-  /* Active density vars — toggled by [data-density] on <html> */
-  --density-row-active:          var(--density-row-compact);
-  --density-input-active:        var(--density-input-compact);
-  --density-sidebar-item-active: 28px;
-
-  /* ===== MOTION ============================================================= */
-  --motion-fast:   100ms;
-  --motion-normal: 150ms;
-  --motion-slow:   200ms;
-  --motion-ease:   cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* ===== SHADCN COMPAT ALIASES =============================================
-     shadcn/ui expects these token names. We alias to our semantic tokens so
-     the rest of the codebase uses our names and shadcn components still work.
-     ======================================================================== */
-  --background:       var(--color-bg-base);
-  --foreground:       var(--color-text-primary);
-  --card:             var(--color-bg-elevated);
-  --card-foreground:  var(--color-text-primary);
-  --popover:          var(--color-bg-elevated);
-  --popover-foreground: var(--color-text-primary);
-  --primary:          var(--color-accent-solid);
-  --primary-foreground: var(--color-accent-fg);
-  --secondary:        var(--color-bg-muted);
-  --secondary-foreground: var(--color-text-primary);
-  --muted:            var(--color-bg-muted);
-  --muted-foreground: var(--color-text-secondary);
-  --accent:           var(--color-accent-subtle);
-  --accent-foreground: var(--color-accent-solid);
-  --destructive:      var(--color-danger-solid);
-  --destructive-foreground: var(--color-danger-fg);
-  --border:           var(--color-border-default);
-  --input:            var(--color-border-default);
-  --ring:             var(--color-accent-solid);
-  --radius:           var(--radius-md);
+  /* ── Aliases for design-system spec compatibility ── */
+  --color-page-bg:      var(--bg-page);
+  --color-card-bg:      var(--bg-surface);
+  --color-elevated-bg:  var(--bg-elevated);
+  --color-input-bg:     var(--bg-elevated);
+  --color-hover-bg:     var(--bg-hover);
+  --color-primary:      var(--brand);
+  --color-primary-hover: var(--brand-hover);
+  --border-default:     var(--border);
 }
 
-.dark {
-  --color-bg-base:        240 10% 6%;
-  --color-bg-subtle:      240 10% 8%;
-  --color-bg-muted:       240 8%  11%;
-  --color-bg-elevated:    240 8%  13%;
-  --color-bg-inverse:     0   0%  100%;
+/* ─── Light theme overrides ─── */
+[data-theme="light"] {
+  --bg-app:        #fafafa;
+  --bg-surface:    #ffffff;
+  --bg-elevated:   #ffffff;
+  --bg-overlay:    #f5f5f5;
+  --bg-subtle:     #f0f0f0;
+  --bg-base:       #f7f7f7;
+  --bg-hover:      #f5f5f5;
 
-  --color-border-subtle:  240 6%  16%;
-  --color-border-default: 240 5%  22%;
-  --color-border-strong:  240 5%  40%;
+  --card-bg:       #ffffff;
+  --card-gradient: none;
 
-  --color-text-primary:   0   0%  96%;
-  --color-text-secondary: 240 5%  70%;
-  --color-text-tertiary:  240 4%  60%;
-  --color-text-disabled:  240 5%  40%;
-  --color-text-inverse:   240 10% 9%;
+  --border:        #e5e5e5;
+  --border-strong: #d4d4d4;
+  --border-focus:  #16a34a;
 
-  --color-accent-subtle:  161 60% 12%;
-  --color-accent-muted:   161 60% 16%;
-  --color-accent-default: 158 64% 45%;
-  --color-accent-solid:   158 64% 42%;
-  --color-accent-strong:  158 64% 36%;
-}
+  --text-primary:   #171717;
+  --text-secondary: #525252;
+  --text-tertiary:  #a3a3a3;
+  --text-disabled:  #d4d4d4;
 
-/* =============================================================================
-   Wave 1.5 — aesthetic tokens
-   ============================================================================ */
-:root {
-  /* Backgrounds */
-  --bg-deep: #0A0A0B;
-  --bg-surface: #111113;
-  --bg-elevated: #17171A;
-  --bg-subtle: #1C1C20;
+  --brand:         #16a34a;
+  --brand-hover:   #15803d;
+  --brand-muted:   rgba(22, 163, 74, 0.08);
+  --brand-border:  rgba(22, 163, 74, 0.15);
 
-  /* Text */
-  --fg-primary: #F5F5F7;
-  --fg-secondary: #A1A1AA;
-  --fg-tertiary: #52525B;
-  --fg-quaternary: #27272A;
+  --success:  #16a34a;
+  --warning:  #f59e0b;
+  --error:    #ef4444;
+  --info:     #3b82f6;
+  --neutral:  #6366f1;
 
-  /* Primary accent (emerald) */
-  --accent-emerald-50: #ECFDF5;
-  --accent-emerald-400: #34D399;
-  --accent-emerald-500: #10B981;
-  --accent-emerald-600: #059669;
-  --accent-emerald-glow: rgba(16, 185, 129, 0.25);
+  --success-bg: rgba(22, 163, 74, 0.06);
+  --warning-bg: rgba(245, 158, 11, 0.06);
+  --error-bg:   rgba(239, 68, 68, 0.06);
+  --info-bg:    rgba(59, 130, 246, 0.06);
 
-  /* Secondary accents */
-  --accent-blue-500: #3B82F6;
-  --accent-blue-glow: rgba(59, 130, 246, 0.25);
-  --accent-purple-500: #A855F7;
-  --accent-purple-glow: rgba(168, 85, 247, 0.25);
-  --accent-amber-500: #F59E0B;
-  --accent-amber-glow: rgba(245, 158, 11, 0.25);
-  --accent-pink-500: #EC4899;
-  --accent-pink-glow: rgba(236, 72, 153, 0.25);
-  --accent-cyan-500: #06B6D4;
-  --accent-cyan-glow: rgba(6, 182, 212, 0.25);
-
-  /* Culture colors */
-  --culture-sunflower: #F59E0B;
-  --culture-wheat: #EAB308;
-  --culture-corn: #3B82F6;
-  --culture-rapeseed: #EC4899;
-  --culture-soy: #10B981;
-  --culture-peas: #A855F7;
-  --culture-empty: #52525B;
-
-  /* Semantic */
-  --success: #10B981;
-  --warning: #F59E0B;
-  --danger: #EF4444;
-  --info: #3B82F6;
-
-  /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --border-default: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.12);
-  --border-accent: rgba(16, 185, 129, 0.3);
-
-  /* Shadows / glow */
-  --shadow-kpi: 0 0 0 1px rgba(255,255,255,0.02), 0 0 60px -20px var(--accent-emerald-glow);
-  --shadow-card: 0 4px 24px -8px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
-  --shadow-popover: 0 8px 32px -8px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.08);
-  --shadow-focus: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--accent-emerald-500);
-}
-
-/* Gradient mesh backgrounds */
-.gradient-mesh-default {
-  background:
-    radial-gradient(800px circle at 20% 0%, rgba(34, 197, 94, 0.08), transparent 50%),
-    radial-gradient(600px circle at 80% 100%, rgba(59, 130, 246, 0.06), transparent 50%),
-    radial-gradient(400px circle at 50% 50%, rgba(168, 85, 247, 0.04), transparent 50%),
-    var(--bg-deep);
-}
-
-.gradient-mesh-finance {
-  background:
-    radial-gradient(800px circle at 10% 0%, rgba(16, 185, 129, 0.1), transparent 50%),
-    radial-gradient(600px circle at 90% 50%, rgba(59, 130, 246, 0.08), transparent 50%),
-    var(--bg-deep);
-}
-
-.gradient-mesh-fields {
-  background:
-    radial-gradient(800px circle at 50% 0%, rgba(16, 185, 129, 0.12), transparent 60%),
-    radial-gradient(400px circle at 0% 100%, rgba(245, 158, 11, 0.06), transparent 50%),
-    var(--bg-deep);
-}
-
-/* Noise texture overlay */
-.noise-overlay {
-  position: absolute;
-  inset: 0;
-  opacity: 0.015;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Shimmer skeleton */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-.skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--bg-subtle) 0%,
-    var(--bg-elevated) 50%,
-    var(--bg-subtle) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.8s ease-in-out infinite;
-}
-
-/* Tabular nums helper */
-.tabular-nums {
-  font-feature-settings: "tnum";
-  font-variant-numeric: tabular-nums;
-}
-
-/* Card with glow hover */
-.card-hoverable {
-  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.02);
-}
-.card-hoverable:hover {
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.08),
-    0 0 80px -20px var(--accent-emerald-glow);
-  border-color: var(--border-accent);
-}
-
-/* ===== DENSITY OVERRIDES =================================================== */
-[data-density="comfortable"] {
-  --density-row-active:          var(--density-row-comfortable);
-  --density-input-active:        var(--density-input-comfortable);
-  --density-sidebar-item-active: 32px;
-}
-
-/* ===== GLOBAL DEFAULTS ===================================================== */
-html {
-  font-family: var(--font-sans);
-  font-size: var(--text-base);
-  line-height: var(--leading-normal);
-  color: hsl(var(--color-text-primary));
-  background: hsl(var(--color-bg-base));
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Tabular numerals everywhere numbers matter */
-.tabular, table, .font-mono {
-  font-variant-numeric: tabular-nums;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    transition-duration: 0ms !important;
-    animation-duration: 0ms !important;
-  }
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:  0 4px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-lg:  0 12px 24px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px rgba(22, 163, 74, 0.08);
 }

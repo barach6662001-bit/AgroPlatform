@@ -16,9 +16,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vitest/globals", "@testing-library/jest-dom", "vite-plugin-pwa/client"],
-    "baseUrl": ".",
-    "paths": { "@/*": ["./src/*"] }
+    "types": ["vitest/globals", "@testing-library/jest-dom", "vite-plugin-pwa/client"]
   },
   "include": ["src"]
 }

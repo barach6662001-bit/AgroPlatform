@@ -1,223 +1,102 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff, ArrowRight, Mail, Key, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { AuthShell } from '@/components/auth/auth-card'
-import { loginSchema, type LoginInput } from '@/domain/validation/auth.schema'
-import { useAuthStore } from '@/stores/authStore'
-import { login } from '@/api/auth'
-import { toast } from 'sonner'
+import { Form, Input, Button, Dropdown, message } from 'antd';
+import { User, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../stores/authStore';
+import { login } from '../api/auth';
+import { useTranslation, languages } from '../i18n';
+import Logo from '../components/Logo';
+import s from './Login.module.css';
 
 export default function Login() {
-  const navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [magicLoading, setMagicLoading] = useState(false)
-  const [magicSent, setMagicSent] = useState(false)
+  const navigate = useNavigate();
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const { t, lang, setLang } = useTranslation();
 
-  const setAuth = useAuthStore((s) => s.setAuth)
-
-  const form = useForm<LoginInput>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(loginSchema) as any,
-    defaultValues: { email: '', password: '', rememberMe: false },
-  })
-
-  const { register, handleSubmit, formState: { errors }, getValues, watch } = form
-
-  const onSubmit = async (data: LoginInput) => {
-    setLoading(true)
+  const onFinish = async (values: { email: string; password: string }) => {
     try {
-      const result = await login({ email: data.email, password: data.password })
-      setAuth(
-        result.token,
-        result.email,
-        result.role,
-        result.tenantId,
-        result.requirePasswordChange,
-        result.hasCompletedOnboarding,
-        result.firstName,
-        result.lastName,
-        result.refreshToken,
-      )
-      if (result.requirePasswordChange) {
-        navigate('/change-password')
-        return
-      }
-      const lastRoute = localStorage.getItem('last-route') || '/dashboard'
-      navigate(lastRoute)
-    } catch (err) {
-      const e = err as { response?: { data?: { message?: string } }; message?: string }
-      toast.error(e?.response?.data?.message ?? e?.message ?? 'Could not sign in. Check your credentials.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const onMagicLink = async () => {
-    const email = getValues('email')
-    const parsed = loginSchema.shape.email.safeParse(email)
-    if (!parsed.success) {
-      form.setError('email', { message: 'Enter an email first' })
-      return
-    }
-    setMagicLoading(true)
-    try {
-      const res = await fetch('/api/auth/magic-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-      if (res.status === 404 || res.status === 501) {
-        toast.message('Magic link sign-in coming soon — please use password')
-        return
-      }
-      if (!res.ok) throw new Error('Request failed')
-      setMagicSent(true)
+      const data = await login(values);
+      setAuth(data.token, data.email, data.role, data.tenantId, data.requirePasswordChange, data.hasCompletedOnboarding, data.firstName, data.lastName, data.refreshToken);
+      message.success(t.auth.welcomeMessage);
+      navigate(data.requirePasswordChange ? '/change-password' : '/');
     } catch {
-      toast.error('Could not send magic link')
-    } finally {
-      setMagicLoading(false)
+      message.error(t.auth.loginError);
     }
-  }
+  };
 
-  const onSSO = () => {
-    toast.message('SSO configuration pending — contact your administrator')
-  }
-
-  if (magicSent) {
-    return (
-      <AuthShell>
-        <Card>
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent-subtle">
-              <Mail className="h-5 w-5 text-accent-solid" />
-            </div>
-            <CardTitle>Check your email</CardTitle>
-            <CardDescription>
-              We sent a magic link to {watch('email')}. It expires in 15 minutes.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full" onClick={() => setMagicSent(false)}>
-              Back to sign in
-            </Button>
-          </CardContent>
-        </Card>
-      </AuthShell>
-    )
-  }
+  const currentLang = languages.find(l => l.code === lang);
+  const langMenuItems = languages.map(l => ({
+    key: l.code,
+    label: (
+      <div className={s.flexCenter}>
+        <img src={l.flag} alt={l.shortLabel} className={s.bordered} />
+        <span>{l.label}</span>
+      </div>
+    ),
+  }));
 
   return (
-    <AuthShell>
-      <Card>
-        <CardHeader>
-          <CardTitle>Sign in</CardTitle>
-          <CardDescription>to continue to your workspace</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                autoFocus
-                {...register('email')}
-              />
-              {errors.email && (
-                <p className="text-xs text-danger">{errors.email.message}</p>
-              )}
-            </div>
+    <div className={s.loginPage}>
+      <div className={s.loginCard}>
+        {/* Logo */}
+        <Logo size={28} variant="full" />
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link to="/forgot-password" className="text-xs text-fg-secondary hover:text-fg-primary">
-                  Forgot?
-                </Link>
-              </div>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  {...register('password')}
-                  className="pr-9"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-tertiary hover:text-fg-secondary"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-xs text-danger">{errors.password.message}</p>
-              )}
-            </div>
+        {/* Title */}
+        <h3 className={s.formTitle}>{t.auth.loginTitle}</h3>
+        <p className={s.formSubtitle}>{t.auth.loginSubtitle}</p>
 
-            <div className="flex items-start gap-2">
-              <Checkbox
-                id="rememberMe"
-                checked={watch('rememberMe')}
-                onCheckedChange={(v) => form.setValue('rememberMe', !!v)}
-              />
-              <Label htmlFor="rememberMe" className="text-xs text-fg-secondary leading-4">
-                Remember me on this device for 30 days
-              </Label>
-            </div>
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
-                <>Sign in<ArrowRight className="ml-1 h-4 w-4" /></>
-              )}
+        {/* Form: email + password + submit */}
+        <Form layout="vertical" onFinish={onFinish}>
+          <Form.Item
+            name="email"
+            label={<span className={s.fieldLabel}>{t.auth.email}</span>}
+            rules={[{ required: true, type: 'email', message: t.auth.enterEmail }]}
+          >
+            <Input
+              prefix={<User size={16} strokeWidth={1.5} className={s.inputIcon} />}
+              placeholder={t.auth.email}
+              size="large"
+            />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            label={<span className={s.fieldLabel}>{t.auth.password}</span>}
+            rules={[{ required: true, message: t.auth.enterPassword }]}
+          >
+            <Input.Password
+              prefix={<Lock size={16} strokeWidth={1.5} className={s.inputIcon} />}
+              placeholder={t.auth.password}
+              size="large"
+            />
+          </Form.Item>
+          <Form.Item className={s.submitGap}>
+            <Button type="primary" htmlType="submit" block size="large" className={s.submitButton}>
+              {t.auth.login}
             </Button>
-          </form>
+          </Form.Item>
+        </Form>
 
-          <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-border-subtle" />
-            <span className="text-[10px] uppercase tracking-wide text-fg-tertiary">or</span>
-            <div className="h-px flex-1 bg-border-subtle" />
-          </div>
+        {/* Forgot password */}
+        <div className={s.forgotLink}>{t.auth.forgotPassword}</div>
+      </div>
 
-          <div className="space-y-2">
-            <Button
-              variant="outline"
-              className="w-full gap-2"
-              onClick={onMagicLink}
-              disabled={magicLoading}
-              type="button"
-            >
-              {magicLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
-              Email a magic link
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full gap-2"
-              onClick={onSSO}
-              data-sso-placeholder="true"
-              type="button"
-            >
-              <Key className="h-4 w-4" />
-              Sign in with SSO
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Language switcher — bottom left corner */}
+      <div className={s.langCorner}>
+        <Dropdown
+          menu={{
+            items: langMenuItems,
+            selectedKeys: [lang],
+            onClick: ({ key }) => setLang(key as 'uk' | 'en'),
+          }}
+        >
+          <Button type="text" className={s.langButton}>
+            <img src={currentLang?.flag} alt={currentLang?.shortLabel} className={s.flagIcon} />
+            <span className={s.langLabel}>{currentLang?.shortLabel}</span>
+          </Button>
+        </Dropdown>
+      </div>
 
-      <p className="mt-4 text-center text-xs text-fg-tertiary">
-        No account? <span className="text-fg-secondary">Contact your admin</span>
-      </p>
-    </AuthShell>
-  )
+      {/* Copyright — bottom right corner */}
+      <div className={s.copyrightCorner}>{t.auth.copyright}</div>
+    </div>
+  );
 }
