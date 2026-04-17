@@ -17,6 +17,16 @@ Format:
 
 ---
 
+## task-04 — NDVI field map
+- Completed: 2026-04-17 UTC
+- Commit: TBD
+- Magic components used: none (Leaflet map, not a 21st.dev component)
+- Custom written: FieldMap.tsx (Leaflet + react-leaflet + NDVI polygon overlay + legend), useFieldsStatus hook with 6 mock fields
+- Screenshots: agents/wave-1-5/task-04-{field-map,map-view}.png
+- Notes: Esri satellite tiles via arcgisonline.com. NDVI color scale: red→amber→lime→green. 6 mock fields near Kyiv. fitBounds auto-centers on all fields.
+
+---
+
 ## task-03 — complete InvestorDashboard layout
 - Completed: 2026-04-17 UTC
 - Commit: TBD
