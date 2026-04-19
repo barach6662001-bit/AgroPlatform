@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" width="220" height="48">
+  <rect x="4" y="10" width="28" height="28" rx="7" fill="#22C55E"></rect>
+  <path d="M18 16L11 34h3.5l1.3-4.5h4.4L21.5 34H25L18 16zm-1 10.5L18 22l1 4.5h-2z" fill="white"></path>
+  <text x="44" y="28" fill="#171717" font-family="Inter, -apple-system, sans-serif" font-size="17" font-weight="700" letter-spacing="-0.2">Agro<tspan fill="#22C55E">Tech</tspan></text>
+  <text x="44" y="41" fill="#525252" font-family="Inter, -apple-system, sans-serif" font-size="9" font-weight="500" letter-spacing="0.04em">FARM MANAGEMENT</text>
+</svg>

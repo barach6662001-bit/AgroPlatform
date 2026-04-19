@@ -1,4 +1,357 @@
-/* Design system tokens — single source of truth.
- * Canonical source: tokens.css
+/*
+ * AgroPlatform Design System — Colors & Type
+ * Source of truth: frontend/src/styles/tokens.css + frontend/src/theme/{light,dark}Theme.ts
+ *
+ * Two themes:
+ *   :root                   = dark "Command Center" (default for app)
+ *   [data-theme="light"]    = light theme (opt-in)
+ *
+ * Typography stack: Inter (UI), JetBrains Mono (data), tabular-nums everywhere for numbers.
  */
-@import './tokens.css';
+
+/* ─────────────────────────────────────────────────────────────────────────
+   FONTS
+   ───────────────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ─────────────────────────────────────────────────────────────────────────
+   DARK THEME (default) — "Command Center" navy
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Brand */
+  --brand:         #22C55E;
+  --brand-hover:   #16A34A;
+  --brand-active:  #15803D;
+  --brand-glow:    rgba(34, 197, 94, 0.15);
+  --brand-muted:   rgba(34, 197, 94, 0.08);
+  --brand-border:  rgba(34, 197, 94, 0.2);
+
+  /* Backgrounds — navy stack */
+  --bg-page:       #060B14;
+  --bg-surface:    #0C1222;
+  --bg-elevated:   #111A2E;
+  --bg-hover:      #1A2540;
+
+  /* Legacy aliases */
+  --bg-app:        var(--bg-page);
+  --bg-overlay:    var(--bg-hover);
+  --bg-subtle:     var(--bg-elevated);
+
+  /* Card */
+  --card-bg:       rgba(255, 255, 255, 0.03);
+  --card-gradient: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+
+  /* Text — alpha on white */
+  --text-primary:   rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-tertiary:  rgba(255, 255, 255, 0.35);
+  --text-disabled:  rgba(255, 255, 255, 0.20);
+  --text-inverse:   #0C1222;
+
+  /* Borders */
+  --border:         rgba(255, 255, 255, 0.06);
+  --border-hover:   rgba(255, 255, 255, 0.12);
+  --border-strong:  rgba(255, 255, 255, 0.20);
+  --border-focus:   #22C55E;
+
+  /* Semantic / status */
+  --success:  #22C55E;
+  --warning:  #F59E0B;
+  --error:    #EF4444;
+  --info:     #3B82F6;
+  --neutral:  #6366F1;
+
+  --success-bg: rgba(34, 197, 94, 0.08);
+  --warning-bg: rgba(245, 158, 11, 0.08);
+  --error-bg:   rgba(239, 68, 68, 0.08);
+  --info-bg:    rgba(59, 130, 246, 0.08);
+
+  /* Accents */
+  --accent-revenue:  #22C55E;
+  --accent-cost:     #EF4444;
+  --accent-info:     #3B82F6;
+  --accent-warning:  #F59E0B;
+  --accent-premium:  #A855F7;
+
+  /* Crop palette — used in tags, maps, charts */
+  --crop-wheat:      #FBBF24;
+  --crop-sunflower:  #F97316;
+  --crop-corn:       #22C55E;
+  --crop-rapeseed:   #A855F7;
+  --crop-barley:     #0EA5E9;
+  --crop-soy:        #14B8A6;
+  --crop-fallow:     #94A3B8;
+
+  /* Chart series (in order) */
+  --chart-1: #22C55E;
+  --chart-2: #3B82F6;
+  --chart-3: #F59E0B;
+  --chart-4: #A855F7;
+  --chart-5: #14B8A6;
+  --chart-6: #F97316;
+  --chart-7: #EC4899;
+  --chart-8: #0EA5E9;
+
+  /* Typography families */
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  --font-tabular: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Type sizes — core scale */
+  --fs-xxs: 10px;  /* micro labels, counter badges */
+  --fs-xs:  11px;  /* uppercase labels, tags */
+  --fs-sm:  12px;  /* form labels, captions */
+  --fs-md:  13px;  /* body / UI default */
+  --fs-base:14px;  /* body (marketing) */
+  --fs-lg:  15px;  /* section titles */
+  --fs-xl:  18px;  /* card titles */
+  --fs-2xl: 22px;  /* page title */
+  --fs-3xl: 28px;  /* KPI value */
+  --fs-4xl: 32px;  /* hero KPI */
+  --fs-display: 68px; /* landing hero heading (clamped) */
+
+  /* Font weights */
+  --fw-regular: 400;
+  --fw-book:    450;
+  --fw-medium:  500;
+  --fw-semibold:600;
+  --fw-bold:    700;
+  --fw-black:   800;
+
+  /* Line heights */
+  --lh-tight:  1.1;
+  --lh-snug:   1.2;
+  --lh-body:   1.5;
+  --lh-loose:  1.7;
+
+  /* Letter spacing */
+  --ls-tight:  -0.02em;
+  --ls-normal: 0;
+  --ls-caps:   0.04em; /* small caps labels */
+  --ls-kbd:    0.06em; /* table headers */
+
+  /* Spacing — 4px grid */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radius */
+  --radius-xs:  4px;
+  --radius-sm:  6px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+  --radius-2xl: 24px;
+  --radius-pill: 9999px;
+
+  /* Shadows — restrained in dark mode */
+  --shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md:   0 4px 16px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.06);
+  --shadow-lg:   0 16px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.08);
+  --shadow-glow: 0 0 20px rgba(34, 197, 94, 0.15);
+  --shadow-glow-strong: 0 0 32px rgba(34, 197, 94, 0.45);
+  --shadow-card: 0 0 0 1px rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.4);
+
+  /* Transitions */
+  --transition-fast: 100ms ease;
+  --transition-base: 150ms ease;
+  --transition-slow: 200ms ease;
+
+  /* Control heights */
+  --control-h-sm: 28px;
+  --control-h:    36px;
+  --control-h-lg: 40px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   LIGHT THEME — greige / white
+   ───────────────────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-page:       #fafafa;
+  --bg-surface:    #ffffff;
+  --bg-elevated:   #ffffff;
+  --bg-hover:      #f5f5f5;
+  --bg-overlay:    #f5f5f5;
+  --bg-subtle:     #f0f0f0;
+  --bg-app:        #fafafa;
+
+  --card-bg:       #ffffff;
+  --card-gradient: none;
+
+  --text-primary:   #171717;
+  --text-secondary: #525252;
+  --text-tertiary:  #a3a3a3;
+  --text-disabled:  #d4d4d4;
+  --text-inverse:   #ffffff;
+
+  --border:        #e5e5e5;
+  --border-hover:  #d4d4d4;
+  --border-strong: #d4d4d4;
+  --border-focus:  #16a34a;
+
+  --brand:         #16a34a;
+  --brand-hover:   #15803d;
+  --brand-active:  #166534;
+  --brand-muted:   rgba(22, 163, 74, 0.08);
+  --brand-border:  rgba(22, 163, 74, 0.15);
+
+  --success:  #16a34a;
+  --warning:  #f59e0b;
+  --error:    #ef4444;
+  --info:     #3b82f6;
+
+  --success-bg: rgba(22, 163, 74, 0.06);
+  --warning-bg: rgba(245, 158, 11, 0.06);
+  --error-bg:   rgba(239, 68, 68, 0.06);
+  --info-bg:    rgba(59, 130, 246, 0.06);
+
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:  0 4px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-lg:  0 12px 24px rgba(0, 0, 0, 0.10), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px rgba(22, 163, 74, 0.08);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SEMANTIC TYPOGRAPHY CLASSES
+   ───────────────────────────────────────────────────────────────────────── */
+body,
+.body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: var(--lh-body);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, .h1, .page-title {
+  font-family: var(--font-sans);
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-tight);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+h2, .h2 {
+  font-family: var(--font-sans);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-tight);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+h3, .h3, .section-title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.display {
+  font-family: var(--font-sans);
+  font-size: clamp(36px, 6vw, var(--fs-display));
+  font-weight: var(--fw-black);
+  line-height: var(--lh-tight);
+  letter-spacing: -1px;
+  color: var(--text-primary);
+}
+
+.display-gradient {
+  background: linear-gradient(135deg, #22c55e 0%, #16d45a 50%, #4ade80 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.page-subtitle, .subtitle {
+  font-size: var(--fs-base);
+  color: var(--text-secondary);
+  line-height: var(--lh-body);
+  margin: 0;
+}
+
+p, .p {
+  font-size: var(--fs-md);
+  line-height: var(--lh-body);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+small, .small {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.caption {
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+  line-height: var(--lh-body);
+}
+
+/* Small-caps label — used in KPI cards and table headers */
+.label-text,
+.overline {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-kbd);
+}
+
+/* Form label */
+.form-label {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+}
+
+/* KPI number — big, tight, tabular */
+.kpi-value {
+  font-size: var(--fs-3xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-value-hero {
+  font-size: var(--fs-4xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Inline code / keyboard */
+code, .code, kbd {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  padding: 1px 5px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+}
+
+/* Link */
+a {
+  color: var(--brand);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+a:hover { color: var(--brand-hover); }
