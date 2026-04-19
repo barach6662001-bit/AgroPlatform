@@ -1,10 +1,10 @@
-import { Form, Input, Button, Dropdown, message } from 'antd';
-import { User, Lock } from 'lucide-react';
+import { useState, useRef, type FormEvent } from 'react';
+import { Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
 import { useTranslation, languages } from '../i18n';
-import Logo from '../components/Logo';
+import logoUrl from '../assets/brand/logo-a-mark.svg?url';
 import s from './Login.module.css';
 
 export default function Login() {
@@ -12,91 +12,164 @@ export default function Login() {
   const setAuth = useAuthStore((s) => s.setAuth);
   const { t, lang, setLang } = useTranslation();
 
-  const onFinish = async (values: { email: string; password: string }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [langOpen, setLangOpen] = useState(false);
+
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const submitRef = useRef<HTMLButtonElement>(null);
+
+  const validate = () => {
+    const next: { email?: string; password?: string } = {};
+    if (!email) next.email = t.auth.enterEmail;
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = t.auth.enterEmail;
+    if (!password) next.password = t.auth.enterPassword;
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setApiError('');
+    if (!validate()) return;
+    setLoading(true);
     try {
-      const data = await login(values);
+      const data = await login({ email, password });
       setAuth(data.token, data.email, data.role, data.tenantId, data.requirePasswordChange, data.hasCompletedOnboarding, data.firstName, data.lastName, data.refreshToken);
-      message.success(t.auth.welcomeMessage);
       navigate(data.requirePasswordChange ? '/change-password' : '/');
     } catch {
-      message.error(t.auth.loginError);
+      setApiError(t.auth.loginError);
+    } finally {
+      setLoading(false);
     }
   };
 
   const currentLang = languages.find(l => l.code === lang);
-  const langMenuItems = languages.map(l => ({
-    key: l.code,
-    label: (
-      <div className={s.flexCenter}>
-        <img src={l.flag} alt={l.shortLabel} className={s.bordered} />
-        <span>{l.label}</span>
-      </div>
-    ),
-  }));
 
   return (
     <div className={s.loginPage}>
       <div className={s.loginCard}>
         {/* Logo */}
-        <Logo size={28} variant="full" />
+        <img src={logoUrl} alt="" className={s.logo} width={44} height={44} />
 
         {/* Title */}
-        <h3 className={s.formTitle}>{t.auth.loginTitle}</h3>
+        <h1 className={s.formTitle}>{t.auth.loginTitle}</h1>
         <p className={s.formSubtitle}>{t.auth.loginSubtitle}</p>
 
-        {/* Form: email + password + submit */}
-        <Form layout="vertical" onFinish={onFinish}>
-          <Form.Item
-            name="email"
-            label={<span className={s.fieldLabel}>{t.auth.email}</span>}
-            rules={[{ required: true, type: 'email', message: t.auth.enterEmail }]}
-          >
-            <Input
-              prefix={<User size={16} strokeWidth={1.5} className={s.inputIcon} />}
+        {/* Form */}
+        <form className={s.form} onSubmit={onSubmit} noValidate>
+          {/* Email */}
+          <div className={s.fieldGroup}>
+            <label className={s.fieldLabel} htmlFor="login-email">{t.auth.email}</label>
+            <input
+              id="login-email"
+              type="email"
+              className={`${s.input}${errors.email ? ` ${s.inputError}` : ''}`}
               placeholder={t.auth.email}
-              size="large"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors(prev => ({ ...prev, email: undefined })); }}
+              autoComplete="email"
             />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            label={<span className={s.fieldLabel}>{t.auth.password}</span>}
-            rules={[{ required: true, message: t.auth.enterPassword }]}
-          >
-            <Input.Password
-              prefix={<Lock size={16} strokeWidth={1.5} className={s.inputIcon} />}
-              placeholder={t.auth.password}
-              size="large"
-            />
-          </Form.Item>
-          <Form.Item className={s.submitGap}>
-            <Button type="primary" htmlType="submit" block size="large" className={s.submitButton}>
-              {t.auth.login}
-            </Button>
-          </Form.Item>
-        </Form>
+            {errors.email && <p className={s.fieldError}>{errors.email}</p>}
+          </div>
 
-        {/* Forgot password */}
-        <div className={s.forgotLink}>{t.auth.forgotPassword}</div>
+          {/* Password */}
+          <div className={s.fieldGroup}>
+            <label className={s.fieldLabel} htmlFor="login-password">{t.auth.password}</label>
+            <div className={s.inputWrapper}>
+              <input
+                id="login-password"
+                ref={passwordRef}
+                type={showPassword ? 'text' : 'password'}
+                className={`${s.input} ${s.inputWithIcon}${errors.password ? ` ${s.inputError}` : ''}`}
+                placeholder={t.auth.password}
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors(prev => ({ ...prev, password: undefined })); }}
+                autoComplete="current-password"
+              />
+              <button
+                ref={toggleRef}
+                type="button"
+                className={s.passwordToggle}
+                onClick={() => setShowPassword(v => !v)}
+                tabIndex={0}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword
+                  ? <EyeOff size={16} strokeWidth={1.5} />
+                  : <Eye size={16} strokeWidth={1.5} />
+                }
+              </button>
+            </div>
+            {errors.password && <p className={s.fieldError}>{errors.password}</p>}
+          </div>
+
+          {/* API error */}
+          {apiError && (
+            <div className={s.apiError}>
+              <AlertCircle size={14} strokeWidth={1.5} className={s.apiErrorIcon} />
+              <p className={s.apiErrorText}>{apiError}</p>
+            </div>
+          )}
+
+          {/* Submit */}
+          <button
+            ref={submitRef}
+            type="submit"
+            className={s.submitButton}
+            disabled={loading}
+          >
+            {loading && <Loader2 size={16} strokeWidth={1.5} className={s.spinner} />}
+            {loading ? 'Вхід...' : t.auth.login}
+          </button>
+        </form>
+
+        {/* Help text */}
+        <p className={s.helpText}>{t.auth.forgotPassword}</p>
       </div>
 
-      {/* Language switcher — bottom left corner */}
-      <div className={s.langCorner}>
-        <Dropdown
-          menu={{
-            items: langMenuItems,
-            selectedKeys: [lang],
-            onClick: ({ key }) => setLang(key as 'uk' | 'en'),
-          }}
-        >
-          <Button type="text" className={s.langButton}>
+      {/* Footer: lang switcher + copyright */}
+      <div className={s.footer}>
+        {/* Language switcher */}
+        <div style={{ position: 'relative' }}>
+          <button
+            type="button"
+            className={s.langButton}
+            onClick={() => setLangOpen(v => !v)}
+            onBlur={(e) => {
+              if (!e.currentTarget.parentElement?.contains(e.relatedTarget)) {
+                setLangOpen(false);
+              }
+            }}
+          >
             <img src={currentLang?.flag} alt={currentLang?.shortLabel} className={s.flagIcon} />
             <span className={s.langLabel}>{currentLang?.shortLabel}</span>
-          </Button>
-        </Dropdown>
-      </div>
+          </button>
+          {langOpen && (
+            <div className={s.langDropdown}>
+              {languages.map(l => (
+                <button
+                  key={l.code}
+                  type="button"
+                  className={`${s.langOption}${l.code === lang ? ` ${s.langOptionActive}` : ''}`}
+                  onClick={() => { setLang(l.code as 'uk' | 'en'); setLangOpen(false); }}
+                >
+                  <img src={l.flag} alt={l.shortLabel} className={s.flagIcon} />
+                  <span>{l.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
-      {/* Copyright — bottom right corner */}
-      <div className={s.copyrightCorner}>{t.auth.copyright}</div>
+        {/* Copyright */}
+        <span className={s.copyrightText}>{t.auth.copyright}</span>
+      </div>
     </div>
   );
 }
