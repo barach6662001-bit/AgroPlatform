@@ -70,7 +70,7 @@ export default function Login() {
               id="login-email"
               type="email"
               className={`${s.input}${errors.email ? ` ${s.inputError}` : ''}`}
-              placeholder="name@example.com"
+              placeholder={t.auth.email}
               value={email}
               onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors(prev => ({ ...prev, email: undefined })); }}
               autoComplete="email"
