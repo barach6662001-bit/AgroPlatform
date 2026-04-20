@@ -53,6 +53,10 @@ export default function Login() {
 
   return (
     <div className={s.loginPage}>
+      {/* Decorative glow orbs */}
+      <div className={`${s.orb} ${s.orbGreen}`} />
+      <div className={`${s.orb} ${s.orbBlue}`} />
+
       <div className={s.loginCard}>
         {/* Logo */}
         <img src={logoUrl} alt="" className={s.logo} width={44} height={44} />
