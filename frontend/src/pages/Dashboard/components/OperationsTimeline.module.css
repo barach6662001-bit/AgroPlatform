@@ -65,6 +65,7 @@
 }
 
 .time {
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-tertiary);
   flex-shrink: 0;
@@ -72,8 +73,9 @@
 
 .badge {
   flex-shrink: 0;
+  font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   padding: 2px 8px;
   border-radius: 99px;
   background: var(--warning-bg);

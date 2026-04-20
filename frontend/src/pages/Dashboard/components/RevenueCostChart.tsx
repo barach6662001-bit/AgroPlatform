@@ -61,11 +61,11 @@ export default function RevenueCostChart({ data, title, costLabel, revenueLabel 
           <CartesianGrid strokeDasharray="4 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
           <XAxis
             dataKey="name"
-            tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.35)', fontFamily: 'var(--font-sans)' }}
+            tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.35)', fontFamily: 'var(--font-mono)' }}
             axisLine={false} tickLine={false}
           />
           <YAxis
-            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-sans)' }}
+            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}
             axisLine={false} tickLine={false} width={64}
             tickFormatter={(v: number) => formatUA(v)}
           />

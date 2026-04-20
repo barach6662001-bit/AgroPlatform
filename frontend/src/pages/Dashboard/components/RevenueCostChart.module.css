@@ -17,9 +17,12 @@
 }
 
 .title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
 }
 
 /* Tooltip */
@@ -34,10 +37,12 @@
 }
 
 .tooltipLabel {
+  font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   margin-bottom: 6px;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
 .tooltipRow {
@@ -60,6 +65,7 @@
 
 .tooltipValue {
   color: var(--text-primary);
+  font-family: var(--font-mono);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
