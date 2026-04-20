@@ -1,58 +1,85 @@
 /*
  * AgroPlatform Design System — Colors & Type
- * Source of truth: frontend/src/styles/tokens.css + frontend/src/theme/{light,dark}Theme.ts
+ * 21st Dark Premium aesthetic: black canvas, Geist typography, radial glow accents.
  *
- * Two themes:
- *   :root                   = dark "Command Center" (default for app)
- *   [data-theme="light"]    = light theme (opt-in)
+ * Themes:
+ *   :root                   = dark "21st Dark Premium" (default)
+ *   [data-theme="light"]    = light theme (opt-in, greige/white)
  *
- * Typography stack: Inter (UI), JetBrains Mono (data), tabular-nums everywhere for numbers.
+ * Accent toggles (data-acc on <html>):
+ *   default / data-acc="green"  — signature green (brand)
+ *   data-acc="violet"
+ *   data-acc="blue"
+ *   data-acc="mono"             — monochrome on near-white
+ *
+ * Typography: Geist (UI + marketing), Geist Mono (data + code).
+ * Tabular-nums everywhere for numbers.
  */
 
 /* ─────────────────────────────────────────────────────────────────────────
-   FONTS
+   FONTS — Geist family (via Google Fonts)
    ───────────────────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
 
 /* ─────────────────────────────────────────────────────────────────────────
-   DARK THEME (default) — "Command Center" navy
+   DARK THEME (default) — "21st Dark Premium" black stack
    ───────────────────────────────────────────────────────────────────────── */
 :root {
-  /* Brand */
-  --brand:         #22C55E;
-  --brand-hover:   #16A34A;
+  /* Brand / accent — single living accent.
+     --acc and --accRgb are the canonical knobs; data-acc="…" swaps them. */
+  --acc:           #22C55E;
+  --accRgb:        34, 197, 94;
+  --acc2:          #16A34A;           /* gradient end, hover state */
+
+  --brand:         var(--acc);
+  --brand-hover:   var(--acc2);
   --brand-active:  #15803D;
-  --brand-glow:    rgba(34, 197, 94, 0.15);
-  --brand-muted:   rgba(34, 197, 94, 0.08);
-  --brand-border:  rgba(34, 197, 94, 0.2);
+  --brand-glow:    rgba(var(--accRgb), 0.15);
+  --brand-muted:   rgba(var(--accRgb), 0.08);
+  --brand-border:  rgba(var(--accRgb), 0.22);
 
-  /* Backgrounds — navy stack */
-  --bg-page:       #060B14;
-  --bg-surface:    #0C1222;
-  --bg-elevated:   #111A2E;
-  --bg-hover:      #1A2540;
+  /* Backgrounds — black stack (was navy) */
+  --bg:            #0a0a0a;           /* page */
+  --e1:            #101010;           /* elevated 1 (cards) */
+  --e2:            #161616;           /* elevated 2 (popovers, dialogs) */
+  --hov:           #1c1c1c;           /* hover fill */
 
-  /* Legacy aliases */
-  --bg-app:        var(--bg-page);
-  --bg-overlay:    var(--bg-hover);
-  --bg-subtle:     var(--bg-elevated);
+  --bg-page:       var(--bg);
+  --bg-surface:    var(--e1);
+  --bg-elevated:   var(--e2);
+  --bg-hover:      var(--hov);
+  --bg-app:        var(--bg);
+  --bg-overlay:    var(--hov);
+  --bg-subtle:     var(--e2);
 
-  /* Card */
+  /* Radial glow backdrop — the signature 21st canvas.
+     Paint on <body> or a full-bleed wrapper. */
+  --bg-glow:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(var(--accRgb), .10), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 15% 120%, rgba(var(--accRgb), .06), transparent 55%),
+    var(--bg);
+
+  /* Card fills — nearly transparent on the black canvas */
   --card-bg:       rgba(255, 255, 255, 0.03);
   --card-gradient: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
 
-  /* Text — alpha on white */
-  --text-primary:   rgba(255, 255, 255, 0.92);
-  --text-secondary: rgba(255, 255, 255, 0.55);
-  --text-tertiary:  rgba(255, 255, 255, 0.35);
+  /* Text — alpha on white (slightly brighter primary than navy theme) */
+  --t:              rgba(255, 255, 255, 0.94);
+  --tm:             rgba(255, 255, 255, 0.58);
+  --td:             rgba(255, 255, 255, 0.38);
+  --text-primary:   var(--t);
+  --text-secondary: var(--tm);
+  --text-tertiary:  var(--td);
   --text-disabled:  rgba(255, 255, 255, 0.20);
-  --text-inverse:   #0C1222;
+  --text-inverse:   #0a0a0a;
 
-  /* Borders */
-  --border:         rgba(255, 255, 255, 0.06);
-  --border-hover:   rgba(255, 255, 255, 0.12);
-  --border-strong:  rgba(255, 255, 255, 0.20);
-  --border-focus:   #22C55E;
+  /* Borders — hairlines in white alpha */
+  --b:              rgba(255, 255, 255, 0.08);
+  --b2:             rgba(255, 255, 255, 0.14);
+  --border:         var(--b);
+  --border-hover:   var(--b2);
+  --border-strong:  rgba(255, 255, 255, 0.22);
+  --border-focus:   var(--acc);
 
   /* Semantic / status */
   --success:  #22C55E;
@@ -66,14 +93,14 @@
   --error-bg:   rgba(239, 68, 68, 0.08);
   --info-bg:    rgba(59, 130, 246, 0.08);
 
-  /* Accents */
+  /* Data accents (mirror brand roles) */
   --accent-revenue:  #22C55E;
   --accent-cost:     #EF4444;
   --accent-info:     #3B82F6;
   --accent-warning:  #F59E0B;
   --accent-premium:  #A855F7;
 
-  /* Crop palette — used in tags, maps, charts */
+  /* Crop palette — used in tags, maps, charts (data-bound) */
   --crop-wheat:      #FBBF24;
   --crop-sunflower:  #F97316;
   --crop-corn:       #22C55E;
@@ -82,7 +109,7 @@
   --crop-soy:        #14B8A6;
   --crop-fallow:     #94A3B8;
 
-  /* Chart series (in order) */
+  /* Chart series (order) */
   --chart-1: #22C55E;
   --chart-2: #3B82F6;
   --chart-3: #F59E0B;
@@ -92,43 +119,47 @@
   --chart-7: #EC4899;
   --chart-8: #0EA5E9;
 
-  /* Typography families */
-  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono:    'JetBrains Mono', 'Fira Code', Consolas, monospace;
-  --font-tabular: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Typography families — Geist */
+  --fs:           'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --fm:           'Geist Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --font-sans:    var(--fs);
+  --font-mono:    var(--fm);
+  --font-tabular: var(--fs);
 
   /* Type sizes — core scale */
-  --fs-xxs: 10px;  /* micro labels, counter badges */
-  --fs-xs:  11px;  /* uppercase labels, tags */
-  --fs-sm:  12px;  /* form labels, captions */
-  --fs-md:  13px;  /* body / UI default */
-  --fs-base:14px;  /* body (marketing) */
-  --fs-lg:  15px;  /* section titles */
-  --fs-xl:  18px;  /* card titles */
-  --fs-2xl: 22px;  /* page title */
-  --fs-3xl: 28px;  /* KPI value */
-  --fs-4xl: 32px;  /* hero KPI */
-  --fs-display: 68px; /* landing hero heading (clamped) */
+  --fs-xxs: 10px;
+  --fs-xs:  11px;
+  --fs-sm:  12px;
+  --fs-md:  13px;
+  --fs-base:14px;
+  --fs-lg:  15px;
+  --fs-xl:  18px;
+  --fs-2xl: 22px;
+  --fs-3xl: 28px;
+  --fs-4xl: 32px;
+  --fs-hero: 42px;     /* 21st hero */
+  --fs-display: 68px;
 
-  /* Font weights */
-  --fw-regular: 400;
-  --fw-book:    450;
-  --fw-medium:  500;
-  --fw-semibold:600;
-  --fw-bold:    700;
-  --fw-black:   800;
+  /* Font weights (Geist ships 400/500/600/700) */
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
 
   /* Line heights */
-  --lh-tight:  1.1;
+  --lh-tight:  1.05;
   --lh-snug:   1.2;
-  --lh-body:   1.5;
+  --lh-body:   1.55;
   --lh-loose:  1.7;
 
-  /* Letter spacing */
-  --ls-tight:  -0.02em;
-  --ls-normal: 0;
-  --ls-caps:   0.04em; /* small caps labels */
-  --ls-kbd:    0.06em; /* table headers */
+  /* Letter spacing — Geist is tighter than Inter, so go more negative */
+  --ls-tighter: -0.035em;  /* hero */
+  --ls-tight:   -0.02em;
+  --ls-body:    -0.005em;
+  --ls-normal:  0;
+  --ls-caps:    0.04em;
+  --ls-kbd:     0.06em;
+  --ls-eyebrow: 0.08em;
 
   /* Spacing — 4px grid */
   --space-1:  4px;
@@ -151,13 +182,13 @@
   --radius-2xl: 24px;
   --radius-pill: 9999px;
 
-  /* Shadows — restrained in dark mode */
-  --shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md:   0 4px 16px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.06);
-  --shadow-lg:   0 16px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.08);
-  --shadow-glow: 0 0 20px rgba(34, 197, 94, 0.15);
-  --shadow-glow-strong: 0 0 32px rgba(34, 197, 94, 0.45);
-  --shadow-card: 0 0 0 1px rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.4);
+  /* Shadows — restrained; 21st leans on glow, not drop shadow */
+  --shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-md:   0 4px 16px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255,255,255,0.06);
+  --shadow-lg:   0 20px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.08);
+  --shadow-glow: 0 0 20px rgba(var(--accRgb), 0.25);
+  --shadow-glow-strong: 0 0 32px rgba(var(--accRgb), 0.55);
+  --shadow-card: 0 0 0 1px rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.5);
 
   /* Transitions */
   --transition-fast: 100ms ease;
@@ -171,36 +202,62 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+   ACCENT VARIANTS — swap the living accent without touching the canvas
+   ───────────────────────────────────────────────────────────────────────── */
+[data-acc="green"]  { --acc:#22C55E; --accRgb:34,197,94;   --acc2:#16A34A; }
+[data-acc="violet"] { --acc:#8B5CF6; --accRgb:139,92,246;  --acc2:#7C3AED; }
+[data-acc="blue"]   { --acc:#3B82F6; --accRgb:59,130,246;  --acc2:#2563EB; }
+[data-acc="mono"]   { --acc:#fafafa; --accRgb:250,250,250; --acc2:#e5e5e5; }
+
+/* ─────────────────────────────────────────────────────────────────────────
    LIGHT THEME — greige / white
    ───────────────────────────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg-page:       #fafafa;
-  --bg-surface:    #ffffff;
-  --bg-elevated:   #ffffff;
-  --bg-hover:      #f5f5f5;
-  --bg-overlay:    #f5f5f5;
+  --bg:            #fafafa;
+  --e1:            #ffffff;
+  --e2:            #ffffff;
+  --hov:           #f5f5f5;
+
+  --bg-page:       var(--bg);
+  --bg-surface:    var(--e1);
+  --bg-elevated:   var(--e2);
+  --bg-hover:      var(--hov);
+  --bg-overlay:    var(--hov);
   --bg-subtle:     #f0f0f0;
-  --bg-app:        #fafafa;
+  --bg-app:        var(--bg);
+
+  --bg-glow:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(var(--accRgb), .06), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 15% 120%, rgba(var(--accRgb), .04), transparent 55%),
+    var(--bg);
 
   --card-bg:       #ffffff;
   --card-gradient: none;
 
-  --text-primary:   #171717;
-  --text-secondary: #525252;
-  --text-tertiary:  #a3a3a3;
+  --t:              #171717;
+  --tm:             #525252;
+  --td:             #a3a3a3;
+  --text-primary:   var(--t);
+  --text-secondary: var(--tm);
+  --text-tertiary:  var(--td);
   --text-disabled:  #d4d4d4;
   --text-inverse:   #ffffff;
 
-  --border:        #e5e5e5;
-  --border-hover:  #d4d4d4;
-  --border-strong: #d4d4d4;
+  --b:             #e5e5e5;
+  --b2:            #d4d4d4;
+  --border:        var(--b);
+  --border-hover:  var(--b2);
+  --border-strong: var(--b2);
   --border-focus:  #16a34a;
 
-  --brand:         #16a34a;
-  --brand-hover:   #15803d;
+  --acc:           #16a34a;
+  --accRgb:        22, 163, 74;
+  --acc2:          #15803d;
+  --brand:         var(--acc);
+  --brand-hover:   var(--acc2);
   --brand-active:  #166534;
-  --brand-muted:   rgba(22, 163, 74, 0.08);
-  --brand-border:  rgba(22, 163, 74, 0.15);
+  --brand-muted:   rgba(var(--accRgb), 0.08);
+  --brand-border:  rgba(var(--accRgb), 0.15);
 
   --success:  #16a34a;
   --warning:  #f59e0b;
@@ -215,7 +272,7 @@
   --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md:  0 4px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow-lg:  0 12px 24px rgba(0, 0, 0, 0.10), 0 4px 8px rgba(0, 0, 0, 0.06);
-  --shadow-glow: 0 0 20px rgba(22, 163, 74, 0.08);
+  --shadow-glow: 0 0 20px rgba(var(--accRgb), 0.10);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -223,17 +280,26 @@
    ───────────────────────────────────────────────────────────────────────── */
 body,
 .body {
-  font-family: var(--font-sans);
+  font-family: var(--fs);
   font-size: var(--fs-base);
   line-height: var(--lh-body);
   color: var(--text-primary);
+  letter-spacing: var(--ls-body);
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Canvas helper — apply to <body> or a full-bleed wrapper to paint the
+   signature black-with-radial-glow backdrop. */
+.canvas,
+.bg-glow {
+  background: var(--bg-glow);
+  background-color: var(--bg);
+}
+
 h1, .h1, .page-title {
-  font-family: var(--font-sans);
+  font-family: var(--fs);
   font-size: var(--fs-2xl);
   font-weight: var(--fw-semibold);
   line-height: var(--lh-snug);
@@ -243,7 +309,7 @@ h1, .h1, .page-title {
 }
 
 h2, .h2 {
-  font-family: var(--font-sans);
+  font-family: var(--fs);
   font-size: var(--fs-xl);
   font-weight: var(--fw-semibold);
   line-height: var(--lh-snug);
@@ -260,20 +326,53 @@ h3, .h3, .section-title {
   margin: 0;
 }
 
-.display {
-  font-family: var(--font-sans);
-  font-size: clamp(36px, 6vw, var(--fs-display));
-  font-weight: var(--fw-black);
+/* Hero / display — the 21st signature gradient heading */
+.hero-title {
+  font-family: var(--fs);
+  font-size: var(--fs-hero);
+  font-weight: var(--fw-semibold);
   line-height: var(--lh-tight);
-  letter-spacing: -1px;
+  letter-spacing: var(--ls-tighter);
+  background: linear-gradient(180deg, #fff, rgba(255,255,255,0.6));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.display {
+  font-family: var(--fs);
+  font-size: clamp(36px, 6vw, var(--fs-display));
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tighter);
   color: var(--text-primary);
 }
 
 .display-gradient {
-  background: linear-gradient(135deg, #22c55e 0%, #16d45a 50%, #4ade80 100%);
+  background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.6) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Eyebrow — pill-shaped meta chip above hero, with live dot */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 11px;
+  border: 1px solid var(--b);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.025);
+  font-family: var(--fm);
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+}
+.eyebrow .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--acc);
+  box-shadow: 0 0 12px rgba(var(--accRgb), 0.8);
 }
 
 .page-subtitle, .subtitle {
@@ -301,25 +400,30 @@ small, .small {
   line-height: var(--lh-body);
 }
 
-/* Small-caps label — used in KPI cards and table headers */
+/* Small-caps label — KPI labels, table headers, section overlines */
 .label-text,
 .overline {
+  font-family: var(--fm);
   font-size: var(--fs-xs);
   font-weight: var(--fw-medium);
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: var(--ls-kbd);
+  letter-spacing: var(--ls-eyebrow);
 }
 
 /* Form label */
 .form-label {
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
+  font-family: var(--fm);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
   color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
 }
 
 /* KPI number — big, tight, tabular */
 .kpi-value {
+  font-family: var(--fs);
   font-size: var(--fs-3xl);
   font-weight: var(--fw-semibold);
   line-height: var(--lh-tight);
@@ -329,17 +433,18 @@ small, .small {
 }
 
 .kpi-value-hero {
+  font-family: var(--fs);
   font-size: var(--fs-4xl);
   font-weight: var(--fw-semibold);
   line-height: var(--lh-tight);
-  letter-spacing: var(--ls-tight);
-  color: var(--text-primary);
+  letter-spacing: var(--ls-tighter);
+  color: var(--acc);
   font-variant-numeric: tabular-nums;
 }
 
 /* Inline code / keyboard */
 code, .code, kbd {
-  font-family: var(--font-mono);
+  font-family: var(--fm);
   font-size: 0.92em;
   padding: 1px 5px;
   background: var(--bg-elevated);
@@ -350,8 +455,8 @@ code, .code, kbd {
 
 /* Link */
 a {
-  color: var(--brand);
+  color: var(--acc);
   text-decoration: none;
   transition: color var(--transition-base);
 }
-a:hover { color: var(--brand-hover); }
+a:hover { color: var(--acc2); }
