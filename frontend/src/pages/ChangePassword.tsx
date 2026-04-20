@@ -1,5 +1,6 @@
 import { Form, Input, Button, message } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
+import { Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { changePassword } from '../api/auth';
@@ -44,7 +45,7 @@ export default function ChangePassword() {
         className={s.fullWidth}
       >
         <div className={s.textCenter}>
-          <div className={s.text32}>🔒</div>
+          <div className={s.lockIcon}><Lock size={32} strokeWidth={1.5} /></div>
           <h2 className={s.text22}>
             {t.auth.changePasswordTitle}
           </h2>

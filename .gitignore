@@ -442,3 +442,4 @@ src/**/appsettings.Local.json
 # Database backups
 backups/
 "AgroPlatform/.claude/settings.local.json" 
+.vscode/mcp.json

@@ -9,3 +9,4 @@ export { default as CurrencyCell } from './CurrencyCell';
 export { default as DateCell } from './DateCell';
 export { default as QuantityCell } from './QuantityCell';
 export { default as ActionBar } from './ActionBar';
+export { default as EyebrowChip } from './EyebrowChip';

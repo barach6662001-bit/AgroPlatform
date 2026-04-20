@@ -208,6 +208,46 @@
           "reveal": "always",
           "panel": "new"
         }
+      },
+      {
+        "type": "shell",
+        "label": "ds-verify-old-favicon",
+        "command": "echo '=== OLD favicon ===' && git show HEAD:frontend/public/favicon.svg && echo '' && echo '=== NEW favicon ===' && cat frontend/public/favicon.svg",
+        "options": { "cwd": "/workspaces/AgroPlatform" },
+        "group": "none",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "type": "shell",
+        "label": "ds-unstage-lockfile-status",
+        "command": "git restore --staged frontend/package-lock.json && git checkout -- frontend/package-lock.json && git add -A && git status",
+        "options": { "cwd": "/workspaces/AgroPlatform" },
+        "group": "none",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "type": "shell",
+        "label": "ds-commit-push",
+        "command": "git checkout -- .vscode/tasks.json && git add -A && git commit -m 'chore(design-system): integrate AgroPlatform Design System' && git push -u origin chore/design-system-integration",
+        "options": { "cwd": "/workspaces/AgroPlatform" },
+        "group": "none",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "type": "shell",
+        "label": "ds-create-pr",
+        "command": "gh pr create --base main --head chore/design-system-integration --title 'chore(design-system): integrate AgroPlatform Design System (tokens + assets + skill)' --body '## What this adds\n- `frontend/src/styles/design-system.css` — all design tokens (navy Command Center + green brand)\n- `frontend/src/assets/brand/` — 4 SVG logos\n- `frontend/public/favicon.svg` — new favicon\n- `.claude/skills/agroplatform-design/SKILL.md` — Claude Code skill\n- `docs/design-system/README.md` — brand guide\n\n## What this does NOT change\n- No component code rewritten\n- No existing tokens removed (design-system.css is additive)\n- Visual appearance of the app is unchanged — this PR just makes the new tokens available for future use\n\n**Next:** login page redesign will consume these tokens.'",
+        "options": { "cwd": "/workspaces/AgroPlatform" },
+        "group": "none",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "type": "shell",
+        "label": "ds-watch-checks-merge",
+        "command": "gh pr checks chore/design-system-integration --watch && gh pr merge chore/design-system-integration --squash --auto",
+        "options": { "cwd": "/workspaces/AgroPlatform" },
+        "group": "none",
+        "presentation": { "reveal": "always", "panel": "new" }
       }
   ]
 }

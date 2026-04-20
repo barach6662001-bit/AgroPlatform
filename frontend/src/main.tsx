@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import dayjs from 'dayjs';
 import 'dayjs/locale/uk';
 import 'leaflet/dist/leaflet.css';
+import './styles/design-system.css';
 import './theme/global.css';
 import './utils/leafletFix';
 import App from './App.tsx';
