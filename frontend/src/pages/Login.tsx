@@ -1,5 +1,6 @@
-import { useState, useRef, type FormEvent } from 'react';
-import { Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
+import { useState, useRef, useCallback, type FormEvent, type MouseEvent } from 'react';
+import { Eye, EyeOff, AlertCircle, Loader2, Mail, Lock, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
@@ -19,10 +20,27 @@ export default function Login() {
   const [apiError, setApiError] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [langOpen, setLangOpen] = useState(false);
+  const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const passwordRef = useRef<HTMLInputElement>(null);
-  const toggleRef = useRef<HTMLButtonElement>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
+
+  /* 3D tilt */
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useTransform(mouseY, [-300, 300], [8, -8]);
+  const rotateY = useTransform(mouseX, [-300, 300], [-8, 8]);
+
+  const handleCardMouse = useCallback((e: MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - rect.left - rect.width / 2);
+    mouseY.set(e.clientY - rect.top - rect.height / 2);
+  }, [mouseX, mouseY]);
+
+  const handleCardLeave = useCallback(() => {
+    mouseX.set(0);
+    mouseY.set(0);
+  }, [mouseX, mouseY]);
 
   const validate = () => {
     const next: { email?: string; password?: string } = {};
@@ -53,93 +71,194 @@ export default function Login() {
 
   return (
     <div className={s.loginPage}>
-      {/* Decorative glow orbs */}
-      <div className={`${s.orb} ${s.orbGreen}`} />
-      <div className={`${s.orb} ${s.orbBlue}`} />
+      {/* Background gradient */}
+      <div className={s.bgGradient} />
+      {/* Noise texture */}
+      <div className={s.noiseOverlay} />
+      {/* Top radial glow */}
+      <div className={s.topGlow} />
+      <div className={s.topGlowPulse} />
+      {/* Ambient spots */}
+      <div className={s.ambientLeft} />
+      <div className={s.ambientRight} />
 
-      <div className={s.loginCard}>
-        {/* Logo */}
-        <img src={logoUrl} alt="" className={s.logo} width={44} height={44} />
+      {/* 3D tilt card wrapper */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className={s.cardPerspective}
+      >
+        <motion.div
+          className={s.cardTilt}
+          style={{ rotateX, rotateY }}
+          onMouseMove={handleCardMouse}
+          onMouseLeave={handleCardLeave}
+        >
+          <div className={s.cardGroup}>
+            {/* Glow on hover */}
+            <div className={s.cardGlow} />
 
-        {/* Title */}
-        <h1 className={s.formTitle}>{t.auth.loginTitle}</h1>
-        <p className={s.formSubtitle}>{t.auth.loginSubtitle}</p>
-
-        {/* Form */}
-        <form className={s.form} onSubmit={onSubmit} noValidate>
-          {/* Email */}
-          <div className={s.fieldGroup}>
-            <label className={s.fieldLabel} htmlFor="login-email">{t.auth.email}</label>
-            <input
-              id="login-email"
-              type="email"
-              className={`${s.input}${errors.email ? ` ${s.inputError}` : ''}`}
-              placeholder={t.auth.email}
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors(prev => ({ ...prev, email: undefined })); }}
-              autoComplete="email"
-            />
-            {errors.email && <p className={s.fieldError}>{errors.email}</p>}
-          </div>
-
-          {/* Password */}
-          <div className={s.fieldGroup}>
-            <label className={s.fieldLabel} htmlFor="login-password">{t.auth.password}</label>
-            <div className={s.inputWrapper}>
-              <input
-                id="login-password"
-                ref={passwordRef}
-                type={showPassword ? 'text' : 'password'}
-                className={`${s.input} ${s.inputWithIcon}${errors.password ? ` ${s.inputError}` : ''}`}
-                placeholder={t.auth.password}
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors(prev => ({ ...prev, password: undefined })); }}
-                autoComplete="current-password"
-              />
-              <button
-                ref={toggleRef}
-                type="button"
-                className={s.passwordToggle}
-                onClick={() => setShowPassword(v => !v)}
-                tabIndex={0}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword
-                  ? <EyeOff size={16} strokeWidth={1.5} />
-                  : <Eye size={16} strokeWidth={1.5} />
-                }
-              </button>
+            {/* Traveling light beams */}
+            <div className={s.beamContainer}>
+              <div className={`${s.beam} ${s.beamTop}`} />
+              <div className={`${s.beam} ${s.beamRight}`} />
+              <div className={`${s.beam} ${s.beamBottom}`} />
+              <div className={`${s.beam} ${s.beamLeft}`} />
+              {/* Corner glow dots */}
+              <div className={`${s.cornerDot} ${s.cornerTL}`} />
+              <div className={`${s.cornerDot} ${s.cornerTR}`} />
+              <div className={`${s.cornerDot} ${s.cornerBR}`} />
+              <div className={`${s.cornerDot} ${s.cornerBL}`} />
             </div>
-            {errors.password && <p className={s.fieldError}>{errors.password}</p>}
-          </div>
 
-          {/* API error */}
-          {apiError && (
-            <div className={s.apiError}>
-              <AlertCircle size={14} strokeWidth={1.5} className={s.apiErrorIcon} />
-              <p className={s.apiErrorText}>{apiError}</p>
+            {/* Border glow on hover */}
+            <div className={s.borderGlow} />
+
+            {/* Glass card */}
+            <div className={s.loginCard}>
+              {/* Inner crosshatch pattern */}
+              <div className={s.cardPattern} />
+
+              {/* Logo + header */}
+              <div className={s.header}>
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', duration: 0.8 }}
+                  className={s.logoCircle}
+                >
+                  <img src={logoUrl} alt="" className={s.logo} width={28} height={28} />
+                  <div className={s.logoShine} />
+                </motion.div>
+
+                <motion.h1
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className={s.formTitle}
+                >
+                  {t.auth.loginTitle}
+                </motion.h1>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className={s.formSubtitle}
+                >
+                  {t.auth.loginSubtitle}
+                </motion.p>
+              </div>
+
+              {/* Form */}
+              <form className={s.form} onSubmit={onSubmit} noValidate>
+                {/* Email */}
+                <div className={s.fieldGroup}>
+                  <div className={`${s.inputRow}${focusedInput === 'email' ? ` ${s.inputRowFocused}` : ''}`}>
+                    <Mail size={16} strokeWidth={1.5} className={`${s.fieldIcon}${focusedInput === 'email' ? ` ${s.fieldIconActive}` : ''}`} />
+                    <input
+                      id="login-email"
+                      type="email"
+                      className={`${s.input}${errors.email ? ` ${s.inputError}` : ''}`}
+                      placeholder={t.auth.email}
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors(prev => ({ ...prev, email: undefined })); }}
+                      onFocus={() => setFocusedInput('email')}
+                      onBlur={() => setFocusedInput(null)}
+                      autoComplete="email"
+                    />
+                  </div>
+                  {errors.email && <p className={s.fieldError}>{errors.email}</p>}
+                </div>
+
+                {/* Password */}
+                <div className={s.fieldGroup}>
+                  <div className={`${s.inputRow}${focusedInput === 'password' ? ` ${s.inputRowFocused}` : ''}`}>
+                    <Lock size={16} strokeWidth={1.5} className={`${s.fieldIcon}${focusedInput === 'password' ? ` ${s.fieldIconActive}` : ''}`} />
+                    <input
+                      id="login-password"
+                      ref={passwordRef}
+                      type={showPassword ? 'text' : 'password'}
+                      className={`${s.input} ${s.inputWithIcon}${errors.password ? ` ${s.inputError}` : ''}`}
+                      placeholder={t.auth.password}
+                      value={password}
+                      onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors(prev => ({ ...prev, password: undefined })); }}
+                      onFocus={() => setFocusedInput('password')}
+                      onBlur={() => setFocusedInput(null)}
+                      autoComplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      className={s.passwordToggle}
+                      onClick={() => setShowPassword(v => !v)}
+                      tabIndex={0}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword
+                        ? <EyeOff size={16} strokeWidth={1.5} />
+                        : <Eye size={16} strokeWidth={1.5} />
+                      }
+                    </button>
+                  </div>
+                  {errors.password && <p className={s.fieldError}>{errors.password}</p>}
+                </div>
+
+                {/* API error */}
+                {apiError && (
+                  <div className={s.apiError}>
+                    <AlertCircle size={14} strokeWidth={1.5} className={s.apiErrorIcon} />
+                    <p className={s.apiErrorText}>{apiError}</p>
+                  </div>
+                )}
+
+                {/* Submit */}
+                <motion.button
+                  ref={submitRef}
+                  type="submit"
+                  className={s.submitButton}
+                  disabled={loading}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className={s.submitInner}>
+                    {loading && <div className={s.submitShimmer} />}
+                    <AnimatePresence mode="wait">
+                      {loading ? (
+                        <motion.span
+                          key="loading"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className={s.submitContent}
+                        >
+                          <Loader2 size={16} strokeWidth={1.5} className={s.spinner} />
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="text"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className={s.submitContent}
+                        >
+                          {t.auth.login}
+                          <ArrowRight size={14} strokeWidth={1.5} className={s.submitArrow} />
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.button>
+              </form>
+
+              {/* Help text */}
+              <p className={s.helpText}>{t.auth.forgotPassword}</p>
             </div>
-          )}
-
-          {/* Submit */}
-          <button
-            ref={submitRef}
-            type="submit"
-            className={s.submitButton}
-            disabled={loading}
-          >
-            {loading && <Loader2 size={16} strokeWidth={1.5} className={s.spinner} />}
-            {loading ? 'Вхід...' : t.auth.login}
-          </button>
-        </form>
-
-        {/* Help text */}
-        <p className={s.helpText}>{t.auth.forgotPassword}</p>
-      </div>
+          </div>
+        </motion.div>
+      </motion.div>
 
       {/* Footer: lang switcher + copyright */}
       <div className={s.footer}>
-        {/* Language switcher */}
         <div style={{ position: 'relative' }}>
           <button
             type="button"
@@ -170,8 +289,6 @@ export default function Login() {
             </div>
           )}
         </div>
-
-        {/* Copyright */}
         <span className={s.copyrightText}>{t.auth.copyright}</span>
       </div>
     </div>
