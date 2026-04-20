@@ -15,9 +15,18 @@
   margin: 0;
   font-size: 26px;
   font-weight: 700;
+  background: linear-gradient(180deg, #fff, rgba(255, 255, 255, 0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+[data-theme="light"] .text22 {
+  background: none;
+  -webkit-text-fill-color: var(--text-primary);
   color: var(--text-primary);
-  letter-spacing: -0.5px;
-  line-height: 1.2;
 }
 
 .text13 {

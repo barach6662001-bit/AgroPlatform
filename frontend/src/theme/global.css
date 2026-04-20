@@ -11,9 +11,26 @@ body {
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.5;
+  letter-spacing: -0.005em;
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Radial glow backdrop — the signature ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -5%, rgba(var(--accRgb), .10) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 5% 100%, rgba(var(--accRgb), .06) 0%, transparent 50%);
+}
+
+[data-theme="light"] body::before {
+  display: none;
 }
 
 /* Interactive elements — smooth transitions */
