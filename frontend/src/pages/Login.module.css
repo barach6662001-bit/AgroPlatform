@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════
    Login — 21st.dev Sign In Card adaptation
-   3D tilt · traveling light beams · glass card · radial glow backdrop
+   traveling light beams · glass card · radial glow backdrop
    All colors via design-system.css tokens — zero hardcoded hex.
    ═══════════════════════════════════════════════════════════════════════ */
 
@@ -104,21 +104,21 @@
   100% { opacity: 0.6; }
 }
 
-/* ── 3D tilt wrapper ── */
+/* ── Card wrapper ── */
 .cardPerspective {
   position: relative;
   z-index: 1;
   width: 100%;
   max-width: 400px;
-  perspective: 1500px;
-}
-
-.cardTilt {
-  position: relative;
 }
 
 .cardGroup {
   position: relative;
+  transition: transform 0.4s ease;
+}
+
+.cardGroup:hover {
+  transform: translateY(-2px);
 }
 
 /* ── Card hover glow ── */

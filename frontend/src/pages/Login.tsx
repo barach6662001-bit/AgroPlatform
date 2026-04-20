@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback, type FormEvent, type MouseEvent } from 'react';
+import { useState, useRef, type FormEvent } from 'react';
 import { Eye, EyeOff, AlertCircle, Loader2, Mail, Lock, ArrowRight } from 'lucide-react';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
@@ -24,23 +24,6 @@ export default function Login() {
 
   const passwordRef = useRef<HTMLInputElement>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
-
-  /* 3D tilt */
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const rotateX = useTransform(mouseY, [-300, 300], [8, -8]);
-  const rotateY = useTransform(mouseX, [-300, 300], [-8, 8]);
-
-  const handleCardMouse = useCallback((e: MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left - rect.width / 2);
-    mouseY.set(e.clientY - rect.top - rect.height / 2);
-  }, [mouseX, mouseY]);
-
-  const handleCardLeave = useCallback(() => {
-    mouseX.set(0);
-    mouseY.set(0);
-  }, [mouseX, mouseY]);
 
   const validate = () => {
     const next: { email?: string; password?: string } = {};
@@ -82,19 +65,13 @@ export default function Login() {
       <div className={s.ambientLeft} />
       <div className={s.ambientRight} />
 
-      {/* 3D tilt card wrapper */}
+      {/* Card wrapper */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         className={s.cardPerspective}
       >
-        <motion.div
-          className={s.cardTilt}
-          style={{ rotateX, rotateY }}
-          onMouseMove={handleCardMouse}
-          onMouseLeave={handleCardLeave}
-        >
           <div className={s.cardGroup}>
             {/* Glow on hover */}
             <div className={s.cardGlow} />
@@ -254,7 +231,6 @@ export default function Login() {
               <p className={s.helpText}>{t.auth.forgotPassword}</p>
             </div>
           </div>
-        </motion.div>
       </motion.div>
 
       {/* Footer: lang switcher + copyright */}
