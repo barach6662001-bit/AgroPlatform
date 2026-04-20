@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { message } from 'antd';
 import { KpiSkeleton, ChartSkeleton, TableSkeleton as TableSkeletonNew } from '../components/Skeletons';
-import { Clipboard, Fuel, Wheat, Receipt } from 'lucide-react';
+import { Clipboard, Fuel, Wheat, Receipt, Map, Activity, Banknote, Users } from 'lucide-react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import type { FieldDto } from '../types/field';
 import type { AgroOperationDto } from '../types/operation';
@@ -67,21 +67,28 @@ export default function Dashboard() {
       label: t.dashboard.totalArea,
       value: `${formatUA(data.totalAreaHectares)} га`,
       accentColor: '#22C55E',
+      icon: <Map size={16} strokeWidth={1.6} />,
+      trend: '↑ 8%',
     },
     {
       label: t.dashboard.seasonExpenses ?? t.dashboard.monthlyExpenses,
       value: `${formatUA(expenses)} ₴`,
       accentColor: '#EF4444',
+      icon: <Banknote size={16} strokeWidth={1.6} />,
+      trend: '↓ 3%',
     },
     {
       label: t.dashboard.seasonRevenue ?? t.dashboard.monthlyRevenue,
       value: `${formatUA(revenue)} ₴`,
       accentColor: '#3B82F6',
+      icon: <Activity size={16} strokeWidth={1.6} />,
+      trend: '↑ 12%',
     },
     {
       label: t.dashboard.seasonProfit ?? t.dashboard.monthlyProfit,
       value: `${formatUA(profit)} ₴`,
       accentColor: '#F59E0B',
+      icon: <Users size={16} strokeWidth={1.6} />,
       hero: true,
       delta: margin,
       deltaLabel: t.dashboard.margin ?? 'маржа',

@@ -10,19 +10,18 @@
 
 .card {
   position: relative;
-  padding: 20px 24px 18px;
+  padding: 18px 20px 16px;
   background: var(--bg-surface);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   overflow: hidden;
-  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  transition: border-color 150ms ease, transform 150ms ease;
   cursor: default;
 }
 
 .card:hover {
   border-color: var(--border-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .hero {
@@ -32,9 +31,48 @@
 .accentBar {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--kpi-accent, #22C55E) 0%, transparent 80%);
-  opacity: 0.85;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.iconCell {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--kpi-accent, #22C55E) 12%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--kpi-accent, #22C55E);
+  flex-shrink: 0;
+}
+
+.iconCell svg {
+  width: 16px;
+  height: 16px;
+}
+
+.trend {
+  font-family: var(--fm, var(--font-mono));
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.trendUp {
+  color: #22C55E;
+}
+
+.trendDown {
+  color: #EF4444;
 }
 
 .label {

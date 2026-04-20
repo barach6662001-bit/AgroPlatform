@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import CountUp from 'react-countup';
 import s from './KpiHeroRow.module.css';
 
@@ -5,6 +6,8 @@ export interface KpiItem {
   label: string;
   value: string;
   accentColor: string;
+  icon?: ReactNode;
+  trend?: string;
   delta?: string;
   deltaLabel?: string;
   hero?: boolean;
@@ -36,6 +39,16 @@ export default function KpiHeroRow({ items }: Props) {
             style={{ '--kpi-accent': item.accentColor } as React.CSSProperties}
           >
             <div className={s.accentBar} />
+            <div className={s.cardTop}>
+              {item.icon && (
+                <div className={s.iconCell}>{item.icon}</div>
+              )}
+              {item.trend && (
+                <span className={`${s.trend} ${item.trend.startsWith('-') || item.trend.includes('↓') ? s.trendDown : s.trendUp}`}>
+                  {item.trend}
+                </span>
+              )}
+            </div>
             <div className={s.label}>{item.label}</div>
             <div className={s.value}>
               {parsed ? (
