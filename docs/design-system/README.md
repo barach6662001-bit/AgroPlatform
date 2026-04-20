@@ -2,7 +2,7 @@
 
 **AgroTech / AgroPlatform** — a Ukrainian-language farm management SaaS (cloud "Command Center" for agricultural enterprises). It unifies warehouse, fields, agri-operations, machinery, grain storage, HR, sales, and economics in a single multi-tenant platform.
 
-The brand voice is **professional, Ukrainian-first, utilitarian — built for agronomists and farm managers, not consumer marketing.** The visual language is a dark "Command Center" navy palette with a single confident green accent, plus a softer light theme for daytime / print.
+The brand voice is **professional, Ukrainian-first, utilitarian — built for agronomists and farm managers, not consumer marketing.** The visual language is **21st Dark Premium**: a near-black canvas (`#0a0a0a`) lit by soft radial accent glow, Geist typography, and a single living green accent (swappable to violet / blue / mono). A greige light theme ships for daytime / print.
 
 ---
 
@@ -85,20 +85,22 @@ Think **Linear / Vercel dashboard crossed with Bloomberg terminal**, translated 
 
 ## VISUAL FOUNDATIONS
 
-### Palette — "Command Center" navy
+### Palette — 21st Dark Premium (black canvas)
 
 The system ships **two themes**; dark is the default and the one the brand is built around.
 
-**Dark** — deep navy stack (page → surface → elevated → hover)
-- `#060B14` page · `#0C1222` surface · `#111A2E` elevated · `#1A2540` hover
-- Text is **alpha on white**: `92% / 55% / 35% / 20%` — no pure-white text
-- Borders are hairlines in white alpha: `6% / 12% / 20%` — no solid greys
+**Dark** — near-black stack, lit by radial accent glow (page → elevated-1 → elevated-2 → hover)
+- `#0a0a0a` page · `#101010` cards · `#161616` popovers · `#1c1c1c` hover
+- **Radial glow backdrop is the signature** — two soft ellipses of accent at 10% / 6% opacity (top-center + bottom-left). Never flat black. Apply via `.canvas` / `--bg-glow`.
+- Text is **alpha on white**: `94% / 58% / 38% / 20%` — no pure-white text
+- Borders are hairlines in white alpha: `8% / 14% / 22%` — no solid greys
 
-**Brand green** — single accent, used *sparingly*
-- `#22C55E` brand · `#16A34A` hover · `#15803D` active
-- Used for: primary button, active nav item, link, success, positive KPI, key charts, focus ring
+**Living accent** — single accent, swappable
+- `#22C55E` green (default) · `#8B5CF6` violet · `#3B82F6` blue · `#fafafa` mono
+- Exposed as `--acc` / `--accRgb` / `--acc2` (gradient end). Toggle via `[data-acc="violet" | "blue" | "mono"]` on `<html>`.
+- Used for: primary button, active nav item, link, success, positive KPI, key charts, focus ring, radial glow
 
-**Light theme** swaps the navy for a warm neutral stack (`#fafafa / #ffffff / #f5f5f5`) and shifts brand to `#16A34A` for AA contrast on white.
+**Light theme** swaps the canvas for a warm neutral stack (`#fafafa / #ffffff / #f5f5f5`) and shifts accent to `#16A34A` for AA contrast on white.
 
 ### Semantic colors
 - Success `#22C55E` · Warning `#F59E0B` · Error `#EF4444` · Info `#3B82F6`
@@ -114,14 +116,16 @@ Ordered palette optimized for dark backgrounds:
 `#22C55E → #3B82F6 → #F59E0B → #A855F7 → #14B8A6 → #F97316 → #EC4899 → #0EA5E9`
 
 ### Typography
-- **Inter** — all UI, data, marketing. Weights 400 / 450 / 500 / 600 / 700 / 800.
-- **JetBrains Mono** — inline code, keyboard hints, API keys, technical values only.
+- **Geist** — all UI, data, marketing. Weights 400 / 500 / 600 / 700. The brand face.
+- **Geist Mono** — code, keyboard hints, API values, **eyebrow labels**, **table headers**, **meta text**, all uppercase small-caps labels.
 - **Tabular-nums everywhere** (`font-variant-numeric: tabular-nums`) — numbers never jitter in tables.
-- **Default body: 13–14px** — the app is **information-dense by design**. Marketing pushes 15–19px for readability.
-- **Page title 22px / 600 / letter-spacing -0.01em**. KPI values 28–32px / 600 / -0.02em.
-- **Uppercase small-caps labels** (`.label-text`): 11px · 500 weight · `letter-spacing: 0.04em` — table headers, KPI labels.
-- Never use system-ui generically; always explicitly name Inter first.
-- **Flag**: we could not pull the original `.ttf`/`.woff2`; the system loads Inter and JetBrains Mono from **Google Fonts CDN** in `colors_and_type.css`. If the team wants self-hosted fonts, drop the files in `fonts/` and swap the `@import` for `@font-face` blocks.
+- **Default body: 13–14px** with letter-spacing `-0.005em` — Geist is tight; lean into it. The app is **information-dense by design**. Marketing pushes 15–18px.
+- **Hero headings use a gradient**: `linear-gradient(180deg, #fff, rgba(255,255,255,0.6))` clipped to text. `.hero-title` is 42px / 600 / `-0.035em`.
+- **Page title**: 22px / 600 / `-0.02em`. **KPI value**: 28–32px / 600 / `-0.02em`. **Hero KPI**: 32–42px tinted with `--acc`.
+- **Eyebrow chip** above hero headings: pill border, 6px accent dot with glow, Geist Mono 11px.
+- **Uppercase labels** (`.label-text`, `.overline`, `.form-label`): Geist Mono 10–11px · `letter-spacing: 0.04–0.08em` — table headers, KPI labels, form labels.
+- Never use Inter, Roboto, or system-ui as the UI face — Geist is the brand face.
+- Geist and Geist Mono are loaded from **Google Fonts CDN** in `colors_and_type.css`. To self-host, drop `.woff2` files in `fonts/` and swap the `@import` for `@font-face` blocks.
 
 ### Spacing & grid
 - **4px base grid**. Tokens: `--space-1..16` = 4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64px.
