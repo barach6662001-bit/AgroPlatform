@@ -40,19 +40,48 @@
   pointer-events: none;
 }
 
+/* ── Decorative orbs ── */
+.loginPage .orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+  opacity: 0.35;
+  z-index: 0;
+}
+
+.orbGreen {
+  width: 340px;
+  height: 340px;
+  top: -8%;
+  left: -6%;
+  background: radial-gradient(circle, rgba(34,197,94,0.45), transparent 70%);
+}
+
+.orbBlue {
+  width: 260px;
+  height: 260px;
+  bottom: 4%;
+  right: -4%;
+  background: radial-gradient(circle, rgba(56,189,248,0.3), transparent 70%);
+}
+
 /* ── Card ── */
 .loginCard {
   width: 100%;
   max-width: 400px;
-  background: var(--card-bg);
+  background: rgba(12,18,34,0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 32px 28px;
+  padding: 36px 32px;
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 
 /* ── Logo ── */
@@ -99,8 +128,9 @@
 }
 
 .fieldLabel {
+  font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: var(--fw-medium);
+  font-weight: 400;
   text-transform: uppercase;
   letter-spacing: var(--ls-kbd);
   color: var(--text-tertiary);
@@ -205,11 +235,11 @@
 /* ── Submit button ── */
 .submitButton {
   width: 100%;
-  height: var(--control-h);
+  height: 42px;
   background: linear-gradient(180deg, var(--brand), var(--brand-hover));
   color: #000;
-  border: none;
-  border-radius: var(--radius-md);
+  border: 1px solid var(--brand-hover);
+  border-radius: var(--radius-lg);
   font-family: var(--font-sans);
   font-size: var(--fs-md);
   font-weight: var(--fw-semibold);
