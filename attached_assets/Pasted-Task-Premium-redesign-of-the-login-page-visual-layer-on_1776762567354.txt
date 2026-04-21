@@ -1,0 +1,149 @@
+Task: Premium redesign of the /login page — visual layer only.
+
+=========================================
+CONTEXT
+=========================================
+
+Current Login.tsx already has:
+- Form state + validation (react-hook-form)
+- Submit handler calling authStore.login()
+- Error handling for API failures
+- Language picker (UA/EN) at bottom-left
+- Footer "© 2026 AgroTech"
+- Test at frontend/src/pages/__tests__/Login.test.tsx that checks:
+  * Email input has placeholder matching /email/i
+  * Password input has placeholder matching /password|пароль/i
+  * Submit button has name matching /login|увійти/i
+  * NO `<a>` anchor tags anywhere
+
+Design system in main: 21st.dev Dark Premium
+- Black canvas #0a0a0a, Geist font, green #22C55E accent
+- Token file: frontend/src/styles/design-system.css
+- Skill: .claude/skills/agroplatform-design/SKILL.md
+- Same tokens used on Landing page you just finished
+
+=========================================
+CRITICAL CONSTRAINTS — DO NOT VIOLATE
+=========================================
+
+1. You may rewrite ONLY these files:
+   - frontend/src/pages/Login.tsx (visual markup, imports)
+   - frontend/src/pages/Login.module.css (styles)
+   - You may ADD new files under frontend/src/components/auth/ if you need sub-components (e.g., GlowOrb.tsx)
+
+2. PRESERVE EXACTLY (no changes):
+   - The form state logic (react-hook-form hooks and resolver)
+   - The submit handler (calls to authStore.login)
+   - The error handling flow
+   - The language picker component at the bottom
+   - All existing i18n keys (from useTranslation)
+   - The redirect logic after successful login
+
+3. The test file Login.test.tsx must still pass. This means:
+   - Email input placeholder must contain "email" (case-insensitive)
+   - Password input placeholder must contain "password" or "пароль"
+   - The submit button accessible name must contain "login" or "увійти"
+   - NO <a> tags — if you want a "Forgot password?" prompt, use plain text <p> or <span>, not a link
+   Test is at frontend/src/pages/__tests__/Login.test.tsx — read it, adapt visuals so it still passes.
+
+4. Do NOT modify:
+   - frontend/src/store/authStore.ts or any other store
+   - frontend/src/services/ or api/
+   - frontend/src/router/
+   - frontend/src/i18n/uk.ts or en.ts (you may use existing keys, never rename/delete)
+   - backend or any .NET files
+
+5. NO mock backend. Login actually calls the real authStore.login(). For preview purposes, if the form gets submitted, it'll fail with a network error — that's fine, show the error state to demonstrate it renders.
+
+=========================================
+VISUAL REFERENCE (what I want)
+=========================================
+
+Aesthetic matches the new Landing page — same black canvas, same radial glow, same Geist font.
+
+Layout: centered card on full-height black background.
+
+Card (420px wide, max-width 92% on mobile):
+- Background: rgba(255,255,255,0.03) OR #101010 with 1px border at rgba(255,255,255,0.08)
+- Border-radius: 14-16px
+- Padding: 32px 28px
+- Shadow: 0 20px 60px rgba(0,0,0,0.5)
+- Optional: backdrop-filter: blur(12px)
+
+Inside the card, in this order:
+1. A-mark logo, 44x44, centered. Import from frontend/src/assets/brand/logo-a-mark.svg
+2. Gap 18px
+3. Heading "Ласкаво просимо" — 30px/600/-0.03em with GRADIENT TEXT:
+     background: linear-gradient(180deg, #fff, rgba(255,255,255,0.6));
+     -webkit-background-clip: text;
+     -webkit-text-fill-color: transparent;
+4. Gap 6px
+5. Subtitle "Увійдіть у свій обліковий запис" — 13px, color rgba(255,255,255,0.58), centered
+6. Gap 24px
+7. Email field:
+   - Label "Email" OR "EMAIL" uppercase — 11px, Geist Mono, rgba(255,255,255,0.58), letter-spacing 0.04em
+   - Gap 6px
+   - Input 38px tall, rgba(0,0,0,0.4) bg, 1px solid rgba(255,255,255,0.08), 8px radius
+   - Lucide Mail icon at left 11px, 13px size, color rgba(255,255,255,0.38)
+   - Placeholder MUST include the word "email" (e.g. "name@example.com" works — contains "email" via @example.com? NO it doesn't. Use "you@example.com"? Also no. Safe choice: placeholder="Email" or placeholder="your.email@example.com")
+   - Focus: border rgba(34,197,94,0.5), box-shadow 0 0 0 3px rgba(34,197,94,0.12)
+8. Gap 12px
+9. Password field — same style as email:
+   - Label "Пароль" uppercase Geist Mono
+   - Lucide Lock icon at left
+   - Placeholder "Пароль" (contains "пароль")
+   - Right-aligned Eye/EyeOff Lucide toggle icon, click switches input type password/text
+10. Gap 16px
+11. Submit button "Увійти":
+    - Full width, 40px height
+    - Background: linear-gradient(180deg, #22C55E, #16A34A)
+    - Color: #000 (black)
+    - Border: 1px solid rgba(0,0,0,0.2)
+    - Border-radius: 9px
+    - Font: Geist 600 weight, 13px
+    - Box-shadow: 0 0 30px rgba(34,197,94,0.25), inset 0 1px 0 rgba(255,255,255,0.2)
+    - Right-side arrow icon: ArrowRight (Lucide)
+    - Hover: translateY(-1px), brightness(1.1), stronger glow
+    - Loading: disabled, spinner (Loader2 Lucide spinning), text "Вхід..."
+12. Gap 16px
+13. Help text (NOT a link, just <p>): "Забули пароль? Зверніться до адміністратора вашої компанії."
+    - 12px, color rgba(255,255,255,0.58), centered, line-height 1.5
+
+Page background (the full-screen wrapper):
+- Black #0a0a0a base
+- Two decorative glow orbs (pointer-events: none, z-index behind card):
+  * Orb 1: 600px circle, position top -20% left 50% translateX(-50%), radial-gradient(circle, rgba(34,197,94,0.15), transparent 60%), filter blur(40px)
+  * Orb 2: 400px circle, bottom -15% right -10%, same gradient with blue rgba(59,130,246,0.10)
+- Optional: subtle noise texture overlay (2-3% opacity)
+
+Bottom of page (existing footer — keep it):
+- Language picker (UA flag) at bottom-left padding 24px
+- "© 2026 AgroTech" at bottom-right, 12px, rgba(255,255,255,0.38)
+
+Error state:
+- When submit returns API error: show alert above the button
+- Background rgba(239,68,68,0.1), border 1px solid rgba(239,68,68,0.3), padding 10px 14px, border-radius 8px
+- AlertCircle Lucide icon on left, red text matching error message
+- Text 13px, color #EF4444
+
+Responsive (<768px):
+- Card becomes full width minus 16px padding on sides
+- Heading shrinks to 26px
+- All other proportions scale accordingly
+
+=========================================
+EXECUTION
+=========================================
+
+1. Read current Login.tsx and Login.module.css to preserve form logic
+2. Read Login.test.tsx to understand test expectations
+3. Rewrite Login.module.css fully with the spec above
+4. Rewrite Login.tsx visual layer, preserving every line of business logic from the original (form state, validation, submit, error handling, language picker usage, redirect)
+5. Verify test-safety: placeholder strings contain required keywords, button name matches, no <a> tags
+6. Produce preview screenshots at 1440x900 (normal, loading, error) and 390x844 (mobile)
+7. Run: git diff <starting-commit-sha> -- frontend/src/pages/Login.tsx frontend/src/pages/Login.module.css > PHASE_2_DIFF.patch
+8. List changed files in CHANGED_FILES.md
+
+DO NOT push to my real GitHub. Treat Replit as sandbox. I'll pull the diff manually.
+
+Acknowledge the constraints in one paragraph, then proceed. Show preview + diff when done.
