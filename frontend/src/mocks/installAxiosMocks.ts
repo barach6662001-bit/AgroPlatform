@@ -26,6 +26,12 @@ export function installAxiosMocks(client: AxiosInstance): void {
 }
 
 function emptyResponseFor(url: string): unknown {
+  // Permissions endpoint — must return a well-formed { role, permissions }
+  // payload, otherwise the permissions store crashes when it does
+  // `permissions.includes(policy)` on `undefined`. CompanyAdmin grants all.
+  if (url.includes('/api/admin/role-permissions/my')) {
+    return { role: 'CompanyAdmin', permissions: [] };
+  }
   // Endpoints that return paginated collections — give them an empty page.
   if (
     url.includes('/api/fields') ||

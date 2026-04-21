@@ -11,7 +11,7 @@ export const mockUser = {
   token: 'mock-access-token',
   refreshToken: 'mock-refresh-token',
   email: 'demo@agroplatform.dev',
-  role: 'Admin',
+  role: 'CompanyAdmin',
   tenantId: mockTenantId,
   requirePasswordChange: false,
   hasCompletedOnboarding: true,
