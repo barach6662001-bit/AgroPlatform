@@ -101,8 +101,18 @@ jobs:
             docker image prune -f
             echo "Waiting for API health check..."
             API_HEALTHY=0
+            API_CID=$(docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.deploy.yml ps -q api)
+            if [ -z "$API_CID" ]; then
+              echo "::error::api container not found after compose up"
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.deploy.yml ps
+              exit 1
+            fi
+            # In prod the API port is not published to the host (see
+            # docker-compose.prod.yml), so we cannot curl localhost:8080.
+            # Read the container's own HEALTHCHECK status via docker inspect.
             for i in $(seq 1 60); do
-              if curl -sf http://localhost:8080/health/live > /dev/null 2>&1; then
+              STATUS=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$API_CID" 2>/dev/null || echo unknown)
+              if [ "$STATUS" = "healthy" ]; then
                 echo "API is healthy after ${i}s"
                 API_HEALTHY=1
                 break
