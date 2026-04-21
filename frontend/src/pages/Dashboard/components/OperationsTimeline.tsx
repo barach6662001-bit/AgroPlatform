@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, Clock3 } from 'lucide-react';
+import { CheckCircle2, Clock3, AlertTriangle } from 'lucide-react';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import type { AgroOperationDto } from '../../../types/operation';
@@ -31,6 +31,11 @@ export default function OperationsTimeline({ operations }: Props) {
         const date = op.completedDate ?? op.plannedDate;
         const relDate = date ? dayjs(date).fromNow() : '';
         const opLabel = t.operationTypes[op.operationType as keyof typeof t.operationTypes] || op.operationType;
+        const today = dayjs().startOf('day');
+        const isOverdue = !op.isCompleted && op.plannedDate ? dayjs(op.plannedDate).isBefore(today) : false;
+        const status: 'done' | 'overdue' | 'pending' = op.isCompleted
+          ? 'done'
+          : isOverdue ? 'overdue' : 'pending';
 
         return (
           <div
@@ -39,10 +44,9 @@ export default function OperationsTimeline({ operations }: Props) {
             onClick={() => navigate(`/operations/${op.id}`)}
           >
             <div className={s.iconWrap}>
-              {op.isCompleted
-                ? <CheckCircle2 size={14} strokeWidth={2} className={s.iconDone} />
-                : <Clock3 size={14} strokeWidth={2} className={s.iconPending} />
-              }
+              {status === 'done'    && <CheckCircle2 size={14} strokeWidth={2} className={s.iconDone} />}
+              {status === 'overdue' && <AlertTriangle size={14} strokeWidth={2} className={s.iconOverdue} />}
+              {status === 'pending' && <Clock3 size={14} strokeWidth={2} className={s.iconPending} />}
               {i < operations.length - 1 && <div className={s.connector} />}
             </div>
             <div className={s.content}>
@@ -52,7 +56,7 @@ export default function OperationsTimeline({ operations }: Props) {
                 {relDate && <span className={s.time}>{relDate}</span>}
               </div>
             </div>
-            <div className={s.badge} data-done={op.isCompleted}>
+            <div className={s.badge} data-status={status}>
               {op.isCompleted ? t.operations.completed : t.operations.inProgress}
             </div>
           </div>

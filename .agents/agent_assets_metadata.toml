@@ -6,3 +6,9 @@ id = "jReHbdn5y01LUfPNmSXsl"
 uri = "file://attached_assets/screenshots/login-v2-default.jpg"
 type = "image"
 title = "Preview: /login (1280 viewport)"
+
+[[outputs]]
+id = "ASJ6iFaDOuEI_Ugqwhvtc"
+uri = "file://screenshots/dashboard_now.jpg"
+type = "image"
+title = "Dashboard — DEV MOCK MODE"
