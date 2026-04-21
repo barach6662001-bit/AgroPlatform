@@ -1,0 +1,105 @@
+Task: Premium redesign of the AgroPlatform (AgroTech) frontend — a Ukrainian-language farm management SaaS (agritech).
+
+=========================================
+CRITICAL CONSTRAINTS (read carefully)
+=========================================
+
+1. BACKEND API: my real backend is .NET 8 ASP.NET Core, hosted at agrotech-usa.com. You do NOT have access to it. Do NOT invent new API endpoints. Do NOT change field names in TypeScript interfaces, DTOs, or Zustand store shapes. If a page needs data, mock it locally matching the EXISTING shapes — do not restructure the data.
+
+2. PRESERVE BUSINESS LOGIC: do not touch:
+   - frontend/src/store/ (Zustand stores — authStore, themeStore, tenantStore, etc.)
+   - frontend/src/services/ or api/ (API clients)
+   - frontend/src/hooks/ (except pure presentational hooks)
+   - frontend/src/router/ (routing config)
+   - frontend/src/i18n/ (keep all UK/EN translation keys — you may ADD new keys, never rename existing)
+   - Any .NET or backend config
+
+3. DESIGN SYSTEM IS ALREADY DEFINED:
+   - Read .claude/skills/agroplatform-design/SKILL.md and frontend/src/styles/design-system.css BEFORE starting
+   - Aesthetic: "21st Dark Premium" — black #0a0a0a canvas, Geist typography, green #22C55E accent, radial glow backdrops, Geist Mono for data/labels
+   - Use ONLY the CSS variables from design-system.css. Zero hardcoded hex values.
+   - Keep the crop palette (wheat, sunflower, corn, rapeseed, barley, soy)
+   - Ukrainian text, sentence case, no emoji in product UI, tabular-nums for numbers, "1 234 567,89 ₴" format
+
+4. KEEP ALL 80+ EXISTING PAGES FUNCTIONAL. List of pages at frontend/src/pages/. Do not delete any. Do not rename routes.
+
+=========================================
+WHAT I WANT YOU TO ACTUALLY DO
+=========================================
+
+Phase 1 — Landing page (/)
+- This is the public marketing page a prospect sees before signing up
+- Current file: frontend/src/pages/Landing/AgroHero.tsx and LandingPage.tsx
+- Redesign to Vercel/Linear-grade premium:
+  * Hero section with animated gradient orb, eyebrow chip with pulsing dot
+  * 6-8 feature cards with lucide-react icons (Wheat, Tractor, Warehouse, BarChart, Sprout, Map, Fuel, Users)
+  * Pricing section: 3 tiers (Starter / Pro / Enterprise) with Ukrainian copy, monthly pricing in UAH (my call to make real numbers — use placeholders for now)
+  * Social proof: stat callouts "10K+ активних господарств", "50M+ гектарів", "+35% врожайність", "24/7 підтримка"
+  * Testimonials section: 3 fake-but-plausible Ukrainian-sounding agro quotes (founders/farmers)
+  * FAQ section (accordion, 6 items)
+  * Footer with sitemap columns + language toggle + socials
+
+Phase 2 — Auth pages
+- Login, ChangePassword, AccessDenied, NotFound, ServerError
+- Premium dark card with glow orbs
+- Lucide Mail, Lock, Eye/EyeOff icons INSIDE inputs
+- Gradient heading "Ласкаво просимо"
+- Do NOT break Login.test.tsx — keep placeholder `/email/i` and button name `/login|увійти/i` passing
+
+Phase 3 — Shell
+- Sidebar with compact logo header (green-to-transparent gradient under it), Lucide icons, active item with green bg + left indicator bar + text var(--acc)
+- Topbar with breadcrumbs, farm switcher, notification bell, theme toggle, user menu — glassmorphism blur(12px) rgba(10,10,10,.75)
+- MobileDrawer Sheet from left
+- Do NOT change navigation item list or route mappings
+
+Phase 4 — Dashboard (/dashboard)
+- EyebrowChip "DASHBOARD / SEASON 2026" with pulsing dot
+- Gradient page title "Огляд господарства"
+- 4 KPI hero cards (Виручка, Маржа, Активні поля, NDVI) with Geist Mono labels, tabular-nums values, sparklines
+- Interactive field map card (use existing Leaflet setup if present — do not replace map library)
+- Operations timeline with status dots and Geist Mono timestamps
+- Revenue/cost area chart using existing recharts (just restyle with accent colors)
+- Quick actions strip (row of gradient buttons)
+
+Phase 5 — Key module pages (in this priority)
+- Fields list (frontend/src/pages/Fields/FieldsList.tsx): premium data table with crop color tags, NDVI indicators, sortable columns, filter bar with search
+- Field detail page: tabs (Inspection, Seeding, Fertilizer, Protection, Harvest, Soil Analysis, NDVI, Zones) — use v2 tab styles
+- Operations list + detail: same table treatment, timeline view
+- Warehouses: item table with quantity progress bars
+- Economics / Finance: marginality by field, cashflow chart, cost categories donut (recharts)
+
+Phase 6 — Everything else
+- Apply design system cascade to the remaining 50+ pages
+- Do NOT rewrite layouts — just ensure they render correctly under the new tokens
+- List any page that looks broken under the new tokens so I can fix it later
+
+=========================================
+DELIVERY
+=========================================
+
+- Work on a feature branch `feat/replit-premium-redesign` in the Replit workspace
+- Commit atomically per phase
+- At the end, produce:
+  1. A zip download of ONLY changed files (tsx, css modules, assets) — NOT node_modules, NOT lockfiles, NOT config
+  2. A DIFF.md file listing exactly what changed per file
+  3. Screenshots of each redesigned page at 1440x900 and 390x844
+
+- DO NOT open pull requests against my GitHub
+- DO NOT push to my main branch
+- DO NOT modify package.json unless absolutely necessary (and if you do, justify each new dependency)
+
+I will pull the zip into my Codespace, review the diff carefully, and merge selectively.
+
+=========================================
+IF YOU HIT A WALL
+=========================================
+
+If a page requires backend data you don't have — mock it in /frontend/src/mocks/ with realistic Ukrainian agro data (farm names like "ТОВ Хрещата Долина", crops, UAH amounts). Do not change the TypeScript interfaces.
+
+If a component needs styling you can't express with the tokens — add a new token to design-system.css following the naming convention, don't hardcode.
+
+If tests break — fix the test to match new copy if semantic meaning is preserved, or STOP and ask.
+
+=========================================
+
+Start with Phase 1 (Landing). Show me the result before moving to Phase 2.
