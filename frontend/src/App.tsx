@@ -14,6 +14,7 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import Login from './pages/Login';
 import ChangePassword from './pages/ChangePassword';
 import Dashboard from './pages/Dashboard';
+import DashboardV2PreviewPage from './pages/DashboardV2/PreviewPage';
 import CompaniesPage from './pages/SuperAdmin/CompaniesPage';
 import CompanyUsersPage from './pages/SuperAdmin/CompanyUsersPage';
 import FieldsList from './pages/Fields/FieldsList';
@@ -94,6 +95,11 @@ export default function App() {
           <Route path="/" element={<RootRoute />} />
           <Route path="/login" element={<Login />} />
           <Route path="/landing" element={<LandingPage />} />
+          {/* DEV-only preview routes — guarded by import.meta.env.DEV inside
+              the page component; in a production build the route 404s back to /. */}
+          {import.meta.env.DEV && (
+            <Route path="/preview/dashboard-v2" element={<DashboardV2PreviewPage />} />
+          )}
           <Route path="/access-denied" element={<AccessDenied />} />
           <Route path="/change-password" element={
             <ProtectedRoute>

@@ -1,0 +1,78 @@
+/* Warehouse snapshot card — top stock items with bar visualization */
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  align-items: baseline;
+}
+
+.name {
+  font-family: var(--fs);
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.005em;
+}
+
+.value {
+  font-family: var(--fm);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.70);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.bar {
+  grid-column: 1 / -1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(var(--accRgb), 0.55), rgba(var(--accRgb), 0.85));
+  border-radius: 999px;
+  transition: width 250ms ease;
+}
+
+/* Low-stock badge — only annotation that breaks the single-accent rule,
+   semantically required to flag a real problem to the operator. */
+.lowBadge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-family: var(--fm);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--warning);
+  background: rgba(245, 158, 11, 0.10);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.empty {
+  font-family: var(--fs);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.40);
+  text-align: center;
+  padding: 16px 0;
+}
