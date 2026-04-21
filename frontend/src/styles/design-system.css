@@ -172,6 +172,22 @@
   --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* Surface tints — translucent overlays for elevated panels on dark canvas */
+  --surface-tint-1: rgba(255, 255, 255, 0.02);
+  --surface-tint-2: rgba(255, 255, 255, 0.03);
+  --surface-tint-3: rgba(255, 255, 255, 0.04);
+  --surface-tint-4: rgba(255, 255, 255, 0.06);
+  --surface-tint-hover: rgba(255, 255, 255, 0.025);
+
+  /* Inset highlights for primary buttons (subtle top-edge lift) */
+  --inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.20);
+
+  /* Display text gradient — used for hero / section titles */
+  --gradient-display:
+    linear-gradient(180deg, var(--text-primary), color-mix(in srgb, var(--text-primary) 60%, transparent));
 
   /* Radius */
   --radius-xs:  4px;

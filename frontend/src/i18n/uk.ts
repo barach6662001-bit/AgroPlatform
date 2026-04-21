@@ -1718,6 +1718,7 @@ const uk = {
     a11yClose: 'Закрити',
     a11yStats: 'Ключові показники',
     a11yLanguage: 'Мова інтерфейсу',
+    a11ySocials: 'Соціальні мережі',
   },
   search: {
     placeholder: 'Пошук по всій системі...',

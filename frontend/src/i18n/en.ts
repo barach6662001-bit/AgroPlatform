@@ -1720,6 +1720,7 @@ const en: Translations = {
     a11yClose: 'Close',
     a11yStats: 'Key metrics',
     a11yLanguage: 'Interface language',
+    a11ySocials: 'Social networks',
   },
   search: {
     placeholder: 'Search across the system...',
