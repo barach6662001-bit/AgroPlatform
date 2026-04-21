@@ -56,12 +56,12 @@ export const mockDashboard: DashboardDto = {
     Machinery: 350_000,
   },
   costTrend: [
-    { year: 2025, month: 11, totalAmount: 410_000 },
-    { year: 2025, month: 12, totalAmount: 380_000 },
-    { year: 2026, month: 1, totalAmount: 295_000 },
-    { year: 2026, month: 2, totalAmount: 340_000 },
-    { year: 2026, month: 3, totalAmount: 475_000 },
-    { year: 2026, month: 4, totalAmount: 520_000 },
+    { year: 2025, month: 11, totalAmount: 410_000, revenueAmount: 540_000 },
+    { year: 2025, month: 12, totalAmount: 380_000, revenueAmount: 610_000 },
+    { year: 2026, month: 1,  totalAmount: 295_000, revenueAmount: 720_000 },
+    { year: 2026, month: 2,  totalAmount: 340_000, revenueAmount: 780_000 },
+    { year: 2026, month: 3,  totalAmount: 475_000, revenueAmount: 830_000 },
+    { year: 2026, month: 4,  totalAmount: 520_000, revenueAmount: 860_000 },
   ],
 };
 

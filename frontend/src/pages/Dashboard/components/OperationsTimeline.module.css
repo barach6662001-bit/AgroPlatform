@@ -33,7 +33,20 @@
 }
 
 .iconDone { color: var(--brand); }
-.iconPending { color: var(--warning); }
+.iconPending { color: var(--text-tertiary); }
+.iconOverdue {
+  color: var(--warning);
+  animation: pulseOverdue 1.6s ease-in-out infinite;
+}
+
+@keyframes pulseOverdue {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.92); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iconOverdue { animation: none; }
+}
 
 .content {
   flex: 1;
@@ -78,15 +91,23 @@
   font-weight: 500;
   padding: 2px 8px;
   border-radius: 99px;
-  background: var(--warning-bg);
-  color: var(--warning);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
-.badge[data-done="true"] {
+.badge[data-status="done"] {
   background: var(--success-bg);
   color: var(--success);
+  border-color: rgba(34, 197, 94, 0.22);
+}
+
+.badge[data-status="overdue"] {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-color: rgba(245, 158, 11, 0.28);
 }
 
 .empty {

@@ -2,6 +2,7 @@ export interface MonthlyCostTrendDto {
   year: number;
   month: number;
   totalAmount: number;
+  revenueAmount?: number;
 }
 
 export interface TopStockItemDto {

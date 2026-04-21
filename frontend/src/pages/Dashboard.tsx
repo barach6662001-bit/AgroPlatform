@@ -63,32 +63,35 @@ export default function Dashboard() {
   const profit = revenue - expenses;
   const margin = revenue > 0 ? ((profit / revenue) * 100).toFixed(1) + '%' : undefined;
 
+  // KPI accent palette: keep ONE living green for area/profit; expenses use
+  // amber (not red) — increased spend is only "bad" if it exceeds budget.
+  // Revenue uses the brand accent. This matches the landing's single-accent rule.
   const kpiItems = [
     {
       label: t.dashboard.totalArea,
       value: `${formatUA(data.totalAreaHectares)} га`,
-      accentColor: '#22C55E',
+      accentColor: 'rgba(255, 255, 255, 0.85)',
       icon: <Map size={16} strokeWidth={1.6} />,
       trend: '↑ 8%',
     },
     {
       label: t.dashboard.seasonExpenses ?? t.dashboard.monthlyExpenses,
       value: `${formatUA(expenses)} ₴`,
-      accentColor: '#EF4444',
+      accentColor: '#F59E0B',
       icon: <Banknote size={16} strokeWidth={1.6} />,
       trend: '↓ 3%',
     },
     {
       label: t.dashboard.seasonRevenue ?? t.dashboard.monthlyRevenue,
       value: `${formatUA(revenue)} ₴`,
-      accentColor: '#3B82F6',
+      accentColor: '#22C55E',
       icon: <Activity size={16} strokeWidth={1.6} />,
       trend: '↑ 12%',
     },
     {
       label: t.dashboard.seasonProfit ?? t.dashboard.monthlyProfit,
       value: `${formatUA(profit)} ₴`,
-      accentColor: '#F59E0B',
+      accentColor: '#22C55E',
       icon: <Users size={16} strokeWidth={1.6} />,
       hero: true,
       delta: margin,
@@ -99,7 +102,19 @@ export default function Dashboard() {
   const costTrendData = data.costTrend.map((item) => ({
     name: `${item.year}-${String(item.month).padStart(2, '0')}`,
     cost: item.totalAmount,
+    revenue: item.revenueAmount,
   }));
+  const hasRevenueSeries = data.costTrend.some((p) => typeof p.revenueAmount === 'number');
+
+  // Derive synthetic alert tiers from the existing dashboard DTO.
+  const today = new Date().toISOString().slice(0, 10);
+  const overdueOperations = operations.filter(
+    (op) => !op.isCompleted && op.plannedDate && op.plannedDate < today,
+  ).length;
+  const lowStockItems = (data.topStockItems ?? []).filter((it) => it.totalBalance < 500).length;
+  const completedToday = operations.filter(
+    (op) => op.isCompleted && op.completedDate?.slice(0, 10) === today,
+  ).length;
 
   const quickActions = isWarehouseOp
     ? [
@@ -131,7 +146,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="page-enter">
+    <div className={`${s.pageWrap} page-enter`}>
       {/* Premium header */}
       <header className={s.pageHead}>
         <div className={s.headLeft}>
@@ -178,14 +193,15 @@ export default function Dashboard() {
       <KpiHeroRow items={kpiItems} />
 
       {/* Alerts */}
-      {(data.underRepairMachines > 0 || data.pendingOperations > 0) && (
-        <div className={s.alertsGap}>
-          <AlertsPanel
-            underRepairMachines={data.underRepairMachines}
-            pendingOperations={data.pendingOperations}
-          />
-        </div>
-      )}
+      <div className={s.alertsGap}>
+        <AlertsPanel
+          underRepairMachines={data.underRepairMachines}
+          pendingOperations={data.pendingOperations}
+          overdueOperations={overdueOperations}
+          lowStockItems={lowStockItems}
+          completedToday={completedToday}
+        />
+      </div>
 
       {/* Revenue/Cost Chart */}
       {costTrendData.length > 0 && (
@@ -193,6 +209,7 @@ export default function Dashboard() {
           data={costTrendData}
           title={t.dashboard.costTrend}
           costLabel={t.dashboard.costsUAH}
+          revenueLabel={hasRevenueSeries ? (t.dashboard as Record<string, string | undefined>).revenueLabel ?? 'Дохід' : undefined}
         />
       )}
 

@@ -156,6 +156,15 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       icon: <Map size={16} strokeWidth={1.5} />,
       children: fieldsChildren,
     }] : []),
+    // IA: warehouse comes BEFORE production — production consumes warehouse
+    // resources (sowing, fertilising, spraying), so it must be visible first
+    // in the daily mental model of the agronomist.
+    ...(canWarehouses ? [{
+      key: 'storage-group',
+      label: t.nav.storageLogistics,
+      icon: <Warehouse size={16} strokeWidth={1.5} />,
+      children: storageChildren,
+    }] : []),
     ...(canMachinery ? [{
       key: 'operations-group',
       label: t.nav.operationsGroup,
@@ -163,12 +172,6 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       children: operationsChildren,
     }] : []),
     { type: 'divider' as const },
-    ...(canWarehouses ? [{
-      key: 'storage-group',
-      label: t.nav.storageLogistics,
-      icon: <Warehouse size={16} strokeWidth={1.5} />,
-      children: storageChildren,
-    }] : []),
     ...(canHR ? [{
       key: 'hr-group',
       label: t.nav.hr,
