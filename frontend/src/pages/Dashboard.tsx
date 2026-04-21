@@ -122,11 +122,12 @@ export default function Dashboard() {
         { label: t.dashboard.quickCost, icon: <Receipt size={16} />, color: '#8B5CF6', route: '/economics' },
       ];
 
+  const dashI18n = t.dashboard as Record<string, string | undefined>;
   const periodOptions: Array<{ key: typeof period; label: string }> = [
-    { key: 'day', label: t.dashboard.day ?? 'День' },
-    { key: 'week', label: t.dashboard.week ?? 'Тиждень' },
-    { key: 'month', label: t.dashboard.month ?? 'Місяць' },
-    { key: 'season', label: t.dashboard.season ?? 'Сезон' },
+    { key: 'day', label: dashI18n.day ?? 'День' },
+    { key: 'week', label: dashI18n.week ?? 'Тиждень' },
+    { key: 'month', label: dashI18n.month ?? 'Місяць' },
+    { key: 'season', label: dashI18n.season ?? 'Сезон' },
   ];
 
   return (
@@ -139,9 +140,9 @@ export default function Dashboard() {
           <p className={s.headSubMeta}>
             <span>{t.dashboard.subtitle}</span>
             <span className={s.dotSep}>·</span>
-            <span>{formatUA(data.totalAreaHectares)} {t.dashboard.haUnit ?? 'га'}</span>
+            <span>{formatUA(data.totalAreaHectares)} {dashI18n.haUnit ?? 'га'}</span>
             <span className={s.dotSep}>·</span>
-            <span>{fields.length} {t.dashboard.fieldsUnit ?? 'полів'}</span>
+            <span>{fields.length} {dashI18n.fieldsUnit ?? 'полів'}</span>
           </p>
         </div>
         <div className={s.headRight}>
@@ -164,7 +165,7 @@ export default function Dashboard() {
             className={s.ctaPrimary}
             onClick={() => navigate('/operations')}
           >
-            <span>{t.dashboard.newOperation ?? 'Нова операція'}</span>
+            <span>{dashI18n.newOperation ?? 'Нова операція'}</span>
             <ArrowRight size={14} aria-hidden="true" />
           </button>
           <div className={s.weatherSlot}>

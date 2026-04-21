@@ -28,7 +28,7 @@ export default function Breadcrumbs() {
       settings: n.settings,
       admin: n.settings,
       superadmin: n.settings,
-      profile: t.auth?.profile ?? 'Profile',
+      profile: (t.auth as Record<string, string | undefined>)?.profile ?? 'Profile',
       pnl: n.pnl,
       budget: n.budget,
       leases: n.leases,
