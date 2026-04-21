@@ -1,0 +1,33 @@
+{
+  "cli": { "version": ">= 5.0.0", "requireCommit": true },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development",
+      "env": { "API_URL": "https://staging.agrotech-usa.com" }
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview",
+      "env": { "API_URL": "https://staging.agrotech-usa.com" }
+    },
+    "production": {
+      "channel": "production",
+      "autoIncrement": true,
+      "env": { "API_URL": "https://agrotech-usa.com" }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "YOUR_APPLE_ID",
+        "ascAppId": "YOUR_ASC_APP_ID",
+        "appleTeamId": "YOUR_TEAM_ID"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json"
+      }
+    }
+  }
+}

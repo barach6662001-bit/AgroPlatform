@@ -1,0 +1,34 @@
+name: Check frontend lockfile sync
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+
+jobs:
+  check-lockfile:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check that package-lock.json is updated when package.json changes
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD")
+
+          PKG_CHANGED=$(echo "$CHANGED" | grep -c '^frontend/package\.json$' || true)
+          LOCK_CHANGED=$(echo "$CHANGED" | grep -c '^frontend/package-lock\.json$' || true)
+
+          if [ "$PKG_CHANGED" -gt 0 ] && [ "$LOCK_CHANGED" -eq 0 ]; then
+            echo "::error::frontend/package.json changed without corresponding frontend/package-lock.json update. Run 'npm install' in frontend/ and commit the lockfile."
+            exit 1
+          fi
+
+          echo "✅ Lockfile sync check passed."

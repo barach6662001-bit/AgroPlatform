@@ -1,0 +1,655 @@
+@import '../styles/design-system.css';
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Radial glow backdrop — the signature ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -5%, rgba(var(--accRgb), .10) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 5% 100%, rgba(var(--accRgb), .06) 0%, transparent 50%);
+}
+
+[data-theme="light"] body::before {
+  display: none;
+}
+
+/* Interactive elements — smooth transitions */
+a, button, [role="button"],
+.ant-btn, .ant-menu-item, .ant-menu-submenu-title,
+.ant-tag, .ant-pagination-item {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+/* ── Micro-animations ──────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: fadeInUp 0.3s ease forwards;
+}
+
+.page-content {
+  animation: fadeIn 0.2s ease forwards;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+
+/* ── Ant Design overrides ──────────────────────────────────────────────── */
+
+/* Layout */
+.ant-layout,
+.ant-layout-content {
+  background: var(--bg-app) !important;
+}
+
+/* Sidebar Menu */
+.ant-menu-dark { background: transparent !important; }
+.ant-menu-dark .ant-menu-item {
+  border-radius: var(--radius-md) !important;
+  margin: 1px 8px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  color: var(--text-secondary) !important;
+  font-size: 13px !important;
+  font-weight: 450 !important;
+}
+.ant-menu-dark .ant-menu-item:hover {
+  background: var(--bg-overlay) !important;
+  color: var(--text-primary) !important;
+}
+.ant-menu-dark .ant-menu-item-selected {
+  background: var(--brand-muted) !important;
+  color: var(--brand) !important;
+  font-weight: 500 !important;
+}
+.ant-menu-dark .ant-menu-submenu-title {
+  border-radius: var(--radius-md) !important;
+  margin: 1px 8px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  color: var(--text-secondary) !important;
+  font-size: 13px !important;
+}
+.ant-menu-dark .ant-menu-submenu-title:hover {
+  background: var(--bg-overlay) !important;
+  color: var(--text-primary) !important;
+}
+.ant-menu-dark .ant-menu-sub {
+  background: transparent !important;
+}
+.ant-menu-dark .ant-menu-item .anticon,
+.ant-menu-dark .ant-menu-submenu-title .anticon {
+  font-size: 14px !important;
+  opacity: 0.7;
+}
+
+/* Cards */
+.ant-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: none !important;
+}
+.ant-card-head {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  min-height: 48px !important;
+  padding: 0 20px !important;
+}
+.ant-card-body { padding: 20px !important; }
+
+/* Tables */
+.ant-table-wrapper { background: transparent !important; }
+.ant-table {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+}
+.ant-table-thead > tr > th,
+.ant-table-thead > tr > td {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-right: none !important;
+  color: var(--text-tertiary) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  padding: 12px 16px !important;
+}
+.ant-table-tbody > tr > td {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-right: none !important;
+  color: var(--text-primary) !important;
+  padding: 12px 16px !important;
+  font-size: 13px !important;
+  transition: background var(--transition-fast) !important;
+}
+.ant-table-tbody > tr:hover > td {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+.ant-table-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+.ant-table-container {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden !important;
+}
+
+/* Buttons */
+.ant-btn {
+  border-radius: var(--radius-md) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  height: 36px !important;
+  padding: 0 14px !important;
+  transition: all var(--transition-base) !important;
+  box-shadow: none !important;
+}
+.ant-btn-primary {
+  background: linear-gradient(180deg, #22C55E 0%, #16A34A 100%) !important;
+  border: none !important;
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+.ant-btn-primary:hover {
+  filter: brightness(1.1) !important;
+  transform: translateY(-0.5px) !important;
+}
+.ant-btn-primary:active {
+  transform: scale(0.98) !important;
+}
+.ant-btn-default {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--border-strong) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+.ant-btn-default:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--border-hover) !important;
+  color: var(--text-primary) !important;
+}
+.ant-btn-dangerous {
+  background: transparent !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  color: var(--error) !important;
+}
+.ant-btn-dangerous:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+.btn-danger {
+  background: transparent !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  color: var(--error) !important;
+}
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+/* Inputs */
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-input-number,
+.ant-picker,
+.ant-select-selector {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+  font-size: 13px !important;
+}
+.ant-input:focus,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector,
+.ant-picker-focused {
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1) !important;
+}
+.ant-input::placeholder,
+.ant-select-selection-placeholder {
+  color: var(--text-tertiary) !important;
+}
+.ant-input-number-input { color: var(--text-primary) !important; }
+
+/* Form labels */
+.ant-form-item-label > label {
+  color: var(--text-secondary) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+.ant-form-item-required::before { color: var(--error) !important; }
+
+/* Modal */
+.ant-modal-content {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+.ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 16px 20px !important;
+  margin: 0 !important;
+}
+.ant-modal-title {
+  color: var(--text-primary) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+.ant-modal-body { padding: 20px !important; }
+.ant-modal-footer {
+  border-top: 1px solid var(--border) !important;
+  padding: 12px 20px !important;
+  margin: 0 !important;
+}
+.ant-modal-close { color: var(--text-tertiary) !important; }
+.ant-modal-close:hover { color: var(--text-primary) !important; }
+
+/* Select dropdown */
+.ant-select-dropdown,
+.ant-dropdown-menu {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: 4px !important;
+}
+.ant-select-item {
+  color: var(--text-secondary) !important;
+  border-radius: var(--radius-md) !important;
+  font-size: 13px !important;
+}
+.ant-select-item-option-active {
+  background: var(--bg-overlay) !important;
+  color: var(--text-primary) !important;
+}
+.ant-select-item-option-selected {
+  background: var(--brand-muted) !important;
+  color: var(--brand) !important;
+  font-weight: 500 !important;
+}
+
+/* Tags & Badges */
+.ant-tag {
+  border-radius: var(--radius-sm) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 20px !important;
+  padding: 0 8px !important;
+  border: none !important;
+}
+.ant-badge-status-dot { width: 6px !important; height: 6px !important; }
+
+/* Pagination */
+.ant-pagination-item {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius-md) !important;
+}
+.ant-pagination-item a { color: var(--text-secondary) !important; }
+.ant-pagination-item-active {
+  background: var(--brand-muted) !important;
+  border-color: var(--brand-border) !important;
+}
+.ant-pagination-item-active a { color: var(--brand) !important; }
+.ant-pagination-prev button,
+.ant-pagination-next button {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+  color: var(--text-secondary) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* Popconfirm */
+.ant-popover-inner {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+.ant-popover-message-title { color: var(--text-primary) !important; }
+
+/* Tabs */
+.ant-tabs-tab {
+  color: var(--text-tertiary) !important;
+  font-size: 13px !important;
+  padding: 8px 0 !important;
+}
+.ant-tabs-tab:hover { color: var(--text-primary) !important; }
+.ant-tabs-tab-active .ant-tabs-tab-btn { color: var(--brand) !important; }
+.ant-tabs-ink-bar { background: var(--brand) !important; }
+.ant-tabs-nav::before { border-color: var(--border) !important; }
+
+/* Divider */
+.ant-divider { border-color: var(--border) !important; }
+
+/* Tooltip */
+.ant-tooltip-inner {
+  background: var(--bg-overlay) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  font-size: 12px !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* Message/notification */
+.ant-message-notice-content {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Statistic */
+.ant-statistic-title {
+  color: var(--text-secondary) !important;
+}
+
+/* Recharts */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--border) !important;
+}
+.recharts-text {
+  fill: var(--text-secondary) !important;
+}
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+.recharts-tooltip-label {
+  color: var(--text-primary) !important;
+}
+.recharts-tooltip-item {
+  color: var(--text-secondary) !important;
+}
+
+/* Page layout */
+.page-container { padding: 0; }
+
+/* Card hover states */
+.ant-card {
+  transition: border-color 0.15s ease !important;
+}
+.ant-card:hover {
+  border-color: var(--border-strong) !important;
+}
+
+/* Segmented control */
+.ant-segmented {
+  background: var(--bg-elevated) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 2px !important;
+}
+.ant-segmented-item {
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-secondary) !important;
+  font-size: 13px !important;
+  transition: all 0.15s ease !important;
+}
+.ant-segmented-item-selected {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+.ant-segmented-item:hover:not(.ant-segmented-item-selected) {
+  color: var(--text-primary) !important;
+}
+
+/* Focus-visible for keyboard navigation */
+.ant-btn:focus-visible,
+.ant-input:focus-visible,
+.ant-select-selector:focus-visible,
+.ant-pagination-item:focus-visible {
+  outline: 2px solid var(--border-focus) !important;
+  outline-offset: 2px !important;
+}
+
+/* Page title typography */
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 4px 0 0;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.label-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Clickable table rows */
+.ant-table-tbody > tr.clickable-row {
+  cursor: pointer;
+}
+.ant-table-tbody > tr.clickable-row:hover > td {
+  background: var(--brand-muted) !important;
+}
+
+/* Menu item padding via CSS (no inline styles) */
+.ant-menu-dark .ant-menu-item {
+  padding: 4px 8px !important;
+}
+.ant-menu-dark .ant-menu-submenu-title {
+  padding: 4px 8px !important;
+}
+
+/* Alert cards */
+.alert-card {
+  background: var(--bg-surface);
+  border-left: 3px solid var(--warning);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+}
+.alert-card.error { border-left-color: var(--error); }
+.alert-card.success { border-left-color: var(--success); }
+
+/* Clickable table rows */
+.clickable-row { cursor: pointer !important; }
+
+/* Mobile table */
+@media (max-width: 767px) {
+  .ant-table-wrapper { overflow-x: auto; }
+  .ant-table-wrapper .ant-table-tbody > tr > td:first-child,
+  .ant-table-wrapper .ant-table-thead > tr > th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--bg-surface);
+  }
+}
+
+@media (max-width: 1024px) {
+  .ant-table { font-size: 13px; }
+  .ant-card { padding: 12px; }
+  .ant-modal { max-width: 95vw !important; }
+}
+@media (max-width: 768px) {
+  .ant-table-wrapper { overflow-x: auto; }
+}
+
+/* ─── Phase 8: Premium polish ─────────────────────────────────────────────── */
+
+/* Card lift on hover */
+.ant-card {
+  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease !important;
+}
+.ant-card:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-color: var(--border-hover) !important;
+}
+
+/* Tag hover */
+.ant-tag {
+  transition: opacity 120ms ease !important;
+}
+.ant-tag:hover { opacity: 0.8; }
+
+/* Primary button glow on hover */
+.ant-btn-primary:hover {
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.25) !important;
+}
+
+/* Form submit success shake on error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes badgeScaleIn {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.shake { animation: shake 300ms ease; }
+.count-up { animation: countUp 200ms ease; }
+.badge-scale-in { animation: badgeScaleIn 200ms ease; }
+
+/* Better page transitions — fade + slide from bottom */
+.page-enter {
+  animation: fadeInUp 250ms ease forwards;
+}
+
+/* Recharts premium style */
+.recharts-cartesian-grid-horizontal line {
+  stroke: rgba(255,255,255,0.04) !important;
+  stroke-dasharray: 4 4 !important;
+}
+.recharts-cartesian-grid-vertical line {
+  display: none !important;
+}
+.recharts-text.recharts-cartesian-axis-tick-value tspan {
+  fill: rgba(255,255,255,0.35) !important;
+  font-size: 11px !important;
+  font-family: var(--font-sans) !important;
+}
+
+/* Empty state improvements */
+.ant-empty-image { opacity: 0.4; }
+.ant-empty-description {
+  color: var(--text-secondary) !important;
+  font-size: 13px !important;
+}
+
+/* Notification bell dot */
+.ant-badge-count {
+  min-width: 16px !important;
+  height: 16px !important;
+  line-height: 16px !important;
+  font-size: 10px !important;
+  border-radius: 8px !important;
+}
+
+/* Input number controls */
+.ant-input-number-handler-wrap {
+  background: var(--bg-elevated) !important;
+  border-left: 1px solid var(--border) !important;
+}
+.ant-input-number-handler {
+  color: var(--text-tertiary) !important;
+  border-color: var(--border) !important;
+}
+.ant-input-number-handler:hover {
+  color: var(--brand) !important;
+  background: var(--brand-muted) !important;
+}
+
+/* Date picker premium */
+.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+  background: var(--brand) !important;
+  color: #000 !important;
+}
+.ant-picker-cell:hover .ant-picker-cell-inner {
+  background: var(--bg-hover) !important;
+}
+.ant-picker-panel-container {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+.ant-picker-header {
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+.ant-picker-header-view button {
+  color: var(--text-primary) !important;
+}
+.ant-picker-content th {
+  color: var(--text-tertiary) !important;
+  font-size: 11px !important;
+}
+.ant-picker-cell-in-view { color: var(--text-primary) !important; }
+.ant-picker-cell:not(.ant-picker-cell-in-view) { color: var(--text-tertiary) !important; }

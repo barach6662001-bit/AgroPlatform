@@ -1,0 +1,27 @@
+export interface AuthResponse {
+  token: string;
+  email: string;
+  role: string;
+  expiresAt: string;
+  tenantId: string;
+  requirePasswordChange: boolean;
+  hasCompletedOnboarding: boolean;
+  firstName?: string;
+  lastName?: string;
+  refreshToken?: string;
+  refreshTokenExpiresAt?: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}

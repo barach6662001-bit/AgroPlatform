@@ -1,0 +1,287 @@
+.toolbarItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.flagIcon {
+  width: 20px;
+  height: 14px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.appShell {
+  display: flex;
+  height: 100vh;
+  background: var(--bg-page);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Sidebar shell ── */
+.sidebar {
+  width: 232px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.02);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 200ms ease;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebarCollapsed {
+  width: 64px;
+}
+
+.sidebarNav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 8px 8px;
+}
+
+/* ── Logo area ── */
+.logoWrap {
+  height: 56px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.logoWrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background-image: linear-gradient(90deg, rgba(var(--accRgb), 0.4), transparent 78%);
+}
+
+.logoWrapCollapsed {
+  padding: 0;
+  justify-content: center;
+}
+
+/* ── User section at bottom ── */
+.userSection {
+  padding: 12px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+  cursor: default;
+  transition: background 120ms ease;
+}
+
+.userSection:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.userSectionCollapsed {
+  padding: 12px 0;
+  justify-content: center;
+}
+
+.userAvatar {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--acc) 0%, var(--acc2) 100%);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #000;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(var(--accRgb), 0.15);
+}
+
+.userMeta {
+  overflow: hidden;
+  flex: 1;
+}
+
+.userName {
+  font-size: 12px;
+  color: var(--text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userRole {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Main area ── */
+.mainArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-glow), var(--bg-page);
+  background-attachment: fixed;
+}
+
+/* ── Topbar / Header ── */
+.topbar {
+  height: 52px;
+  flex-shrink: 0;
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 16px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.topbarBtn {
+  padding: 4px 8px;
+  height: 32px;
+  width: 32px;
+  color: var(--text-secondary) !important;
+  border-radius: 8px !important;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.topbarBtn:hover {
+  color: var(--text-primary) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.topbarAction {
+  color: var(--text-secondary) !important;
+  padding: 4px 8px;
+  height: 32px;
+  min-width: 32px;
+  width: auto !important;
+  border-radius: 8px !important;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.topbarAction:hover {
+  color: var(--text-primary) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.searchTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  height: 32px;
+  width: 240px;
+  max-width: 38vw;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.searchTrigger:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--text-secondary);
+}
+
+.searchTriggerLabel {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.langFlag {
+  width: 18px;
+  height: 13px;
+  object-fit: cover;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+.topbarLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.kbdHint {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+.logoutBtn {
+  color: var(--text-secondary) !important;
+  font-size: 12px;
+  height: 32px;
+  border-radius: 8px !important;
+  transition: color 120ms ease, background 120ms ease;
+}
+
+.logoutBtn:hover {
+  color: var(--error) !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+.toolbarDivider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+/* ── Page area ── */
+.pageArea {
+  flex: 1;
+  overflow: auto;
+  padding: 24px 28px;
+}
+
+@media (max-width: 768px) {
+  .pageArea { padding: 16px; }
+  .searchTrigger { display: none; }
+}

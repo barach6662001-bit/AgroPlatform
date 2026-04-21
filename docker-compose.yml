@@ -1,0 +1,66 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: postgres/Dockerfile
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-agroplatform_db}
+      POSTGRES_USER: ${POSTGRES_USER:-agroplatform}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agroplatform_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-agroplatform} -d ${POSTGRES_DB:-agroplatform_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agro-network
+
+  api:
+    build:
+      context: .
+      dockerfile: src/AgroPlatform.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-agroplatform_db};Username=${POSTGRES_USER:-agroplatform};Password=${POSTGRES_PASSWORD:-agroplatform_dev}"
+      JwtSettings__Key: "${JWT_KEY}"
+      JwtSettings__Issuer: "${JWT_ISSUER:-AgroPlatform}"
+      JwtSettings__Audience: "${JWT_AUDIENCE:-AgroPlatform}"
+      Cors__AllowedOrigins__0: "${CORS_ORIGIN:-http://localhost:3000}"
+      Cors__AllowedOrigins__1: "${CODESPACES_URL:-}"
+      Swagger__Enabled: "${SWAGGER_ENABLED:-true}"
+      AUTO_MIGRATE: "${AUTO_MIGRATE:-true}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health/live || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - agro-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - agro-network
+
+volumes:
+  pgdata:
+  api-logs:
+
+networks:
+  agro-network:

@@ -1,0 +1,43 @@
+.text12 {
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.spaced {
+  background: var(--bg-surface);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.block6 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.text121 {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.block11 {
+  grid-column: 1 / -1;
+}
+
+.spaced1 {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.text122 {
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin-bottom: 4px;
+}

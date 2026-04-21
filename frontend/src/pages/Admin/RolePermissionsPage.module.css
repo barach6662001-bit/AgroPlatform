@@ -1,0 +1,24 @@
+.textCenter {
+  padding: 24px;
+  text-align: center;
+}
+
+.padded {
+  padding: 24px;
+}
+
+.flex_center_between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.spaced {
+  margin: 0;
+}
+
+.spaced1 {
+  margin: 0;
+  color: var(--text-secondary);
+}

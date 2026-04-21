@@ -1,0 +1,19 @@
+.block0 {
+  width: 160px;
+}
+
+.colored {
+  color: var(--text-secondary);
+}
+
+.spaced {
+  margin-bottom: 16px;
+}
+
+.block5 {
+  width: 100px;
+}
+
+.spaced1 {
+  margin-bottom: 24px;
+}

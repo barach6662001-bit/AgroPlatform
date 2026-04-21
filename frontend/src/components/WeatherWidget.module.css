@@ -1,0 +1,41 @@
+.bg {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  min-width: 220px;
+  border-radius: 10px;
+}
+
+.flex_center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.block2 {
+  width: 40px;
+  height: 40px;
+}
+
+.text32 {
+  font-size: 32px;
+  color: var(--text-tertiary);
+}
+
+.text22 {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.text12 {
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+.text121 {
+  margin-left: 12px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  line-height: 1.7;
+}

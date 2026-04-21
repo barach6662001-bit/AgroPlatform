@@ -1,0 +1,253 @@
+/* ── Dashboard ── */
+
+/* Page wrapper: centers content, caps width, paints a subtle radial accent
+   glow behind the KPI hero row to match the landing page's hero treatment. */
+.pageWrap {
+  position: relative;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px 32px 48px;
+  isolation: isolate;
+}
+
+.pageWrap::before {
+  content: '';
+  position: absolute;
+  inset: -40px -40px auto -40px;
+  height: 360px;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 60% 70% at 80% 0%, rgba(var(--accRgb), 0.10), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(var(--accRgb), 0.05), transparent 60%);
+  filter: blur(2px);
+}
+
+@media (max-width: 1024px) {
+  .pageWrap { padding: 20px 24px 40px; }
+}
+@media (max-width: 768px) {
+  .pageWrap { padding: 16px 16px 32px; }
+}
+
+/* ── Premium page header ── */
+.pageHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.headLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.headTitle {
+  margin: 0;
+  font-family: var(--fs);
+  font-size: clamp(28px, 3.4vw, 38px);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.6) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.headSubMeta {
+  margin: 0;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--fm);
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.dotSep {
+  color: var(--text-tertiary);
+}
+
+.headRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.weatherSlot {
+  display: inline-flex;
+}
+
+@media (max-width: 768px) {
+  .weatherSlot { display: none; }
+}
+
+/* ── Segmented period control ── */
+.segmented {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  gap: 2px;
+}
+
+.seg {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  height: 28px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-family: var(--fm);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.seg:hover {
+  color: var(--text-primary);
+}
+
+.segActive {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+/* ── Primary CTA — IDENTICAL to landing's primary button ── */
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 18px;
+  border-radius: var(--radius-md);
+  border: 0;
+  cursor: pointer;
+  background: linear-gradient(180deg, var(--acc), var(--acc2, #16A34A));
+  color: #06180d;
+  font-family: var(--fs);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.20),
+    0 0 0 1px rgba(var(--accRgb), 0.35),
+    var(--shadow-glow);
+  transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+}
+
+.ctaPrimary:hover {
+  transform: translateY(-0.5px);
+  filter: brightness(1.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 0 0 1px rgba(var(--accRgb), 0.45),
+    var(--shadow-glow-strong);
+}
+
+.ctaPrimary:active { transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ctaPrimary { transition: none; }
+  .ctaPrimary:hover { transform: none; }
+}
+
+/* ── Card helpers ── */
+.cardTitle {
+  font-family: var(--fm);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+/* ── Content grid (60/40) ── */
+.contentGrid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* ── Timeline card ── */
+.timelineCard {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  transition: border-color 150ms ease;
+  overflow: hidden;
+}
+
+.timelineCard::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+.timelineCard:hover { border-color: var(--border-hover); }
+
+.timelineHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 1024px) {
+  .contentGrid { grid-template-columns: 1fr; gap: 20px; }
+}
+
+.alertsGap {
+  margin-bottom: 24px;
+}
+
+/* ── Onboarding empty state ── */
+.onboardingCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  gap: 12px;
+}
+
+.onboardingIcon {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.onboardingTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.onboardingDesc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  max-width: 320px;
+  margin: 0;
+}

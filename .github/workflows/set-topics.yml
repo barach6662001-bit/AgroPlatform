@@ -1,0 +1,48 @@
+name: Set repository topics
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/set-topics.yml'
+
+jobs:
+  set-topics:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      metadata: write
+    steps:
+      - name: Set repository topics
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api -X PUT /repos/${{ github.repository }}/topics \
+            --input - <<EOF
+          {
+            "names": [
+              "agriculture",
+              "agro",
+              "agrotech",
+              "farm-management",
+              "dotnet",
+              "aspnet-core",
+              "react",
+              "typescript",
+              "postgresql",
+              "docker",
+              "clean-architecture",
+              "cqrs",
+              "entity-framework-core",
+              "ant-design",
+              "vite",
+              "zustand",
+              "leaflet",
+              "jwt-authentication",
+              "multi-tenant",
+              "erp",
+              "agritech"
+            ]
+          }
+          EOF

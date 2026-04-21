@@ -1,0 +1,243 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend-build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: TypeScript type-check
+        run: npx tsc -b --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Docker build dry-run (frontend)
+        working-directory: .
+        run: docker build -f frontend/Dockerfile frontend/
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build (Release)
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Warn-as-error check (Domain + Application)
+        run: |
+          dotnet build src/AgroPlatform.Domain/AgroPlatform.Domain.csproj \
+            --no-restore --configuration Release --warnaserror
+          dotnet build src/AgroPlatform.Application/AgroPlatform.Application.csproj \
+            --no-restore --configuration Release --warnaserror
+
+      - name: Run unit tests
+        run: |
+          dotnet test tests/AgroPlatform.UnitTests \
+            --no-build --configuration Release --verbosity normal \
+            --logger trx --results-directory TestResults \
+            --collect:"XPlat Code Coverage"
+
+      - name: Run integration tests
+        run: |
+          dotnet test tests/AgroPlatform.IntegrationTests \
+            --no-build --configuration Release --verbosity normal \
+            --logger trx --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: TestResults/**/*.trx
+          retention-days: 7
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: TestResults/**/coverage.cobertura.xml
+          retention-days: 7
+
+      - name: Check for vulnerable packages (production)
+        run: |
+          echo "=== Scanning production projects for vulnerabilities ==="
+          FOUND_VULN=0
+          for proj in src/AgroPlatform.Api/AgroPlatform.Api.csproj \
+                      src/AgroPlatform.Application/AgroPlatform.Application.csproj \
+                      src/AgroPlatform.Domain/AgroPlatform.Domain.csproj \
+                      src/AgroPlatform.Infrastructure/AgroPlatform.Infrastructure.csproj; do
+            echo ""
+            echo "--- Scanning $proj ---"
+            OUTPUT=$(dotnet list "$proj" package --vulnerable --include-transitive 2>&1)
+            echo "$OUTPUT"
+            if echo "$OUTPUT" | grep -qiE '\b(Critical|High)\b'; then
+              echo "::error::HIGH or CRITICAL vulnerability found in $proj"
+              FOUND_VULN=1
+            fi
+          done
+
+          echo ""
+          echo "=== Scanning test projects (informational only) ==="
+          for proj in tests/AgroPlatform.UnitTests/AgroPlatform.UnitTests.csproj \
+                      tests/AgroPlatform.IntegrationTests/AgroPlatform.IntegrationTests.csproj; do
+            echo ""
+            echo "--- Scanning $proj (non-blocking) ---"
+            dotnet list "$proj" package --vulnerable --include-transitive 2>&1 || true
+          done
+
+          if [ "$FOUND_VULN" -ne 0 ]; then
+            echo "::error::HIGH or CRITICAL vulnerabilities found in production projects! Please update affected packages."
+            exit 1
+          fi
+          echo "✅ No HIGH/CRITICAL vulnerabilities in production projects."
+
+      - name: Publish API
+        run: |
+          dotnet publish src/AgroPlatform.Api/AgroPlatform.Api.csproj \
+            --no-restore --no-build --configuration Release --output publish/api
+
+      - name: Upload API artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-publish
+          path: publish/api
+          retention-days: 7
+
+  docker-smoke-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: [build-and-test, frontend-build-and-test]
+    env:
+      JWT_KEY: ${{ secrets.JWT_KEY || 'ci-smoke-test-jwt-key-32-characters-ok!!' }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build Docker images
+        run: docker compose build --no-cache
+
+      - name: Start postgres
+        run: |
+          docker compose up -d postgres
+          echo "Waiting for postgres to be healthy..."
+          for i in $(seq 1 12); do
+            STATUS=$(docker compose ps postgres --format '{{.Health}}' 2>/dev/null || echo "unknown")
+            if [ "$STATUS" = "healthy" ]; then echo "✅ Postgres healthy"; break; fi
+            if [ "$i" -eq 12 ]; then echo "::error::Postgres failed to become healthy"; exit 1; fi
+            sleep 5
+          done
+
+      - name: Start API
+        run: |
+          docker compose up -d --no-deps api
+          echo "Waiting for API container to be running..."
+          for i in $(seq 1 6); do
+            STATE=$(docker compose ps api --format '{{.State}}' 2>/dev/null || echo "unknown")
+            if [ "$STATE" = "running" ]; then echo "✅ API container is running"; break; fi
+            if [ "$STATE" = "exited" ] || [ "$STATE" = "dead" ]; then
+              echo "::error::API container exited immediately (state=$STATE). Dumping logs:"
+              docker compose logs api
+              exit 1
+            fi
+            sleep 2
+          done
+
+      - name: Wait for API health check
+        run: |
+          echo "Waiting for API to become healthy..."
+          for i in $(seq 1 30); do
+            STATUS=$(docker compose ps api --format '{{.Health}}' 2>/dev/null || echo "unknown")
+            STATE=$(docker compose ps api --format '{{.State}}' 2>/dev/null || echo "unknown")
+            echo "  Attempt $i/30: health=$STATUS state=$STATE"
+            if [ "$STATUS" = "healthy" ]; then
+              echo "✅ API is healthy"
+              break
+            fi
+            if [ "$STATE" != "running" ] && [ "$i" -gt 1 ]; then
+              echo "::error::API container stopped (state=$STATE). Dumping logs:"
+              docker compose logs api
+              exit 1
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "::error::API failed to become healthy within 5 minutes"
+              docker compose logs api
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: Verify API responds
+        run: |
+          HTTP_CODE=$(docker compose exec api wget -qO- -S http://localhost:8080/health/live 2>&1 | grep -oP 'HTTP/\S+\s+\K\d{3}' | tail -1)
+          if [ -z "$HTTP_CODE" ]; then
+            HTTP_CODE=$(docker compose exec api wget --spider -S http://localhost:8080/health/live 2>&1 | grep -oP '\d{3}' | head -1)
+          fi
+          echo "Health endpoint returned: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Health endpoint returned $HTTP_CODE instead of 200"
+            docker compose logs api
+            exit 1
+          fi
+          echo "✅ API health endpoint responds 200"
+
+      - name: Start frontend
+        run: |
+          docker compose up -d --no-deps frontend
+          sleep 5
+          FRONTEND_STATUS=$(docker compose ps frontend --format '{{.State}}' 2>/dev/null || echo "unknown")
+          echo "Frontend state: $FRONTEND_STATUS"
+          if [ "$FRONTEND_STATUS" != "running" ]; then
+            echo "::error::Frontend container is not running (state=$FRONTEND_STATUS)"
+            docker compose logs frontend
+            exit 1
+          fi
+          echo "✅ Frontend container is running"
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v

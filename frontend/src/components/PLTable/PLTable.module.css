@@ -1,0 +1,65 @@
+.block2 {
+  overflow-x: auto;
+}
+
+.fullWidth {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.bg {
+  background: var(--bg-subtle);
+}
+
+.rowEven {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.rowEven:hover {
+  background: var(--bg-overlay);
+}
+
+.rowOdd {
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.rowOdd:hover {
+  background: var(--bg-overlay);
+}
+
+.medium {
+  padding: 10px 14px;
+  font-weight: 500;
+}
+
+.textRight {
+  padding: 10px 14px;
+  text-align: right;
+  color: var(--text-secondary);
+}
+
+.padded {
+  padding: 10px 14px;
+  min-width: 160px;
+}
+
+.flex_center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.block12 {
+  flex: 1;
+}
+
+.text10 {
+  margin-right: 3px;
+  font-size: 10px;
+}

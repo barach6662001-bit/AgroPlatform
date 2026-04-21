@@ -1,0 +1,46 @@
+.block0 {
+  width: 340px;
+}
+
+.fullWidth {
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.block2 {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.fullWidth1 {
+  width: 100%;
+}
+
+.fullWidth2 {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.spaced {
+  margin: 0;
+}
+
+.text11 {
+  font-size: 11px;
+}
+
+.text13 {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.text18 {
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.padded {
+  padding: 4px 8px;
+}

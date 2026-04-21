@@ -1,0 +1,29 @@
+.block0 {
+  flex-shrink: 0;
+}
+
+.flex_center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.block2 {
+  line-height: 1.1;
+}
+
+.colored {
+  color: var(--brand);
+}
+
+.brandName {
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.brandTagline {
+  color: var(--text-tertiary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}

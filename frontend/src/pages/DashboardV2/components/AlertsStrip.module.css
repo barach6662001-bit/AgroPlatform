@@ -1,0 +1,67 @@
+/* Compact single-line alerts strip for v2 dashboard.
+ * Designed to read as one muted info bar, not a panel of tiles. */
+
+.strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.empty {
+  color: rgba(255, 255, 255, 0.40);
+  font-family: var(--fm);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px;
+  font-family: var(--fs);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.item:hover { color: var(--text-primary); }
+
+.item:hover .icon { color: var(--text-primary); }
+
+.icon {
+  color: rgba(255, 255, 255, 0.45);
+  display: inline-flex;
+  transition: color 150ms ease;
+}
+
+.iconAlert  { color: var(--acc); }
+
+.count {
+  font-family: var(--fm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+/* Vertical hairline separator between items */
+.divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+  .strip { padding: 10px 14px; }
+  .item  { padding: 4px 10px; font-size: 12px; }
+}

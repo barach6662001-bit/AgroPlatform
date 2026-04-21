@@ -1,0 +1,10 @@
+.colored {
+  color: var(--text-primary);
+}
+
+/* Backdrop blur on the AntD mask under the drawer */
+:global(.ant-drawer) :global(.ant-drawer-mask) {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}

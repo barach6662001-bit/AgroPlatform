@@ -1,0 +1,106 @@
+/* Shared premium form styles */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.label {
+  font-family: var(--fm);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--tm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Input overrides */
+.input :global(.ant-input),
+.input {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border-color: var(--b) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-md) !important;
+  font-size: 13px;
+  height: 38px;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.input:focus,
+.input :global(.ant-input:focus),
+.input :global(.ant-input-focused) {
+  border-color: rgba(var(--accRgb), 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accRgb), 0.12) !important;
+}
+
+.input:hover,
+.input :global(.ant-input:hover) {
+  border-color: var(--border-hover) !important;
+}
+
+.inputError :global(.ant-input),
+.inputError {
+  border-color: var(--error) !important;
+}
+
+.inputError:focus,
+.inputError :global(.ant-input:focus) {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.errorMsg {
+  font-size: 11px;
+  color: var(--error);
+  font-weight: 500;
+}
+
+/* Textarea */
+.textarea :global(.ant-input) {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-md) !important;
+  font-size: 13px;
+  resize: vertical;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.textarea :global(.ant-input:focus) {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px var(--brand-glow) !important;
+}
+
+/* Select */
+.select :global(.ant-select-selector) {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-md) !important;
+  height: 38px !important;
+  font-size: 13px;
+}
+
+.select :global(.ant-select-focused .ant-select-selector) {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px var(--brand-glow) !important;
+}
+
+.select :global(.ant-select-selector:hover) {
+  border-color: var(--border-hover) !important;
+}
+
+.select :global(.ant-select-selection-placeholder) {
+  color: var(--text-tertiary) !important;
+  line-height: 36px !important;
+}
+
+.select :global(.ant-select-selection-item) {
+  line-height: 36px !important;
+  color: var(--text-primary) !important;
+}
+
+.select :global(.ant-select-arrow) {
+  color: var(--text-tertiary) !important;
+}

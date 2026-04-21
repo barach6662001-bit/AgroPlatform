@@ -1,0 +1,20 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "PGfwcV7mBY_v_A1-ZumML"
+uri = "file://docs/redesign-v3/screenshots/01-above-the-fold.jpg"
+type = "image"
+title = "Screenshot 01 — above the fold (KPI hero + alerts strip)"
+
+[[outputs]]
+id = "Hd-tqk3eKKFSoT_Zflo2i"
+uri = "file://docs/redesign-v3/screenshots/02-financial-chart.jpg"
+type = "image"
+title = "Screenshot 02 — financial chart + field status / recent operations"
+
+[[outputs]]
+id = "U6s0yrE-kxFfIl4AtlEue"
+uri = "file://docs/redesign-v3/screenshots/03-bottom-warehouse-upcoming.jpg"
+type = "image"
+title = "Screenshot 03 — warehouse snapshot + upcoming + weather"

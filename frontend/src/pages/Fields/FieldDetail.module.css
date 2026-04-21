@@ -1,0 +1,102 @@
+.sectionGap {
+  margin-bottom: 16px;
+}
+
+.alertGap {
+  margin-bottom: 20px;
+}
+
+.kpiCard {
+  background: var(--bg-surface);
+  border-color: var(--border);
+}
+
+.kpiLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.kpiExpenses {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--error);
+}
+
+.subValue {
+  font-size: 11px;
+}
+
+.kpiRevenue {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.kpiNeutral {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.actionsGap {
+  margin-bottom: 12px;
+}
+
+.cardGap {
+  margin-top: 16px;
+}
+
+.emptyText {
+  text-align: center;
+  padding: 16px 0;
+  color: #888;
+}
+
+.smallGap {
+  margin-top: 8px;
+}
+
+.block21 {
+  width: 220px;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* ── Field KPI Grid ── */
+.fieldKpiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .fieldKpiGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.fieldKpiCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldKpiLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.fieldKpiValue {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}

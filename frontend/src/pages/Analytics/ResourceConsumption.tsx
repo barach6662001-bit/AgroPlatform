@@ -1,0 +1,98 @@
+import { useEffect, useState } from 'react';
+import { DatePicker, Space, message } from 'antd';
+import TableSkeleton from '../../components/TableSkeleton';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
+import { chartConfig, chartColors } from '../../components/charts/chartTheme';
+import { getResourceConsumption } from '../../api/analytics';
+import type { ResourceConsumptionDto } from '../../types/analytics';
+import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
+import { useTranslation } from '../../i18n';
+import s from './ResourceConsumption.module.css';
+import DataTable from '../../components/ui/DataTable';
+
+const { RangePicker } = DatePicker;
+
+export default function ResourceConsumption() {
+  const [data, setData] = useState<ResourceConsumptionDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState<[string, string] | null>(null);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    setLoading(true);
+    getResourceConsumption(dateRange ? { from: dateRange[0], to: dateRange[1] } : undefined)
+      .then(setData)
+      .catch(() => message.error(t.analytics.loadError))
+      .finally(() => setLoading(false));
+  }, [dateRange]);
+
+  const columns = [
+    { title: t.analytics.resourceName, dataIndex: 'itemName', key: 'itemName' },
+    {
+      title: t.analytics.totalQuantity,
+      dataIndex: 'totalConsumed',
+      key: 'totalConsumed',
+      render: (v: number) => v.toFixed(2),
+      sorter: (a: ResourceConsumptionDto, b: ResourceConsumptionDto) => a.totalConsumed - b.totalConsumed,
+    },
+    { title: t.analytics.unit, dataIndex: 'unitCode', key: 'unitCode' },
+  ];
+
+  const chartData = data.map((item) => ({
+    name: item.itemName,
+    [t.analytics.totalQuantity]: Number(item.totalConsumed.toFixed(2)),
+  }));
+
+  return (
+    <div>
+      <PageHeader
+        title={t.analytics.resourceConsumption}
+        subtitle={t.analytics.title}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.analytics, path: '/analytics/efficiency' }, { label: t.nav.resources }]} />}
+      />
+      <Space className={s.spaced}>
+        <RangePicker
+          onChange={(_, dateStrings) =>
+            setDateRange(dateStrings[0] && dateStrings[1] ? [dateStrings[0], dateStrings[1]] : null)
+          }
+          placeholder={[t.analytics.from, t.analytics.to]}
+        />
+      </Space>
+      {loading ? (
+        <TableSkeleton />
+      ) : (
+        <>
+          <DataTable
+            dataSource={data}
+            columns={columns}
+            rowKey="itemId"
+            pagination={false}
+            className={s.spaced1}
+          />
+          {chartData.length > 0 && (
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 60 }}>
+                <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
+                <XAxis dataKey="name" angle={-30} textAnchor="end" interval={0} tick={{ fill: '#6b7b9a', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#6b7b9a', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} labelStyle={chartConfig.tooltip.labelStyle} cursor={chartConfig.tooltip.cursor} />
+                <Legend />
+                <Bar dataKey={t.analytics.totalQuantity} fill="#14B8A6" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </>
+      )}
+    </div>
+  );
+}

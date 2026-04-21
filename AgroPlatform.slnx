@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+    <File Path="docker-compose.prod.yml" />
+    <File Path=".env.example" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/AgroPlatform.Api/AgroPlatform.Api.csproj" />
+    <Project Path="src/AgroPlatform.Application/AgroPlatform.Application.csproj" />
+    <Project Path="src/AgroPlatform.Domain/AgroPlatform.Domain.csproj" />
+    <Project Path="src/AgroPlatform.Infrastructure/AgroPlatform.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AgroPlatform.IntegrationTests/AgroPlatform.IntegrationTests.csproj" />
+    <Project Path="tests/AgroPlatform.UnitTests/AgroPlatform.UnitTests.csproj" />
+  </Folder>
+</Solution>

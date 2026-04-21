@@ -1,0 +1,40 @@
+.colored {
+  color: var(--error);
+}
+
+.colored1 {
+  color: var(--text-secondary);
+}
+
+.spaced {
+  margin-bottom: 24px;
+}
+
+.block5 {
+  width: 100px;
+}
+
+.block7 {
+  width: 160px;
+}
+
+.text13 {
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.bg {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.colored2 {
+  color: var(--text-primary);
+}
+
+.spaced1 {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}

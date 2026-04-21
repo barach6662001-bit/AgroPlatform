@@ -1,0 +1,253 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "git-force-push",
+      "command": "git add -A && git commit -m 'chore: update tasks.json' && git push --force-with-lease origin copilot/feattask-046-multi-farm-clean",
+      "options": {
+        "cwd": "/workspaces/AgroPlatform"
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+          {
+          "type": "shell",
+          "label": "check-main-iappdbcontext",
+          "command": "git fetch origin main && git show origin/main:src/AgroPlatform.Application/Common/Interfaces/IAppDbContext.cs | head -15",
+          "options": {
+            "cwd": "/workspaces/AgroPlatform"
+          },
+          "group": "none",
+          "presentation": {
+            "reveal": "always",
+            "panel": "new"
+          }
+        },
+        {
+        "type": "shell",
+        "label": "git-status-diff",
+        "command": "git status && echo '---DIFF---' && git diff HEAD --stat",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "git-merge-main",
+        "command": "git fetch origin main && git merge --no-edit origin/main || true && git status --short",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "git-commit-merge-push",
+        "command": "git add -A && git commit -m 'merge: resolve conflicts with main for PR #395' && git push origin copilot/feattask-046-multi-farm-clean",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "git-fixup-push",
+        "command": "git add -A && git commit -m 'fix: CI errors - remove bad DTOs using, fix any types, ApiKey TenantId new keyword, AuditEntry string UserId, EF Core usings' && git push origin copilot/feattask-046-multi-farm-clean",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "git-sync-main-create-phase3-branch",
+        "command": "git fetch origin main && git checkout main && git pull --ff-only origin main && git checkout -B phase3-audit-attachments",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "dotnet-build-root",
+        "command": "dotnet build",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "frontend-tsc-noemit",
+        "command": "cd frontend && npx tsc --noEmit",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "ef-add-phase3-migration",
+        "command": "dotnet ef migrations add AddAuditDiffsAndAttachments --project src/AgroPlatform.Infrastructure --startup-project src/AgroPlatform.Api --output-dir Persistence/Migrations",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "git-commit-push-phase3",
+        "command": "git add -A && git commit -m 'feat: add audit diffs and attachments' && git push -u origin phase3-audit-attachments",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "gh-create-phase3-pr",
+        "command": "gh pr create --base main --head phase3-audit-attachments --title \"Phase 3A: enrich audit history with before/after values and add attachment support\" --body $'## Summary\n- add structured audit diffs with explicit oldValues, newValues and affectedColumns in the API and UI\n- add a tenant-scoped Attachment entity with upload/list/download endpoints\n- store files on the local filesystem under a structured tenant/entity path rooted at AttachmentStorage:RootPath or the app App_Data/attachments fallback\n\n## Implementation notes\n- audit diffs are captured in the EF save interceptor from modified properties and exposed as before/after payloads plus affected column names\n- attachments are stored outside the database and linked by relative storage path per tenant, entity type and entity id'",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "gh-view-phase3-pr",
+        "command": "gh pr view phase3-audit-attachments --json number,url,state,mergeStateStatus,headRefName,baseRefName",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "gh-watch-phase3-pr-checks",
+        "command": "gh pr checks phase3-audit-attachments --watch",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "gh-auto-merge-phase3-pr",
+        "command": "gh pr merge phase3-audit-attachments --auto --squash",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "git-show-head-snapshot-top",
+        "command": "git show HEAD:src/AgroPlatform.Infrastructure/Persistence/Migrations/AppDbContextModelSnapshot.cs | sed -n '1,80p'",
+        "options": {
+          "cwd": "/workspaces/AgroPlatform"
+        },
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "type": "shell",
+        "label": "ds-verify-old-favicon",
+        "command": "echo '=== OLD favicon ===' && git show HEAD:frontend/public/favicon.svg && echo '' && echo '=== NEW favicon ===' && cat frontend/public/favicon.svg",
+        "options": { "cwd": "/workspaces/AgroPlatform" },
+        "group": "none",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "type": "shell",
+        "label": "ds-unstage-lockfile-status",
+        "command": "git restore --staged frontend/package-lock.json && git checkout -- frontend/package-lock.json && git add -A && git status",
+        "options": { "cwd": "/workspaces/AgroPlatform" },
+        "group": "none",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "type": "shell",
+        "label": "ds-commit-push",
+        "command": "git checkout -- .vscode/tasks.json && git add -A && git commit -m 'chore(design-system): integrate AgroPlatform Design System' && git push -u origin chore/design-system-integration",
+        "options": { "cwd": "/workspaces/AgroPlatform" },
+        "group": "none",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "type": "shell",
+        "label": "ds-create-pr",
+        "command": "gh pr create --base main --head chore/design-system-integration --title 'chore(design-system): integrate AgroPlatform Design System (tokens + assets + skill)' --body '## What this adds\n- `frontend/src/styles/design-system.css` — all design tokens (navy Command Center + green brand)\n- `frontend/src/assets/brand/` — 4 SVG logos\n- `frontend/public/favicon.svg` — new favicon\n- `.claude/skills/agroplatform-design/SKILL.md` — Claude Code skill\n- `docs/design-system/README.md` — brand guide\n\n## What this does NOT change\n- No component code rewritten\n- No existing tokens removed (design-system.css is additive)\n- Visual appearance of the app is unchanged — this PR just makes the new tokens available for future use\n\n**Next:** login page redesign will consume these tokens.'",
+        "options": { "cwd": "/workspaces/AgroPlatform" },
+        "group": "none",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "type": "shell",
+        "label": "ds-watch-checks-merge",
+        "command": "gh pr checks chore/design-system-integration --watch && gh pr merge chore/design-system-integration --squash --auto",
+        "options": { "cwd": "/workspaces/AgroPlatform" },
+        "group": "none",
+        "presentation": { "reveal": "always", "panel": "new" }
+      }
+  ]
+}

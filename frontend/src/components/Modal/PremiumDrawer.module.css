@@ -1,0 +1,34 @@
+/* Premium Drawer */
+.drawer :global(.ant-drawer-content) {
+  background: var(--bg-surface) !important;
+  border-left: 1px solid var(--border) !important;
+}
+
+.drawer :global(.ant-drawer-header) {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 16px 24px !important;
+}
+
+.drawer :global(.ant-drawer-title) {
+  color: var(--text-primary) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+.drawer :global(.ant-drawer-body) {
+  padding: 20px 24px !important;
+}
+
+.drawer :global(.ant-drawer-close) {
+  color: var(--text-tertiary) !important;
+}
+
+.drawer :global(.ant-drawer-close:hover) {
+  color: var(--text-primary) !important;
+}
+
+:global(.ant-drawer-mask) {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(4px);
+}

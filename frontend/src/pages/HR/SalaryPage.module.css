@@ -1,0 +1,53 @@
+.spaced {
+  margin-bottom: 20px;
+}
+
+.block1 {
+  width: 130px;
+}
+
+.block2 {
+  width: 90px;
+}
+
+.colored {
+  color: var(--text-secondary);
+}
+
+.spaced1 {
+  margin-bottom: 8px;
+}
+
+.text15 {
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.text12 {
+  color: var(--text-secondary);
+  display: block;
+  font-size: 12px;
+}
+
+.text121 {
+  color: #6b7280;
+  display: block;
+  font-size: 12px;
+}
+
+.spaced2 {
+  margin-bottom: 12px;
+}
+
+.text11 {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.colored1 {
+  color: #6b7280;
+}
+
+.fullWidth {
+  width: 100%;
+}

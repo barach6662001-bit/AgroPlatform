@@ -1,0 +1,46 @@
+name: frontend-lockfile-guard
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - '.github/workflows/frontend-lockfile-guard.yml'
+
+jobs:
+  verify-lockfile-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check package.json/package-lock.json coupling
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          PACKAGE_CHANGED=false
+          LOCK_CHANGED=false
+
+          if echo "$CHANGED_FILES" | grep -qx 'frontend/package.json'; then
+            PACKAGE_CHANGED=true
+          fi
+
+          if echo "$CHANGED_FILES" | grep -qx 'frontend/package-lock.json'; then
+            LOCK_CHANGED=true
+          fi
+
+          if [ "$PACKAGE_CHANGED" = true ] && [ "$LOCK_CHANGED" = false ]; then
+            echo "ERROR: frontend/package.json changed without frontend/package-lock.json update."
+            echo "Run 'npm install' inside frontend and commit the updated lockfile."
+            exit 1
+          fi
+
+          echo "Lockfile guard passed."

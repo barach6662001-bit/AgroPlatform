@@ -1,0 +1,21 @@
+.spaced {
+  color: #238636;
+  margin-left: 6px;
+}
+
+.spaced1 {
+  margin-bottom: 16px;
+}
+
+.spaced2 {
+  margin-bottom: 12px;
+}
+
+.text13 {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.block4 {
+  width: 90px;
+}

@@ -1,0 +1,11 @@
+.colored {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.text09em {
+  color: var(--text-tertiary);
+  margin-left: 4px;
+  font-size: 0.9em;
+}

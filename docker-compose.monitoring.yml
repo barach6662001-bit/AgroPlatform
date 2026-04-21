@@ -1,0 +1,44 @@
+# docker-compose.monitoring.yml — Prometheus + Grafana stack
+# Usage: docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+#
+# Adds Prometheus metrics scraping and Grafana dashboards for AgroPlatform.
+# ASP.NET Core must expose /metrics (prometheus-net.AspNetCore).
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.4.1
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
+    ports:
+      - "9090:9090"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - agro-network
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "3100:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - agro-network
+
+volumes:
+  prometheus_data:
+  grafana_data:

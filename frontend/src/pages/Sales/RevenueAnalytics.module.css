@@ -1,0 +1,35 @@
+.colored {
+  color: var(--success);
+}
+
+.spaced {
+  margin-bottom: 24px;
+}
+
+.spaced1 {
+  color: var(--text-secondary);
+  margin-right: 8px;
+}
+
+.block5 {
+  width: 100px;
+}
+
+.bg {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.colored1 {
+  color: var(--text-secondary);
+}
+
+.colored2 {
+  color: var(--text-primary);
+}
+
+.spaced2 {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}
