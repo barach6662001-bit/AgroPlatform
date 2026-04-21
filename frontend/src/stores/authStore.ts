@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { usePermissionsStore } from './permissionsStore';
+import { isBypassEnabled } from '../mocks/isBypassEnabled';
+import { mockUser } from '../mocks/mockUser';
 
 interface AuthState {
   token: string | null;
@@ -85,3 +87,22 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+
+// Dev-only auth bypass: seed the store with a mock authenticated user so Replit
+// sandbox (and similar local-only preview environments) can render protected
+// pages without a backend. Runs exactly once, only when `isBypassEnabled` is true
+// (which requires BOTH `import.meta.env.DEV` and `VITE_BYPASS_AUTH=true`), and
+// never overwrites a real logged-in session rehydrated from localStorage.
+if (isBypassEnabled && !useAuthStore.getState().isAuthenticated) {
+  useAuthStore.getState().setAuth(
+    mockUser.token,
+    mockUser.email,
+    mockUser.role,
+    mockUser.tenantId,
+    mockUser.requirePasswordChange,
+    mockUser.hasCompletedOnboarding,
+    mockUser.firstName,
+    mockUser.lastName,
+    mockUser.refreshToken
+  );
+}

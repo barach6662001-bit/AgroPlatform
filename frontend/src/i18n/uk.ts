@@ -1751,6 +1751,9 @@ const uk = {
     typeFuelTank: 'Паливний бак',
     typeSale: 'Продаж',
   },
+  devBypass: {
+    banner: 'DEV MOCK MODE — backend не підключено, дані тестові',
+  },
 } as const;
 
 export default uk;
