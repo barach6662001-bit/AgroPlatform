@@ -773,6 +773,11 @@
   transition: color var(--transition-base);
 }
 .footerLink:hover { color: var(--text-primary); }
+.footerLinkMuted {
+  color: var(--text-tertiary);
+  cursor: default;
+}
+.footerLinkMuted:hover { color: var(--text-tertiary); }
 
 .footerBottom {
   max-width: 1180px;

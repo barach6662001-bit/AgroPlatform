@@ -1551,6 +1551,7 @@ const en: Translations = {
     heroSubtitle: 'Warehouses, fields, machinery, HR, finance — all in one place. For modern agricultural enterprises.',
     ctaLogin: 'Sign In',
     ctaDemo: 'Demo Mode',
+    ctaLearnMore: 'Learn more',
     featureWarehouses: 'Warehouse management',
     featureWarehousesDesc: 'Receipt, issue, transfer, inventory with full audit trail.',
     featureFields: 'Fields & crop rotation',
