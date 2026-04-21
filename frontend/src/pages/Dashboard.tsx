@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { message } from 'antd';
 import { KpiSkeleton, ChartSkeleton, TableSkeleton as TableSkeletonNew } from '../components/Skeletons';
-import { Clipboard, Fuel, Wheat, Receipt, Map, Activity, Banknote, Users } from 'lucide-react';
+import { Clipboard, Fuel, Wheat, Receipt, Map, Activity, Banknote, Users, ArrowRight } from 'lucide-react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import type { FieldDto } from '../types/field';
 import type { AgroOperationDto } from '../types/operation';
-import PageHeader from '../components/PageHeader';
+import EyebrowChip from '../components/EyebrowChip';
 import WeatherWidget from '../components/WeatherWidget';
 import AlertsPanel from '../components/dashboard/AlertsPanel';
 import { useTranslation } from '../i18n';
@@ -29,6 +29,7 @@ export default function Dashboard() {
   const role = useAuthStore((s) => s.role);
   const hasCompletedOnboarding = useAuthStore((s) => s.hasCompletedOnboarding);
 
+  const [period, setPeriod] = useState<'day' | 'week' | 'month' | 'season'>('season');
   const { data, isLoading: dashLoading, isError: dashError } = useDashboardQuery();
   const { data: fieldsData, isLoading: fieldsLoading } = useDashboardFieldsQuery();
   const { data: operationsData, isLoading: opsLoading } = useDashboardOperationsQuery();
@@ -121,13 +122,57 @@ export default function Dashboard() {
         { label: t.dashboard.quickCost, icon: <Receipt size={16} />, color: '#8B5CF6', route: '/economics' },
       ];
 
+  const dashI18n = t.dashboard as Record<string, string | undefined>;
+  const periodOptions: Array<{ key: typeof period; label: string }> = [
+    { key: 'day', label: dashI18n.day ?? 'День' },
+    { key: 'week', label: dashI18n.week ?? 'Тиждень' },
+    { key: 'month', label: dashI18n.month ?? 'Місяць' },
+    { key: 'season', label: dashI18n.season ?? 'Сезон' },
+  ];
+
   return (
     <div className="page-enter">
-      {/* Header + Weather */}
-      <div className={s.flex_between_wrap}>
-        <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
-        <WeatherWidget />
-      </div>
+      {/* Premium header */}
+      <header className={s.pageHead}>
+        <div className={s.headLeft}>
+          <EyebrowChip label="DASHBOARD / SEASON 2026" />
+          <h1 className={s.headTitle}>{t.dashboard.title}</h1>
+          <p className={s.headSubMeta}>
+            <span>{t.dashboard.subtitle}</span>
+            <span className={s.dotSep}>·</span>
+            <span>{formatUA(data.totalAreaHectares)} {dashI18n.haUnit ?? 'га'}</span>
+            <span className={s.dotSep}>·</span>
+            <span>{fields.length} {dashI18n.fieldsUnit ?? 'полів'}</span>
+          </p>
+        </div>
+        <div className={s.headRight}>
+          <div className={s.segmented} role="tablist" aria-label="Period">
+            {periodOptions.map((opt) => (
+              <button
+                key={opt.key}
+                role="tab"
+                aria-selected={period === opt.key}
+                className={`${s.seg} ${period === opt.key ? s.segActive : ''}`}
+                onClick={() => setPeriod(opt.key)}
+                type="button"
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className={s.ctaPrimary}
+            onClick={() => navigate('/operations')}
+          >
+            <span>{dashI18n.newOperation ?? 'Нова операція'}</span>
+            <ArrowRight size={14} aria-hidden="true" />
+          </button>
+          <div className={s.weatherSlot}>
+            <WeatherWidget />
+          </div>
+        </div>
+      </header>
 
       {/* KPI Hero Row */}
       <KpiHeroRow items={kpiItems} />

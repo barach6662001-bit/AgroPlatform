@@ -9,83 +9,67 @@
   border-right: 0;
   flex: 1;
   overflow-y: auto;
-  background: transparent;
+  background: transparent !important;
 }
 
 /* ── Menu item base ── */
-.bg :global(.ant-menu-item) {
-  height: 36px;
-  line-height: 36px;
-  padding: 0 12px !important;
-  border-radius: var(--radius-md);
+.bg :global(.ant-menu-item),
+.bg :global(.ant-menu-submenu-title) {
+  height: 36px !important;
+  line-height: 36px !important;
+  padding: 0 10px !important;
+  border-radius: 8px;
   margin: 1px 0;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text-secondary);
-  transition: all 120ms ease;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.58) !important;
+  transition: background 150ms ease, color 150ms ease;
   position: relative;
 }
 
-.bg :global(.ant-menu-item:hover) {
-  background: rgba(255, 255, 255, 0.05) !important;
-  color: var(--text-primary) !important;
+.bg :global(.ant-menu-item:hover),
+.bg :global(.ant-menu-submenu-title:hover) {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: rgba(255, 255, 255, 0.94) !important;
 }
 
-/* ── Active item: accent dot at right with glow ── */
+/* ── Active item: left bar at edge in --acc ── */
 .bg :global(.ant-menu-item-selected) {
-  background: rgba(255, 255, 255, 0.06) !important;
-  color: var(--text-primary) !important;
-  font-weight: 500;
+  background: rgba(var(--accRgb), 0.12) !important;
+  color: var(--acc) !important;
+  font-weight: 500 !important;
   border-inline-end: none !important;
 }
 
 .bg :global(.ant-menu-item-selected::after) {
   content: '';
   position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 16px;
-  background: #22C55E;
-  border-radius: 4px;
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+  left: -8px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--acc);
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 8px rgba(var(--accRgb), 0.55);
 }
 
 .bg :global(.ant-menu-item-selected::before) {
   display: none;
 }
 
-/* Active icon color */
-.bg :global(.ant-menu-item-selected .ant-menu-item-icon) {
-  color: var(--text-primary) !important;
+.bg :global(.ant-menu-item-selected .ant-menu-item-icon),
+.bg :global(.ant-menu-item-selected .anticon) {
+  color: var(--acc) !important;
 }
 
-/* ── Submenu title ── */
-.bg :global(.ant-menu-submenu-title) {
-  height: 36px !important;
-  line-height: 36px !important;
-  padding: 0 12px !important;
-  border-radius: var(--radius-md);
-  margin: 1px 0;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text-secondary);
-  transition: all 120ms ease;
-}
-
-.bg :global(.ant-menu-submenu-title:hover) {
-  background: rgba(255, 255, 255, 0.05) !important;
-  color: var(--text-primary) !important;
-}
-
+/* ── Submenu open/selected ── */
 .bg :global(.ant-menu-submenu-selected > .ant-menu-submenu-title) {
-  color: var(--text-primary) !important;
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.94) !important;
+  font-weight: 500 !important;
 }
 
 .bg :global(.ant-menu-submenu-open > .ant-menu-submenu-title) {
-  color: var(--text-primary) !important;
+  color: rgba(255, 255, 255, 0.94) !important;
 }
 
 /* ── Expand arrow ── */
@@ -97,17 +81,17 @@
 .bg :global(.ant-menu-item-only-child) {
   padding-left: 36px !important;
   font-size: 12px;
-  color: var(--text-tertiary);
-  height: 32px;
-  line-height: 32px;
+  color: rgba(255, 255, 255, 0.5) !important;
+  height: 32px !important;
+  line-height: 32px !important;
 }
 
 .bg :global(.ant-menu-item-only-child:hover) {
-  color: var(--text-primary) !important;
+  color: rgba(255, 255, 255, 0.94) !important;
 }
 
 .bg :global(.ant-menu-item-only-child.ant-menu-item-selected) {
-  color: var(--text-primary) !important;
+  color: var(--acc) !important;
   font-size: 12px;
 }
 
@@ -115,6 +99,7 @@
 .bg :global(.ant-menu-item .ant-menu-item-icon),
 .bg :global(.ant-menu-submenu-title .ant-menu-item-icon) {
   margin-inline-end: 10px !important;
+  font-size: 14px !important;
 }
 
 .bg :global(.ant-menu-item .ant-menu-item-icon + span),
@@ -124,8 +109,8 @@
 
 /* ── Section dividers ── */
 .bg :global(.ant-menu-item-divider) {
-  border-color: var(--border) !important;
-  margin: 6px 0 !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  margin: 8px 4px !important;
 }
 
 /* ── Submenu popup (collapsed mode) background ── */
@@ -134,11 +119,12 @@
 }
 
 .sectionLabel {
-  font-size: 10px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-tertiary);
-  padding: 14px 20px 4px;
+  padding: 14px 10px 4px;
   user-select: none;
 }

@@ -7,6 +7,7 @@ import Sidebar from './Sidebar';
 import MobileDrawer from './MobileDrawer';
 import NotificationBell from './NotificationBell';
 import FarmSwitcher from './FarmSwitcher';
+import Breadcrumbs from './Breadcrumbs';
 import OfflineIndicator from '../OfflineIndicator';
 import Logo from '../Logo';
 import CommandPalette from '../CommandPalette';
@@ -126,35 +127,44 @@ export default function AppLayout() {
       <div className={s.mainArea}>
         {/* Topbar */}
         <header className={s.topbar}>
-          {isMobile ? (
-            <Button
-              type="text"
-              icon={<MenuIcon size={18} />}
-              onClick={() => setDrawerOpen(true)}
-              className={s.topbarBtn}
-            />
-          ) : (
-            <Button
-              type="text"
-              icon={sidebarCollapsed
-                ? <PanelLeftOpen size={16} />
-                : <PanelLeftClose size={16} />
-              }
-              onClick={() => setSidebarCollapsed(prev => !prev)}
-              className={s.topbarBtn}
-            />
-          )}
+          <div className={s.topbarLeft}>
+            {isMobile ? (
+              <Button
+                type="text"
+                icon={<MenuIcon size={18} />}
+                onClick={() => setDrawerOpen(true)}
+                className={s.topbarBtn}
+              />
+            ) : (
+              <Button
+                type="text"
+                icon={sidebarCollapsed
+                  ? <PanelLeftOpen size={16} />
+                  : <PanelLeftClose size={16} />
+                }
+                onClick={() => setSidebarCollapsed(prev => !prev)}
+                className={s.topbarBtn}
+              />
+            )}
+            <Breadcrumbs />
+          </div>
 
           <div className={s.toolbarItem}>
-            <Button
-              type="text"
-              icon={<Search size={16} />}
-              onClick={openSearch}
-              className={s.topbarAction}
-              style={{ width: 'auto' }}
-            >
-              {!isMobile && <span className={s.topbarLabel}>{t.search.trigger} <kbd className={s.kbdHint}>⌘K</kbd></span>}
-            </Button>
+            {!isMobile && (
+              <button type="button" onClick={openSearch} className={s.searchTrigger}>
+                <Search size={14} aria-hidden="true" />
+                <span className={s.searchTriggerLabel}>{t.search.trigger}</span>
+                <kbd className={s.kbdHint}>⌘K</kbd>
+              </button>
+            )}
+            {isMobile && (
+              <Button
+                type="text"
+                icon={<Search size={16} />}
+                onClick={openSearch}
+                className={s.topbarAction}
+              />
+            )}
             <FarmSwitcher />
             <OfflineIndicator />
             <div className={s.toolbarDivider} />

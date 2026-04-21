@@ -1,0 +1,224 @@
+Task: Premium redesign of (a) the Application Shell (Sidebar + Topbar + AppLayout) and (b) the Dashboard page. Visual + interaction polish. Same sandbox rules as Phase 1 and 2.
+
+=========================================
+CONTEXT
+=========================================
+
+You have already redesigned:
+- Phase 1: Landing page (public /)
+- Phase 2: Login page (public /login)
+
+Now: authenticated app interior. This is what a logged-in user sees every day.
+
+Design system: 21st.dev Dark Premium (same as before).
+- frontend/src/styles/design-system.css (all tokens)
+- .claude/skills/agroplatform-design/SKILL.md (full spec)
+
+=========================================
+CRITICAL CONSTRAINTS — DO NOT VIOLATE
+=========================================
+
+1. DO NOT change any of these:
+   - frontend/src/store/ (Zustand)
+   - frontend/src/services/, api/
+   - frontend/src/hooks/ (except pure presentational hooks you add new)
+   - frontend/src/router/ (routing paths, guards, redirects)
+   - frontend/src/i18n/uk.ts, en.ts (use existing keys, never rename/delete; adding new keys is OK)
+   - Any backend / .NET files
+
+2. PRESERVE all current nav structure:
+   - The Sidebar already has a list of nav items (Dashboard, Fields, Operations, Machinery, Warehouses, GrainStorage, Sales, HR, Economics, Analytics, etc.). Do NOT remove items. Do NOT rename route paths. You may REGROUP items visually (sub-menus, sections, collapsible groups) but the href to each page must stay identical.
+   - Read the current Sidebar.tsx first, list every route it currently exposes, and keep every single one functional.
+
+3. PRESERVE all Topbar logic:
+   - FarmSwitcher (tenant switcher)
+   - NotificationBell
+   - Language toggle
+   - Theme toggle
+   - User menu with logout
+   - Breadcrumbs
+   - Global search (if present)
+   Keep all wired handlers and stores intact.
+
+4. Tests must still pass:
+   - frontend/src/pages/__tests__/Dashboard.test.tsx exists. Read it first. Whatever it asserts must still be true after your redesign.
+   - Other tests: MachineryList.test.tsx, NotificationsPage.test.tsx, Login.test.tsx — these are for other pages, don't break their imports.
+
+5. No new heavy dependencies. Lucide, Framer Motion (only if already in package.json), recharts — OK. No new chart library, no new animation library.
+
+=========================================
+PART A — SHELL REDESIGN
+=========================================
+
+Files you can rewrite:
+- frontend/src/components/Layout/AppLayout.tsx
+- frontend/src/components/Layout/AppLayout.module.css
+- frontend/src/components/Layout/Sidebar.tsx
+- frontend/src/components/Layout/Sidebar.module.css
+- frontend/src/components/Layout/Topbar.tsx (if exists) or header section in AppLayout
+- frontend/src/components/Layout/FarmSwitcher.tsx + .module.css
+- frontend/src/components/Layout/NotificationBell.tsx + .module.css
+- frontend/src/components/Layout/Breadcrumbs.tsx + .module.css
+- frontend/src/components/Layout/MobileDrawer.tsx + .module.css
+- You may add new files under frontend/src/components/Layout/ for sub-components
+
+SIDEBAR SPEC:
+- Width 232px expanded, 64px collapsed
+- Position: fixed left, full height
+- Background: rgba(255,255,255,0.02) on top of the page's black
+- Border-right: 1px solid rgba(255,255,255,0.06)
+- Padding: 16px 12px
+
+SIDEBAR LOGO HEADER:
+- Top of sidebar, 56px tall
+- Logo A-mark 22x22 + wordmark "Agro[Tex]" (Tех in --acc green)
+- Wordmark 13px, 500 weight, Geist
+- Bottom border: 1px with green-to-transparent gradient (this is a signature touch — background-image: linear-gradient(90deg, rgba(34,197,94,0.4), transparent))
+- Collapsed state: only logo 22x22 centered, no wordmark
+
+SIDEBAR NAV ITEMS:
+- Group by domain: "Огляд", "Поля та операції", "Склад і ресурси", "Фінанси", "Аналітика", "Команда", "Налаштування"
+- Each group has a small Geist Mono 9px uppercase label (color --td, letter-spacing 0.08em) above its items
+- Item: 36px tall, 7px padding, Lucide icon left (14px, strokeWidth 1.8), label 11-12px
+- Default state: color rgba(255,255,255,0.58)
+- Hover: bg rgba(255,255,255,0.03), color rgba(255,255,255,0.94)
+- Active item:
+  * bg rgba(34,197,94,0.12)
+  * color var(--acc) — icon and label both
+  * Left indicator: 2px wide bar at left edge, full height of item, color var(--acc), rounded-right
+- Animation: all transitions 150ms ease
+- Collapsed state: only icons centered, tooltips on hover showing label
+
+TOPBAR SPEC:
+- Height 52px
+- Sticky top, z-index 30
+- Glassmorphism: backdrop-filter: blur(12px), background: rgba(10,10,10,0.75)
+- Border-bottom: 1px solid rgba(255,255,255,0.06)
+- Padding: 0 20px
+- Contents left-to-right:
+  1. Mobile: hamburger menu (show only <768px, opens MobileDrawer)
+  2. Breadcrumbs: Geist Mono 11px, color --td, with / separators in --tq color, last segment --t
+  3. Middle: global search (optional, if already there) — 240px width, rounded 8px, rgba(255,255,255,0.03) bg, Search icon left, kbd ⌘K hint right
+  4. Right: FarmSwitcher → NotificationBell → Language toggle → Theme toggle → User menu avatar
+- Each right-side control: 32x32, rounded-8, transparent bg, hover rgba(255,255,255,0.03), Lucide icon 14px
+- FarmSwitcher: shows current farm name + chevron, opens dropdown with list
+- NotificationBell: bell icon with red dot badge if unread, opens dropdown with list
+- User menu: 28px avatar (initials fallback), opens dropdown with Profile / Settings / Logout
+
+BREADCRUMBS:
+- Geist Mono font
+- Format: "Модуль / Підрозділ / Поточна сторінка"
+- Chevron separator (Lucide ChevronRight 11px, --tq color)
+- All but last: clickable, hover --tm
+- Last: --t, no hover
+
+MOBILEDRAWER:
+- Sheet from left, width 260px
+- Same nav structure as Sidebar
+- Backdrop: rgba(0,0,0,0.6) with blur(4px)
+- Open animation: slide-in 200ms ease
+
+APPLAYOUT COMPOSITION:
+- Sidebar (fixed left)
+- Main area: margin-left 232px (64px when collapsed), background: the radial glow --bg-glow
+- Topbar (sticky, inside main area)
+- Page content: padding 24px 28px desktop, 16px mobile
+
+=========================================
+PART B — DASHBOARD REDESIGN
+=========================================
+
+Files you can rewrite:
+- frontend/src/pages/Dashboard.tsx
+- frontend/src/pages/Dashboard.module.css
+- frontend/src/pages/Dashboard/components/KpiHeroRow.tsx + .module.css
+- frontend/src/pages/Dashboard/components/FieldStatusCard.tsx + .module.css
+- frontend/src/pages/Dashboard/components/OperationsTimeline.tsx + .module.css
+- frontend/src/pages/Dashboard/components/QuickActionsStrip.tsx + .module.css
+- frontend/src/pages/Dashboard/components/RevenueCostChart.tsx + .module.css
+- You may add new files under frontend/src/pages/Dashboard/components/
+
+DO NOT change any data-fetching hooks or store calls. If a component pulls data from a hook, keep the hook unchanged; only reshape how the data is rendered.
+
+If the backend data shape isn't available in Replit, mock it locally under frontend/src/mocks/ with realistic Ukrainian agri data:
+- Farm name example: "ТОВ Хрещата Долина"
+- Crops: Соняшник, Пшениця, Кукурудза, Ріпак, Соя
+- UAH amounts: "12 840 000 ₴"
+- Hectares: "2 340 га"
+- Mark mock files with `// TODO: remove mock when backend ready`
+
+DASHBOARD LAYOUT (top to bottom):
+
+1. HEADER BLOCK:
+   - EyebrowChip component at top: small pill with pulsing green dot + Geist Mono label "DASHBOARD / SEASON 2026". 11px, bg rgba(255,255,255,0.025), border rgba(255,255,255,0.08), padding 4px 11px, border-radius 999px. Dot 6px, box-shadow 0 0 12px rgba(34,197,94,0.8), animation pulse 2s infinite.
+   - Gap 10px
+   - Page title "Огляд господарства" — 26-30px/600/-0.03em with gradient text (linear-gradient 180deg #fff → rgba(255,255,255,0.65), clipped to text)
+   - Gap 4px
+   - Sub-meta Geist Mono 12px --tm: "День 107 · {area} га · {fieldsCount} полів"
+   - Right side of header: segmented control (Day / Week / Month / Season), pill style, border rgba(255,255,255,0.08), active segment bg rgba(255,255,255,0.08); plus primary button "Нова операція" (gradient accent, black text, arrow icon)
+
+2. KPI HERO ROW — 4 cards grid, gap 12px:
+   Each card:
+   - Background #101010, border rgba(255,255,255,0.08), border-radius 12px, padding 14px
+   - On hover: border rgba(255,255,255,0.14), translateY(-1px), transition 200ms
+   - Label at top: Geist Mono 10px uppercase, letter-spacing 0.06em, --td
+   - Value: 22-24px/600/-0.02em, tabular-nums, with Geist Mono suffix/unit smaller
+   - Delta below value: Geist Mono 10px, tabular-nums
+     * Positive → --acc green with ▲ indicator
+     * Negative → amber or red with ▼
+     * Neutral → --tm
+   - Optional mini-sparkline at bottom (7-12 points, --acc line with gradient fill)
+   Cards in order:
+   (a) "Виручка" — big UAH amount (e.g. "12.84 млн ₴") + growth %
+   (b) "Маржа" — % + change in pp
+   (c) "Активні поля" — count + area "N полів · M га"
+   (d) "NDVI (сер.)" — float value + delta
+
+3. MAIN ROW — 2 columns (2fr / 1fr on desktop, stacks on mobile):
+   LEFT COLUMN (2fr):
+   a) RevenueCostChart card: title "Доходи vs витрати", period selector top-right, area chart with two gradients (revenue --acc green, cost --error red at lower opacity). Tooltip on hover showing exact values Geist Mono.
+   b) Gap 12px
+   c) OperationsTimeline card: title "Активні операції", list of 4-6 recent operations. Each row: status dot (green/amber/red) + operation type + field code + worker name + progress bar + percentage right-aligned. Geist Mono for codes and timestamps.
+   
+   RIGHT COLUMN (1fr):
+   a) FieldStatusCard: title "Стан полів", compact list of 5-8 fields. Each row: crop color tag (small square) + field name + area + NDVI value + mini trend arrow.
+   b) Gap 12px
+   c) AlertsCard (new, optional but nice): title "Сповіщення", small list of 3-4 system alerts with severity icons (AlertTriangle for warning, AlertCircle for error, Info for info). Tap to dismiss.
+
+4. QUICK ACTIONS STRIP (full width, horizontal scroll on mobile):
+   - Row of 5-6 tappable chips, each: Lucide icon + label + optional count badge
+   - Examples: "Додати операцію" / "Записати наробіток" / "Внести урожай" / "Створити накладну" / "Звіт за сезон"
+   - Each chip: bg rgba(255,255,255,0.03), border rgba(255,255,255,0.08), padding 10px 14px, border-radius 10px, hover lift + border brighten
+   - Icon at left (14px), label 12px, count badge at right (tiny pill with --acc bg, --bg text)
+
+ANIMATIONS:
+- Page entrance: staggered fade-in-up for KPI cards (50ms stagger, 300ms each), using CSS animation
+- Card hover: translateY(-1px) + box-shadow + border brighten, 200ms ease
+- Sparkline draw-in on mount (stroke-dashoffset animation)
+- Progress bars fill from 0 to value on mount, 600ms ease-out
+- Numbers count up from 0 to final value on mount (use requestAnimationFrame, 800ms; implement small useCountUp hook inline if needed)
+- Pulse dot in eyebrow chip (keyframes opacity+scale, 2s infinite)
+
+RESPONSIVE:
+- <768px: Sidebar collapses to MobileDrawer, Topbar becomes hamburger + logo + avatar only, KPI row becomes 2x2 grid, main row stacks
+- 768-1024px: Sidebar collapsed (64px), main row 1-column
+- >1024px: full layout as specified
+
+=========================================
+DELIVERABLES
+=========================================
+
+1. Show preview at /dashboard with mock data
+2. Also show /fields to confirm Sidebar/Topbar work on other pages (doesn't need to be redesigned inside — just shell around it)
+3. Dashboard.test.tsx must still pass. Read it first and adapt.
+4. Produce git diff: git diff <starting-commit-sha> -- frontend/ > PHASE_3_DIFF.patch
+5. List changed files: CHANGED_FILES.md
+6. Screenshots:
+   - /dashboard at 1440x900 (desktop full layout)
+   - /dashboard at 768x1024 (tablet, sidebar collapsed)
+   - /dashboard at 390x844 (mobile with drawer open, and with drawer closed)
+   - /fields at 1440x900 (to show shell wrapping other pages)
+
+DO NOT push to real GitHub. Replit is sandbox. I'll pull diff manually.
+
+Acknowledge constraints in one paragraph, then proceed. Work on Shell first, then Dashboard, then produce deliverables.
