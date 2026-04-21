@@ -189,6 +189,20 @@
   --gradient-display:
     linear-gradient(180deg, var(--text-primary), color-mix(in srgb, var(--text-primary) 60%, transparent));
 
+  /* Featured / recommended card composition (subtle accent wash + glow ring) */
+  --gradient-featured:
+    linear-gradient(180deg, rgba(var(--accRgb), 0.06), rgba(var(--accRgb), 0.01));
+  --shadow-featured-ring:
+    0 0 0 1px rgba(var(--accRgb), 0.18),
+    0 0 var(--space-8) rgba(var(--accRgb), 0.10);
+
+  /* Decorative glow dot (e.g., live indicator) */
+  --shadow-glow-dot: 0 0 var(--space-3) rgba(var(--accRgb), 0.85);
+
+  /* Background orb blur (used for radial green glows behind hero) */
+  --blur-orb: 80px;
+  --blur-glass: 12px;
+
   /* Radius */
   --radius-xs:  4px;
   --radius-sm:  6px;

@@ -29,8 +29,8 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
   background: color-mix(in srgb, var(--bg) 75%, transparent);
   border-bottom: 1px solid var(--border);
 }
@@ -215,7 +215,7 @@
   height: 6px;
   border-radius: 50%;
   background: var(--acc);
-  box-shadow: 0 0 12px rgba(var(--accRgb), 0.85);
+  box-shadow: var(--shadow-glow-dot);
   animation: pulseDot 2.4s ease-in-out infinite;
 }
 @keyframes pulseDot {
@@ -235,7 +235,7 @@
 .heroOrb2 {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(var(--blur-orb));
   pointer-events: none;
   z-index: -1;
 }
@@ -475,12 +475,8 @@
 }
 .priceCardActive {
   border-color: var(--brand-border);
-  background:
-    linear-gradient(180deg, rgba(var(--accRgb), 0.06), rgba(var(--accRgb), 0.01)),
-    var(--surface-tint-2);
-  box-shadow:
-    0 0 0 1px rgba(var(--accRgb), 0.18),
-    0 0 32px rgba(var(--accRgb), 0.10);
+  background: var(--gradient-featured), var(--surface-tint-2);
+  box-shadow: var(--shadow-featured-ring);
 }
 .priceBadge {
   position: absolute;
