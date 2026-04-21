@@ -248,6 +248,80 @@ export default function LandingPage() {
               <span className={s.heroMetaItem}><Check size={13} />{L.heroMeta2}</span>
               <span className={s.heroMetaItem}><Check size={13} />{L.heroMeta3}</span>
             </div>
+
+            {/* Product preview */}
+            <div className={s.preview} aria-hidden="true">
+              <div className={s.previewBar}>
+                <span className={s.previewDot} />
+                <span className={s.previewDot} style={{ background: 'var(--text-tertiary)' }} />
+                <span className={s.previewDot} style={{ background: 'var(--text-quaternary, var(--text-tertiary))' }} />
+                <span className={s.previewCrumbs}>
+                  {L.previewCrumb1} <span className={s.previewCrumbSep}>/</span> {L.previewCrumb2} <span className={s.previewCrumbSep}>/</span> <span className={s.previewCrumbActive}>{L.previewCrumb3}</span>
+                </span>
+                <span className={s.previewLive}>
+                  <span className={s.previewLiveDot} />
+                  {L.previewLive}
+                </span>
+              </div>
+              <div className={s.previewBody}>
+                <div className={s.previewKpis}>
+                  <div className={s.previewKpi}>
+                    <div className={s.previewKpiLabel}>{L.previewKpi1Label}</div>
+                    <div className={s.previewKpiValue}>{L.previewKpi1Value}</div>
+                    <div className={s.previewKpiDelta}>+12 {L.previewVs}</div>
+                  </div>
+                  <div className={s.previewKpi}>
+                    <div className={s.previewKpiLabel}>{L.previewKpi2Label}</div>
+                    <div className={s.previewKpiValue}>{L.previewKpi2Value}</div>
+                    <div className={s.previewKpiDelta}>+8.4 % {L.previewVs}</div>
+                  </div>
+                  <div className={s.previewKpi}>
+                    <div className={s.previewKpiLabel}>{L.previewKpi3Label}</div>
+                    <div className={s.previewKpiValue}>{L.previewKpi3Value}</div>
+                    <div className={`${s.previewKpiDelta} ${s.previewKpiDeltaDown}`}>−3.1 % {L.previewVs}</div>
+                  </div>
+                  <div className={s.previewKpi}>
+                    <div className={s.previewKpiLabel}>{L.previewKpi4Label}</div>
+                    <div className={s.previewKpiValue}>{L.previewKpi4Value}</div>
+                    <div className={s.previewKpiDelta}>+2.6 {L.previewPp}</div>
+                  </div>
+                </div>
+                <div className={s.previewChart}>
+                  <div className={s.previewChartHead}>
+                    <span className={s.previewChartTitle}>{L.previewChartTitle}</span>
+                    <span className={s.previewChartRange}>{L.previewChartRange}</span>
+                  </div>
+                  <svg viewBox="0 0 600 140" preserveAspectRatio="none" className={s.previewSvg}>
+                    <defs>
+                      <linearGradient id="previewFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stopColor="#22C55E" stopOpacity="0.35" />
+                        <stop offset="1" stopColor="#22C55E" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    {[20, 50, 80, 110].map((y) => (
+                      <line key={y} x1="0" x2="600" y1={y} y2={y} stroke="rgba(255,255,255,0.04)" />
+                    ))}
+                    <path
+                      d="M0 110 L50 95 L100 100 L150 80 L200 86 L250 60 L300 70 L350 48 L400 55 L450 32 L500 40 L550 22 L600 28 L600 140 L0 140 Z"
+                      fill="url(#previewFill)"
+                    />
+                    <path
+                      d="M0 110 L50 95 L100 100 L150 80 L200 86 L250 60 L300 70 L350 48 L400 55 L450 32 L500 40 L550 22 L600 28"
+                      fill="none"
+                      stroke="#22C55E"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    {[
+                      [50, 95], [150, 80], [250, 60], [350, 48], [450, 32], [550, 22],
+                    ].map(([x, y]) => (
+                      <circle key={`${x}-${y}`} cx={x} cy={y} r="3" fill="#0a0a0a" stroke="#22C55E" strokeWidth="1.5" />
+                    ))}
+                  </svg>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 

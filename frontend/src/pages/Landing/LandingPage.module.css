@@ -798,6 +798,152 @@
   color: var(--text-tertiary);
 }
 
+/* ─── Hero product preview card ─── */
+.preview {
+  position: relative;
+  margin: var(--space-12) auto 0;
+  width: min(960px, 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(180deg, var(--surface-tint-3), var(--surface-tint-1)),
+    var(--bg);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 var(--space-24) rgba(var(--accRgb), 0.10);
+  overflow: hidden;
+  text-align: left;
+}
+.preview::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(180deg, rgba(var(--accRgb), 0.45), transparent 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+.previewBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-tint-1);
+}
+.previewDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  opacity: 0.8;
+}
+.previewDot:first-child { background: var(--acc); }
+.previewCrumbs {
+  font-family: var(--fm);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-left: var(--space-3);
+}
+.previewCrumbSep { margin: 0 var(--space-2); color: var(--text-quaternary, var(--text-tertiary)); }
+.previewCrumbActive { color: var(--text-primary); }
+.previewLive {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--fm);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--acc);
+  padding: 4px var(--space-2);
+  border: 1px solid var(--brand-border);
+  background: var(--brand-muted);
+  border-radius: var(--radius-pill);
+}
+.previewLiveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--acc);
+  box-shadow: var(--shadow-glow-dot);
+  animation: pulseDot 2.4s ease-in-out infinite;
+}
+.previewBody {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+.previewKpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+}
+.previewKpi {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-tint-1);
+}
+.previewKpiLabel {
+  font-family: var(--fm);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.previewKpiValue {
+  font-family: var(--fs);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.previewKpiDelta {
+  font-family: var(--fm);
+  font-size: var(--fs-xs);
+  color: var(--acc);
+  margin-top: 2px;
+}
+.previewKpiDeltaDown { color: #F87171; }
+.previewChart {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  background: var(--surface-tint-1);
+}
+.previewChartHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+.previewChartTitle {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
+  color: var(--text-primary);
+}
+.previewChartRange {
+  font-family: var(--fm);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.previewSvg {
+  width: 100%;
+  height: 140px;
+  display: block;
+}
+
 /* ─── Lang toggle ─── */
 .langToggle {
   display: inline-flex;
@@ -844,6 +990,8 @@
 
   .hero { padding: var(--space-16) var(--space-5) var(--space-12); }
   .heroSubtitle { font-size: var(--fs-lg); }
+  .previewKpis { grid-template-columns: repeat(2, 1fr); }
+  .preview { margin-top: var(--space-10); }
 
   .statsInner { grid-template-columns: repeat(2, 1fr); }
   .pricingGrid,
