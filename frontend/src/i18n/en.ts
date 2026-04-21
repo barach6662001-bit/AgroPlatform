@@ -1753,6 +1753,9 @@ const en: Translations = {
     typeFuelTank: 'Fuel tank',
     typeSale: 'Sale',
   },
+  devBypass: {
+    banner: 'DEV MOCK MODE — backend not connected, using mock data',
+  },
 };
 
 export default en;
