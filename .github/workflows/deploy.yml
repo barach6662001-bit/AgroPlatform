@@ -67,16 +67,27 @@ jobs:
         env:
           GHCR_USERNAME: ${{ github.repository_owner }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          REPO_PULL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_SLUG: ${{ github.repository }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: root
           key: ${{ secrets.SERVER_SSH_KEY }}
-          envs: GHCR_USERNAME,GHCR_TOKEN
+          envs: GHCR_USERNAME,GHCR_TOKEN,REPO_PULL_TOKEN,REPO_SLUG
           script: |
             set -euo pipefail
             cd /opt/agroplatform
             git checkout -- .
-            git pull origin main
+            # Private repo — pull using the workflow's transient GITHUB_TOKEN via
+            # http.extraheader so we do not depend on any credential helper being
+            # configured on the server. Token is scoped to this run only.
+            if [ -z "${REPO_PULL_TOKEN:-}" ]; then
+              echo "::error::REPO_PULL_TOKEN is empty — workflow did not forward GITHUB_TOKEN"
+              exit 1
+            fi
+            AUTH_HEADER="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$REPO_PULL_TOKEN" | base64 -w0)"
+            git -c "http.https://github.com/.extraheader=${AUTH_HEADER}" fetch origin main
+            git reset --hard origin/main
             # Login to GHCR on the server (packages are private, token required).
             # Fail loudly here if the token is missing or expired so we never
             # silently keep running stale containers (the #580 incident).
