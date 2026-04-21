@@ -63,6 +63,25 @@ export default function Dashboard() {
   const profit = revenue - expenses;
   const margin = revenue > 0 ? ((profit / revenue) * 100).toFixed(1) + '%' : undefined;
 
+  // Compute period-over-period trend from the cost trend series. Returns a
+  // formatted arrow-prefixed percentage string, or `undefined` when we cannot
+  // compute a meaningful delta (no previous data / previous value is zero /
+  // current value is zero — don't show a "↑ 8%" chip next to "0,00 ₴").
+  const computeTrend = (values: Array<number | undefined | null>): string | undefined => {
+    const nums = values.filter((v): v is number => typeof v === 'number' && !isNaN(v));
+    if (nums.length < 2) return undefined;
+    const current = nums[nums.length - 1];
+    const previous = nums[nums.length - 2];
+    if (!previous || current === 0) return undefined;
+    const pct = ((current - previous) / Math.abs(previous)) * 100;
+    if (!isFinite(pct) || Math.abs(pct) < 0.5) return undefined;
+    const arrow = pct >= 0 ? '↑' : '↓';
+    return `${arrow} ${Math.abs(pct).toFixed(0)}%`;
+  };
+
+  const expensesTrend = computeTrend(data.costTrend.map((p) => p.totalAmount));
+  const revenueTrend = computeTrend(data.costTrend.map((p) => p.revenueAmount));
+
   // KPI accent palette: keep ONE living green for area/profit; expenses use
   // amber (not red) — increased spend is only "bad" if it exceeds budget.
   // Revenue uses the brand accent. This matches the landing's single-accent rule.
@@ -72,21 +91,20 @@ export default function Dashboard() {
       value: `${formatUA(data.totalAreaHectares)} га`,
       accentColor: 'rgba(255, 255, 255, 0.85)',
       icon: <Map size={16} strokeWidth={1.6} />,
-      trend: '↑ 8%',
     },
     {
       label: t.dashboard.seasonExpenses ?? t.dashboard.monthlyExpenses,
       value: `${formatUA(expenses)} ₴`,
       accentColor: '#F59E0B',
       icon: <Banknote size={16} strokeWidth={1.6} />,
-      trend: '↓ 3%',
+      trend: expenses > 0 ? expensesTrend : undefined,
     },
     {
       label: t.dashboard.seasonRevenue ?? t.dashboard.monthlyRevenue,
       value: `${formatUA(revenue)} ₴`,
       accentColor: '#22C55E',
       icon: <Activity size={16} strokeWidth={1.6} />,
-      trend: '↑ 12%',
+      trend: revenue > 0 ? revenueTrend : undefined,
     },
     {
       label: t.dashboard.seasonProfit ?? t.dashboard.monthlyProfit,
@@ -94,8 +112,8 @@ export default function Dashboard() {
       accentColor: '#22C55E',
       icon: <Users size={16} strokeWidth={1.6} />,
       hero: true,
-      delta: margin,
-      deltaLabel: t.dashboard.margin ?? 'маржа',
+      delta: revenue > 0 ? margin : undefined,
+      deltaLabel: revenue > 0 ? (t.dashboard.margin ?? 'маржа') : undefined,
     },
   ];
 

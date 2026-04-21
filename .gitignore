@@ -443,3 +443,11 @@ src/**/appsettings.Local.json
 backups/
 "AgroPlatform/.claude/settings.local.json" 
 .vscode/mcp.json
+
+# Replit Agent scratch files (task briefs, screenshot dumps, patch exports)
+/docs/replit-dump*.patch
+/screenshots/dashboard_*.jpg
+/screenshots/dashboard_*.png
+/attached_assets/Pasted*.txt
+/attached_assets/image_*.png
+/attached_assets/screenshots/797daf07-*
