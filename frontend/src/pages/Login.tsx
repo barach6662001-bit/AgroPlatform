@@ -228,7 +228,7 @@ export default function Login() {
                 setLangOpen(false);
               }
             }}
-            aria-haspopup="menu"
+            aria-haspopup="listbox"
             aria-expanded={langOpen}
           >
             {currentLang?.flag && (
@@ -237,13 +237,11 @@ export default function Login() {
             <span>{currentLang?.shortLabel}</span>
           </button>
           {langOpen && (
-            <div className={s.langDropdown} role="menu">
+            <div className={s.langDropdown} role="listbox">
               {languages.map((l) => (
                 <button
                   key={l.code}
                   type="button"
-                  role="menuitemradio"
-                  aria-checked={l.code === lang}
                   className={`${s.langOption}${l.code === lang ? ` ${s.langOptionActive}` : ''}`}
                   onClick={() => {
                     setLang(l.code as 'uk' | 'en');
