@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { login } from '../api/auth';
 import { useTranslation, languages } from '../i18n';
-import logoUrl from '../assets/brand/logo-a-mark.svg?url';
+import Logo from '../components/Logo';
 import s from './Login.module.css';
 
 export default function Login() {
@@ -66,7 +66,9 @@ export default function Login() {
       >
         <div className={s.card}>
           <div className={s.header}>
-            <img src={logoUrl} alt="" className={s.logo} width={44} height={44} />
+            <div className={s.logo}>
+              <Logo size={44} variant="icon" />
+            </div>
             <h1 className={s.title}>{t.auth.loginTitle}</h1>
             <p className={s.subtitle}>{t.auth.loginSubtitle}</p>
           </div>
