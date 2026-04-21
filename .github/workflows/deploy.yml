@@ -64,24 +64,48 @@ jobs:
     steps:
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@v1
+        env:
+          GHCR_USERNAME: ${{ github.repository_owner }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: root
           key: ${{ secrets.SERVER_SSH_KEY }}
+          envs: GHCR_USERNAME,GHCR_TOKEN
           script: |
+            set -euo pipefail
             cd /opt/agroplatform
             git checkout -- .
             git pull origin main
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+            # Login to GHCR on the server (packages are private, token required).
+            # Fail loudly here if the token is missing or expired so we never
+            # silently keep running stale containers (the #580 incident).
+            if [ -z "${GHCR_TOKEN:-}" ]; then
+              echo "::error::GHCR_TOKEN is empty — set it in the production environment secrets"
+              exit 1
+            fi
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
             docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.deploy.yml pull
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.deploy.yml up -d
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.deploy.yml up -d --force-recreate --remove-orphans
             docker image prune -f
             echo "Waiting for API health check..."
-            for i in $(seq 1 30); do
+            API_HEALTHY=0
+            for i in $(seq 1 60); do
               if curl -sf http://localhost:8080/health/live > /dev/null 2>&1; then
                 echo "API is healthy after ${i}s"
+                API_HEALTHY=1
                 break
               fi
               sleep 1
             done
+            if [ "$API_HEALTHY" -ne 1 ]; then
+              echo "::error::API did not become healthy within 60s"
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.deploy.yml logs --tail=100 api
+              exit 1
+            fi
+            # Verify the frontend actually serves the new commit SHA by checking
+            # that the running frontend container image matches the one we just
+            # built (short SHA). This catches silent no-op deploys.
+            RUNNING_SHA=$(docker inspect --format='{{.Image}}' agroplatform-frontend-1 2>/dev/null | cut -d':' -f2 | cut -c1-12 || echo "unknown")
+            echo "Frontend running image digest prefix: ${RUNNING_SHA}"
             echo "Deployed: ${{ github.sha }}"

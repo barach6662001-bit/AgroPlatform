@@ -72,21 +72,20 @@ export default function Dashboard() {
       value: `${formatUA(data.totalAreaHectares)} га`,
       accentColor: 'rgba(255, 255, 255, 0.85)',
       icon: <Map size={16} strokeWidth={1.6} />,
-      trend: '↑ 8%',
     },
     {
       label: t.dashboard.seasonExpenses ?? t.dashboard.monthlyExpenses,
       value: `${formatUA(expenses)} ₴`,
       accentColor: '#F59E0B',
       icon: <Banknote size={16} strokeWidth={1.6} />,
-      trend: '↓ 3%',
+      trend: expenses > 0 ? expensesTrend : undefined,
     },
     {
       label: t.dashboard.seasonRevenue ?? t.dashboard.monthlyRevenue,
       value: `${formatUA(revenue)} ₴`,
       accentColor: '#22C55E',
       icon: <Activity size={16} strokeWidth={1.6} />,
-      trend: '↑ 12%',
+      trend: revenue > 0 ? revenueTrend : undefined,
     },
     {
       label: t.dashboard.seasonProfit ?? t.dashboard.monthlyProfit,
@@ -94,8 +93,8 @@ export default function Dashboard() {
       accentColor: '#22C55E',
       icon: <Users size={16} strokeWidth={1.6} />,
       hero: true,
-      delta: margin,
-      deltaLabel: t.dashboard.margin ?? 'маржа',
+      delta: revenue > 0 ? margin : undefined,
+      deltaLabel: revenue > 0 ? (t.dashboard.margin ?? 'маржа') : undefined,
     },
   ];
 
