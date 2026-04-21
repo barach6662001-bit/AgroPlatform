@@ -63,6 +63,7 @@ import ImportItemsPage from './pages/Warehouses/ImportItemsPage';
 import OnboardingWizard from './pages/Onboarding/OnboardingWizard';
 import LandingPage from './pages/Landing/LandingPage';
 import { useAuthStore } from './stores/authStore';
+import DevBypassBanner from './components/DevBypassBanner';
 
 function RootRoute() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -88,6 +89,7 @@ export default function App() {
     >
       <ErrorBoundary>
       <BrowserRouter>
+        <DevBypassBanner />
         <Routes>
           <Route path="/" element={<RootRoute />} />
           <Route path="/login" element={<Login />} />
