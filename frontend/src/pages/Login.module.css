@@ -250,8 +250,8 @@
   background: var(--surface-tint-2, var(--surface-tint-1));
 }
 .inputRowError {
-  border-color: var(--error);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--error) 18%, transparent);
+  border-color: #F87171;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12);
 }
 .fieldIcon { color: var(--text-tertiary); flex-shrink: 0; }
 .fieldIconActive { color: var(--acc); }
@@ -288,7 +288,7 @@
   align-items: center;
   gap: 6px;
   font-size: var(--fs-xs);
-  color: var(--error);
+  color: #F87171;
   margin: 0;
 }
 
@@ -297,13 +297,13 @@
   align-items: flex-start;
   gap: 8px;
   padding: 10px 12px;
-  border: 1px solid color-mix(in srgb, var(--error) 35%, transparent);
-  background: var(--error-bg);
-  color: color-mix(in srgb, var(--error) 75%, white);
+  border: 1px solid rgba(248, 113, 113, 0.30);
+  background: rgba(248, 113, 113, 0.08);
+  color: #FCA5A5;
   border-radius: var(--radius-md);
   font-size: var(--fs-sm);
 }
-.apiErrorIcon { color: var(--error); flex-shrink: 0; margin-top: 1px; }
+.apiErrorIcon { color: #F87171; flex-shrink: 0; margin-top: 1px; }
 .apiErrorText { margin: 0; }
 
 /* ─── Submit ─── */
