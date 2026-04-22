@@ -47,8 +47,7 @@ const uk = {
     efficiency: 'Ефективність полів',
     resources: 'Розхід ресурсів',
     revenueAnalytics: 'Аналітика продажів',
-    seasonComparison: 'Порівняння сезонів',
-    breakEven: 'Беззбитковість',
+    seasonComparison: 'Порівняння сезонів',    breakEven: 'Беззбитковість',
     cropRotationAdvisor: 'Поради по сівозміні',
     salaryFuelAnalytics: 'Зарплата та паливо',
     auditLog: 'Журнал аудиту',
@@ -69,6 +68,7 @@ const uk = {
     recent: 'Недавно',
     pinItem: 'Закріпити',
     unpinItem: 'Відкріпити',
+    more: 'Ще',
   },
   common: {
     cancel: 'Скасувати',
