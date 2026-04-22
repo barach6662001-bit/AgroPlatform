@@ -29,6 +29,11 @@ public class GrainBatchConfiguration : IEntityTypeConfiguration<GrainBatch>
         builder.Property(b => b.MoisturePercent)
             .HasPrecision(5, 2);
 
+        builder.Property(b => b.ImpurityPercent).HasPrecision(5, 2);
+        builder.Property(b => b.GrainImpurityPercent).HasPrecision(5, 2);
+        builder.Property(b => b.ProteinPercent).HasPrecision(5, 2);
+        builder.Property(b => b.GlutenPercent).HasPrecision(5, 2);
+
         builder.HasOne(b => b.SourceField)
             .WithMany()
             .HasForeignKey(b => b.SourceFieldId)

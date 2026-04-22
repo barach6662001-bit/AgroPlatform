@@ -1,7 +1,7 @@
 import { exportToCsv } from '../../utils/exportCsv';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography, Tabs, Tag, Tooltip,  } from 'antd';
+import { Badge, message, Button, Space, Modal, Form, Input, Select, DatePicker, InputNumber, AutoComplete, Alert, Row, Col, Card, Typography, Tabs, Tag, Tooltip, Collapse,  } from 'antd';
 import {
   PlusOutlined, ExportOutlined, DownloadOutlined, SwapOutlined,
   ScissorOutlined, EditOutlined, DeleteOutlined,
@@ -380,6 +380,30 @@ export default function GrainBatchList() {
       render: (v?: number) => v != null ? `${v.toFixed(1)}%` : '—',
     },
     {
+      title: t.grain.qualityClass, dataIndex: 'qualityClass', key: 'qualityClass',
+      render: (v?: number) => {
+        if (v == null) return '—';
+        const color = v <= 2 ? 'green' : v <= 4 ? 'gold' : 'red';
+        return <Tag color={color}>{v}</Tag>;
+      },
+    },
+    {
+      title: t.grain.protein, dataIndex: 'proteinPercent', key: 'proteinPercent',
+      render: (v?: number) => v != null ? `${v.toFixed(1)}%` : '—',
+    },
+    {
+      title: t.grain.gluten, dataIndex: 'glutenPercent', key: 'glutenPercent',
+      render: (v?: number) => v != null ? `${v.toFixed(1)}%` : '—',
+    },
+    {
+      title: t.grain.impurity, dataIndex: 'impurityPercent', key: 'impurityPercent',
+      render: (v?: number) => v != null ? `${v.toFixed(2)}%` : '—',
+    },
+    {
+      title: t.grain.nature, dataIndex: 'naturePerLiter', key: 'naturePerLiter',
+      render: (v?: number) => v != null ? String(v) : '—',
+    },
+    {
       title: t.grain.initialQuantity, dataIndex: 'initialQuantityTons', key: 'initialQuantityTons',
       render: (v: number) => `${v.toFixed(2)} т`,
     },
@@ -565,6 +589,12 @@ export default function GrainBatchList() {
             { key: 'grainType', title: t.grain.grainType },
             { key: 'sourceFieldName', title: t.grain.sourceField },
             { key: 'moisturePercent', title: t.grain.moisture },
+            { key: 'qualityClass', title: t.grain.qualityClass },
+            { key: 'proteinPercent', title: t.grain.protein },
+            { key: 'glutenPercent', title: t.grain.gluten },
+            { key: 'impurityPercent', title: t.grain.impurity },
+            { key: 'grainImpurityPercent', title: t.grain.grainImpurity },
+            { key: 'naturePerLiter', title: t.grain.nature },
             { key: 'initialQuantityTons', title: t.grain.initialQuantity },
             { key: 'quantityTons', title: t.grain.quantityTons },
             { key: 'pricePerTon', title: t.grain.pricePerTon },
@@ -729,11 +759,52 @@ export default function GrainBatchList() {
             />
           </Form.Item>
           <Form.Item name="moisturePercent" label={t.grain.moisture}>
-            <InputNumber min={0} max={100} precision={1} addonAfter="%" className={s.fullWidth} />
+            <InputNumber min={0} max={30} precision={1} addonAfter="%" className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="receivedDate" label={t.grain.receivedDate} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker className={s.fullWidth} />
           </Form.Item>
+          <Collapse
+            ghost
+            items={[{
+              key: 'quality',
+              label: t.grain.qualitySectionTitle,
+              children: (
+                <Row gutter={12}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item name="impurityPercent" label={t.grain.impurity}>
+                      <InputNumber min={0} max={100} precision={2} addonAfter="%" className={s.fullWidth} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item name="grainImpurityPercent" label={t.grain.grainImpurity}>
+                      <InputNumber min={0} max={100} precision={2} addonAfter="%" className={s.fullWidth} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item name="proteinPercent" label={t.grain.protein}>
+                      <InputNumber min={0} max={100} precision={2} addonAfter="%" className={s.fullWidth} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item name="glutenPercent" label={t.grain.gluten}>
+                      <InputNumber min={0} max={100} precision={2} addonAfter="%" className={s.fullWidth} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item name="naturePerLiter" label={t.grain.nature}>
+                      <InputNumber min={400} max={900} className={s.fullWidth} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item name="qualityClass" label={t.grain.qualityClass} tooltip={t.grain.qualityClassHint}>
+                      <Select allowClear options={[1,2,3,4,5,6].map(n => ({ value: n, label: String(n) }))} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              ),
+            }]}
+          />
           <Form.Item name="notes" label={t.common.notes}>
             <Input.TextArea rows={2} />
           </Form.Item>

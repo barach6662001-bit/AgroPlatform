@@ -13,6 +13,12 @@ public class GrainBatchSummaryDto
     public string? OwnerName { get; set; }
     public DateTime ReceivedDate { get; set; }
     public decimal? MoisturePercent { get; set; }
+    public decimal? ImpurityPercent { get; set; }
+    public decimal? GrainImpurityPercent { get; set; }
+    public decimal? ProteinPercent { get; set; }
+    public decimal? GlutenPercent { get; set; }
+    public int? NaturePerLiter { get; set; }
+    public int? QualityClass { get; set; }
     public string? SourceFieldName { get; set; }
     public string? ContractNumber { get; set; }
 }

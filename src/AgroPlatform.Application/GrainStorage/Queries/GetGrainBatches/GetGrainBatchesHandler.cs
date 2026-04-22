@@ -50,6 +50,12 @@ public class GetGrainBatchesHandler : IRequestHandler<GetGrainBatchesQuery, Pagi
                     ? b.SourceField!.Name
                     : null,
                 MoisturePercent = b.MoisturePercent,
+                ImpurityPercent = b.ImpurityPercent,
+                GrainImpurityPercent = b.GrainImpurityPercent,
+                ProteinPercent = b.ProteinPercent,
+                GlutenPercent = b.GlutenPercent,
+                NaturePerLiter = b.NaturePerLiter,
+                QualityClass = b.QualityClass,
                 Notes = b.Notes,
                 Placements = b.Placements
                     .Select(p => new GrainBatchPlacementDto

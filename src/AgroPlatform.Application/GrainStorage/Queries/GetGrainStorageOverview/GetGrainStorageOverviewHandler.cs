@@ -68,6 +68,12 @@ public class GetGrainStorageOverviewHandler
                 OwnerName = p.GrainBatch.OwnerName,
                 ReceivedDate = p.GrainBatch.ReceivedDate,
                 MoisturePercent = p.GrainBatch.MoisturePercent,
+                ImpurityPercent = p.GrainBatch.ImpurityPercent,
+                GrainImpurityPercent = p.GrainBatch.GrainImpurityPercent,
+                ProteinPercent = p.GrainBatch.ProteinPercent,
+                GlutenPercent = p.GrainBatch.GlutenPercent,
+                NaturePerLiter = p.GrainBatch.NaturePerLiter,
+                QualityClass = p.GrainBatch.QualityClass,
                 SourceFieldName = p.GrainBatch.SourceFieldId != null ? p.GrainBatch.SourceField?.Name : null,
                 ContractNumber = p.GrainBatch.ContractNumber,
             }).ToList());
