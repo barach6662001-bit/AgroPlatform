@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import CountUp from 'react-countup';
 import s from './KpiHeroRow.module.css';
 
@@ -11,6 +12,8 @@ export interface KpiItem {
   delta?: string;
   deltaLabel?: string;
   hero?: boolean;
+  /** Optional navigation target — when set, the whole card becomes a link. */
+  href?: string;
 }
 
 interface Props {
@@ -32,12 +35,10 @@ export default function KpiHeroRow({ items }: Props) {
     <div className={s.grid}>
       {items.map((item, i) => {
         const parsed = parseNumeric(item.value);
-        return (
-          <div
-            key={i}
-            className={`${s.card} ${item.hero ? s.hero : ''}`}
-            style={{ '--kpi-accent': item.accentColor } as React.CSSProperties}
-          >
+        const className = `${s.card} ${item.href ? s.clickable : ''} ${item.hero ? s.hero : ''}`;
+        const style = { '--kpi-accent': item.accentColor } as React.CSSProperties;
+        const body = (
+          <>
             <div className={s.accentBar} />
             <div className={s.cardTop}>
               {item.icon && (
@@ -68,6 +69,15 @@ export default function KpiHeroRow({ items }: Props) {
                 {item.deltaLabel && <span className={s.deltaLabel}>{item.deltaLabel}</span>}
               </div>
             )}
+          </>
+        );
+        return item.href ? (
+          <Link key={i} to={item.href} className={className} style={style}>
+            {body}
+          </Link>
+        ) : (
+          <div key={i} className={className} style={style}>
+            {body}
           </div>
         );
       })}

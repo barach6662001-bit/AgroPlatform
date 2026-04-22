@@ -79,6 +79,7 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
       value: `${formatUA(data.totalAreaHectares)} ${dash.haUnit ?? 'га'}`,
       accentColor: 'rgba(255, 255, 255, 0.85)',
       icon: <Map size={16} strokeWidth={1.6} />,
+      href: '/fields',
     },
     {
       label: dash.seasonExpenses ?? t.dashboard.monthlyExpenses,
@@ -86,6 +87,7 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
       accentColor: '#F59E0B',
       icon: <Banknote size={16} strokeWidth={1.6} />,
       trend: derived.expenses > 0 ? derived.expensesTrend : undefined,
+      href: '/economics',
     },
     {
       label: dash.seasonRevenue ?? t.dashboard.monthlyRevenue,
@@ -93,6 +95,7 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
       accentColor: '#22C55E',
       icon: <Activity size={16} strokeWidth={1.6} />,
       trend: derived.revenue > 0 ? derived.revenueTrend : undefined,
+      href: '/sales',
     },
     {
       label: dash.seasonProfit ?? t.dashboard.monthlyProfit,
@@ -103,6 +106,7 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
       trend: derived.revenue > 0 ? derived.profitTrend : undefined,
       delta: derived.revenue > 0 ? derived.margin : undefined,
       deltaLabel: derived.revenue > 0 ? (dash.margin ?? 'маржа') : undefined,
+      href: '/economics/pnl',
     },
   ];
 

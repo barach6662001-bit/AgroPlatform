@@ -27,6 +27,13 @@ export function usePublicDemoAutoLogin(): { ready: boolean; failed: boolean } {
   useEffect(() => {
     if (!isPublicDemoMode) return;
     if (isAuthenticated) { setReady(true); return; }
+    // If the visitor explicitly lands on /login or /landing, let them see
+    // those pages instead of silently auto-logging them in as demo. This
+    // keeps the real login flow reachable even when public demo mode is on.
+    if (typeof window !== 'undefined') {
+      const p = window.location.pathname;
+      if (p === '/login' || p === '/landing') { setReady(true); return; }
+    }
     if (didRun.current) return;
     didRun.current = true;
 

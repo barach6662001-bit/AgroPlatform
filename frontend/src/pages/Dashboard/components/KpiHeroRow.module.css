@@ -22,6 +22,21 @@
   isolation: isolate;
 }
 
+/* Clickable variant — the card is wrapped in <Link>. Strip anchor styles and
+   flag it as interactive. */
+.clickable {
+  display: block;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+.clickable:hover,
+.clickable:focus-visible { text-decoration: none; color: inherit; }
+.clickable:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--kpi-accent, #22C55E) 60%, transparent);
+  outline-offset: 2px;
+}
+
 /* Inner top-edge highlight to match landing card treatment */
 .card::after {
   content: '';
