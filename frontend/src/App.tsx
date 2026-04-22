@@ -111,7 +111,8 @@ export default function App() {
             <Route path="/superadmin/companies" element={<CompaniesPage />} />
             <Route path="/superadmin/companies/:id/users" element={<CompanyUsersPage />} />
             <Route path="/fields" element={<FieldsList />} />
-            <Route path="/fields/leases" element={<LeasePage />} />
+            <Route path="/fields/leases" element={<Navigate to="/finance/leases" replace />} />
+            <Route path="/finance/leases" element={<LeasePage />} />
             <Route path="/fields/rotation-advisor" element={<CropRotationAdvisor />} />
             <Route path="/fields/:id" element={<FieldDetail />} />
             <Route path="/warehouses" element={<WarehousesList />} />
