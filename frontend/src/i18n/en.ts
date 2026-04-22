@@ -71,6 +71,7 @@ const en: Translations = {
     recent: 'Recent',
     pinItem: 'Pin',
     unpinItem: 'Unpin',
+    more: 'More',
   },
   common: {
     cancel: 'Cancel',

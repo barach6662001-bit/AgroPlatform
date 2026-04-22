@@ -5,6 +5,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import Sidebar from './Sidebar';
 import MobileDrawer from './MobileDrawer';
+import MobileBottomTabs from './MobileBottomTabs';
 import NotificationBell from './NotificationBell';
 import FarmSwitcher from './FarmSwitcher';
 import Breadcrumbs from './Breadcrumbs';
@@ -215,6 +216,7 @@ export default function AppLayout() {
       </div>
 
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      {isMobile && <MobileBottomTabs onMoreClick={() => setDrawerOpen(true)} />}
       <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );

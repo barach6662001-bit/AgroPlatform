@@ -8,3 +8,80 @@
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
+
+.userCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.userMeta { min-width: 0; }
+
+.userName {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.userRole {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 2px;
+}
+
+.item {
+  justify-content: flex-start !important;
+  height: 44px !important;
+  font-size: 14px !important;
+  color: var(--text-secondary) !important;
+  padding-left: 12px !important;
+}
+
+.item:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 4px;
+}
+
+.danger {
+  color: var(--error) !important;
+}
+.danger:hover {
+  color: var(--error) !important;
+  background: var(--error-bg) !important;
+}

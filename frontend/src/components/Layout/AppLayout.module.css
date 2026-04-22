@@ -282,6 +282,6 @@
 }
 
 @media (max-width: 768px) {
-  .pageArea { padding: 16px; }
+  .pageArea { padding: 16px; padding-bottom: calc(56px + env(safe-area-inset-bottom) + 16px); }
   .searchTrigger { display: none; }
 }
