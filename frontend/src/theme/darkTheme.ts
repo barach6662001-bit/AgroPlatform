@@ -3,18 +3,21 @@ import type { ThemeConfig } from 'antd';
 
 export const darkTheme: ThemeConfig = {
   token: {
-    colorBgBase:          '#0a0a0a',
-    colorBgContainer:     '#101010',
-    colorBgElevated:      '#161616',
-    colorBgLayout:        '#0a0a0a',
-    colorBgSpotlight:     '#161616',
-    colorBorder:          'rgba(255, 255, 255, 0.08)',
-    colorBorderSecondary: 'rgba(255, 255, 255, 0.14)',
-    colorTextBase:        'rgba(255, 255, 255, 0.94)',
-    colorText:            'rgba(255, 255, 255, 0.94)',
-    colorTextSecondary:   'rgba(255, 255, 255, 0.58)',
-    colorTextTertiary:    'rgba(255, 255, 255, 0.38)',
-    colorTextQuaternary:  'rgba(255, 255, 255, 0.2)',
+    // Single source of truth: CSS custom properties from styles/tokens.css.
+    // This removes the historical mismatch between AntD-rendered surfaces
+    // and custom CSS-var surfaces.
+    colorBgBase:          'var(--bg-page)',
+    colorBgContainer:     'var(--bg-surface)',
+    colorBgElevated:      'var(--bg-elevated)',
+    colorBgLayout:        'var(--bg-page)',
+    colorBgSpotlight:     'var(--bg-elevated)',
+    colorBorder:          'var(--border)',
+    colorBorderSecondary: 'var(--border-hover)',
+    colorTextBase:        'var(--text-primary)',
+    colorText:            'var(--text-primary)',
+    colorTextSecondary:   'var(--text-secondary)',
+    colorTextTertiary:    'var(--text-tertiary)',
+    colorTextQuaternary:  'var(--text-disabled)',
     colorPrimary:         '#22C55E',
     colorSuccess:         '#22C55E',
     colorError:           '#EF4444',

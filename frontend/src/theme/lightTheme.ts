@@ -2,18 +2,20 @@ import type { ThemeConfig } from 'antd';
 
 export const lightTheme: ThemeConfig = {
   token: {
-    colorBgBase:          '#fafafa',
-    colorBgContainer:     '#ffffff',
-    colorBgElevated:      '#ffffff',
-    colorBgLayout:        '#fafafa',
-    colorBgSpotlight:     '#f5f5f5',
-    colorBorder:          '#e5e5e5',
-    colorBorderSecondary: '#d4d4d4',
-    colorTextBase:        '#171717',
-    colorText:            '#171717',
-    colorTextSecondary:   '#525252',
-    colorTextTertiary:    '#a3a3a3',
-    colorTextQuaternary:  '#d4d4d4',
+    // Single source of truth: CSS custom properties from styles/tokens.css
+    // (specifically the [data-theme="light"] block).
+    colorBgBase:          'var(--bg-page)',
+    colorBgContainer:     'var(--bg-surface)',
+    colorBgElevated:      'var(--bg-elevated)',
+    colorBgLayout:        'var(--bg-page)',
+    colorBgSpotlight:     'var(--bg-hover)',
+    colorBorder:          'var(--border)',
+    colorBorderSecondary: 'var(--border-strong)',
+    colorTextBase:        'var(--text-primary)',
+    colorText:            'var(--text-primary)',
+    colorTextSecondary:   'var(--text-secondary)',
+    colorTextTertiary:    'var(--text-tertiary)',
+    colorTextQuaternary:  'var(--text-disabled)',
     colorPrimary:         '#16a34a',
     colorSuccess:         '#16a34a',
     colorError:           '#ef4444',
