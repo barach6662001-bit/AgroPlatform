@@ -45,7 +45,7 @@ export default function AlertsPanel({
     rows.push({
       severity: 'critical',
       icon: <AlertTriangle size={16} strokeWidth={1.8} />,
-      title: dash.overdueOps ?? 'overdue operations',
+      title: dash.overdueOps ?? '',
       count: overdueOperations,
       route: '/operations',
     });
@@ -72,7 +72,7 @@ export default function AlertsPanel({
     rows.push({
       severity: 'warning',
       icon: <PackageMinus size={16} strokeWidth={1.8} />,
-      title: dash.lowStockAlert ?? 'items with low stock',
+      title: dash.lowStockAlert ?? '',
       count: lowStockItems,
       route: '/warehouses/items',
     });
@@ -81,7 +81,7 @@ export default function AlertsPanel({
     rows.push({
       severity: 'info',
       icon: <CheckCircle2 size={16} strokeWidth={1.8} />,
-      title: dash.completedToday ?? 'operations completed today',
+      title: dash.completedToday ?? '',
       count: completedToday,
       route: '/operations',
     });
@@ -95,9 +95,9 @@ export default function AlertsPanel({
   const hasMore = rows.length > 5 && !expanded;
 
   return (
-    <section className={s.card} aria-label={dash.needsAttention ?? 'Needs attention'}>
+    <section className={s.card} aria-label={dash.needsAttention}>
       <header className={s.header}>
-        <span className={s.title}>{dash.needsAttention ?? 'Потребує уваги'}</span>
+        <span className={s.title}>{dash.needsAttention}</span>
         <span className={s.totalCount}>{rows.length}</span>
       </header>
       <ul className={s.list}>

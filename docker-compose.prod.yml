@@ -35,6 +35,10 @@ services:
   api:
     ports: !override
       - "8080"  # internal only, no host binding
+    environment:
+      # Enable investor-demo seed (80 fields, 25 machines, 12 months of data)
+      # so the public demo site showcases the full product capabilities.
+      Demo__Scale: "${DEMO_SCALE:-Investor}"
 
   frontend:
     ports: !override

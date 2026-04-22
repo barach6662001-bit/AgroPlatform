@@ -23,6 +23,7 @@ services:
       Cors__AllowedOrigins__0: "${CORS_ORIGIN:-https://staging.agrotech-usa.com}"
       Swagger__Enabled: "true"
       AUTO_MIGRATE: "true"
+      Demo__Scale: "${DEMO_SCALE:-Investor}"
 
   frontend:
     ports:

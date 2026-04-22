@@ -94,6 +94,7 @@ const en: Translations = {
     activate: 'Activate',
     deactivate: 'Deactivate',
     export: 'Export',
+    close: 'Close',
   },
   auditLog: {
     title: 'Audit Log',

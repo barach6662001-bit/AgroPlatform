@@ -28,7 +28,7 @@ export default function Breadcrumbs() {
       settings: n.settings,
       admin: n.settings,
       superadmin: n.settings,
-      profile: (t.auth as Record<string, string | undefined>)?.profile ?? 'Profile',
+      profile: (t.auth as Record<string, string | undefined>)?.profile ?? n.profile ?? '',
       pnl: n.pnl,
       budget: n.budget,
       leases: n.leases,
@@ -65,7 +65,7 @@ export default function Breadcrumbs() {
   if (crumbs.length === 0) {
     return (
       <nav className={s.wrap} aria-label="breadcrumb">
-        <span className={s.current}>{(t.nav as Record<string, string>)?.dashboard ?? 'Dashboard'}</span>
+        <span className={s.current}>{(t.nav as Record<string, string>)?.dashboard ?? ''}</span>
       </nav>
     );
   }

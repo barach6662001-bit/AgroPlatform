@@ -217,7 +217,7 @@ export default function InventorySessions() {
       render: (v: string) => formatDate(v),
     },
     {
-      title: t.common?.actions ?? 'Actions',
+      title: t.common?.actions ?? '',
       key: 'actions',
       render: (_: unknown, r: InventorySessionDto) => (
         <Space>
@@ -316,8 +316,8 @@ export default function InventorySessions() {
         open={startOpen}
         onOk={handleStart}
         onCancel={() => { setStartOpen(false); startForm.resetFields(); }}
-        okText={t.common?.save ?? 'Save'}
-        cancelText={t.common?.cancel ?? 'Cancel'}
+        okText={t.common?.save ?? ''}
+        cancelText={t.common?.cancel ?? ''}
         confirmLoading={startSaving}
       >
         <Form form={startForm} layout="vertical" className={s.spaced1}>
@@ -354,7 +354,7 @@ export default function InventorySessions() {
                 </Button>
               )}
               <Button onClick={() => { setDetailOpen(false); setDetail(null); }}>
-                {t.common?.cancel ?? 'Close'}
+                {t.common?.close ?? ''}
               </Button>
             </Space>
           ) : null
@@ -390,8 +390,8 @@ export default function InventorySessions() {
         open={countOpen}
         onOk={handleRecordCount}
         onCancel={() => { setCountOpen(false); countForm.resetFields(); setCountLineId(null); }}
-        okText={t.common?.save ?? 'Save'}
-        cancelText={t.common?.cancel ?? 'Cancel'}
+        okText={t.common?.save ?? ''}
+        cancelText={t.common?.cancel ?? ''}
         confirmLoading={countSaving}
       >
         <Form form={countForm} layout="vertical" className={s.spaced1}>

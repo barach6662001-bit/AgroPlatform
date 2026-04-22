@@ -65,6 +65,7 @@ import ImportItemsPage from './pages/Warehouses/ImportItemsPage';
 import OnboardingWizard from './pages/Onboarding/OnboardingWizard';
 import LandingPage from './pages/Landing/LandingPage';
 import { useAuthStore } from './stores/authStore';
+import { useSidebarStore } from './stores/sidebarStore';
 import DevBypassBanner from './components/DevBypassBanner';
 import PublicDemoBanner from './components/PublicDemoBanner';
 import { isPublicDemoMode } from './utils/publicDemo';
@@ -87,6 +88,15 @@ export default function App() {
   // prevents ProtectedRoute from redirecting to /login during the half-second
   // it takes the network round-trip to complete.
   const { ready: demoReady } = usePublicDemoAutoLogin();
+
+  // Seed sidebar pinned items from role-based defaults once per browser+user.
+  // One-shot (guarded inside the store) — user can freely repin/unpin after.
+  const authRole = useAuthStore((s) => s.role);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const applyDefaultPinsForRole = useSidebarStore((s) => s.applyDefaultPinsForRole);
+  useEffect(() => {
+    if (isAuthenticated) applyDefaultPinsForRole(authRole);
+  }, [isAuthenticated, authRole, applyDefaultPinsForRole]);
 
   useEffect(() => {
     dayjs.locale(lang === 'uk' ? 'uk' : 'en');

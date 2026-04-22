@@ -157,8 +157,8 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
       </motion.header>
 
       {/* ── Row 1 — At a glance (KPI hero) ── */}
-      <motion.section className={s.row} variants={fadeIn} aria-label={dash.atGlance ?? 'At a glance'}>
-        <h2 className={s.sectionLabel}>{dash.atGlance ?? 'At a glance'}</h2>
+      <motion.section className={s.row} variants={fadeIn} aria-label={dash.atGlance}>
+        <h2 className={s.sectionLabel}>{dash.atGlance}</h2>
         <KpiHeroRow items={kpiItems} />
       </motion.section>
 
@@ -173,13 +173,13 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
 
       {/* ── Row 3 — Financial overview ── */}
       {costTrendData.length > 0 && (
-        <motion.section id="financial" className={s.row} variants={fadeIn} aria-label={dash.financialOverview ?? 'Financial overview'}>
-          <h2 className={s.sectionLabel}>{dash.financialOverview ?? 'Financial overview'}</h2>
+        <motion.section id="financial" className={s.row} variants={fadeIn} aria-label={dash.financialOverview}>
+          <h2 className={s.sectionLabel}>{dash.financialOverview}</h2>
           <RevenueCostChart
             data={costTrendData}
             title={t.dashboard.costTrend}
             costLabel={t.dashboard.costsUAH}
-            revenueLabel={hasRevenueSeries ? (dash.revenueLabel ?? 'Дохід') : undefined}
+            revenueLabel={hasRevenueSeries ? dash.revenueLabel : undefined}
           />
         </motion.section>
       )}
@@ -187,7 +187,7 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
       {/* ── Row 4 — Field status + Recent operations ── */}
       <motion.section className={`${s.row} ${s.twoCol}`} variants={fadeIn}>
         <div>
-          <h2 className={s.sectionLabel}>{dash.fieldStatus ?? t.dashboard.fields}</h2>
+          <h2 className={s.sectionLabel}>{dash.fieldStatus}</h2>
           <FieldStatusCard fields={fields} onAddField={() => { /* preview noop */ }} />
         </div>
         <div>
@@ -201,13 +201,13 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
       {/* ── Row 5 — Warehouse snapshot + Upcoming ── */}
       <motion.section id="bottom" className={`${s.row} ${s.twoCol}`} variants={fadeIn}>
         <div>
-          <h2 className={s.sectionLabel}>{dash.warehouseSnapshot ?? 'Warehouse'}</h2>
+          <h2 className={s.sectionLabel}>{dash.warehouseSnapshot}</h2>
           <div className={s.card}>
             <WarehouseSnapshot items={data.topStockItems} />
           </div>
         </div>
         <div>
-          <h2 className={s.sectionLabel}>{dash.upcoming ?? 'Upcoming'}</h2>
+          <h2 className={s.sectionLabel}>{dash.upcoming}</h2>
           <div className={s.card}>
             <UpcomingPanel operations={operations} weather={weather} />
           </div>
