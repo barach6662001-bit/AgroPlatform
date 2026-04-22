@@ -35,7 +35,7 @@ export default function Dashboard() {
   }, [dashError, t.dashboard.loadError]);
 
   if (role === 'SuperAdmin') {
-    return <Navigate to="/superadmin/companies" replace />;
+    return <Navigate to="/superadmin" replace />;
   }
 
   if (!hasCompletedOnboarding) {

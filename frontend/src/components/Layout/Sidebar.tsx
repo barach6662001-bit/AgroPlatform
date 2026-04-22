@@ -158,7 +158,11 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/settings/audit',            label: t.nav.auditLog },
     { key: '/admin/api-keys',            label: t.nav.apiKeys },
     ...(isSuperAdmin
-      ? [{ key: '/superadmin/companies', label: t.nav.companies }]
+      ? [
+          { key: '/superadmin',              label: t.superAdmin.controlCenterTitle },
+          { key: '/superadmin/companies',    label: t.nav.companies },
+          { key: '/superadmin/integrations', label: t.superAdmin.integrations },
+        ]
       : []),
   ];
 

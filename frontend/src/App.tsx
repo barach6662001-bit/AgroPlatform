@@ -16,6 +16,8 @@ import ChangePassword from './pages/ChangePassword';
 import Dashboard from './pages/Dashboard';
 import CompaniesPage from './pages/SuperAdmin/CompaniesPage';
 import CompanyUsersPage from './pages/SuperAdmin/CompanyUsersPage';
+import ControlCenter from './pages/SuperAdmin/ControlCenter';
+import IntegrationsPage from './pages/SuperAdmin/IntegrationsPage';
 import FieldsList from './pages/Fields/FieldsList';
 import FieldDetail from './pages/Fields/FieldDetail';
 import LeasePage from './pages/Fields/LeasePage';
@@ -108,8 +110,10 @@ export default function App() {
             }
           >
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/superadmin" element={<ControlCenter />} />
             <Route path="/superadmin/companies" element={<CompaniesPage />} />
             <Route path="/superadmin/companies/:id/users" element={<CompanyUsersPage />} />
+            <Route path="/superadmin/integrations" element={<IntegrationsPage />} />
             <Route path="/fields" element={<FieldsList />} />
             <Route path="/fields/leases" element={<Navigate to="/finance/leases" replace />} />
             <Route path="/finance/leases" element={<LeasePage />} />
