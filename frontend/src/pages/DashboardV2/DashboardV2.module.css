@@ -1,0 +1,238 @@
+/* ============================================================
+ * Dashboard v2 — premium redesign (preview only)
+ *
+ * Strict landing-aesthetic constraints:
+ *   • Pure black canvas + single radial green glow top-left
+ *   • Single accent (--acc / #22C55E) — no amber, blue, purple
+ *     decorations except where data semantics require it
+ *   • 1px hairline borders @ rgba(255,255,255,0.06)
+ *   • Flat surfaces (no shadows except hairline top edge)
+ *   • Generous spacing: 32px between rows, 16-20px intra-card
+ *   • Geist Sans for text, Geist Mono for labels and numerals
+ *   • Hero KPI value: 56px, font-weight 600, tabular-nums,
+ *     tight letter-spacing (-0.04em)
+ * ============================================================ */
+
+.page {
+  position: relative;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 40px 56px;
+  isolation: isolate;
+  background: #0B0B0D;
+  min-height: 100vh;
+  color: var(--text-primary);
+}
+
+/* Single radial green glow, top-left, very subtle */
+.page::before {
+  content: '';
+  position: absolute;
+  inset: -80px auto auto -80px;
+  width: 720px;
+  height: 480px;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 60% 60% at 30% 30%,
+    rgba(var(--accRgb), 0.10),
+    transparent 70%
+  );
+  filter: blur(8px);
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.headerLeft { min-width: 0; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fm);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 14px;
+}
+
+.eyebrowDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--acc);
+  box-shadow: 0 0 8px rgba(var(--accRgb), 0.6);
+}
+
+.title {
+  font-family: var(--fs);
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.subtitle {
+  font-family: var(--fs);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+.subtitle .sep { margin: 0 8px; opacity: 0.4; }
+
+/* Period segmented */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+}
+
+.seg {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: var(--fm);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.50);
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.seg:hover { color: rgba(255, 255, 255, 0.80); }
+
+.segActive {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+/* ── Section labels ──────────────────────────────────── */
+.sectionLabel {
+  font-family: var(--fm);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.40);
+  margin: 0 0 14px;
+}
+
+/* ── Row spacing ─────────────────────────────────────── */
+.row {
+  margin-bottom: 32px;
+}
+
+.row:last-child { margin-bottom: 0; }
+
+/* ── Two-column grids ────────────────────────────────── */
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 960px) {
+  .twoCol { grid-template-columns: 1fr; }
+  .page { padding: 24px 20px 40px; }
+  .title { font-size: 32px; }
+  .header { flex-direction: column; }
+}
+
+/* ── Card surface (shared) ───────────────────────────── */
+.card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 20px 22px;
+  overflow: hidden;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.card:hover {
+  background: rgba(255, 255, 255, 0.035);
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+/* Hairline top edge highlight on every card — matches landing */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  pointer-events: none;
+}
+
+/* Card heading row */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.cardLink {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  font-family: var(--fm);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.50);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 150ms ease;
+}
+
+.cardLink:hover { color: var(--text-primary); }
+
+/* ── Preview banner (DEV-only top strip) ─────────────── */
+.previewBanner {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(var(--accRgb), 0.10);
+  border-bottom: 1px solid rgba(var(--accRgb), 0.25);
+  font-family: var(--fm);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--acc);
+}
