@@ -63,6 +63,14 @@ const en: Translations = {
     inventory: 'Inventory',
     superAdmin: 'Administration',
     companies: 'Companies',
+    // ─── IA v3 — sidebar overhaul ───
+    production: 'Production',
+    machineryGroup: 'Machinery',
+    machineryUnits: 'Equipment',
+    pinned: 'Pinned',
+    recent: 'Recent',
+    pinItem: 'Pin',
+    unpinItem: 'Unpin',
   },
   common: {
     cancel: 'Cancel',

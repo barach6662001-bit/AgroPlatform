@@ -128,3 +128,64 @@
   padding: 14px 10px 4px;
   user-select: none;
 }
+
+/* ── Group labels (Pinned / Recent) ── */
+.bg :global(.ant-menu-item-group-title) {
+  font-family: var(--font-mono, ui-monospace, monospace) !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(255, 255, 255, 0.38) !important;
+  padding: 10px 10px 4px !important;
+  height: auto !important;
+  line-height: 1.2 !important;
+}
+
+/* ── Leaf label with pin button on hover ── */
+.leaf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.leafText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pinBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.38);
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms ease, background 120ms ease, color 120ms ease;
+  flex-shrink: 0;
+}
+
+.bg :global(.ant-menu-item):hover .pinBtn,
+.bg :global(.ant-menu-submenu):hover .pinBtn {
+  opacity: 1;
+}
+
+.pinBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--acc);
+}
+
+/* Keep pinned items' pin button visible so users see they're pinned. */
+.bg :global(.ant-menu-item-group) .pinBtn {
+  opacity: 0.7;
+}
+

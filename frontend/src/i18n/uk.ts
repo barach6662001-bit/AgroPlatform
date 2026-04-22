@@ -61,6 +61,14 @@ const uk = {
     import: 'Імпорт',
     superAdmin: 'Адміністрування',
     companies: 'Компанії',
+    // ─── IA v3 — sidebar overhaul ───
+    production: 'Виробництво',
+    machineryGroup: 'Техніка',
+    machineryUnits: 'Одиниці техніки',
+    pinned: 'Закріплені',
+    recent: 'Недавно',
+    pinItem: 'Закріпити',
+    unpinItem: 'Відкріпити',
   },
   common: {
     cancel: 'Скасувати',
