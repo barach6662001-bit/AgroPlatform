@@ -35,16 +35,10 @@ export default function KpiHeroRow({ items }: Props) {
     <div className={s.grid}>
       {items.map((item, i) => {
         const parsed = parseNumeric(item.value);
-        const Wrapper = item.href ? Link : 'div';
-        const wrapperProps = item.href
-          ? { to: item.href, className: `${s.card} ${s.clickable} ${item.hero ? s.hero : ''}` }
-          : { className: `${s.card} ${item.hero ? s.hero : ''}` };
-        return (
-          <Wrapper
-            key={i}
-            {...(wrapperProps as never)}
-            style={{ '--kpi-accent': item.accentColor } as React.CSSProperties}
-          >
+        const className = `${s.card} ${item.href ? s.clickable : ''} ${item.hero ? s.hero : ''}`;
+        const style = { '--kpi-accent': item.accentColor } as React.CSSProperties;
+        const body = (
+          <>
             <div className={s.accentBar} />
             <div className={s.cardTop}>
               {item.icon && (
@@ -75,7 +69,16 @@ export default function KpiHeroRow({ items }: Props) {
                 {item.deltaLabel && <span className={s.deltaLabel}>{item.deltaLabel}</span>}
               </div>
             )}
-          </Wrapper>
+          </>
+        );
+        return item.href ? (
+          <Link key={i} to={item.href} className={className} style={style}>
+            {body}
+          </Link>
+        ) : (
+          <div key={i} className={className} style={style}>
+            {body}
+          </div>
         );
       })}
     </div>
