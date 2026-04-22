@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import CountUp from 'react-countup';
 import s from './KpiHeroRow.module.css';
 
@@ -11,6 +12,8 @@ export interface KpiItem {
   delta?: string;
   deltaLabel?: string;
   hero?: boolean;
+  /** Optional navigation target — when set, the whole card becomes a link. */
+  href?: string;
 }
 
 interface Props {
@@ -32,10 +35,14 @@ export default function KpiHeroRow({ items }: Props) {
     <div className={s.grid}>
       {items.map((item, i) => {
         const parsed = parseNumeric(item.value);
+        const Wrapper = item.href ? Link : 'div';
+        const wrapperProps = item.href
+          ? { to: item.href, className: `${s.card} ${s.clickable} ${item.hero ? s.hero : ''}` }
+          : { className: `${s.card} ${item.hero ? s.hero : ''}` };
         return (
-          <div
+          <Wrapper
             key={i}
-            className={`${s.card} ${item.hero ? s.hero : ''}`}
+            {...(wrapperProps as never)}
             style={{ '--kpi-accent': item.accentColor } as React.CSSProperties}
           >
             <div className={s.accentBar} />
@@ -68,7 +75,7 @@ export default function KpiHeroRow({ items }: Props) {
                 {item.deltaLabel && <span className={s.deltaLabel}>{item.deltaLabel}</span>}
               </div>
             )}
-          </div>
+          </Wrapper>
         );
       })}
     </div>
