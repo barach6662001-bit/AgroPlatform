@@ -36,6 +36,18 @@ export interface GrainBatchDto {
   sourceFieldId?: string;
   sourceFieldName?: string;
   moisturePercent?: number;
+  /** Сміттєва домішка, % (0-100) */
+  impurityPercent?: number;
+  /** Зернова домішка, % (0-100) */
+  grainImpurityPercent?: number;
+  /** Протеїн, % (0-100) */
+  proteinPercent?: number;
+  /** Клейковина, % (0-100) */
+  glutenPercent?: number;
+  /** Натура, g/L (400-900) */
+  naturePerLiter?: number;
+  /** Клас 1..6 (ДСТУ) */
+  qualityClass?: number;
   notes?: string;
   placements: GrainBatchPlacementDto[];
 }
@@ -166,6 +178,12 @@ export interface GrainBatchSummaryDto {
   ownerName?: string;
   receivedDate: string;
   moisturePercent?: number;
+  impurityPercent?: number;
+  grainImpurityPercent?: number;
+  proteinPercent?: number;
+  glutenPercent?: number;
+  naturePerLiter?: number;
+  qualityClass?: number;
   sourceFieldName?: string;
   contractNumber?: string;
 }

@@ -36,6 +36,12 @@ public class CreateGrainBatchHandler : IRequestHandler<CreateGrainBatchCommand, 
             ReceivedDate = request.ReceivedDate,
             SourceFieldId = request.SourceFieldId,
             MoisturePercent = request.MoisturePercent,
+            ImpurityPercent = request.ImpurityPercent,
+            GrainImpurityPercent = request.GrainImpurityPercent,
+            ProteinPercent = request.ProteinPercent,
+            GlutenPercent = request.GlutenPercent,
+            NaturePerLiter = request.NaturePerLiter,
+            QualityClass = request.QualityClass,
             Notes = request.Notes,
         };
 

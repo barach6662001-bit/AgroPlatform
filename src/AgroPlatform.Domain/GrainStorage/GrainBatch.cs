@@ -17,6 +17,21 @@ public class GrainBatch : AuditableEntity
     public DateTime ReceivedDate { get; set; }
     public Guid? SourceFieldId { get; set; }
     public decimal? MoisturePercent { get; set; }
+
+    // ── Quality metrics (elevator acceptance sheet) ──
+    /// <summary>Сміттєва домішка, % (weed/foreign matter, 0–100).</summary>
+    public decimal? ImpurityPercent { get; set; }
+    /// <summary>Зернова домішка, % (damaged/broken grain, 0–100).</summary>
+    public decimal? GrainImpurityPercent { get; set; }
+    /// <summary>Протеїн / білок, % dry matter (0–100).</summary>
+    public decimal? ProteinPercent { get; set; }
+    /// <summary>Клейковина, % (wheat gluten, 0–100).</summary>
+    public decimal? GlutenPercent { get; set; }
+    /// <summary>Натура, g/L (test weight / hectoliter weight, typically 400–900).</summary>
+    public int? NaturePerLiter { get; set; }
+    /// <summary>Клас зерна 1..6 (ДСТУ grade).</summary>
+    public int? QualityClass { get; set; }
+
     public string? Notes { get; set; }
 
     [Timestamp]

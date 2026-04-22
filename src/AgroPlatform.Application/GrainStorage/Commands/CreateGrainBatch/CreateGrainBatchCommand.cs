@@ -14,5 +14,11 @@ public record CreateGrainBatchCommand(
     DateTime ReceivedDate,
     Guid? SourceFieldId,
     decimal? MoisturePercent,
-    string? Notes
+    string? Notes,
+    decimal? ImpurityPercent = null,
+    decimal? GrainImpurityPercent = null,
+    decimal? ProteinPercent = null,
+    decimal? GlutenPercent = null,
+    int? NaturePerLiter = null,
+    int? QualityClass = null
 ) : IRequest<Guid>;
