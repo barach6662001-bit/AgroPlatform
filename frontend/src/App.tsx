@@ -67,7 +67,6 @@ import LandingPage from './pages/Landing/LandingPage';
 import { useAuthStore } from './stores/authStore';
 import { useSidebarStore } from './stores/sidebarStore';
 import DevBypassBanner from './components/DevBypassBanner';
-import PublicDemoBanner from './components/PublicDemoBanner';
 import { isPublicDemoMode } from './utils/publicDemo';
 import { usePublicDemoAutoLogin } from './hooks/usePublicDemoAutoLogin';
 
@@ -114,7 +113,6 @@ export default function App() {
       <ErrorBoundary>
       <BrowserRouter>
         <DevBypassBanner />
-        <PublicDemoBanner />
         {isPublicDemoMode && !demoReady ? (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
