@@ -53,6 +53,10 @@ jobs:
           context: ./frontend
           file: frontend/Dockerfile
           push: true
+          build-args: |
+            VITE_PUBLIC_DEMO_MODE=${{ vars.PUBLIC_DEMO_MODE || 'true' }}
+            VITE_PUBLIC_DEMO_EMAIL=${{ vars.PUBLIC_DEMO_EMAIL || 'demo@agro.local' }}
+            VITE_PUBLIC_DEMO_PASSWORD=${{ secrets.PUBLIC_DEMO_PASSWORD || 'DemoPass1' }}
           tags: |
             ${{ env.FRONTEND_IMAGE }}:latest
             ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
