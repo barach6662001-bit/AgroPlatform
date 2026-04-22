@@ -92,6 +92,7 @@ const uk = {
     activate: 'Активувати',
     deactivate: 'Деактивувати',
     export: 'Експорт',
+    close: 'Закрити',
   },
   auditLog: {
     title: 'Журнал аудиту',

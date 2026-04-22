@@ -92,6 +92,17 @@ public static class DataSeeder
         await SeedItemCategoriesAsync(context, logger);
         await SeedSuperAdminAsync(scope.ServiceProvider, configuration, logger);
         await SeedDemoAsync(scope.ServiceProvider, context, logger);
+
+        // Optionally extend the demo tenant to investor-demo scale (80 fields, 25 machines,
+        // 12 months of costs, 8 months of sales, 4 seasons of harvests). Gated on Demo:Scale.
+        try
+        {
+            await DataSeederInvestor.ExtendAsync(context, configuration, logger);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error applying investor-scale demo seed (non-fatal).");
+        }
     }
 
     private static async Task SeedSuperAdminAsync(IServiceProvider sp, IConfiguration configuration, ILogger logger)

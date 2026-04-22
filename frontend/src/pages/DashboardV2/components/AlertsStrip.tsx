@@ -36,7 +36,7 @@ export default function AlertsStrip({
       icon: <AlertTriangle size={14} strokeWidth={1.8} />,
       iconClass: s.iconAlert,
       count: overdueOperations,
-      label: dash.overdueOps ?? 'overdue operations',
+      label: dash.overdueOps ?? '',
       route: '/operations',
     });
   }
@@ -62,13 +62,13 @@ export default function AlertsStrip({
   if (items.length === 0) {
     return (
       <div className={s.strip}>
-        <span className={s.empty}>— {dash.allClear ?? 'No alerts'}</span>
+        <span className={s.empty}>— {dash.allClear}</span>
       </div>
     );
   }
 
   return (
-    <div className={s.strip} aria-label={dash.needsAttention ?? 'Needs attention'}>
+    <div className={s.strip} aria-label={dash.needsAttention}>
       {items.map((it, i) => (
         <span key={it.key} style={{ display: 'inline-flex', alignItems: 'center' }}>
           {i > 0 && <span className={s.divider} aria-hidden="true" />}
