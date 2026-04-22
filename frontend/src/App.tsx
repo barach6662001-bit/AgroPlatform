@@ -66,15 +66,27 @@ import OnboardingWizard from './pages/Onboarding/OnboardingWizard';
 import LandingPage from './pages/Landing/LandingPage';
 import { useAuthStore } from './stores/authStore';
 import DevBypassBanner from './components/DevBypassBanner';
+import PublicDemoBanner from './components/PublicDemoBanner';
+import { isPublicDemoMode } from './utils/publicDemo';
+import { usePublicDemoAutoLogin } from './hooks/usePublicDemoAutoLogin';
 
 function RootRoute() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  // In public demo mode, send everyone straight to /dashboard — the landing
+  // page is effectively bypassed so the app feels "open".
+  if (isPublicDemoMode) return <Navigate to="/dashboard" replace />;
   return isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />;
 }
 
 export default function App() {
   const { lang } = useTranslation();
   const theme = useThemeStore((s) => s.theme);
+
+  // Auto-login as the demo user when public demo mode is enabled. `ready`
+  // stays false until the token is in place (or the attempt fails), which
+  // prevents ProtectedRoute from redirecting to /login during the half-second
+  // it takes the network round-trip to complete.
+  const { ready: demoReady } = usePublicDemoAutoLogin();
 
   useEffect(() => {
     dayjs.locale(lang === 'uk' ? 'uk' : 'en');
@@ -92,6 +104,15 @@ export default function App() {
       <ErrorBoundary>
       <BrowserRouter>
         <DevBypassBanner />
+        <PublicDemoBanner />
+        {isPublicDemoMode && !demoReady ? (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            height: '100vh', color: 'rgba(255,255,255,0.58)', fontSize: 13,
+          }}>
+            {lang === 'uk' ? 'Завантаження демо…' : 'Loading demo…'}
+          </div>
+        ) : (
         <Routes>
           <Route path="/" element={<RootRoute />} />
           <Route path="/login" element={<Login />} />
@@ -166,6 +187,7 @@ export default function App() {
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
+        )}
       </BrowserRouter>
       </ErrorBoundary>
     </ConfigProvider>

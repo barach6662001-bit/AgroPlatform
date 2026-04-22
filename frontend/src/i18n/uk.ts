@@ -1830,6 +1830,9 @@ const uk = {
   devBypass: {
     banner: 'DEV MOCK MODE — backend не підключено, дані тестові',
   },
+  publicDemo: {
+    banner: 'Демо-режим — вхід тимчасово відкритий, усі дії зберігаються',
+  },
 } as const;
 
 export default uk;

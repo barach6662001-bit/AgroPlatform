@@ -1832,6 +1832,9 @@ const en: Translations = {
   devBypass: {
     banner: 'DEV MOCK MODE — backend not connected, using mock data',
   },
+  publicDemo: {
+    banner: 'Demo mode — login is temporarily disabled, all actions are saved',
+  },
 };
 
 export default en;
