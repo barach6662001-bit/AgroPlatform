@@ -42,12 +42,12 @@ describe('MaterialKpiCards', () => {
 
   it('displays formatted amount values for each card', () => {
     render(<MaterialKpiCards items={ITEMS} />);
-    // formatUA: 80_000 → "80.00 тис.", 230_000 → "230.00 тис."
+    // formatUA: 80_000 → "80.00 тис.", 230_000 (total, using TotalCard) → "230 000 ₴"
     expect(screen.getByText('80.00 тис.')).toBeInTheDocument();
     expect(screen.getByText('50.00 тис.')).toBeInTheDocument();
     expect(screen.getByText('40.00 тис.')).toBeInTheDocument();
     expect(screen.getByText('60.00 тис.')).toBeInTheDocument();
-    expect(screen.getByText('230.00 тис.')).toBeInTheDocument();
+    expect(screen.getByText('230 000 ₴')).toBeInTheDocument(); // TotalCard uses formatUah, not formatUA
   });
 
   it('gives the "Всього" card the "total" variant attribute', () => {
