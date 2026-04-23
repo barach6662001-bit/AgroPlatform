@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { formatUAH, formatNumber } from '../../utils/format';
 import { Card, Col, Row, Select, Statistic, Empty, message, Tag } from 'antd';
 import { DollarOutlined, ShoppingOutlined, UserOutlined, TrophyOutlined } from '@ant-design/icons';
@@ -29,6 +30,7 @@ const PIE_COLORS = chartPalette;
 
 export default function RevenueAnalytics() {
   const { t, lang } = useTranslation();
+  const navigate = useNavigate();
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [data, setData] = useState<SalesAnalyticsDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,8 +60,23 @@ export default function RevenueAnalytics() {
 
   const monthlyChartData = (data?.byMonth ?? []).map((m) => ({
     name: `${monthNames[m.month - 1]} ${m.year}`,
+    year: m.year,
+    month: m.month,
     [t.sales.revenueAmount]: m.totalAmount,
   }));
+
+  /** Drill-down from the monthly revenue chart → /sales pre-filtered to the
+   *  clicked month. Uses the explicit `year`/`month` fields on each data
+   *  point so we don't re-parse the localised label. */
+  const handleMonthlyBarClick = (state: { activePayload?: Array<{ payload?: { year?: number; month?: number } }> } | null) => {
+    const p = state?.activePayload?.[0]?.payload;
+    if (!p?.year || !p?.month) return;
+    const mm = String(p.month).padStart(2, '0');
+    const lastDay = new Date(Date.UTC(p.year, p.month, 0)).getUTCDate();
+    const from = `${p.year}-${mm}-01`;
+    const to = `${p.year}-${mm}-${String(lastDay).padStart(2, '0')}`;
+    navigate(`/sales?from=${from}&to=${to}`);
+  };
 
   const productColumns = [
     {
@@ -267,7 +284,12 @@ export default function RevenueAnalytics() {
           >
             {monthlyChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={monthlyChartData} margin={{ top: 5, right: 20, left: 20, bottom: 40 }}>
+                <BarChart
+                  data={monthlyChartData}
+                  margin={{ top: 5, right: 20, left: 20, bottom: 40 }}
+                  onClick={handleMonthlyBarClick}
+                  style={{ cursor: 'pointer' }}
+                >
                   <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                   <XAxis
                     dataKey="name"
