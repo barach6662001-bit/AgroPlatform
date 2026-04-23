@@ -40,6 +40,12 @@ public class TestDbContext : DbContext, IAppDbContext
             e.HasOne(r => r.From).WithMany(u => u.FromRules).HasForeignKey(r => r.FromUnit);
             e.HasOne(r => r.To).WithMany(u => u.ToRules).HasForeignKey(r => r.ToUnit);
         });
+
+        modelBuilder.Entity<TenantFeatureFlag>(e =>
+        {
+            e.HasKey(x => new { x.TenantId, x.Key });
+            e.Property(x => x.Key).HasMaxLength(128);
+        });
     }
 
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
