@@ -132,14 +132,37 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
                 ? headerTenantId.ToString()
                 : TestTenantId.ToString();
 
-        var claims = new[]
+        var userId = Request.Headers.TryGetValue("X-Test-User-Id", out var testUserId)
+            ? testUserId.ToString()
+            : TestUserId.ToString();
+
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, TestUserId.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, userId),
             new Claim(ClaimTypes.Name, "testuser@example.com"),
             new Claim(ClaimTypes.Email, "testuser@example.com"),
             new Claim(ClaimTypes.Role, role),
             new Claim("TenantId", tenantId),
         };
+
+        // Super-admin / MFA test overrides (for PR #610 super-admin integration tests).
+        if (Request.Headers.TryGetValue("X-Test-IsSuperAdmin", out var isSa)
+            && bool.TryParse(isSa.ToString(), out var saBool) && saBool)
+        {
+            claims.Add(new Claim("is_super_admin", "true"));
+        }
+
+        if (Request.Headers.TryGetValue("X-Test-MfaVerified", out var mfaV)
+            && bool.TryParse(mfaV.ToString(), out var mfaBool))
+        {
+            claims.Add(new Claim("mfa_verified", mfaBool ? "true" : "false"));
+        }
+
+        if (Request.Headers.TryGetValue("X-Test-Scope", out var scope)
+            && !string.IsNullOrWhiteSpace(scope.ToString()))
+        {
+            claims.Add(new Claim("scope", scope.ToString()));
+        }
 
         var identity = new ClaimsIdentity(claims, "Test");
         var principal = new ClaimsPrincipal(identity);
