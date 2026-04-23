@@ -7,12 +7,16 @@ import type { DashboardPeriod } from '../pages/DashboardV2/DashboardV2';
  * - `day`    → today 00:00 UTC → now
  * - `week`   → now − 7 days → now
  * - `month`  → 1st of current calendar month (UTC) → now
- * - `season` → Mar 1 of current year (UTC) → now
- *              (TODO: per-tenant season config)
+ * - `season` → **no range** (undefined) — backend returns all-time totals,
+ *              matching the numbers shown on Finance pages (Sales/Costs).
  *
- * Returns ISO-8601 strings so they can be passed as query params directly.
+ * Returns ISO-8601 strings so they can be passed as query params directly,
+ * or `undefined` to fetch the unfiltered (all-time) dashboard.
  */
-export function periodToRange(period: DashboardPeriod, reference: Date = new Date()): { from: string; to: string } {
+export function periodToRange(
+  period: DashboardPeriod,
+  reference: Date = new Date(),
+): { from: string; to: string } | undefined {
   const now = new Date(reference.getTime());
   const toIso = now.toISOString();
 
@@ -31,14 +35,9 @@ export function periodToRange(period: DashboardPeriod, reference: Date = new Dat
       break;
     }
     case 'season':
-    default: {
-      from = new Date(Date.UTC(now.getUTCFullYear(), 2 /* March */, 1, 0, 0, 0, 0));
-      // If "now" is before March 1, use previous year's season start.
-      if (from.getTime() > now.getTime()) {
-        from = new Date(Date.UTC(now.getUTCFullYear() - 1, 2, 1, 0, 0, 0, 0));
-      }
-      break;
-    }
+    default:
+      // "Season" = all-time (honest totals that match the Finance pages).
+      return undefined;
   }
   return { from: from.toISOString(), to: toIso };
 }
