@@ -245,3 +245,89 @@
   text-transform: uppercase;
   color: var(--acc);
 }
+
+/* ═══════════════════════════════════════
+   DASHBOARD REDESIGN PHASE 2
+   ═══════════════════════════════════════ */
+
+/* Refined page layout */
+.page {
+  max-width: 1400px;
+  padding: 28px 36px 56px;
+  background: var(--bg-page);
+}
+
+/* Better title */
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+/* Better eyebrow */
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  color: rgba(255,255,255,0.30);
+  margin-bottom: 10px;
+}
+
+/* Better subtitle */
+.subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.40);
+  letter-spacing: -0.01em;
+}
+
+/* Better section labels */
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  color: rgba(255,255,255,0.25);
+  margin: 0 0 12px;
+}
+
+/* Better cards */
+.card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+
+.card:hover {
+  background: rgba(255,255,255,0.030);
+  border-color: rgba(255,255,255,0.11);
+}
+
+/* Better row spacing */
+.row { margin-bottom: 28px; }
+
+/* Better two-col gap */
+.twoCol { gap: 20px; }
+
+/* Better segmented period selector */
+.segmented {
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.seg {
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.40);
+}
+
+.seg:hover { color: rgba(255,255,255,0.70); }
+
+.segActive {
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.90);
+}

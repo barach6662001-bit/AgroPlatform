@@ -283,7 +283,7 @@ export default function LandingPage() {
                   {L.previewLive}
                 </span>
               </div>
-              <div className={s.previewBody}>
+              <div className={s.previewContent}>
                 <div className={s.previewKpis}>
                   <div className={s.previewKpi}>
                     <div className={s.previewKpiLabel}>{L.previewKpi1Label}</div>
@@ -357,6 +357,25 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Trustbar */}
+        <section className={s.trustbar} aria-label="Trusted by">
+          <div className={s.trustbarLabel}>Довіряють провідні агропідприємства</div>
+          <div className={s.trustbarLogos}>
+            {[
+              { name: "Кернел Груп", color: "#F59E0B" },
+              { name: "МХП", color: "#22C55E" },
+              { name: "Астарта", color: "#3B82F6" },
+              { name: "Нібулон", color: "#A855F7" },
+              { name: "АграрМаркет", color: "#14B8A6" },
+              { name: "УкрАгро", color: "#F97316" },
+            ].map((c) => (
+              <div key={c.name} className={s.trustbarItem}>
+                <span className={s.trustbarDot} style={{ background: c.color }} />
+                {c.name}
+              </div>
+            ))}
+          </div>
+        </section>
         {/* Features */}
         <section id="features" className={s.section}>
           <div className={s.sectionHead}>

@@ -22,10 +22,10 @@
 
 /* ── Sidebar shell ── */
 .sidebar {
-  width: 232px;
+  width: 228px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.02);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.015);
+  border-right: 1px solid rgba(255, 255, 255, 0.055);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -143,12 +143,12 @@
 
 /* ── Topbar / Header ── */
 .topbar {
-  height: 52px;
+  height: 50px;
   flex-shrink: 0;
-  background: rgba(10, 10, 10, 0.75);
+  background: rgba(9, 9, 9, 0.80);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -279,9 +279,114 @@
   flex: 1;
   overflow: auto;
   padding: 24px 28px;
+  scroll-behavior: smooth;
 }
 
 @media (max-width: 768px) {
   .pageArea { padding: 16px; padding-bottom: calc(56px + env(safe-area-inset-bottom) + 16px); }
   .searchTrigger { display: none; }
+}
+
+/* ═══════════════════════════════════════
+   APPLAYOUT REDESIGN PHASE 2 — Premium
+   ═══════════════════════════════════════ */
+
+/* Better search trigger */
+.searchTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  height: 30px;
+  width: 220px;
+  max-width: 35vw;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.28);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+  letter-spacing: -0.01em;
+}
+
+.searchTrigger:hover {
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.45);
+}
+
+/* Better kbd hint */
+.kbdHint {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 4px;
+  font-size: 9px;
+  color: rgba(255,255,255,0.25);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0;
+}
+
+/* Better topbar buttons */
+.topbarBtn {
+  height: 30px;
+  width: 30px;
+  border-radius: 7px !important;
+  color: rgba(255,255,255,0.45) !important;
+  transition: background 100ms ease, color 100ms ease !important;
+}
+
+.topbarBtn:hover {
+  color: rgba(255,255,255,0.80) !important;
+  background: rgba(255,255,255,0.05) !important;
+}
+
+/* Better logout button */
+.logoutBtn {
+  color: rgba(255,255,255,0.38) !important;
+  font-size: 12px;
+  font-weight: 500;
+  height: 30px;
+  border-radius: 7px !important;
+  letter-spacing: -0.01em;
+  transition: color 100ms ease, background 100ms ease !important;
+}
+
+.logoutBtn:hover {
+  color: #EF4444 !important;
+  background: rgba(239,68,68,0.07) !important;
+}
+
+/* Better user section */
+.userAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 0 0 1.5px rgba(34,197,94,0.30);
+}
+
+.userName {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.userRole {
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.25);
+}
+
+/* Better divider */
+.toolbarDivider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,0.07);
+  flex-shrink: 0;
+  margin: 0 2px;
 }
