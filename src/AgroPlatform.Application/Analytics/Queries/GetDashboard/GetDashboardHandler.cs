@@ -3,19 +3,16 @@ using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace AgroPlatform.Application.Analytics.Queries.GetDashboard;
 
 public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardDto>
 {
     private readonly IAppDbContext _context;
-    private readonly IConfiguration? _configuration;
 
-    public GetDashboardHandler(IAppDbContext context, IConfiguration? configuration = null)
+    public GetDashboardHandler(IAppDbContext context)
     {
         _context = context;
-        _configuration = configuration;
     }
 
     public async Task<DashboardDto> Handle(GetDashboardQuery request, CancellationToken cancellationToken)
@@ -142,26 +139,6 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, DashboardD
             .OrderBy(t => t.Year)
             .ThenBy(t => t.Month)
             .ToListAsync(cancellationToken);
-
-        // ── Demo mode: ensure positive margin ─────────────────────────────
-        // When `Demo:EnsurePositiveMargin=true` (set only on public-demo deployments),
-        // scale up revenue figures so the UI shows a positive profit. This is a
-        // display-layer adjustment that never touches the database, never runs in
-        // prod, and preserves the shape of the data (expenses stay truthful).
-        var ensurePositive = string.Equals(_configuration?["Demo:EnsurePositiveMargin"], "true", StringComparison.OrdinalIgnoreCase);
-        if (ensurePositive)
-        {
-            const decimal targetMargin = 1.15m; // 15% profit over expenses
-            if (dto.MonthlyExpenses > 0 && dto.MonthlyRevenue < dto.MonthlyExpenses * targetMargin)
-            {
-                dto.MonthlyRevenue = dto.MonthlyExpenses * targetMargin;
-                dto.MonthlyProfit = dto.MonthlyRevenue - dto.MonthlyExpenses;
-            }
-            if (dto.TotalCosts > 0 && dto.TotalRevenue < dto.TotalCosts * targetMargin)
-            {
-                dto.TotalRevenue = dto.TotalCosts * targetMargin;
-            }
-        }
 
         return dto;
     }
