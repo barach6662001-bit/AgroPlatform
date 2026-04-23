@@ -2,8 +2,13 @@ import apiClient from './axios';
 import type { DashboardDto, ResourceConsumptionDto, FieldEfficiencyDto, SalaryFuelAnalyticsDto } from '../types/analytics';
 import type { MarginalitySummaryDto } from '../types/economics';
 
-export const getDashboard = (signal?: AbortSignal) =>
-  apiClient.get<DashboardDto>('/api/analytics/dashboard', { signal }).then((r) => r.data);
+export const getDashboard = (
+  params?: { from?: string; to?: string },
+  signal?: AbortSignal,
+) =>
+  apiClient
+    .get<DashboardDto>('/api/analytics/dashboard', { params, signal })
+    .then((r) => r.data);
 
 export const getResourceConsumption = (params?: { from?: string; to?: string }) =>
   apiClient.get<ResourceConsumptionDto[]>('/api/analytics/resource-consumption', { params }).then((r) => r.data);

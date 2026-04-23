@@ -5,18 +5,20 @@ import { getFields } from '../api/fields';
 import { getOperations } from '../api/operations';
 import { useAuthStore } from '../stores/authStore';
 
-export const DASHBOARD_QUERY_KEY = (tenantId?: string | null) =>
-  ['dashboard', tenantId] as const;
+export const DASHBOARD_QUERY_KEY = (
+  tenantId?: string | null,
+  range?: { from?: string; to?: string },
+) => ['dashboard', tenantId, range?.from ?? null, range?.to ?? null] as const;
 export const DASHBOARD_NOTIFICATIONS_QUERY_KEY = (tenantId?: string | null) =>
   ['dashboard', tenantId, 'notifications'] as const;
 export const DASHBOARD_FIELDS_QUERY_KEY = (tenantId?: string | null) =>
   ['dashboard', tenantId, 'fields'] as const;
 
-export function useDashboardQuery() {
+export function useDashboardQuery(range?: { from?: string; to?: string }) {
   const { tenantId } = useAuthStore();
   return useQuery({
-    queryKey: DASHBOARD_QUERY_KEY(tenantId),
-    queryFn: ({ signal }) => getDashboard(signal),
+    queryKey: DASHBOARD_QUERY_KEY(tenantId, range),
+    queryFn: ({ signal }) => getDashboard(range, signal),
     staleTime: 60_000,
   });
 }

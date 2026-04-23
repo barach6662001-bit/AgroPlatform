@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { message } from 'antd';
 import type { FieldDto } from '../types/field';
@@ -11,7 +11,8 @@ import {
   useDashboardOperationsQuery,
 } from '../hooks/useDashboardQuery';
 import { KpiSkeleton, ChartSkeleton, TableSkeleton as TableSkeletonNew } from '../components/Skeletons';
-import DashboardV2 from './DashboardV2/DashboardV2';
+import DashboardV2, { type DashboardPeriod } from './DashboardV2/DashboardV2';
+import { periodToRange } from '../utils/periodToRange';
 
 /**
  * Real /dashboard route — thin container around the pure presentational
@@ -24,7 +25,10 @@ export default function Dashboard() {
   const role = useAuthStore((s) => s.role);
   const hasCompletedOnboarding = useAuthStore((s) => s.hasCompletedOnboarding);
 
-  const { data, isLoading: dashLoading, isError: dashError } = useDashboardQuery();
+  const [period, setPeriod] = useState<DashboardPeriod>('season');
+  const range = useMemo(() => periodToRange(period), [period]);
+
+  const { data, isLoading: dashLoading, isError: dashError } = useDashboardQuery(range);
   const { data: fieldsData, isLoading: fieldsLoading } = useDashboardFieldsQuery();
   const { data: operationsData, isLoading: opsLoading } = useDashboardOperationsQuery();
 
@@ -57,5 +61,13 @@ export default function Dashboard() {
   const fields: FieldDto[] = fieldsData?.items ?? [];
   const operations: AgroOperationDto[] = operationsData?.items ?? [];
 
-  return <DashboardV2 data={data} fields={fields} operations={operations} />;
+  return (
+    <DashboardV2
+      data={data}
+      fields={fields}
+      operations={operations}
+      period={period}
+      onPeriodChange={setPeriod}
+    />
+  );
 }
