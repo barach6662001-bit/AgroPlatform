@@ -1,5 +1,5 @@
 import { Button, Dropdown } from 'antd';
-import { Menu as MenuIcon, PanelLeftClose, PanelLeftOpen, Sun, Moon, Search, LogOut } from 'lucide-react';
+import { Menu as MenuIcon, PanelLeftClose, PanelLeftOpen, Search, LogOut } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,7 +15,6 @@ import CommandPalette from '../CommandPalette';
 import { PageTransition } from '../PageTransition';
 import { useAuthStore } from '../../stores/authStore';
 import { revokeRefreshToken } from '../../api/auth';
-import { useThemeStore } from '../../stores/themeStore';
 import { useTranslation, languages } from '../../i18n';
 import s from './AppLayout.module.css';
 
@@ -28,7 +27,6 @@ export default function AppLayout() {
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_BREAKPOINT);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth < TABLET_BREAKPOINT);
   const { email, role, logout, tenantId, refreshToken } = useAuthStore();
-  const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const { t, lang, setLang } = useTranslation();
   const queryClient = useQueryClient();
@@ -186,12 +184,6 @@ export default function AppLayout() {
                 </span>
               </Button>
             </Dropdown>
-            <Button
-              type="text"
-              icon={theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-              onClick={toggleTheme}
-              className={s.topbarAction}
-            />
             <NotificationBell />
             <div className={s.toolbarDivider} />
             <Button
