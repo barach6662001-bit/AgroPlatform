@@ -17,6 +17,8 @@ interface Props {
   title: string;
   costLabel: string;
   revenueLabel?: string;
+  /** Fires with the clicked point's `name` ("YYYY-MM"). Used for drill-down. */
+  onPointClick?: (name: string) => void;
 }
 
 interface TooltipEntry {
@@ -74,16 +76,26 @@ const CustomTooltip = ({ active, payload, label, profitLabel }: {
   );
 };
 
-export default function RevenueCostChart({ data, title, costLabel, revenueLabel }: Props) {
+export default function RevenueCostChart({ data, title, costLabel, revenueLabel, onPointClick }: Props) {
   const { t } = useTranslation();
   const profitLabel = (t.dashboard as Record<string, string | undefined>).profitDelta ?? 'Profit';
+  const handleClick = onPointClick
+    ? (state: { activeLabel?: string } | null) => {
+        if (state?.activeLabel) onPointClick(state.activeLabel);
+      }
+    : undefined;
   return (
     <div className={s.card}>
       <div className={s.header}>
         <span className={s.title}>{title}</span>
       </div>
       <ResponsiveContainer width="100%" height={280}>
-        <AreaChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
+        <AreaChart
+          data={data}
+          margin={{ top: 8, right: 12, left: 0, bottom: 4 }}
+          onClick={handleClick}
+          style={onPointClick ? { cursor: 'pointer' } : undefined}
+        >
           <defs>
             <linearGradient id="gradCost" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%"  stopColor="#F59E0B" stopOpacity={0.28} />

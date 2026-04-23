@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Map, Banknote, Activity, TrendingUp } from 'lucide-react';
 import type { DashboardDto } from '../../types/analytics';
@@ -7,6 +8,7 @@ import type { AgroOperationDto } from '../../types/operation';
 import { useTranslation } from '../../i18n';
 import { formatUA } from '../../utils/numberFormat';
 import { computeTrend } from '../../utils/computeTrend';
+import { formatPeriodRange } from '../../utils/formatPeriodRange';
 import KpiHeroRow from '../Dashboard/components/KpiHeroRow';
 import RevenueCostChart from '../Dashboard/components/RevenueCostChart';
 import FieldStatusCard from '../Dashboard/components/FieldStatusCard';
@@ -48,14 +50,30 @@ const fadeIn = {
  * the real /dashboard route by wrapping it in a hook-driven container.
  */
 export default function DashboardV2({ data, fields, operations, weather, period: periodProp, onPeriodChange }: DashboardV2Props) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const dash = t.dashboard as Record<string, string | undefined>;
+  const navigate = useNavigate();
   const [periodLocal, setPeriodLocal] = useState<Period>('season');
   const period = periodProp ?? periodLocal;
   const handlePeriodChange = useCallback((p: Period) => {
     if (onPeriodChange) onPeriodChange(p);
     else setPeriodLocal(p);
   }, [onPeriodChange]);
+
+  /* Drill-down from the revenue/cost chart: each point's `name` is
+     "YYYY-MM" (see costTrendData below). Clicking a point jumps to the
+     Costs page pre-filtered to that month. */
+  const handleChartPointClick = useCallback((name: string) => {
+    const m = /^(\d{4})-(\d{2})$/.exec(name);
+    if (!m) return;
+    const year = Number(m[1]);
+    const month = Number(m[2]); // 1-12
+    const from = `${m[1]}-${m[2]}-01`;
+    // last day of the month in UTC
+    const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    const to = `${m[1]}-${m[2]}-${String(lastDay).padStart(2, '0')}`;
+    navigate(`/economics/costs?from=${from}&to=${to}`);
+  }, [navigate]);
 
   /* KPI label resolver — uses dedicated i18n key per period so the card title
      reflects the selected range (day / week / month / season). */
@@ -180,6 +198,9 @@ export default function DashboardV2({ data, fields, operations, weather, period:
               </button>
             ))}
           </div>
+          <div className={s.rangeLabel} aria-live="polite">
+            {formatPeriodRange(period, dash.allTime ?? 'Весь час', lang as 'uk' | 'en')}
+          </div>
         </div>
       </motion.header>
 
@@ -207,6 +228,7 @@ export default function DashboardV2({ data, fields, operations, weather, period:
             title={t.dashboard.costTrend}
             costLabel={t.dashboard.costsUAH}
             revenueLabel={hasRevenueSeries ? dash.revenueLabel : undefined}
+            onPointClick={handleChartPointClick}
           />
         </motion.section>
       )}

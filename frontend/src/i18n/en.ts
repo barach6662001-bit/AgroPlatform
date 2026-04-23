@@ -352,6 +352,7 @@ const en: Translations = {
     week: 'Week',
     month: 'Month',
     season: 'Season',
+    allTime: 'All time',
     commandCenter: 'Command Center',
     atGlance: 'At a glance',
     financialOverview: 'Financial overview',

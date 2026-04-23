@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo } from 'react';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { message } from 'antd';
 import type { FieldDto } from '../types/field';
 import type { AgroOperationDto } from '../types/operation';
@@ -14,6 +14,8 @@ import { KpiSkeleton, ChartSkeleton, TableSkeleton as TableSkeletonNew } from '.
 import DashboardV2, { type DashboardPeriod } from './DashboardV2/DashboardV2';
 import { periodToRange } from '../utils/periodToRange';
 
+const VALID_PERIODS: DashboardPeriod[] = ['day', 'week', 'month', 'season'];
+
 /**
  * Real /dashboard route — thin container around the pure presentational
  * {@link DashboardV2}.  Handles role-based redirects, onboarding guard,
@@ -25,7 +27,22 @@ export default function Dashboard() {
   const role = useAuthStore((s) => s.role);
   const hasCompletedOnboarding = useAuthStore((s) => s.hasCompletedOnboarding);
 
-  const [period, setPeriod] = useState<DashboardPeriod>('season');
+  // Period is persisted in the URL so refresh/share/back-button all work.
+  // Invalid / missing values fall back to "season" (all-time).
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rawPeriod = searchParams.get('period');
+  const period: DashboardPeriod = (VALID_PERIODS as string[]).includes(rawPeriod ?? '')
+    ? (rawPeriod as DashboardPeriod)
+    : 'season';
+  const setPeriod = useCallback((p: DashboardPeriod) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (p === 'season') next.delete('period');
+      else next.set('period', p);
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+
   const range = useMemo(() => periodToRange(period), [period]);
 
   const { data, isLoading: dashLoading, isError: dashError } = useDashboardQuery(range);
