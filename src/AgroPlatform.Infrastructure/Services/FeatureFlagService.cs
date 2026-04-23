@@ -52,13 +52,18 @@ public sealed class FeatureFlagService : IFeatureFlagService
     {
         // SuperAdmin requests without a concrete tenant context get all optional flags as disabled.
         if (tenantId == Guid.Empty)
-            return BuildDefaultMap();
+            return BuildDisabledMap();
 
-        var defaults = BuildDefaultMap();
         var rows = await _db.TenantFeatureFlags
             .AsNoTracking()
             .Where(x => x.TenantId == tenantId)
             .ToListAsync(cancellationToken);
+
+        // Backward compatibility: existing tenants without explicit rows keep optional features enabled.
+        if (rows.Count == 0)
+            return BuildEnabledMap();
+
+        var defaults = BuildDisabledMap();
 
         foreach (var row in rows)
         {
@@ -68,9 +73,14 @@ public sealed class FeatureFlagService : IFeatureFlagService
         return defaults;
     }
 
-    private static Dictionary<string, bool> BuildDefaultMap()
+    private static Dictionary<string, bool> BuildDisabledMap()
     {
         return OptionalFeatureFlagKeys.All.ToDictionary(k => k, _ => false, StringComparer.Ordinal);
+    }
+
+    private static Dictionary<string, bool> BuildEnabledMap()
+    {
+        return OptionalFeatureFlagKeys.All.ToDictionary(k => k, _ => true, StringComparer.Ordinal);
     }
 
     private static string GetCacheKey(Guid tenantId) => $"feature-flags:{tenantId:D}";
