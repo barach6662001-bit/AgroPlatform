@@ -143,6 +143,13 @@ public static class DataSeeder
                     logger.LogInformation("SuperAdmin re-activated.");
                 }
 
+                // Ensure the new IsSuperAdmin platform flag is set on legacy seed accounts.
+                if (!existing.IsSuperAdmin)
+                {
+                    existing.IsSuperAdmin = true;
+                    await userManager.UpdateAsync(existing);
+                }
+
                 return;
             }
 
@@ -158,6 +165,7 @@ public static class DataSeeder
                 TenantId              = Guid.Empty,
                 IsActive              = true,
                 RequirePasswordChange = false,
+                IsSuperAdmin          = true,
             };
 
             var result = await userManager.CreateAsync(superAdmin, password);

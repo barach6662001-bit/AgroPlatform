@@ -1,7 +1,10 @@
 using System.Security.Claims;
 using AgroPlatform.Application.Common.Interfaces;
+using AgroPlatform.Domain.Users;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Api.Controllers;
 
@@ -12,10 +15,20 @@ namespace AgroPlatform.Api.Controllers;
 public sealed class MeController : ControllerBase
 {
     private readonly IFeatureFlagService _featureFlags;
+    private readonly IAppDbContext _db;
+    private readonly UserManager<AppUser> _userManager;
+    private readonly ICurrentUserService _currentUser;
 
-    public MeController(IFeatureFlagService featureFlags)
+    public MeController(
+        IFeatureFlagService featureFlags,
+        IAppDbContext db,
+        UserManager<AppUser> userManager,
+        ICurrentUserService currentUser)
     {
         _featureFlags = featureFlags;
+        _db = db;
+        _userManager = userManager;
+        _currentUser = currentUser;
     }
 
     [HttpGet]
@@ -27,6 +40,20 @@ public sealed class MeController : ControllerBase
         var tenantIdClaim = User.FindFirstValue("TenantId");
         Guid.TryParse(tenantIdClaim, out var tenantId);
 
+        var userId = _currentUser.UserId;
+        bool isSuperAdmin = _currentUser.IsSuperAdmin;
+        bool mfaEnabled = false;
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var mfa = await _db.UserMfaSettings.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            mfaEnabled = mfa?.IsEnabled == true;
+
+            // Prefer the DB flag over the JWT claim (claim may be stale across logins).
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is not null) isSuperAdmin = user.IsSuperAdmin || _currentUser.IsSuperAdmin;
+        }
+
         return Ok(new
         {
             email = User.FindFirstValue(ClaimTypes.Email) ?? string.Empty,
@@ -35,6 +62,10 @@ public sealed class MeController : ControllerBase
             firstName = User.FindFirstValue("first_name") ?? string.Empty,
             lastName = User.FindFirstValue("last_name") ?? string.Empty,
             features,
+            isSuperAdmin,
+            mfaEnabled,
+            // Super-admin without MFA enrolled → SPA redirects to /setup-mfa.
+            mfaRequired = isSuperAdmin && !mfaEnabled,
         });
     }
 }

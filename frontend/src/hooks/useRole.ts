@@ -12,6 +12,7 @@ export type AppRole =
 
 export const useRole = () => {
   const role = useAuthStore((s) => s.role) as AppRole | null;
+  const isSuperAdminFlag = useAuthStore((s) => s.isSuperAdmin);
 
   const hasRole = (allowedRoles: AppRole[]) => {
     if (!role) return false;
@@ -21,7 +22,9 @@ export const useRole = () => {
   const hasPermission = (module: AppModule, action: AppAction) =>
     checkPermission(role, module, action);
 
-  const isSuperAdmin = role === 'SuperAdmin';
+  // `isSuperAdmin` is true when *either* the legacy role is SuperAdmin *or* the
+  // new platform-level AppUser.IsSuperAdmin flag (exposed via /api/me) is set.
+  const isSuperAdmin = role === 'SuperAdmin' || isSuperAdminFlag;
   const isAdmin = role === 'CompanyAdmin';
   const isManager = role === 'Manager';
   const isWarehouseOperator = role === 'WarehouseOperator';

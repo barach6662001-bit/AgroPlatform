@@ -10,4 +10,5 @@ public interface ICurrentUserService
     UserRole? Role { get; }
     bool IsInRole(UserRole role);
     bool IsSuperAdmin { get; }
+    bool MfaVerified { get; }
 }

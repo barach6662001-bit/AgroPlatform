@@ -8,6 +8,9 @@ export interface MeResponse {
   firstName?: string;
   lastName?: string;
   features: Record<OptionalFeatureFlagKey, boolean>;
+  isSuperAdmin: boolean;
+  mfaEnabled: boolean;
+  mfaRequired: boolean;
 }
 
 export const getMe = () =>

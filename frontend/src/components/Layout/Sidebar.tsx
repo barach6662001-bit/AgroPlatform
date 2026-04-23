@@ -170,6 +170,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
     { key: '/admin/api-keys',            label: t.nav.apiKeys },
     ...(isSuperAdmin
       ? [
+          { key: '/admin/tenants',           label: t.admin.tenantsTitle },
           { key: '/superadmin',              label: t.superAdmin.controlCenterTitle },
           { key: '/superadmin/companies',    label: t.nav.companies },
           { key: '/superadmin/integrations', label: t.superAdmin.integrations },

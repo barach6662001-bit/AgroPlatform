@@ -15,6 +15,11 @@ interface AuthState {
   firstName: string | null;
   lastName: string | null;
   isAuthenticated: boolean;
+  // Super-admin platform flag (PR #610). Independent of `role`; mirrors the server-side AppUser.IsSuperAdmin.
+  isSuperAdmin: boolean;
+  // Short-lived token issued when login detects a super-admin with MFA enabled.
+  // While this is set (and `isAuthenticated` is still false), the SPA routes to /mfa-verify.
+  mfaPendingToken: string | null;
   setAuth: (
     token: string,
     email: string,
@@ -24,11 +29,14 @@ interface AuthState {
     hasCompletedOnboarding?: boolean,
     firstName?: string,
     lastName?: string,
-    refreshToken?: string
+    refreshToken?: string,
+    isSuperAdmin?: boolean
   ) => void;
   setTokens: (token: string, refreshToken: string) => void;
   setTenantId: (tenantId: string) => void;
   setHasCompletedOnboarding: (value: boolean) => void;
+  setIsSuperAdmin: (value: boolean) => void;
+  setMfaPendingToken: (token: string | null) => void;
   logout: () => void;
 }
 
@@ -45,7 +53,9 @@ export const useAuthStore = create<AuthState>()(
       firstName: null,
       lastName: null,
       isAuthenticated: false,
-      setAuth: (token, email, role, tenantId, requirePasswordChange, hasCompletedOnboarding, firstName, lastName, refreshToken) =>
+      isSuperAdmin: false,
+      mfaPendingToken: null,
+      setAuth: (token, email, role, tenantId, requirePasswordChange, hasCompletedOnboarding, firstName, lastName, refreshToken, isSuperAdmin) =>
         set({
           token,
           refreshToken: refreshToken ?? null,
@@ -57,6 +67,8 @@ export const useAuthStore = create<AuthState>()(
           firstName: firstName ?? null,
           lastName: lastName ?? null,
           isAuthenticated: true,
+          isSuperAdmin: isSuperAdmin ?? false,
+          mfaPendingToken: null,
         }),
       setTokens: (token, refreshToken) =>
         set({ token, refreshToken }),
@@ -65,6 +77,8 @@ export const useAuthStore = create<AuthState>()(
         set({ tenantId });
       },
       setHasCompletedOnboarding: (value) => set({ hasCompletedOnboarding: value }),
+      setIsSuperAdmin: (value) => set({ isSuperAdmin: value }),
+      setMfaPendingToken: (token) => set({ mfaPendingToken: token }),
       logout: () => {
         usePermissionsStore.getState().reset();
         localStorage.removeItem('auth-storage');
@@ -79,6 +93,8 @@ export const useAuthStore = create<AuthState>()(
           firstName: null,
           lastName: null,
           isAuthenticated: false,
+          isSuperAdmin: false,
+          mfaPendingToken: null,
         });
       },
     }),

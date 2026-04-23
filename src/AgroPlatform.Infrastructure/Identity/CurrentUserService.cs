@@ -51,5 +51,39 @@ public class CurrentUserService : ICurrentUserService
 
     public bool IsInRole(UserRole role) => Role == role;
 
-    public bool IsSuperAdmin => Role == UserRole.SuperAdmin;
+    /// <summary>
+    /// Platform-level super-admin. Either <see cref="UserRole.SuperAdmin"/> (legacy)
+    /// or the new <c>is_super_admin</c> JWT claim (additive flag on <c>AppUser</c>).
+    /// </summary>
+    public bool IsSuperAdmin
+    {
+        get
+        {
+            if (Role == UserRole.SuperAdmin) return true;
+            var claim = _httpContextAccessor.HttpContext?.User?.FindFirstValue("is_super_admin");
+            return string.Equals(claim, "true", StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    /// <summary>
+    /// True when the current token represents a fully MFA-verified session. Tokens
+    /// issued with <c>scope=mfa_pending</c> set this to false; everything else is treated as verified
+    /// (legacy tokens without the claim predate MFA and default to true for backwards compatibility).
+    /// </summary>
+    public bool MfaVerified
+    {
+        get
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user is null || !(user.Identity?.IsAuthenticated ?? false)) return false;
+
+            var scope = user.FindFirstValue("scope");
+            if (string.Equals(scope, "mfa_pending", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            var verified = user.FindFirstValue("mfa_verified");
+            if (verified is null) return true;
+            return string.Equals(verified, "true", StringComparison.OrdinalIgnoreCase);
+        }
+    }
 }

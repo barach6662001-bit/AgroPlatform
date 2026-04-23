@@ -12,6 +12,7 @@ using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Sales;
+using AgroPlatform.Domain.SuperAdmin;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.EntityFrameworkCore;
@@ -73,6 +74,8 @@ public interface IAppDbContext
     DbSet<TenantFeatureFlag> TenantFeatureFlags { get; }
     DbSet<ApiKey> ApiKeys { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
+    DbSet<UserMfaSettings> UserMfaSettings { get; }
+    DbSet<SuperAdminAuditLog> SuperAdminAuditLogs { get; }
 
     // Approval workflow
     DbSet<ApprovalRule> ApprovalRules { get; }
