@@ -1,19 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber, Card, Divider, Empty } from 'antd';
+import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber } from 'antd';
 import { PlusOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined, HomeOutlined, PrinterOutlined } from '@ant-design/icons';
 import { printReport } from '../../utils/printReport';
 import { getCostRecords, getCostSummary, createCostRecord, deleteCostRecord } from '../../api/economics';
-import { getBudgets } from '../../api/budgets';
-import type { BudgetDto } from '../../api/budgets';
 import type { CostRecordDto, CostSummaryDto, MaterialKpiItem, CostCategory } from '../../types/economics';
 import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
-import PLTable from '../../components/PLTable';
 import MaterialKpiCards from '../../components/MaterialKpiCards';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
-import type { PLTableRow } from '../../components/PLTable';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
@@ -31,12 +27,9 @@ const categoryColors: Record<string, string> = {
   Lease: 'gold', Other: 'default',
 };
 
-const CATEGORIES = ['Fuel', 'Seeds', 'Fertilizer', 'Pesticide', 'Machinery', 'Labor', 'Lease', 'Other'];
-
 export default function CostRecords() {
   const [result, setResult] = useState<PaginatedResult<CostRecordDto> | null>(null);
   const [summary, setSummary] = useState<CostSummaryDto | null>(null);
-  const [budgets, setBudgets] = useState<BudgetDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState<CostCategory | undefined>();
   const [dateRange, setDateRange] = useState<[string, string] | null>(null);
@@ -52,8 +45,6 @@ export default function CostRecords() {
 
   const canCreate = hasRole(['CompanyAdmin', 'Manager', 'Accountant']);
   const canDelete = hasRole(['CompanyAdmin', 'Manager', 'Accountant']);
-
-  const currentYear = new Date().getFullYear();
 
   const load = (p = page, ps = pageSize) => {
     setLoading(true);
@@ -71,9 +62,7 @@ export default function CostRecords() {
       dateTo: dateRange?.[1],
     }).then(setSummary);
 
-    const budgetFetch = getBudgets(currentYear).then(setBudgets);
-
-    Promise.all([paginated, summaryFetch, budgetFetch])
+    Promise.all([paginated, summaryFetch])
       .catch(() => message.error(t.economics.loadError))
       .finally(() => setLoading(false));
   };
@@ -142,20 +131,6 @@ export default function CostRecords() {
   const sumByCategory = (cat: string) =>
     summary?.byCategory.find((c) => c.category === cat)?.amount ?? 0;
 
-  const planByCategory = (cat: string) =>
-    budgets.find((b) => b.category === cat)?.plannedAmount ?? 0;
-
-  const plRows: PLTableRow[] = CATEGORIES.map((cat) => ({
-    key: cat,
-    label: t.costCategories[cat as keyof typeof t.costCategories] ?? cat,
-    plan: planByCategory(cat),
-    fact: sumByCategory(cat),
-    unit: 'UAH',
-    lowerIsBetter: true,
-  }));
-
-  const hasBudget = plRows.some((r) => r.plan > 0);
-
   const kpiItems: MaterialKpiItem[] = [
     { key: 'Fertilizers', label: t.materialKpi.fertilizers, amount: sumByCategory('Fertilizer'), icon: <ExperimentOutlined /> },
     { key: 'Seeds', label: t.materialKpi.seeds, amount: sumByCategory('Seeds'), icon: <AppstoreOutlined /> },
@@ -201,30 +176,6 @@ export default function CostRecords() {
       <div style={{ marginBottom: 24 }}>
         <MaterialKpiCards items={kpiItems} loading={loading} />
       </div>
-
-      <Card
-        style={{ marginBottom: 24, background: '#161B22', border: '1px solid #30363D' }}
-        bodyStyle={{ padding: 0 }}
-        title={<span style={{ color: '#E6EDF3', fontSize: 15, fontWeight: 600 }}>{t.economics.plTableTitle}</span>}
-      >
-        {!hasBudget && !loading ? (
-          <div style={{ padding: '32px 16px' }}>
-            <Empty description={<span style={{ color: '#8B949E' }}>{t.economics.plNoPlan}</span>} />
-          </div>
-        ) : (
-          <PLTable
-            rows={plRows}
-            labels={{
-              metric: t.economics.plColMetric,
-              plan: t.economics.plColPlan,
-              fact: t.economics.plColFact,
-              execution: t.economics.plColExecution,
-            }}
-          />
-        )}
-      </Card>
-
-      <Divider style={{ borderColor: '#30363D', margin: '0 0 16px' }} />
 
       <Space style={{ marginBottom: 16 }} wrap>
         <Select
