@@ -97,9 +97,18 @@
 /* Period segmented */
 .headerRight {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
   flex-shrink: 0;
+}
+
+.rangeLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.42);
+  text-transform: uppercase;
 }
 
 .segmented {

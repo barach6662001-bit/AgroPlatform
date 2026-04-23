@@ -6,8 +6,6 @@ import enUS from 'antd/locale/en_US';
 import dayjs from 'dayjs';
 import { useTranslation } from './i18n';
 import { darkTheme } from './theme/darkTheme';
-import { lightTheme } from './theme/lightTheme';
-import { useThemeStore } from './stores/themeStore';
 import AppLayout from './components/Layout/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
@@ -72,15 +70,14 @@ import { usePublicDemoAutoLogin } from './hooks/usePublicDemoAutoLogin';
 
 function RootRoute() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  // In public demo mode, send everyone straight to /dashboard — the landing
-  // page is effectively bypassed so the app feels "open".
-  if (isPublicDemoMode) return <Navigate to="/dashboard" replace />;
+  // Authenticated users (including auto-logged-in public-demo users who
+  // navigated away from "/") go straight to the dashboard; unauthenticated
+  // visitors always see the marketing landing page.
   return isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />;
 }
 
 export default function App() {
   const { lang } = useTranslation();
-  const theme = useThemeStore((s) => s.theme);
 
   // Auto-login as the demo user when public demo mode is enabled. `ready`
   // stays false until the token is in place (or the attempt fails), which
@@ -102,13 +99,15 @@ export default function App() {
   }, [lang]);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+    // The application is dark-only; the attribute is still set so CSS
+    // selectors keyed on [data-theme="dark"] keep working.
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }, []);
 
   return (
     <ConfigProvider
       locale={lang === 'uk' ? ukUA : enUS}
-      theme={theme === 'dark' ? darkTheme : lightTheme}
+      theme={darkTheme}
     >
       <ErrorBoundary>
       <BrowserRouter>

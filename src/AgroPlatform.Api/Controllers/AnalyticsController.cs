@@ -30,14 +30,24 @@ public class AnalyticsController : ControllerBase
 
     /// <summary>
     /// Returns the aggregated dashboard data: total fields, operations in progress,
-    /// total costs, warehouse balances summary and recent activity.
+    /// total costs, warehouse balances summary and recent activity. When both
+    /// <paramref name="from"/> and <paramref name="to"/> are supplied, the
+    /// period-sensitive economics (costs, revenue, profit, cost trend) are
+    /// restricted to the half-open <c>[from, to)</c> UTC range.
     /// </summary>
+    /// <param name="from">Start of the range, inclusive (UTC).</param>
+    /// <param name="to">End of the range, exclusive (UTC).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet("dashboard")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetDashboard(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetDashboard(
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to,
+        CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(new GetDashboardQuery(), cancellationToken);
+        var fromUtc = from.HasValue ? DateTime.SpecifyKind(from.Value, DateTimeKind.Utc) : (DateTime?)null;
+        var toUtc = to.HasValue ? DateTime.SpecifyKind(to.Value, DateTimeKind.Utc) : (DateTime?)null;
+        var result = await _sender.Send(new GetDashboardQuery(fromUtc, toUtc), cancellationToken);
         return Ok(result);
     }
 
