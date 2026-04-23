@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Map, Banknote, Activity, TrendingUp } from 'lucide-react';
 import type { DashboardDto } from '../../types/analytics';
@@ -16,15 +16,20 @@ import WarehouseSnapshot from './components/WarehouseSnapshot';
 import UpcomingPanel from './components/UpcomingPanel';
 import s from './DashboardV2.module.css';
 
+export type DashboardPeriod = 'day' | 'week' | 'month' | 'season';
+
 export interface DashboardV2Props {
   data: DashboardDto;
   fields: FieldDto[];
   operations: AgroOperationDto[];
   /** Optional preview-only weather snapshot (no live API call). */
   weather?: { tempC: number; condition: 'clear' | 'cloudy'; location: string };
+  /** Controlled period selection. If omitted, component manages its own state. */
+  period?: DashboardPeriod;
+  onPeriodChange?: (p: DashboardPeriod) => void;
 }
 
-type Period = 'day' | 'week' | 'month' | 'season';
+type Period = DashboardPeriod;
 
 /* ── Framer-motion variants — fade-in only, 60ms stagger per row ── */
 const container = {
@@ -42,10 +47,28 @@ const fadeIn = {
  * /preview/dashboard-v2 route AND, after design approval, to wire into
  * the real /dashboard route by wrapping it in a hook-driven container.
  */
-export default function DashboardV2({ data, fields, operations, weather }: DashboardV2Props) {
+export default function DashboardV2({ data, fields, operations, weather, period: periodProp, onPeriodChange }: DashboardV2Props) {
   const { t } = useTranslation();
   const dash = t.dashboard as Record<string, string | undefined>;
-  const [period, setPeriod] = useState<Period>('season');
+  const [periodLocal, setPeriodLocal] = useState<Period>('season');
+  const period = periodProp ?? periodLocal;
+  const handlePeriodChange = useCallback((p: Period) => {
+    if (onPeriodChange) onPeriodChange(p);
+    else setPeriodLocal(p);
+  }, [onPeriodChange]);
+
+  /* KPI label resolver — uses dedicated i18n key per period so the card title
+     reflects the selected range (day / week / month / season). */
+  const periodLabel = (kind: 'expenses' | 'revenue' | 'profit'): string => {
+    const map: Record<Period, Record<'expenses' | 'revenue' | 'profit', string | undefined>> = {
+      day:    { expenses: dash.dayExpenses,    revenue: dash.dayRevenue,    profit: dash.dayProfit    },
+      week:   { expenses: dash.weekExpenses,   revenue: dash.weekRevenue,   profit: dash.weekProfit   },
+      month:  { expenses: dash.monthlyExpenses,revenue: dash.monthlyRevenue,profit: dash.monthlyProfit },
+      season: { expenses: dash.seasonExpenses, revenue: dash.seasonRevenue, profit: dash.seasonProfit },
+    };
+    const fallback = { expenses: t.dashboard.monthlyExpenses, revenue: t.dashboard.monthlyRevenue, profit: t.dashboard.monthlyProfit } as const;
+    return map[period][kind] ?? fallback[kind];
+  };
 
   /* ── Derived figures ──────────────────────────────────── */
   const derived = useMemo(() => {
@@ -82,7 +105,7 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
       href: '/fields',
     },
     {
-      label: dash.seasonExpenses ?? t.dashboard.monthlyExpenses,
+      label: periodLabel('expenses'),
       value: `${formatUA(derived.expenses)} ₴`,
       accentColor: '#F59E0B',
       icon: <Banknote size={16} strokeWidth={1.6} />,
@@ -90,7 +113,7 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
       href: '/economics',
     },
     {
-      label: dash.seasonRevenue ?? t.dashboard.monthlyRevenue,
+      label: periodLabel('revenue'),
       value: `${formatUA(derived.revenue)} ₴`,
       accentColor: '#22C55E',
       icon: <Activity size={16} strokeWidth={1.6} />,
@@ -98,7 +121,7 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
       href: '/sales',
     },
     {
-      label: dash.seasonProfit ?? t.dashboard.monthlyProfit,
+      label: periodLabel('profit'),
       value: `${formatUA(derived.profit)} ₴`,
       accentColor: '#22C55E',
       icon: <TrendingUp size={16} strokeWidth={1.6} />,
@@ -139,7 +162,7 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
             <span className={s.sep}>·</span>
             <span>{formatUA(data.totalAreaHectares)} {dash.haUnit ?? 'га'}</span>
             <span className={s.sep}>·</span>
-            <span>{fields.length} {dash.fieldsUnit ?? 'полів'}</span>
+            <span>{data.totalFields} {dash.fieldsUnit ?? 'полів'}</span>
           </p>
         </div>
         <div className={s.headerRight}>
@@ -150,7 +173,7 @@ export default function DashboardV2({ data, fields, operations, weather }: Dashb
                 role="tab"
                 aria-selected={period === opt.key}
                 className={`${s.seg} ${period === opt.key ? s.segActive : ''}`}
-                onClick={() => setPeriod(opt.key)}
+                onClick={() => handlePeriodChange(opt.key)}
                 type="button"
               >
                 {opt.label}
