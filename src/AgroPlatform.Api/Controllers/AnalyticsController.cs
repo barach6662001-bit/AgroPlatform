@@ -3,7 +3,9 @@ using AgroPlatform.Application.Analytics.Queries.GetFieldEfficiency;
 using AgroPlatform.Application.Analytics.Queries.GetResourceConsumption;
 using AgroPlatform.Application.Analytics.Queries.GetSalaryFuelAnalytics;
 using AgroPlatform.Application.Economics.Queries.GetMarginality;
+using AgroPlatform.Api.FeatureFlags;
 using AgroPlatform.Domain.Authorization;
+using AgroPlatform.Domain.FeatureFlags;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +62,7 @@ public class AnalyticsController : ControllerBase
     /// <param name="fieldId">Optional field filter.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet("resource-consumption")]
+    [RequireFeatureFlag(OptionalFeatureFlagKeys.AnalyticsResourceUsage)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetResourceConsumption(
         [FromQuery] DateTime? dateFrom,
@@ -77,6 +80,7 @@ public class AnalyticsController : ControllerBase
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet("field-efficiency")]
+    [RequireFeatureFlag(OptionalFeatureFlagKeys.AnalyticsFieldEfficiency)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFieldEfficiency(CancellationToken cancellationToken)
     {
@@ -91,6 +95,7 @@ public class AnalyticsController : ControllerBase
     /// <param name="year">Year to aggregate (defaults to current year).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     [HttpGet("marginality")]
+    [RequireFeatureFlag(OptionalFeatureFlagKeys.AnalyticsMarginality)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMarginality(
         [FromQuery] int? year,

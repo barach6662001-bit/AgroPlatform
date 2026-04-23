@@ -3,6 +3,7 @@ using AgroPlatform.Domain.Approval;
 using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Common;
 using AgroPlatform.Domain.Economics;
+using AgroPlatform.Domain.FeatureFlags;
 using AgroPlatform.Domain.Fields;
 using AgroPlatform.Domain.Fuel;
 using AgroPlatform.Domain.GrainStorage;
@@ -69,6 +70,7 @@ public interface IAppDbContext
     DbSet<RolePermission> RolePermissions { get; }
     DbSet<AuditEntry> AuditEntries { get; }
     DbSet<Attachment> Attachments { get; }
+    DbSet<TenantFeatureFlag> TenantFeatureFlags { get; }
     DbSet<ApiKey> ApiKeys { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
 

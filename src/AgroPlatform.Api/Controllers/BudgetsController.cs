@@ -2,6 +2,8 @@ using AgroPlatform.Application.Economics.Commands.UpsertBudget;
 using AgroPlatform.Application.Economics.Queries.ExportBudgets;
 using AgroPlatform.Application.Economics.Queries.GetBudgetPlanVsFact;
 using AgroPlatform.Application.Economics.Queries.GetBudgets;
+using AgroPlatform.Api.FeatureFlags;
+using AgroPlatform.Domain.FeatureFlags;
 using AgroPlatform.Domain.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +14,7 @@ namespace AgroPlatform.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/economics/budgets")]
+[RequireFeatureFlag(OptionalFeatureFlagKeys.Budget)]
 [Produces("application/json")]
 public class BudgetsController : ControllerBase
 {

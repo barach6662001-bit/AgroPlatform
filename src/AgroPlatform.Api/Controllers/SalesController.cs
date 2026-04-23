@@ -4,7 +4,9 @@ using AgroPlatform.Application.Sales.Commands.UpdateSale;
 using AgroPlatform.Application.Sales.Queries.GetSaleById;
 using AgroPlatform.Application.Sales.Queries.GetSales;
 using AgroPlatform.Application.Sales.Queries.GetSalesAnalytics;
+using AgroPlatform.Api.FeatureFlags;
 using AgroPlatform.Domain.Authorization;
+using AgroPlatform.Domain.FeatureFlags;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +36,7 @@ public class SalesController : ControllerBase
     }
 
     [HttpGet("analytics")]
+    [RequireFeatureFlag(OptionalFeatureFlagKeys.AnalyticsSalesAnalytics)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSalesAnalytics(
         [FromQuery] int? year,

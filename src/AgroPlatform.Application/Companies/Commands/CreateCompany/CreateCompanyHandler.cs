@@ -1,6 +1,7 @@
 using AgroPlatform.Application.Common.Exceptions;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Application.Companies.DTOs;
+using AgroPlatform.Domain.FeatureFlags;
 using AgroPlatform.Domain.Users;
 using MediatR;
 
@@ -35,6 +36,14 @@ public class CreateCompanyHandler : IRequestHandler<CreateCompanyCommand, Compan
         };
 
         _db.Tenants.Add(tenant);
+
+        _db.TenantFeatureFlags.AddRange(OptionalFeatureFlagKeys.All.Select(key => new TenantFeatureFlag
+        {
+            TenantId = tenant.Id,
+            Key = key,
+            IsEnabled = false,
+        }));
+
         await _db.SaveChangesAsync(cancellationToken);
 
         return new CompanyListDto(
