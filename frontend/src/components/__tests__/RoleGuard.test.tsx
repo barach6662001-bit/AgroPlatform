@@ -25,10 +25,10 @@ describe('RoleGuard', () => {
     });
 
     render(
-      <MemoryRouter initialEntries={['/economics']}>
+      <MemoryRouter initialEntries={['/expenses']}>
         <Routes>
           <Route
-            path="/economics"
+            path="/expenses"
             element={
               <RoleGuard allowedRoles={['CompanyAdmin', 'Manager', 'Accountant']}>
                 <div>Economics Page</div>
@@ -54,10 +54,10 @@ describe('RoleGuard', () => {
     });
 
     render(
-      <MemoryRouter initialEntries={['/economics']}>
+      <MemoryRouter initialEntries={['/expenses']}>
         <Routes>
           <Route
-            path="/economics"
+            path="/expenses"
             element={
               <RoleGuard allowedRoles={['CompanyAdmin', 'Manager', 'Accountant']}>
                 <div>Economics Page</div>

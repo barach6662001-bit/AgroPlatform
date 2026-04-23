@@ -2,9 +2,8 @@
  * AgroPlatform Design System — Colors & Type
  * 21st Dark Premium aesthetic: black canvas, Geist typography, radial glow accents.
  *
- * Themes:
+ * Theme:
  *   :root                   = dark "21st Dark Premium" (default)
- *   [data-theme="light"]    = light theme (opt-in, greige/white)
  *
  * Accent toggles (data-acc on <html>):
  *   default / data-acc="green"  — signature green (brand)
@@ -238,72 +237,6 @@
 [data-acc="violet"] { --acc:#8B5CF6; --accRgb:139,92,246;  --acc2:#7C3AED; }
 [data-acc="blue"]   { --acc:#3B82F6; --accRgb:59,130,246;  --acc2:#2563EB; }
 [data-acc="mono"]   { --acc:#fafafa; --accRgb:250,250,250; --acc2:#e5e5e5; }
-
-/* ─────────────────────────────────────────────────────────────────────────
-   LIGHT THEME — greige / white
-   ───────────────────────────────────────────────────────────────────────── */
-[data-theme="light"] {
-  --bg:            #fafafa;
-  --e1:            #ffffff;
-  --e2:            #ffffff;
-  --hov:           #f5f5f5;
-
-  --bg-page:       var(--bg);
-  --bg-surface:    var(--e1);
-  --bg-elevated:   var(--e2);
-  --bg-hover:      var(--hov);
-  --bg-overlay:    var(--hov);
-  --bg-subtle:     #f0f0f0;
-  --bg-app:        var(--bg);
-
-  --bg-glow:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(var(--accRgb), .06), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 15% 120%, rgba(var(--accRgb), .04), transparent 55%),
-    var(--bg);
-
-  --card-bg:       #ffffff;
-  --card-gradient: none;
-
-  --t:              #171717;
-  --tm:             #525252;
-  --td:             #a3a3a3;
-  --text-primary:   var(--t);
-  --text-secondary: var(--tm);
-  --text-tertiary:  var(--td);
-  --text-disabled:  #d4d4d4;
-  --text-inverse:   #ffffff;
-
-  --b:             #e5e5e5;
-  --b2:            #d4d4d4;
-  --border:        var(--b);
-  --border-hover:  var(--b2);
-  --border-strong: var(--b2);
-  --border-focus:  #16a34a;
-
-  --acc:           #16a34a;
-  --accRgb:        22, 163, 74;
-  --acc2:          #15803d;
-  --brand:         var(--acc);
-  --brand-hover:   var(--acc2);
-  --brand-active:  #166534;
-  --brand-muted:   rgba(var(--accRgb), 0.08);
-  --brand-border:  rgba(var(--accRgb), 0.15);
-
-  --success:  #16a34a;
-  --warning:  #f59e0b;
-  --error:    #ef4444;
-  --info:     #3b82f6;
-
-  --success-bg: rgba(22, 163, 74, 0.06);
-  --warning-bg: rgba(245, 158, 11, 0.06);
-  --error-bg:   rgba(239, 68, 68, 0.06);
-  --info-bg:    rgba(59, 130, 246, 0.06);
-
-  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md:  0 4px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-lg:  0 12px 24px rgba(0, 0, 0, 0.10), 0 4px 8px rgba(0, 0, 0, 0.06);
-  --shadow-glow: 0 0 20px rgba(var(--accRgb), 0.10);
-}
 
 /* ─────────────────────────────────────────────────────────────────────────
    SEMANTIC TYPOGRAPHY CLASSES

@@ -23,12 +23,6 @@
   line-height: 1.15;
 }
 
-[data-theme="light"] .text22 {
-  background: none;
-  -webkit-text-fill-color: var(--text-primary);
-  color: var(--text-primary);
-}
-
 .text13 {
   margin: 4px 0 0;
   font-size: 13px;

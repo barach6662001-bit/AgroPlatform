@@ -17,7 +17,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { usePermissions } from '../../hooks/usePermissions';
-import { useThemeStore } from '../../stores/themeStore';
 import { useSidebarStore } from '../../stores/sidebarStore';
 import s from './Sidebar.module.css';
 
@@ -52,6 +51,7 @@ const ROUTE_TO_GROUP: Array<[string, string]> = [
   ['/machinery',               'machinery-group'],
   ['/fleet',                   'machinery-group'],
   ['/hr',                      'hr-group'],
+  ['/expenses',                'finance-group'],
   ['/economics',               'finance-group'],
   ['/sales',                   'finance-group'],
   ['/finance',                 'finance-group'],
@@ -89,7 +89,6 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const { t } = useTranslation();
   const { role, isAdmin, isSuperAdmin } = useRole();
   const { hasPermission } = usePermissions();
-  const appTheme = useThemeStore((st) => st.theme);
 
   const pinnedItems   = useSidebarStore((st) => st.pinnedItems);
   const recentItems   = useSidebarStore((st) => st.recentItems);
@@ -131,7 +130,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   ];
 
   const financeChildren = [
-    { key: '/economics',                 label: t.nav.costs },
+    { key: '/expenses',                  label: t.nav.costs },
     { key: '/sales',                     label: t.nav.sales },
     { key: '/economics/budget',          label: t.nav.budget },
     { key: '/finance/leases',            label: t.nav.leases },
@@ -331,7 +330,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   return (
     <div className={s.flex_col}>
       <Menu
-        theme={appTheme === 'dark' ? 'dark' : 'light'}
+        theme="dark"
         mode="inline"
         inlineCollapsed={collapsed}
         selectedKeys={[selectedKey]}

@@ -81,7 +81,7 @@ export default function CostAnalytics() {
       <PageHeader
         title={t.economics.analyticsTitle}
         subtitle={t.economics.analyticsSubtitle}
-        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.costAnalytics }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/expenses' }, { label: t.nav.costAnalytics }]} />}
       />
 
       <Row gutter={[16, 16]} align="middle" className={s.spaced}>

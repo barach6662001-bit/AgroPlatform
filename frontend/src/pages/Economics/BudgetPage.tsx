@@ -168,7 +168,7 @@ export default function BudgetPage() {
       <PageHeader
         title={t.budget.title}
         subtitle={t.budget.subtitle}
-        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.budget }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/expenses' }, { label: t.nav.budget }]} />}
       />
       <Space style={{ marginBottom: 16 }}>
         <span style={{ color: '#8B949E' }}>{t.budget.year}:</span>

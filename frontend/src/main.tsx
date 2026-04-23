@@ -16,6 +16,8 @@ import apiClient from './api/axios';
 
 registerSW({ immediate: false });
 
+document.documentElement.setAttribute('data-theme', 'dark');
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

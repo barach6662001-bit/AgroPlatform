@@ -89,7 +89,7 @@ export default function DashboardV2({
     // last day of the month in UTC
     const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
     const to = `${m[1]}-${m[2]}-${String(lastDay).padStart(2, '0')}`;
-    navigate(`/economics/costs?from=${from}&to=${to}`);
+    navigate(`/expenses?from=${from}&to=${to}`);
   }, [navigate]);
 
   /* KPI label resolver — uses dedicated i18n key per period so the card title
@@ -145,7 +145,7 @@ export default function DashboardV2({
       accentColor: '#F59E0B',
       icon: <Banknote size={16} strokeWidth={1.6} />,
       trend: derived.expenses > 0 ? derived.expensesTrend : undefined,
-      href: '/economics',
+      href: '/expenses',
     },
     {
       label: periodLabel('revenue'),

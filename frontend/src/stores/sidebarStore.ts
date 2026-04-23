@@ -19,7 +19,7 @@ const DEFAULT_PINS_BY_ROLE: Record<string, string[]> = {
   CompanyAdmin:     ['/dashboard', '/fields', '/operations', '/economics/marginality', '/machinery'],
   Manager:          ['/dashboard', '/fields', '/operations', '/economics/marginality', '/machinery'],
   WarehouseOperator:['/warehouses', '/warehouses/items', '/grain', '/fuel', '/dashboard'],
-  Accountant:       ['/economics', '/sales', '/economics/budget', '/hr/salary', '/economics/pnl'],
+  Accountant:       ['/expenses', '/sales', '/economics/budget', '/hr/salary', '/economics/pnl'],
   Viewer:           ['/dashboard', '/fields', '/economics/marginality'],
   '*':              ['/dashboard', '/fields', '/operations'],
 };
