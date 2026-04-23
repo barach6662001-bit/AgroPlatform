@@ -349,6 +349,7 @@ const uk = {
     week: 'Тиждень',
     month: 'Місяць',
     season: 'Сезон',
+    allTime: 'Весь час',
     commandCenter: 'Командний центр',
     atGlance: 'Зведення',
     financialOverview: 'Фінансовий огляд',

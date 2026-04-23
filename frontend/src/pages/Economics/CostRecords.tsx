@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Table, Tag, Space, DatePicker, Select, message, Button, Modal, Form, Input, InputNumber } from 'antd';
+import dayjs from 'dayjs';
 import { PlusOutlined, ExperimentOutlined, AppstoreOutlined, MedicineBoxOutlined, ThunderboltOutlined, GiftOutlined, CalculatorOutlined, DownloadOutlined, HomeOutlined, PrinterOutlined } from '@ant-design/icons';
 import { printReport } from '../../utils/printReport';
 import { getCostRecords, getCostSummary, createCostRecord, deleteCostRecord } from '../../api/economics';
@@ -28,11 +30,19 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function CostRecords() {
+  // Accept ?from=YYYY-MM-DD&to=YYYY-MM-DD for drill-down from the dashboard.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialFrom = searchParams.get('from');
+  const initialTo = searchParams.get('to');
+  const isIsoDate = (v: string | null): v is string => !!v && /^\d{4}-\d{2}-\d{2}$/.test(v);
+  const initialRange: [string, string] | null =
+    isIsoDate(initialFrom) && isIsoDate(initialTo) ? [initialFrom, initialTo] : null;
+
   const [result, setResult] = useState<PaginatedResult<CostRecordDto> | null>(null);
   const [summary, setSummary] = useState<CostSummaryDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState<CostCategory | undefined>();
-  const [dateRange, setDateRange] = useState<[string, string] | null>(null);
+  const [dateRange, setDateRange] = useState<[string, string] | null>(initialRange);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [modalOpen, setModalOpen] = useState(false);
@@ -187,9 +197,18 @@ export default function CostRecords() {
           options={Object.entries(t.costCategories).map(([k, v]) => ({ value: k, label: v }))}
         />
         <RangePicker
-          onChange={(_, dateStrings) =>
-            setDateRange(dateStrings[0] && dateStrings[1] ? [dateStrings[0], dateStrings[1]] : null)
-          }
+          value={dateRange ? [dayjs(dateRange[0]), dayjs(dateRange[1])] : null}
+          onChange={(_, dateStrings) => {
+            const next: [string, string] | null = dateStrings[0] && dateStrings[1] ? [dateStrings[0], dateStrings[1]] : null;
+            setDateRange(next);
+            // Keep the URL in sync so the filter is shareable and survives refresh.
+            setSearchParams((prev) => {
+              const p = new URLSearchParams(prev);
+              if (next) { p.set('from', next[0]); p.set('to', next[1]); }
+              else { p.delete('from'); p.delete('to'); }
+              return p;
+            }, { replace: true });
+          }}
           placeholder={[t.economics.dateFrom, t.economics.dateTo]}
         />
         {canCreate && (
