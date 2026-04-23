@@ -40,7 +40,18 @@ export default function Login() {
     setLoading(true);
     try {
       const data = await login({ email, password });
-      setAuth(data.token, data.email, data.role, data.tenantId, data.requirePasswordChange, data.hasCompletedOnboarding, data.firstName, data.lastName, data.refreshToken);
+      // Super-admin with MFA enabled: the server returns a short-lived mfa_pending token
+      // instead of a full session. Route to /mfa-verify and let the user complete the 2nd factor.
+      if (data.mfaRequired && data.mfaPendingToken) {
+        useAuthStore.getState().setMfaPendingToken(data.mfaPendingToken);
+        navigate('/mfa-verify');
+        return;
+      }
+      setAuth(
+        data.token, data.email, data.role, data.tenantId, data.requirePasswordChange,
+        data.hasCompletedOnboarding, data.firstName, data.lastName, data.refreshToken,
+        data.isSuperAdmin ?? false,
+      );
       navigate(data.requirePasswordChange ? '/change-password' : '/');
     } catch {
       setApiError(t.auth.loginError);

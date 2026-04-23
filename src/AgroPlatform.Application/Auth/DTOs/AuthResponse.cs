@@ -11,5 +11,9 @@ public record AuthResponse(
     string? FirstName,
     string? LastName,
     string? RefreshToken = null,
-    DateTime? RefreshTokenExpiresAt = null
+    DateTime? RefreshTokenExpiresAt = null,
+    bool IsSuperAdmin = false,
+    bool MfaRequired = false,
+    string? MfaPendingToken = null
 );
+

@@ -19,6 +19,7 @@ public class BudgetHandlerTests
         public UserRole? Role => null;
         public bool IsInRole(UserRole role) => false;
         public bool IsSuperAdmin => false;
+        public bool MfaVerified => true;
     }
 
     private static IAppDbContext CreateDbContext()

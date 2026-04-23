@@ -50,6 +50,10 @@ import ApiKeysPage from './pages/Admin/ApiKeysPage';
 import RolePermissionsPage from './pages/Admin/RolePermissionsPage';
 import PendingApprovalsPage from './pages/Admin/PendingApprovalsPage';
 import ApprovalRulesPage from './pages/Admin/ApprovalRulesPage';
+import AdminTenantsPage from './pages/Admin/TenantsPage';
+import AdminTenantDetailPage from './pages/Admin/TenantDetailPage';
+import SetupMfa from './pages/Admin/SetupMfa';
+import MfaVerify from './pages/Admin/MfaVerify';
 import SettingsAuditLogPage from './pages/Settings/AuditLogPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
@@ -143,6 +147,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<RootRoute />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/mfa-verify" element={<MfaVerify />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/access-denied" element={<AccessDenied />} />
           <Route path="/change-password" element={
@@ -279,6 +284,9 @@ export default function App() {
             <Route path="/admin/role-permissions" element={<RolePermissionsPage />} />
             <Route path="/admin/approvals" element={<PendingApprovalsPage />} />
             <Route path="/admin/approval-rules" element={<ApprovalRulesPage />} />
+            <Route path="/admin/tenants" element={<AdminTenantsPage />} />
+            <Route path="/admin/tenants/:id" element={<AdminTenantDetailPage />} />
+            <Route path="/setup-mfa" element={<SetupMfa />} />
             <Route path="/settings/audit" element={<SettingsAuditLogPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />

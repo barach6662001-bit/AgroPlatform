@@ -13,4 +13,5 @@ public class FakeCurrentUserService : ICurrentUserService
     public bool IsInRole(UserRole role) => Role == role;
 
     public bool IsSuperAdmin => Role == UserRole.SuperAdmin;
+    public bool MfaVerified { get; set; } = true;
 }

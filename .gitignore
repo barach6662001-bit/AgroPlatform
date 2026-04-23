@@ -454,3 +454,4 @@ backups/
 .mcp.json
 .mcp.json
 .mcp.json
+*.csproj.lscache

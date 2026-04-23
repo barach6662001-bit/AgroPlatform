@@ -10,6 +10,11 @@ export interface AuthResponse {
   lastName?: string;
   refreshToken?: string;
   refreshTokenExpiresAt?: string;
+  isSuperAdmin?: boolean;
+  // When true, `token` is empty and `mfaPendingToken` carries a short-lived intermediate JWT
+  // that must be exchanged at /api/auth/mfa/verify for a real session.
+  mfaRequired?: boolean;
+  mfaPendingToken?: string;
 }
 
 export interface LoginRequest {

@@ -4,6 +4,7 @@ using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.Users;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgroPlatform.Application.Auth.Commands.Login;
 
@@ -28,6 +29,34 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
 
         if (!user.IsActive)
             throw new UnauthorizedException("Account is inactive.");
+
+        // Super-admins with MFA enabled must complete the 2nd factor before receiving a full JWT.
+        if (user.IsSuperAdmin)
+        {
+            var mfa = await _db.UserMfaSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
+
+            if (mfa is not null && mfa.IsEnabled)
+            {
+                var (pendingToken, pendingExpiresAt) = _jwtTokenService.GenerateMfaPendingToken(user);
+                return new AuthResponse(
+                    Token: string.Empty,
+                    Email: user.Email!,
+                    Role: user.Role.ToString(),
+                    ExpiresAt: pendingExpiresAt,
+                    TenantId: user.TenantId,
+                    RequirePasswordChange: user.RequirePasswordChange,
+                    HasCompletedOnboarding: user.HasCompletedOnboarding,
+                    FirstName: user.FirstName,
+                    LastName: user.LastName,
+                    RefreshToken: null,
+                    RefreshTokenExpiresAt: null,
+                    IsSuperAdmin: true,
+                    MfaRequired: true,
+                    MfaPendingToken: pendingToken);
+            }
+        }
 
         var (token, expiresAt) = _jwtTokenService.GenerateToken(user);
 
@@ -56,6 +85,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResponse>
             user.FirstName,
             user.LastName,
             refreshTokenValue,
-            refreshTokenExpiresAt);
+            refreshTokenExpiresAt,
+            IsSuperAdmin: user.IsSuperAdmin);
     }
 }

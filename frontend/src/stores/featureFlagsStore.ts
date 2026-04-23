@@ -45,6 +45,10 @@ export const useFeatureFlagsStore = create<FeatureFlagsState>((set, get) => ({
         nextFeatures[key] = Boolean(me.features?.[key]);
       }
 
+      // Sync the super-admin flag from the server: login response may predate the flag
+      // being granted, and the /api/me payload is the source of truth.
+      useAuthStore.getState().setIsSuperAdmin(Boolean(me.isSuperAdmin));
+
       set({
         features: nextFeatures,
         loaded: true,

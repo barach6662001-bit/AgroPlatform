@@ -55,6 +55,8 @@ public static class DependencyInjection
         services.AddScoped<IImportService, CsvXlsxImportService>();
         services.AddSingleton<IEmailService, SmtpEmailService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IMfaService, MfaService>();
+        services.AddScoped<ISuperAdminAuditService, SuperAdminAuditService>();
 
         // Background automation jobs
         services.AddHostedService<FuelAnomalyJob>();

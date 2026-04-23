@@ -19,4 +19,7 @@ public class AppUser : IdentityUser
 
     /// <summary>Whether the user has completed the onboarding wizard.</summary>
     public bool HasCompletedOnboarding { get; set; }
+
+    /// <summary>Platform-level super-admin flag. Grants cross-tenant access and requires MFA.</summary>
+    public bool IsSuperAdmin { get; set; }
 }

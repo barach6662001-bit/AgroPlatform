@@ -12,6 +12,7 @@ using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Sales;
+using AgroPlatform.Domain.SuperAdmin;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,18 @@ public class TestDbContext : DbContext, IAppDbContext
         {
             e.HasKey(x => new { x.TenantId, x.Key });
             e.Property(x => x.Key).HasMaxLength(128);
+        });
+
+        modelBuilder.Entity<UserMfaSettings>(e =>
+        {
+            e.HasKey(x => x.UserId);
+            e.Property(x => x.SecretKey).HasMaxLength(32);
+        });
+
+        modelBuilder.Entity<SuperAdminAuditLog>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Action).HasMaxLength(100);
         });
     }
 
@@ -99,6 +112,8 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<TenantFeatureFlag> TenantFeatureFlags => Set<TenantFeatureFlag>();
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<UserMfaSettings> UserMfaSettings => Set<UserMfaSettings>();
+    public DbSet<SuperAdminAuditLog> SuperAdminAuditLogs => Set<SuperAdminAuditLog>();
     public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
     public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
     public DbSet<InventorySession> InventorySessions => Set<InventorySession>();
