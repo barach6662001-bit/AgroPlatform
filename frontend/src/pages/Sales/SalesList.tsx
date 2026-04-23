@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Space, DatePicker, message, Button, Modal, Form, Input, InputNumber, Select } from 'antd';
+import dayjs from 'dayjs';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { getSales, createSale, updateSale, deleteSale } from '../../api/sales';
 import { getFields } from '../../api/fields';
@@ -22,11 +24,22 @@ const { RangePicker } = DatePicker;
 const UNITS = ['т', 'кг', 'л', 'шт'];
 
 export default function SalesList() {
+  // Accept ?from=YYYY-MM-DD&to=YYYY-MM-DD&search=... so drill-downs from the
+  // Sales revenue chart (and any other deep link) pre-fill the filters and
+  // survive refresh / sharing.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isIsoDate = (v: string | null): v is string => !!v && /^\d{4}-\d{2}-\d{2}$/.test(v);
+  const urlFrom = searchParams.get('from');
+  const urlTo = searchParams.get('to');
+  const urlSearch = searchParams.get('search') || undefined;
+  const initialRange: [string, string] | null =
+    isIsoDate(urlFrom) && isIsoDate(urlTo) ? [urlFrom, urlTo] : null;
+
   const [result, setResult] = useState<PaginatedResult<SaleDto> | null>(null);
   const [fields, setFields] = useState<FieldDto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState<string | undefined>();
-  const [dateRange, setDateRange] = useState<[string, string] | null>(null);
+  const [search, setSearch] = useState<string | undefined>(urlSearch);
+  const [dateRange, setDateRange] = useState<[string, string] | null>(initialRange);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
@@ -233,14 +246,31 @@ export default function SalesList() {
         <Input
           placeholder={t.sales.searchBuyer}
           value={search}
-          onChange={(e) => { setSearch(e.target.value || undefined); setPage(1); }}
+          onChange={(e) => {
+            const v = e.target.value || undefined;
+            setSearch(v);
+            setPage(1);
+            setSearchParams((prev) => {
+              const p = new URLSearchParams(prev);
+              if (v) p.set('search', v); else p.delete('search');
+              return p;
+            }, { replace: true });
+          }}
           style={{ width: 240 }}
           allowClear
         />
         <RangePicker
+          value={dateRange ? [dayjs(dateRange[0]), dayjs(dateRange[1])] : null}
           onChange={(_, dates) => {
-            setDateRange(dates[0] && dates[1] ? [dates[0], dates[1]] : null);
+            const next: [string, string] | null = dates[0] && dates[1] ? [dates[0], dates[1]] : null;
+            setDateRange(next);
             setPage(1);
+            setSearchParams((prev) => {
+              const p = new URLSearchParams(prev);
+              if (next) { p.set('from', next[0]); p.set('to', next[1]); }
+              else { p.delete('from'); p.delete('to'); }
+              return p;
+            }, { replace: true });
           }}
         />
         {canWrite && (
