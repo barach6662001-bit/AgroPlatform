@@ -13,6 +13,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import KpiCard from '../../components/ui/KpiCard';
+import TotalCard from '../../components/TotalCard';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
@@ -236,7 +237,7 @@ export default function SalesList() {
       <PageHeader title={t.sales.title} subtitle={t.sales.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.sales }]} />} />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 16 }}>
-        <KpiCard label={t.sales.totalRevenue ?? 'Загальний дохід'} value={`${totalRevenue.toLocaleString('uk-UA')} ₴`} />
+        <TotalCard label={t.sales.totalRevenue ?? 'Загальний дохід'} valueUah={totalRevenue} highlight />
         <KpiCard label={t.sales.totalSales} value={String(totalCount)} />
         <KpiCard label={t.sales.avgDeal ?? 'Середній чек'} value={`${avgDeal.toLocaleString('uk-UA', { maximumFractionDigits: 0 })} ₴`} />
         <KpiCard label={t.sales.totalQuantity} value={`${totalQuantity.toLocaleString('uk-UA', { maximumFractionDigits: 2 })} т`} />

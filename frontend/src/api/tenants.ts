@@ -19,6 +19,11 @@ export interface UpdateTenantRequest {
   phone?: string;
 }
 
+export interface TenantDataBoundariesDto {
+  minOperationDate: string | null;
+  maxOperationDate: string | null;
+}
+
 export const getTenants = () =>
   apiClient.get<TenantDto[]>('/api/tenants').then((r) => r.data);
 
@@ -27,3 +32,9 @@ export const getCurrentTenant = () =>
 
 export const updateCurrentTenant = (data: UpdateTenantRequest) =>
   apiClient.put<TenantDto>('/api/tenants/current', data).then((r) => r.data);
+
+export const getTenantDataBoundaries = () =>
+  apiClient.get<TenantDataBoundariesDto>('/api/tenant/data-boundaries').then((r) => r.data);
+
+export const getSeasons = () =>
+  apiClient.get<number[]>('/api/seasons').then((r) => r.data);
