@@ -29,6 +29,11 @@ export interface DashboardV2Props {
   /** Controlled period selection. If omitted, component manages its own state. */
   period?: DashboardPeriod;
   onPeriodChange?: (p: DashboardPeriod) => void;
+  resolvedRangeLabel?: string;
+  onStepPrev?: () => void;
+  onStepNext?: () => void;
+  disableStepPrev?: boolean;
+  disableStepNext?: boolean;
 }
 
 type Period = DashboardPeriod;
@@ -49,7 +54,19 @@ const fadeIn = {
  * /preview/dashboard-v2 route AND, after design approval, to wire into
  * the real /dashboard route by wrapping it in a hook-driven container.
  */
-export default function DashboardV2({ data, fields, operations, weather, period: periodProp, onPeriodChange }: DashboardV2Props) {
+export default function DashboardV2({
+  data,
+  fields,
+  operations,
+  weather,
+  period: periodProp,
+  onPeriodChange,
+  resolvedRangeLabel,
+  onStepPrev,
+  onStepNext,
+  disableStepPrev,
+  disableStepNext,
+}: DashboardV2Props) {
   const { t, lang } = useTranslation();
   const dash = t.dashboard as Record<string, string | undefined>;
   const navigate = useNavigate();
@@ -198,8 +215,28 @@ export default function DashboardV2({ data, fields, operations, weather, period:
               </button>
             ))}
           </div>
-          <div className={s.rangeLabel} aria-live="polite">
-            {formatPeriodRange(period, dash.allTime ?? 'Весь час', lang as 'uk' | 'en')}
+          <div className={s.rangeWrap}>
+            <button
+              type="button"
+              className={s.rangeArrow}
+              onClick={onStepPrev}
+              disabled={disableStepPrev}
+              aria-label="Previous period"
+            >
+              ‹
+            </button>
+            <div className={s.rangeLabel} aria-live="polite">
+              {resolvedRangeLabel ?? formatPeriodRange(period, dash.allTime ?? 'Весь час', lang as 'uk' | 'en')}
+            </div>
+            <button
+              type="button"
+              className={s.rangeArrow}
+              onClick={onStepNext}
+              disabled={disableStepNext}
+              aria-label="Next period"
+            >
+              ›
+            </button>
           </div>
         </div>
       </motion.header>

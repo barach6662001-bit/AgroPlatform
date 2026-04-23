@@ -1,6 +1,7 @@
 import { Row, Col, Card, Statistic, Skeleton } from 'antd';
 import type { MaterialKpiItem } from '../../types/economics';
 import { formatUA } from '../../utils/numberFormat';
+import TotalCard from '../TotalCard';
 import s from './MaterialKpiCards.module.css';
 
 /** Background colour for the "Всього / Total" highlighted card (SASAgro blue). */
@@ -87,12 +88,15 @@ export default function MaterialKpiCards({ items, loading = false }: Props) {
 
         return (
           <Col key={item.key} xs={24} sm={12} md={8} lg={4}>
-            <Card
-              data-testid={`kpi-card-${item.key}`}
-              data-variant={isTotal ? 'total' : 'default'}
-              style={cardStyle}
-              styles={{ body: { padding: '16px 20px' } }}
-            >
+            {isTotal ? (
+              <TotalCard valueUah={item.amount} label={item.label} icon={item.icon} highlight />
+            ) : (
+              <Card
+                data-testid={`kpi-card-${item.key}`}
+                data-variant="default"
+                style={cardStyle}
+                styles={{ body: { padding: '16px 20px' } }}
+              >
               {/* Icon row */}
               <div
                 className={s.flex_center}
@@ -112,7 +116,8 @@ export default function MaterialKpiCards({ items, loading = false }: Props) {
                 valueStyle={valueStyle}
                 className={s.spaced}
               />
-            </Card>
+              </Card>
+            )}
           </Col>
         );
       })}
