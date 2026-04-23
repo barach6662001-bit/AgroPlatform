@@ -31,6 +31,8 @@ public class JwtTokenService : IJwtTokenService
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
             new Claim("TenantId", user.TenantId.ToString()),
+            new Claim("first_name", user.FirstName ?? string.Empty),
+            new Claim("last_name", user.LastName ?? string.Empty),
         };
 
         var expiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresInMinutes);

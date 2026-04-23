@@ -43,8 +43,8 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CompanyUserD
         {
             UserName              = request.Email,
             Email                 = request.Email,
-            FirstName             = request.FirstName,
-            LastName              = request.LastName,
+            FirstName             = request.FirstName ?? string.Empty,
+            LastName              = request.LastName ?? string.Empty,
             Role                  = role,
             TenantId              = request.TenantId,
             IsActive              = true,

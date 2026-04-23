@@ -20,6 +20,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpContextAccessor();
+        services.AddMemoryCache();
 
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 
@@ -47,6 +48,7 @@ public static class DependencyInjection
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<ITenantService, TenantService>();
+        services.AddScoped<IFeatureFlagService, FeatureFlagService>();
         services.AddSingleton<IDateTimeService, DateTimeService>();
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<IAttachmentStorage, LocalAttachmentStorage>();

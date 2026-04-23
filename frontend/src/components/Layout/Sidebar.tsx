@@ -17,6 +17,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useFeatureFlag } from '../../hooks/useFeatureFlag';
+import { OptionalFeatureFlags } from '../../features/optionalFeatureFlags';
 import { useSidebarStore } from '../../stores/sidebarStore';
 import s from './Sidebar.module.css';
 
@@ -103,6 +105,16 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const canAnalytics   = hasPermission('Analytics.View');
   const canAdmin       = hasPermission('Admin.Manage');
 
+  const budgetEnabled = useFeatureFlag(OptionalFeatureFlags.budget);
+  const pnlEnabled = useFeatureFlag(OptionalFeatureFlags.pnlByFields);
+  const analyticsMarginalityEnabled = useFeatureFlag(OptionalFeatureFlags.analyticsMarginality);
+  const analyticsSeasonComparisonEnabled = useFeatureFlag(OptionalFeatureFlags.analyticsSeasonComparison);
+  const analyticsBreakEvenEnabled = useFeatureFlag(OptionalFeatureFlags.analyticsBreakEven);
+  const analyticsFieldEfficiencyEnabled = useFeatureFlag(OptionalFeatureFlags.analyticsFieldEfficiency);
+  const analyticsResourceUsageEnabled = useFeatureFlag(OptionalFeatureFlags.analyticsResourceUsage);
+  const analyticsExpenseAnalyticsEnabled = useFeatureFlag(OptionalFeatureFlags.analyticsExpenseAnalytics);
+  const analyticsSalesAnalyticsEnabled = useFeatureFlag(OptionalFeatureFlags.analyticsSalesAnalytics);
+
   /* ── Group children ────────────────────────────────────────── */
   const productionChildren = [
     { key: '/fields',                    label: t.nav.fields },
@@ -132,20 +144,20 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
   const financeChildren = [
     { key: '/expenses',                  label: t.nav.costs },
     { key: '/sales',                     label: t.nav.sales },
-    { key: '/economics/budget',          label: t.nav.budget },
+    ...(budgetEnabled ? [{ key: '/economics/budget', label: t.nav.budget }] : []),
     { key: '/finance/leases',            label: t.nav.leases },
-    { key: '/economics/pnl',             label: t.nav.pnl },
+    ...(pnlEnabled ? [{ key: '/economics/pnl', label: t.nav.pnl }] : []),
   ];
 
   // Dedupe: marginality lives ONLY in Analytics now (previously also in Finance).
   const analyticsChildren = [
-    { key: '/analytics/marginality',     label: t.nav.marginality },
-    { key: '/economics/season-comparison', label: t.nav.seasonComparison },
-    { key: '/economics/break-even',      label: t.nav.breakEven },
-    { key: '/analytics/efficiency',      label: t.nav.efficiency },
-    { key: '/analytics/resources',       label: t.nav.resources },
-    { key: '/economics/analytics',       label: t.nav.costAnalytics },
-    { key: '/sales/analytics',           label: t.nav.revenueAnalytics },
+    ...(analyticsMarginalityEnabled ? [{ key: '/analytics/marginality', label: t.nav.marginality }] : []),
+    ...(analyticsSeasonComparisonEnabled ? [{ key: '/economics/season-comparison', label: t.nav.seasonComparison }] : []),
+    ...(analyticsBreakEvenEnabled ? [{ key: '/economics/break-even', label: t.nav.breakEven }] : []),
+    ...(analyticsFieldEfficiencyEnabled ? [{ key: '/analytics/efficiency', label: t.nav.efficiency }] : []),
+    ...(analyticsResourceUsageEnabled ? [{ key: '/analytics/resources', label: t.nav.resources }] : []),
+    ...(analyticsExpenseAnalyticsEnabled ? [{ key: '/economics/analytics', label: t.nav.costAnalytics }] : []),
+    ...(analyticsSalesAnalyticsEnabled ? [{ key: '/sales/analytics', label: t.nav.revenueAnalytics }] : []),
     { key: '/analytics/salary-fuel',     label: t.nav.salaryFuelAnalytics },
   ];
 
@@ -292,13 +304,13 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       children: hrChildren.map((c) => ({ ...c, label: leafLabel(c.key, c.label) })),
     }] : []),
     { type: 'divider' as const },
-    ...(canEconomics ? [{
+    ...(canEconomics && financeChildren.length > 0 ? [{
       key: 'finance-group',
       label: t.nav.finance,
       icon: <Banknote size={16} strokeWidth={1.5} />,
       children: financeChildren.map((c) => ({ ...c, label: leafLabel(c.key, c.label) })),
     }] : []),
-    ...(canAnalytics ? [{
+    ...(canAnalytics && analyticsChildren.length > 0 ? [{
       key: 'analytics-group',
       label: t.nav.analytics,
       icon: <BarChart3 size={16} strokeWidth={1.5} />,

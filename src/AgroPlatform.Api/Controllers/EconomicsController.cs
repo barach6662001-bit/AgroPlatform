@@ -9,8 +9,10 @@ using AgroPlatform.Application.Economics.Queries.GetFieldPnl;
 using AgroPlatform.Application.Economics.Queries.GetCostAnalytics;
 using AgroPlatform.Application.Economics.Queries.GetMarginality;
 using AgroPlatform.Application.Economics.Queries.GetSeasonComparison;
+using AgroPlatform.Api.FeatureFlags;
 using AgroPlatform.Domain.Authorization;
 using AgroPlatform.Domain.Enums;
+using AgroPlatform.Domain.FeatureFlags;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -94,6 +96,7 @@ public class EconomicsController : ControllerBase
     }
 
     [HttpGet("field-pnl")]
+    [RequireFeatureFlag(OptionalFeatureFlagKeys.PnlByFields)]
     [ProducesResponseType(typeof(IReadOnlyList<FieldPnlDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFieldPnl(
         [FromQuery] int? year,
@@ -109,6 +112,7 @@ public class EconomicsController : ControllerBase
 
     /// <summary>Returns marginality summary (revenue vs costs by product and by field) for the given year.</summary>
     [HttpGet("marginality")]
+    [RequireFeatureFlag(OptionalFeatureFlagKeys.AnalyticsMarginality)]
     [ProducesResponseType(typeof(MarginalitySummaryDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMarginality(
         [FromQuery] int? year,
@@ -120,6 +124,7 @@ public class EconomicsController : ControllerBase
 
     /// <summary>Returns cost analytics aggregations (by category, by month) for the given year.</summary>
     [HttpGet("cost-analytics")]
+    [RequireFeatureFlag(OptionalFeatureFlagKeys.AnalyticsExpenseAnalytics)]
     [ProducesResponseType(typeof(CostAnalyticsDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCostAnalytics(
         [FromQuery] int? year,
@@ -131,6 +136,7 @@ public class EconomicsController : ControllerBase
 
     /// <summary>Returns aggregated metrics for each requested season year (revenue, costs, margin, per-ha KPIs).</summary>
     [HttpGet("season-comparison")]
+    [RequireFeatureFlag(OptionalFeatureFlagKeys.AnalyticsSeasonComparison)]
     [ProducesResponseType(typeof(IReadOnlyList<EconomicsByYearDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSeasonComparison(
         [FromQuery] string? years,
@@ -152,6 +158,7 @@ public class EconomicsController : ControllerBase
     /// Formula: breakEvenYield = totalCosts / (pricePerTonne * areaHectares)
     /// </summary>
     [HttpGet("break-even")]
+    [RequireFeatureFlag(OptionalFeatureFlagKeys.AnalyticsBreakEven)]
     [ProducesResponseType(typeof(IReadOnlyList<BreakEvenDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBreakEven(
         [FromQuery] int? year,

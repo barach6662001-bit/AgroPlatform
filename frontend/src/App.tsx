@@ -64,6 +64,9 @@ import OnboardingWizard from './pages/Onboarding/OnboardingWizard';
 import LandingPage from './pages/Landing/LandingPage';
 import { useAuthStore } from './stores/authStore';
 import { useSidebarStore } from './stores/sidebarStore';
+import { useFeatureFlagsStore } from './stores/featureFlagsStore';
+import FeatureFlagGate from './components/FeatureFlagGate';
+import { OptionalFeatureFlags } from './features/optionalFeatureFlags';
 import DevBypassBanner from './components/DevBypassBanner';
 import { isPublicDemoMode } from './utils/publicDemo';
 import { usePublicDemoAutoLogin } from './hooks/usePublicDemoAutoLogin';
@@ -89,10 +92,27 @@ export default function App() {
   // One-shot (guarded inside the store) — user can freely repin/unpin after.
   const authRole = useAuthStore((s) => s.role);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const tenantId = useAuthStore((s) => s.tenantId);
   const applyDefaultPinsForRole = useSidebarStore((s) => s.applyDefaultPinsForRole);
+  const fetchFeatureFlags = useFeatureFlagsStore((s) => s.fetchFeatureFlags);
+  const resetFeatureFlags = useFeatureFlagsStore((s) => s.reset);
+  const loadedForTenantId = useFeatureFlagsStore((s) => s.loadedForTenantId);
   useEffect(() => {
     if (isAuthenticated) applyDefaultPinsForRole(authRole);
   }, [isAuthenticated, authRole, applyDefaultPinsForRole]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      resetFeatureFlags();
+      return;
+    }
+
+    if (tenantId && loadedForTenantId && loadedForTenantId !== tenantId) {
+      resetFeatureFlags();
+    }
+
+    void fetchFeatureFlags();
+  }, [isAuthenticated, tenantId, loadedForTenantId, fetchFeatureFlags, resetFeatureFlags]);
 
   useEffect(() => {
     dayjs.locale(lang === 'uk' ? 'uk' : 'en');
@@ -166,19 +186,89 @@ export default function App() {
             <Route path="/fleet" element={<FleetMap />} />
             <Route path="/fuel" element={<FuelStation />} />
             <Route path="/sales" element={<SalesList />} />
-            <Route path="/sales/analytics" element={<RevenueAnalytics />} />
+            <Route
+              path="/sales/analytics"
+              element={
+                <FeatureFlagGate feature={OptionalFeatureFlags.analyticsSalesAnalytics}>
+                  <RevenueAnalytics />
+                </FeatureFlagGate>
+              }
+            />
             <Route path="/expenses" element={<CostRecords />} />
             <Route path="/economics" element={<Navigate to="/expenses" replace />} />
             <Route path="/economics/costs" element={<Navigate to="/expenses" replace />} />
-            <Route path="/economics/analytics" element={<CostAnalytics />} />
-            <Route path="/economics/pnl" element={<FieldPnl />} />
-            <Route path="/economics/budget" element={<BudgetPage />} />
-            <Route path="/economics/marginality" element={<MarginalityDashboard />} />
-            <Route path="/economics/season-comparison" element={<SeasonComparison />} />
-            <Route path="/economics/break-even" element={<BreakEvenCalculator />} />
-            <Route path="/analytics/resources" element={<ResourceConsumption />} />
-            <Route path="/analytics/efficiency" element={<FieldEfficiency />} />
-            <Route path="/analytics/marginality" element={<AnalyticsMarginalityDashboard />} />
+            <Route
+              path="/economics/analytics"
+              element={
+                <FeatureFlagGate feature={OptionalFeatureFlags.analyticsExpenseAnalytics}>
+                  <CostAnalytics />
+                </FeatureFlagGate>
+              }
+            />
+            <Route
+              path="/economics/pnl"
+              element={
+                <FeatureFlagGate feature={OptionalFeatureFlags.pnlByFields}>
+                  <FieldPnl />
+                </FeatureFlagGate>
+              }
+            />
+            <Route
+              path="/economics/budget"
+              element={
+                <FeatureFlagGate feature={OptionalFeatureFlags.budget}>
+                  <BudgetPage />
+                </FeatureFlagGate>
+              }
+            />
+            <Route
+              path="/economics/marginality"
+              element={
+                <FeatureFlagGate feature={OptionalFeatureFlags.analyticsMarginality}>
+                  <MarginalityDashboard />
+                </FeatureFlagGate>
+              }
+            />
+            <Route
+              path="/economics/season-comparison"
+              element={
+                <FeatureFlagGate feature={OptionalFeatureFlags.analyticsSeasonComparison}>
+                  <SeasonComparison />
+                </FeatureFlagGate>
+              }
+            />
+            <Route
+              path="/economics/break-even"
+              element={
+                <FeatureFlagGate feature={OptionalFeatureFlags.analyticsBreakEven}>
+                  <BreakEvenCalculator />
+                </FeatureFlagGate>
+              }
+            />
+            <Route
+              path="/analytics/resources"
+              element={
+                <FeatureFlagGate feature={OptionalFeatureFlags.analyticsResourceUsage}>
+                  <ResourceConsumption />
+                </FeatureFlagGate>
+              }
+            />
+            <Route
+              path="/analytics/efficiency"
+              element={
+                <FeatureFlagGate feature={OptionalFeatureFlags.analyticsFieldEfficiency}>
+                  <FieldEfficiency />
+                </FeatureFlagGate>
+              }
+            />
+            <Route
+              path="/analytics/marginality"
+              element={
+                <FeatureFlagGate feature={OptionalFeatureFlags.analyticsMarginality}>
+                  <AnalyticsMarginalityDashboard />
+                </FeatureFlagGate>
+              }
+            />
             <Route path="/analytics/salary-fuel" element={<SalaryFuelAnalytics />} />
             <Route path="/hr/employees" element={<EmployeeList />} />
             <Route path="/hr/worklogs" element={<WorkLogPage />} />
