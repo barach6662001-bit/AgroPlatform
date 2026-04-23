@@ -234,7 +234,7 @@ export default function SalesList() {
 
   return (
     <div>
-      <PageHeader title={t.sales.title} subtitle={t.sales.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.sales }]} />} />
+      <PageHeader title={t.sales.title} subtitle={t.sales.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/expenses' }, { label: t.nav.sales }]} />} />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 16 }}>
         <TotalCard label={t.sales.totalRevenue ?? 'Загальний дохід'} valueUah={totalRevenue} highlight />

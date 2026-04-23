@@ -181,7 +181,7 @@ export default function CostRecords() {
 
   return (
     <div>
-      <PageHeader title={t.economics.title} subtitle={t.economics.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.costs }]} />} />
+      <PageHeader title={t.economics.title} subtitle={t.economics.subtitle} breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/expenses' }, { label: t.nav.costs }]} />} />
 
       <div style={{ marginBottom: 24 }}>
         <MaterialKpiCards items={kpiItems} loading={loading} />

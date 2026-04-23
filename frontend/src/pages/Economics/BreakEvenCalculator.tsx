@@ -112,7 +112,7 @@ export default function BreakEvenCalculator() {
       <PageHeader
         title={t.economics.breakEvenTitle}
         subtitle={t.economics.breakEvenSubtitle}
-        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.breakEven }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/expenses' }, { label: t.nav.breakEven }]} />}
       />
 
       {/* Filters */}

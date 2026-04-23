@@ -86,7 +86,7 @@ export default function MarginalityDashboard() {
       <PageHeader
         title={t.economics.margTitle}
         subtitle={t.economics.margSubtitle}
-        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.marginality }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/expenses' }, { label: t.nav.marginality }]} />}
       />
 
       <Row gutter={[16, 16]} align="middle" className={s.spaced}>

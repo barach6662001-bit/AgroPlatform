@@ -124,7 +124,7 @@ export default function SeasonComparison() {
       <PageHeader
         title={t.economics.seasonTitle}
         subtitle={t.economics.seasonSubtitle}
-        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.seasonComparison }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/expenses' }, { label: t.nav.seasonComparison }]} />}
       />
 
       <Row gutter={[16, 16]} align="middle" className={s.spaced}>

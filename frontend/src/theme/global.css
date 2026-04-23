@@ -29,10 +29,6 @@ body::before {
     radial-gradient(ellipse 60% 50% at 5% 100%, rgba(var(--accRgb), .06) 0%, transparent 50%);
 }
 
-[data-theme="light"] body::before {
-  display: none;
-}
-
 /* Interactive elements — smooth transitions */
 a, button, [role="button"],
 .ant-btn, .ant-menu-item, .ant-menu-submenu-title,

@@ -163,7 +163,7 @@ export default function FieldPnl() {
       <PageHeader
         title={t.economics.pnlTitle}
         subtitle={t.economics.pnlSubtitle}
-        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/economics' }, { label: t.nav.pnl }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ label: t.nav.finance, path: '/expenses' }, { label: t.nav.pnl }]} />}
       />
 
       {/* Filters */}

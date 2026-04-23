@@ -167,7 +167,9 @@ export default function App() {
             <Route path="/fuel" element={<FuelStation />} />
             <Route path="/sales" element={<SalesList />} />
             <Route path="/sales/analytics" element={<RevenueAnalytics />} />
-            <Route path="/economics" element={<CostRecords />} />
+            <Route path="/expenses" element={<CostRecords />} />
+            <Route path="/economics" element={<Navigate to="/expenses" replace />} />
+            <Route path="/economics/costs" element={<Navigate to="/expenses" replace />} />
             <Route path="/economics/analytics" element={<CostAnalytics />} />
             <Route path="/economics/pnl" element={<FieldPnl />} />
             <Route path="/economics/budget" element={<BudgetPage />} />
