@@ -67,6 +67,19 @@ public class TestDbContext : DbContext, IAppDbContext
             e.Property(x => x.Code).HasMaxLength(16);
             e.Property(x => x.Name).HasMaxLength(100);
         });
+
+        modelBuilder.Entity<ExchangeRate>(e =>
+        {
+            e.HasKey(x => new { x.Code, x.Date });
+            e.Property(x => x.Code).HasMaxLength(3);
+        });
+
+        modelBuilder.Entity<UserPreferences>(e =>
+        {
+            e.HasKey(x => x.UserId);
+            e.Property(x => x.UserId).HasMaxLength(450);
+            e.Property(x => x.PreferredCurrency).HasMaxLength(3);
+        });
     }
 
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
@@ -123,6 +136,8 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<UserMfaSettings> UserMfaSettings => Set<UserMfaSettings>();
     public DbSet<SuperAdminAuditLog> SuperAdminAuditLogs => Set<SuperAdminAuditLog>();
     public DbSet<Season> Seasons => Set<Season>();
+    public DbSet<ExchangeRate> ExchangeRates => Set<ExchangeRate>();
+    public DbSet<UserPreferences> UserPreferences => Set<UserPreferences>();
     public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
     public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
     public DbSet<InventorySession> InventorySessions => Set<InventorySession>();

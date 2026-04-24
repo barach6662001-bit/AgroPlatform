@@ -84,8 +84,10 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<UserMfaSettings> UserMfaSettings => Set<UserMfaSettings>();
+    public DbSet<UserPreferences> UserPreferences => Set<UserPreferences>();
     public DbSet<SuperAdminAuditLog> SuperAdminAuditLogs => Set<SuperAdminAuditLog>();
     public DbSet<Season> Seasons => Set<Season>();
+    public DbSet<ExchangeRate> ExchangeRates => Set<ExchangeRate>();
 
     // Approval workflow
     public DbSet<ApprovalRule> ApprovalRules => Set<ApprovalRule>();

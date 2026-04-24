@@ -1096,6 +1096,12 @@ const en: Translations = {
     language: 'Language',
     langUk: 'Українська',
     langEn: 'English',
+    currency: 'Currency',
+    currencyHint: 'Display currency. Data is stored in UAH; converted at NBU rate.',
+    currencyUah: 'Hryvnia (UAH)',
+    currencyUsd: 'US Dollar (USD)',
+    currencyEur: 'Euro (EUR)',
+    currencySaveError: 'Failed to save currency',
   },
   budget: {
     title: 'Budget Planning',
