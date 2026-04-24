@@ -1,15 +1,22 @@
+/*
+ * .card augments the design-system <Card> primitive that wraps this tile.
+ *
+ * Card already supplies background, border and border-radius from tokens
+ * (radius="lg", subtle variant, bordered). The rules below add only the
+ * tile-specific affordances Card does not provide:
+ *   - cursor + relative positioning for the hover overlay
+ *   - overflow:hidden so the bleed-to-edge thumb clips against the radius
+ *   - the lift + shadow hover transition
+ *   - the descendant rule that fades the hover CTA in on hover
+ */
 .card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  transition: transform 150ms ease, box-shadow 150ms ease;
 }
 
 .card:hover {
-  border-color: var(--border-hover);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }

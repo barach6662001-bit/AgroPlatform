@@ -3,12 +3,32 @@ import { ArrowRight } from 'lucide-react';
 import type { FieldDto } from '../../../types/field';
 import { useTranslation } from '../../../i18n';
 import { getCropTagStyle } from '../../../utils/cropTagColors';
+import { Card } from '../../../design-system';
 import s from './FieldCard.module.css';
 
 interface Props {
   field: FieldDto;
 }
 
+/**
+ * FieldCard — tile rendered inside the fields grid (FieldsList).
+ *
+ * Phase 2a: outer container migrated from `<div className={s.card}>`
+ * to the design-system `<Card>` primitive. Card supplies the
+ * background, border and radius from tokens (`radius="lg"` mirrors
+ * the legacy `var(--radius-lg)`); Card's auto padding/gap are
+ * disabled (`p="0"`, `gap="0"`) because this tile composes its own
+ * internal layout — a thumb that bleeds to the edges plus an info
+ * block with its own padding. The local CSS module retains only the
+ * tile-specific affordances (cursor, hover lift + shadow, the
+ * absolutely-positioned hover overlay, and the inner thumb/info/
+ * badge/pill rules).
+ *
+ * Behavior preserved verbatim from the legacy implementation,
+ * including the existing `onClick` on a non-button element (an
+ * accessibility debt that is intentionally out of scope for this
+ * pure-surface migration).
+ */
 export default function FieldCard({ field }: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -24,7 +44,14 @@ export default function FieldCard({ field }: Props) {
   };
 
   return (
-    <div className={s.card} onClick={() => navigate(`/fields/${field.id}`)}>
+    <Card
+      as="div"
+      radius="lg"
+      p="0"
+      gap="0"
+      className={s.card}
+      onClick={() => navigate(`/fields/${field.id}`)}
+    >
       {/* Polygon preview placeholder */}
       <div className={s.thumb}>
         <svg viewBox="0 0 80 60" className={s.thumbSvg}>
@@ -65,6 +92,6 @@ export default function FieldCard({ field }: Props) {
           {t.fields.details} <ArrowRight size={12} />
         </button>
       </div>
-    </div>
+    </Card>
   );
 }
