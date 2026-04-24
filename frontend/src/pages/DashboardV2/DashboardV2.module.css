@@ -206,58 +206,13 @@
   .header { flex-direction: column; }
 }
 
-/* ── Card surface (shared) ───────────────────────────── */
-.card {
-  position: relative;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 20px 22px;
-  overflow: hidden;
-  transition: background 150ms ease, border-color 150ms ease;
-}
-
-.card:hover {
-  background: rgba(255, 255, 255, 0.035);
-  border-color: rgba(255, 255, 255, 0.10);
-}
-
-/* Hairline top edge highlight on every card — matches landing */
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-  pointer-events: none;
-}
-
-/* Card heading row */
-.cardHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.cardLink {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  font-family: var(--fm);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.50);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  transition: color 150ms ease;
-}
-
-.cardLink:hover { color: var(--text-primary); }
+/* ── Card surface ─────────────────────────────────────
+ * Removed in Phase 1f. The shared `.card`, `.card:hover`,
+ * `.card::before`, `.cardHeader` and `.cardLink` rules are no
+ * longer referenced — every consumer in this row uses the
+ * design-system <Card> primitive instead. See
+ * `frontend/src/design-system/primitives/Card.tsx`.
+ */
 
 /* ── Preview banner (DEV-only top strip) ─────────────── */
 .previewBanner {
