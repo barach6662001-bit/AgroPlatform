@@ -1178,6 +1178,8 @@ const en: Translations = {
     resourceOverspend: 'Resource overspend',
     loadError: 'Error loading notifications',
     markReadError: 'Error marking as read',
+    read: 'read',
+    unread: 'unread',
     titleColumn: 'Title',
     bodyColumn: 'Message',
     dateColumn: 'Date',

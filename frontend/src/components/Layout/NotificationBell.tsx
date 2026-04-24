@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import { Badge, Button, Popover, List, Typography, Space, Tag, Empty, message } from 'antd';
 import { BellOutlined } from '@ant-design/icons';
 import { useNotificationStore } from '../../hooks/useNotifications';
@@ -117,36 +117,72 @@ export default function NotificationBell() {
         <List
           dataSource={recentNotifications}
           className={s.block2}
-          renderItem={(item: Notification) => (
-            <List.Item
-              style={{
-                padding: '8px 4px',
-                cursor: 'pointer',
-                opacity: item.read ? 0.6 : 1,
-                borderLeft: `3px solid ${typeColor[item.type]}`,
-                paddingLeft: 8,
-                marginBottom: 4,
-              }}
-              onClick={() => handleMarkRead(item.id)}
-            >
-              <div className={s.fullWidth1}>
-                <Space className={s.fullWidth2}>
-                  <Tag color={typeTagColor[item.type]} className={s.spaced}>
-                    {item.type.toUpperCase()}
-                  </Tag>
-                  <Typography.Text type="secondary" className={s.text11}>
-                    {formatRelativeTime(item.timestamp)}
+          renderItem={(item: Notification) => {
+            // Phase 2h — keyboard accessibility for AntD List.Item
+            // notifications inside the bell Popover. The visible row
+            // is mouse-clickable (cursor:pointer + acknowledge-on-
+            // click) but had no role / tabIndex / key handler /
+            // accessible name. We mirror the click intent for
+            // keyboard + AT users with the same pattern used in
+            // Phases 2b–2g.
+            const acknowledge = () => handleMarkRead(item.id);
+
+            // Concise screen-reader summary mirroring the visible
+            // row content (severity, relative time, read-state,
+            // message). Read/unread is communicated via aria-label
+            // text instead of aria-pressed because clicking a
+            // read item is functionally a no-op (acknowledgement,
+            // not a toggle).
+            const stateLabel = item.read ? t.notifications.read : t.notifications.unread;
+            const ariaLabel =
+              `${item.type.toUpperCase()}, ${formatRelativeTime(item.timestamp)}, ` +
+              `${stateLabel}: ${item.message}`;
+
+            return (
+              <List.Item
+                className={s.item}
+                style={{
+                  padding: '8px 4px',
+                  cursor: 'pointer',
+                  opacity: item.read ? 0.6 : 1,
+                  borderLeft: `3px solid ${typeColor[item.type]}`,
+                  paddingLeft: 8,
+                  marginBottom: 4,
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={ariaLabel}
+                onClick={acknowledge}
+                onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
+                  // AntD types <List.Item> as a HTMLDivElement
+                  // even though it renders an <li> — match their
+                  // signature to satisfy strict typing.
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    acknowledge();
+                  }
+                }}
+              >
+                <div className={s.fullWidth1}>
+                  <Space className={s.fullWidth2}>
+                    {/* Decorative — duplicated in aria-label */}
+                    <Tag color={typeTagColor[item.type]} className={s.spaced} aria-hidden="true">
+                      {item.type.toUpperCase()}
+                    </Tag>
+                    <Typography.Text type="secondary" className={s.text11} aria-hidden="true">
+                      {formatRelativeTime(item.timestamp)}
+                    </Typography.Text>
+                  </Space>
+                  <Typography.Text
+                    className={s.text13}
+                    strong={!item.read}
+                  >
+                    {item.message}
                   </Typography.Text>
-                </Space>
-                <Typography.Text
-                  className={s.text13}
-                  strong={!item.read}
-                >
-                  {item.message}
-                </Typography.Text>
-              </div>
-            </List.Item>
-          )}
+                </div>
+              </List.Item>
+            );
+          }}
         />
       )}
     </div>
@@ -164,8 +200,9 @@ export default function NotificationBell() {
       <Badge count={unreadCount} size="small" offset={[-2, 2]}>
         <Button
           type="text"
-          icon={<BellOutlined className={s.text18} />}
+          icon={<BellOutlined className={s.text18} aria-hidden="true" />}
           className={s.padded}
+          aria-label={t.notifications.title}
         />
       </Badge>
     </Popover>
