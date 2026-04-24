@@ -90,22 +90,23 @@
 
 ---
 
-## ПУНКТ 8 — Прибрати light mode, додати selectable currency  `[8.1 CLOSED in PR #604; 8.2 PLANNED for PR #613]`
+## ПУНКТ 8 — Прибрати light mode, додати selectable currency  `[8.1 CLOSED in PR #604; 8.2 CLOSED in PR #613]`
 
 ### 8.1 Light mode  `[CLOSED in PR #604]`
 **Shipped:** Sun/Moon toggle removed from topbar; `themeStore` locked to `'dark'`; `ConfigProvider` always uses dark theme.
 
-### 8.2 Currency selector  `[PLANNED for PR #613]`
-**Scope:**
-- `UserPreferences.PreferredCurrency` (UAH/USD/EUR, default UAH)
-- `ExchangeRate` table with PK (Code, Date)
-- `NbuCurrencyService` + cron 06:00 Kyiv
-- Backfill script `Tools/NbuBackfill` from 2024-01-01
-- `useFormatCurrency()` hook, settings UI in Профіль → Валюта
-- Fallback: last stored rate on NBU failure; weekend/holiday → previous business day
-- Exports: currency header with NBU rate on export date
+### 8.2 Currency selector  `[CLOSED in PR #613]`
+**Shipped:**
+- `UserPreferences.PreferredCurrency` (UAH/USD/EUR, default UAH) — persisted per-user, FK to AspNetUsers
+- `ExchangeRate` table with composite PK `(Code, Date)` — global (non-tenant-scoped)
+- `NbuCurrencyService` + `NbuDailySyncJob` BackgroundService running at **06:00 Europe/Kyiv**
+- Backfill support via `BackfillAsync` (tools backfill script deferred — can reuse endpoint)
+- `useFormatCurrency()` hook, Profile → Валюта selector (UAH/USD/EUR)
+- Fallback chain: previous-business-day row → last stored rate on NBU failure
 - Base currency in DB always UAH; conversion at presentation layer only
-- Do NOT add `rate_at_transaction` to operation tables in this phase
+- No `rate_at_transaction` added to operation tables (per locked decision)
+
+**Deferred to PR #617:** currency header with NBU rate on export date (CSV/PDF export helpers touch)
 
 ---
 
