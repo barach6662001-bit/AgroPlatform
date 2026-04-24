@@ -19,6 +19,7 @@
 - [x] **PR #611** — super-admin integration tests (8 scenarios), `TestAuthHandler` extended with opt-in headers *(test debt from #610 closed)*
 - [x] **PR #612** — full Season model with real StartDate/EndDate, idempotent data seed for existing tenants, tenant-admin + super-admin CRUD, dashboard arrows use real seasons *(TZ 2 remainder)*
 - [x] **PR #613** — currency system: `ExchangeRate` table (composite PK), `UserPreferences.PreferredCurrency`, `NbuCurrencyService` with daily 06:00 Kyiv sync + previous-business-day fallback + last-stored-rate on NBU failure, `/api/currency/rates*` + `/api/currency/preferences` endpoints, frontend `useFormatCurrency` hook + Profile selector *(TZ 8.2)*
+- [x] **PR #628** — currency refactor completion: migrate 20+ pages from hardcoded ₴/UAH/грн to `useFormatCurrency`/`useCurrencySymbol`/`useConvertFromUah`, dynamic formatUAH, reactive `<Money/>` component. Displayed values now reflect the user's preferred currency everywhere (Dashboard, Economics, Analytics, Sales, Fields, HR, Machinery, Warehouses, GrainStorage) *(TZ 8.2 completion)*
 - [x] **PR #616** *(parallel design-system track)* — design-system foundation: TypeScript token source-of-truth, `scripts/build-tokens.ts`, `frontend/src/design-system/tokens/*`, `lightTheme.ts` as deadcode ThemeConfig. Zero breaking changes to existing CSS variable names.
 
 ---
