@@ -38,12 +38,16 @@ public sealed class CurrencyController : ControllerBase
     [HttpGet("rates/latest")]
     public async Task<IActionResult> GetLatestRates(CancellationToken ct)
     {
-        var rows = await _db.ExchangeRates
-            .Where(r => TrackedCodes.Contains(r.Code))
-            .GroupBy(r => r.Code)
-            .Select(g => g.OrderByDescending(r => r.Date).First())
-            .Select(r => new RateDto(r.Code, r.Date, r.RateToUah))
-            .ToListAsync(ct);
+        var rows = new List<RateDto>();
+        foreach (var code in TrackedCodes)
+        {
+            var r = await _db.ExchangeRates
+                .Where(x => x.Code == code)
+                .OrderByDescending(x => x.Date)
+                .Select(x => new RateDto(x.Code, x.Date, x.RateToUah))
+                .FirstOrDefaultAsync(ct);
+            if (r is not null) rows.Add(r);
+        }
         return Ok(rows);
     }
 

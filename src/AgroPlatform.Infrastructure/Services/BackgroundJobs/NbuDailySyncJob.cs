@@ -48,7 +48,7 @@ public sealed class NbuDailySyncJob : BackgroundService
         }
     }
 
-    internal static TimeSpan TimeUntilNext06Kyiv(DateTime nowUtc)
+    public static TimeSpan TimeUntilNext06Kyiv(DateTime nowUtc)
     {
         var nowKyiv = TimeZoneInfo.ConvertTimeFromUtc(nowUtc, KyivTz);
         var todayAt6 = new DateTime(nowKyiv.Year, nowKyiv.Month, nowKyiv.Day, 6, 0, 0, DateTimeKind.Unspecified);
