@@ -484,7 +484,7 @@ export default function LeasePage() {
                 <InputNumber
                   min={0}
                   precision={2}
-                  addonAfter={`${currencySymbol}/т`}
+                  addonAfter="₴/т"
                   className={s.fullWidth}
                   onChange={(price) => {
                     const qty = payForm.getFieldValue('grainQuantityTons');
@@ -495,7 +495,7 @@ export default function LeasePage() {
                 />
               </Form.Item>
               <Form.Item name="amount" label={t.lease.calculatedAmount}>
-                <InputNumber disabled addonAfter={currencySymbol} className={s.fullWidth} />
+                <InputNumber disabled addonAfter="₴" className={s.fullWidth} />
               </Form.Item>
             </>
           )}

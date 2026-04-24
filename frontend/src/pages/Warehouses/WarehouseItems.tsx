@@ -379,7 +379,7 @@ export default function WarehouseItems() {
               min={0}
               step={0.01}
               precision={2}
-              addonAfter={currencySymbol}
+              addonAfter="₴"
               className={s.fullWidth}
               onChange={(val) => {
                 const qty = receiptForm.getFieldValue('quantity');
@@ -508,7 +508,7 @@ export default function WarehouseItems() {
             <InputNumber min={0} step={0.001} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="purchasePrice" label={t.warehouses.purchasePrice}>
-            <InputNumber min={0} precision={4} className={s.fullWidth} addonAfter={currencySymbol} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} addonAfter="₴" />
           </Form.Item>
         </Form>
       </Modal>
@@ -610,7 +610,7 @@ export default function WarehouseItems() {
             <InputNumber min={0} step={0.001} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="purchasePrice" label={t.warehouses.purchasePrice}>
-            <InputNumber min={0} precision={4} className={s.fullWidth} addonAfter={currencySymbol} />
+            <InputNumber min={0} precision={4} className={s.fullWidth} addonAfter="₴" />
           </Form.Item>
         </Form>
       </Modal>

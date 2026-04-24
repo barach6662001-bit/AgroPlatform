@@ -16,6 +16,7 @@ import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { useFormatCurrency } from '../../hooks/useFormatCurrency';
+import Money from '../../components/ui/Money';
 import { formatDate } from '../../utils/dateFormat';
 import apiClient from '../../api/axios';
 import { enqueueOperation } from '../../utils/offlineQueue';
@@ -166,7 +167,7 @@ export default function CostRecords() {
     {
       title: t.economics.amount, dataIndex: 'amount', key: 'amount',
       sorter: (a: CostRecordDto, b: CostRecordDto) => a.amount - b.amount,
-      render: (v: number, r: CostRecordDto) => <strong>{v.toFixed(2)} {r.currency}</strong>,
+      render: (v: number, r: CostRecordDto) => <strong><Money value={v} date={r.date ? new Date(r.date) : undefined} /></strong>,
     },
     { title: t.economics.description, dataIndex: 'description', key: 'description', render: (v: string) => v || '—' },
     {
@@ -242,7 +243,7 @@ export default function CostRecords() {
             <Table.Summary.Row>
               <Table.Summary.Cell index={0} colSpan={2}><strong>{t.economics.total}</strong></Table.Summary.Cell>
               <Table.Summary.Cell index={1}>
-                <strong style={{ color: '#f5222d' }}>{fmt(totalAmount)}</strong>
+                <strong style={{ color: '#f5222d' }}><Money value={totalAmount} /></strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={2} />
               <Table.Summary.Cell index={3} />

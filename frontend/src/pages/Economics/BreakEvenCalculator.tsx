@@ -132,7 +132,7 @@ export default function BreakEvenCalculator() {
           step={100}
           value={pricePerTonne}
           onChange={(v) => setPricePerTonne(v)}
-          placeholder={`${currencySymbol}/т`}
+          placeholder="₴/т"
           className={s.block7}
         />
       </Space>

@@ -184,7 +184,7 @@ export default function FieldPnl() {
           step={100}
           value={pricePerTonne}
           onChange={(v) => setPricePerTonne(v)}
-          placeholder={currencySymbol}
+          placeholder="₴"
           className={s.block14}
         />
         <Button icon={<PrinterOutlined />} onClick={() => printReport(t.economics.pnlTitle, `<table><thead><tr><th>Поле</th><th>Витрати</th><th>Дохід</th><th>Прибуток</th></tr></thead><tbody>${data.map(d => `<tr><td>${d.fieldName}</td><td>${d.totalCosts.toLocaleString()}</td><td>${(d.estimatedRevenue ?? 0).toLocaleString()}</td><td>${(d.netProfit ?? 0).toLocaleString()}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
