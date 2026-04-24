@@ -58,10 +58,18 @@ public static class DependencyInjection
         services.AddScoped<IMfaService, MfaService>();
         services.AddScoped<ISuperAdminAuditService, SuperAdminAuditService>();
 
+        // Currency (NBU)
+        services.AddHttpClient<INbuCurrencyService, NbuCurrencyService>(c =>
+        {
+            c.Timeout = TimeSpan.FromSeconds(15);
+            c.DefaultRequestHeaders.UserAgent.ParseAdd("AgroPlatform/1.0");
+        });
+
         // Background automation jobs
         services.AddHostedService<FuelAnomalyJob>();
         services.AddHostedService<LowStockAlertJob>();
         services.AddHostedService<DailyReportService>();
+        services.AddHostedService<NbuDailySyncJob>();
 
         services.AddIdentity<AppUser, IdentityRole>(options =>
         {

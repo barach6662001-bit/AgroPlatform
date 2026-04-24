@@ -43,6 +43,7 @@ public sealed class MeController : ControllerBase
         var userId = _currentUser.UserId;
         bool isSuperAdmin = _currentUser.IsSuperAdmin;
         bool mfaEnabled = false;
+        string preferredCurrency = "UAH";
 
         if (!string.IsNullOrEmpty(userId))
         {
@@ -52,6 +53,9 @@ public sealed class MeController : ControllerBase
             // Prefer the DB flag over the JWT claim (claim may be stale across logins).
             var user = await _userManager.FindByIdAsync(userId);
             if (user is not null) isSuperAdmin = user.IsSuperAdmin || _currentUser.IsSuperAdmin;
+
+            var prefs = await _db.UserPreferences.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
+            if (prefs is not null) preferredCurrency = prefs.PreferredCurrency;
         }
 
         return Ok(new
@@ -64,6 +68,7 @@ public sealed class MeController : ControllerBase
             features,
             isSuperAdmin,
             mfaEnabled,
+            preferredCurrency,
             // Super-admin without MFA enrolled → SPA redirects to /setup-mfa.
             mfaRequired = isSuperAdmin && !mfaEnabled,
         });
