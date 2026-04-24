@@ -12,6 +12,7 @@ using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Sales;
+using AgroPlatform.Domain.Seasons;
 using AgroPlatform.Domain.SuperAdmin;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
@@ -58,6 +59,13 @@ public class TestDbContext : DbContext, IAppDbContext
         {
             e.HasKey(x => x.Id);
             e.Property(x => x.Action).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Season>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Code).HasMaxLength(16);
+            e.Property(x => x.Name).HasMaxLength(100);
         });
     }
 
@@ -114,6 +122,7 @@ public class TestDbContext : DbContext, IAppDbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<UserMfaSettings> UserMfaSettings => Set<UserMfaSettings>();
     public DbSet<SuperAdminAuditLog> SuperAdminAuditLogs => Set<SuperAdminAuditLog>();
+    public DbSet<Season> Seasons => Set<Season>();
     public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
     public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
     public DbSet<InventorySession> InventorySessions => Set<InventorySession>();

@@ -12,6 +12,7 @@ using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Sales;
+using AgroPlatform.Domain.Seasons;
 using AgroPlatform.Domain.SuperAdmin;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
@@ -76,6 +77,7 @@ public interface IAppDbContext
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<UserMfaSettings> UserMfaSettings { get; }
     DbSet<SuperAdminAuditLog> SuperAdminAuditLogs { get; }
+    DbSet<Season> Seasons { get; }
 
     // Approval workflow
     DbSet<ApprovalRule> ApprovalRules { get; }

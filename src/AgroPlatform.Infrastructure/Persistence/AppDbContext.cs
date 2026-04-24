@@ -13,6 +13,7 @@ using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Sales;
 using AgroPlatform.Domain.SuperAdmin;
+using AgroPlatform.Domain.Seasons;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -84,6 +85,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<UserMfaSettings> UserMfaSettings => Set<UserMfaSettings>();
     public DbSet<SuperAdminAuditLog> SuperAdminAuditLogs => Set<SuperAdminAuditLog>();
+    public DbSet<Season> Seasons => Set<Season>();
 
     // Approval workflow
     public DbSet<ApprovalRule> ApprovalRules => Set<ApprovalRule>();
