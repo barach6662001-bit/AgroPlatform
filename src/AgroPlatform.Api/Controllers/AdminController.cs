@@ -1,6 +1,7 @@
 using AgroPlatform.Api.SuperAdmin;
 using AgroPlatform.Application.Common.Interfaces;
 using AgroPlatform.Domain.FeatureFlags;
+using AgroPlatform.Domain.Seasons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -213,5 +214,133 @@ public sealed class AdminController : ControllerBase
             .ToListAsync(ct);
 
         return Ok(new { items, total, page, pageSize });
+    }
+
+    // =============================================================================================
+    // Seasons (platform super-admin scope). Bypasses tenant filter, audits every mutation.
+    // =============================================================================================
+
+    public record AdminSeasonDto(Guid Id, string Code, string Name, DateOnly StartDate, DateOnly EndDate, bool IsCurrent);
+    public record AdminCreateSeasonRequest(string Code, string Name, DateOnly StartDate, DateOnly EndDate, bool IsCurrent);
+    public record AdminUpdateSeasonRequest(string Code, string Name, DateOnly StartDate, DateOnly EndDate);
+
+    [HttpGet("tenants/{tenantId:guid}/seasons")]
+    public async Task<IActionResult> ListTenantSeasons(Guid tenantId, CancellationToken ct)
+    {
+        var items = await _db.Seasons
+            .IgnoreQueryFilters()
+            .Where(s => s.TenantId == tenantId && !s.IsDeleted)
+            .OrderBy(s => s.StartDate)
+            .Select(s => new AdminSeasonDto(s.Id, s.Code, s.Name, s.StartDate, s.EndDate, s.IsCurrent))
+            .ToListAsync(ct);
+        return Ok(items);
+    }
+
+    [HttpPost("tenants/{tenantId:guid}/seasons")]
+    public async Task<IActionResult> CreateTenantSeason(Guid tenantId, [FromBody] AdminCreateSeasonRequest req, CancellationToken ct)
+    {
+        if (req.EndDate <= req.StartDate) return BadRequest(new { error = "EndDate must be after StartDate." });
+        if (!await _db.Tenants.IgnoreQueryFilters().AnyAsync(t => t.Id == tenantId, ct))
+            return NotFound();
+        if (await _db.Seasons.IgnoreQueryFilters().AnyAsync(s => s.TenantId == tenantId && s.Code == req.Code && !s.IsDeleted, ct))
+            return Conflict(new { error = "Season with this code already exists." });
+
+        if (req.IsCurrent)
+        {
+            var currents = await _db.Seasons.IgnoreQueryFilters()
+                .Where(s => s.TenantId == tenantId && s.IsCurrent && !s.IsDeleted).ToListAsync(ct);
+            foreach (var c in currents) c.IsCurrent = false;
+            if (currents.Count > 0) await _db.SaveChangesAsync(ct);
+        }
+
+        var season = new Season
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenantId,
+            Code = req.Code,
+            Name = req.Name,
+            StartDate = req.StartDate,
+            EndDate = req.EndDate,
+            IsCurrent = req.IsCurrent,
+        };
+        _db.Seasons.Add(season);
+        await _db.SaveChangesAsync(ct);
+
+        await _audit.LogAsync("season.create", nameof(Season), season.Id.ToString(), before: null,
+            after: new AdminSeasonDto(season.Id, season.Code, season.Name, season.StartDate, season.EndDate, season.IsCurrent), ct);
+
+        return Created($"/api/admin/tenants/{tenantId}/seasons/{season.Id}",
+            new AdminSeasonDto(season.Id, season.Code, season.Name, season.StartDate, season.EndDate, season.IsCurrent));
+    }
+
+    [HttpPut("tenants/{tenantId:guid}/seasons/{id:guid}")]
+    public async Task<IActionResult> UpdateTenantSeason(Guid tenantId, Guid id, [FromBody] AdminUpdateSeasonRequest req, CancellationToken ct)
+    {
+        if (req.EndDate <= req.StartDate) return BadRequest(new { error = "EndDate must be after StartDate." });
+        var season = await _db.Seasons.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(s => s.Id == id && s.TenantId == tenantId && !s.IsDeleted, ct);
+        if (season is null) return NotFound();
+
+        if (season.Code != req.Code &&
+            await _db.Seasons.IgnoreQueryFilters().AnyAsync(s => s.TenantId == tenantId && s.Code == req.Code && s.Id != id && !s.IsDeleted, ct))
+            return Conflict(new { error = "Season with this code already exists." });
+
+        var before = new AdminSeasonDto(season.Id, season.Code, season.Name, season.StartDate, season.EndDate, season.IsCurrent);
+        season.Code = req.Code;
+        season.Name = req.Name;
+        season.StartDate = req.StartDate;
+        season.EndDate = req.EndDate;
+        await _db.SaveChangesAsync(ct);
+
+        var after = new AdminSeasonDto(season.Id, season.Code, season.Name, season.StartDate, season.EndDate, season.IsCurrent);
+        await _audit.LogAsync("season.update", nameof(Season), season.Id.ToString(), before, after, ct);
+        return NoContent();
+    }
+
+    [HttpPost("tenants/{tenantId:guid}/seasons/{id:guid}/set-current")]
+    public async Task<IActionResult> SetCurrentTenantSeason(Guid tenantId, Guid id, CancellationToken ct)
+    {
+        var target = await _db.Seasons.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(s => s.Id == id && s.TenantId == tenantId && !s.IsDeleted, ct);
+        if (target is null) return NotFound();
+
+        var before = new AdminSeasonDto(target.Id, target.Code, target.Name, target.StartDate, target.EndDate, target.IsCurrent);
+
+        var currents = await _db.Seasons.IgnoreQueryFilters()
+            .Where(s => s.TenantId == tenantId && s.IsCurrent && s.Id != id && !s.IsDeleted).ToListAsync(ct);
+        if (currents.Count > 0)
+        {
+            foreach (var c in currents) c.IsCurrent = false;
+            await _db.SaveChangesAsync(ct);
+        }
+        if (!target.IsCurrent)
+        {
+            target.IsCurrent = true;
+            await _db.SaveChangesAsync(ct);
+        }
+
+        var after = new AdminSeasonDto(target.Id, target.Code, target.Name, target.StartDate, target.EndDate, target.IsCurrent);
+        await _audit.LogAsync("season.set-current", nameof(Season), target.Id.ToString(), before, after, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("tenants/{tenantId:guid}/seasons/{id:guid}")]
+    public async Task<IActionResult> DeleteTenantSeason(Guid tenantId, Guid id, [FromQuery] bool force, CancellationToken ct)
+    {
+        var season = await _db.Seasons.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(s => s.Id == id && s.TenantId == tenantId && !s.IsDeleted, ct);
+        if (season is null) return NotFound();
+
+        if (season.IsCurrent && !force)
+            return Conflict(new { error = "Cannot delete the current season without force=true." });
+
+        var before = new AdminSeasonDto(season.Id, season.Code, season.Name, season.StartDate, season.EndDate, season.IsCurrent);
+
+        season.IsDeleted = true;
+        season.DeletedAtUtc = DateTime.UtcNow;
+        await _db.SaveChangesAsync(ct);
+
+        await _audit.LogAsync("season.delete", nameof(Season), season.Id.ToString(), before, after: null, ct);
+        return NoContent();
     }
 }

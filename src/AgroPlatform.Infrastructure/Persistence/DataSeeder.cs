@@ -10,6 +10,7 @@ using AgroPlatform.Domain.HR;
 using AgroPlatform.Domain.Machinery;
 using AgroPlatform.Domain.Notifications;
 using AgroPlatform.Domain.Sales;
+using AgroPlatform.Domain.Seasons;
 using AgroPlatform.Domain.Users;
 using AgroPlatform.Domain.Warehouses;
 using Microsoft.AspNetCore.Identity;
@@ -92,6 +93,7 @@ public static class DataSeeder
         await SeedItemCategoriesAsync(context, logger);
         await SeedSuperAdminAsync(scope.ServiceProvider, configuration, logger);
         await SeedDemoAsync(scope.ServiceProvider, context, logger);
+        await SeedDefaultSeasonsAsync(context, logger);
 
         // Optionally extend the demo tenant to investor-demo scale (80 fields, 25 machines,
         // 12 months of costs, 8 months of sales, 4 seasons of harvests). Gated on Demo:Scale.
@@ -297,6 +299,66 @@ public static class DataSeeder
         catch (Exception ex)
         {
             logger.LogError(ex, "Error seeding item categories.");
+        }
+    }
+
+    /// <summary>
+    /// Backfill three default seasons (2023/24, 2024/25, 2025/26) for every tenant
+    /// that has no seasons yet. Marks the most recent (2025/26) season as current.
+    /// Idempotent: skips tenants that already have at least one season.
+    /// </summary>
+    private static async Task SeedDefaultSeasonsAsync(AppDbContext context, ILogger logger)
+    {
+        try
+        {
+            var tenantIds = await context.Tenants.IgnoreQueryFilters()
+                .Select(t => t.Id)
+                .ToListAsync();
+
+            if (tenantIds.Count == 0) return;
+
+            var tenantsWithSeasons = await context.Seasons.IgnoreQueryFilters()
+                .Select(s => s.TenantId)
+                .Distinct()
+                .ToListAsync();
+
+            var tenantsToSeed = tenantIds.Except(tenantsWithSeasons).ToList();
+            if (tenantsToSeed.Count == 0) return;
+
+            logger.LogInformation("Seeding default seasons for {Count} tenant(s)…", tenantsToSeed.Count);
+
+            var defaults = new[]
+            {
+                (Code: "2023/2024", Name: "Сезон 2023/2024", Start: new DateOnly(2023, 8, 1), End: new DateOnly(2024, 7, 31), IsCurrent: false),
+                (Code: "2024/2025", Name: "Сезон 2024/2025", Start: new DateOnly(2024, 8, 1), End: new DateOnly(2025, 7, 31), IsCurrent: false),
+                (Code: "2025/2026", Name: "Сезон 2025/2026", Start: new DateOnly(2025, 8, 1), End: new DateOnly(2026, 7, 31), IsCurrent: true),
+            };
+
+            var now = DateTime.UtcNow;
+            foreach (var tenantId in tenantsToSeed)
+            {
+                foreach (var d in defaults)
+                {
+                    context.Seasons.Add(new Season
+                    {
+                        TenantId    = tenantId,
+                        Code        = d.Code,
+                        Name        = d.Name,
+                        StartDate   = d.Start,
+                        EndDate     = d.End,
+                        IsCurrent   = d.IsCurrent,
+                        CreatedAtUtc = now,
+                    });
+                }
+            }
+
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded {SeasonCount} default seasons across {TenantCount} tenant(s).",
+                tenantsToSeed.Count * defaults.Length, tenantsToSeed.Count);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error seeding default seasons.");
         }
     }
 
