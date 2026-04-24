@@ -1,0 +1,29 @@
+/* Surface — token-only adapter layer.
+ *
+ * The base styling is supplied via inline `style` (driven by tokens) so
+ * that variant overrides remain visible in DevTools. This module only
+ * provides the *interactive* state, which needs `:hover` / `:focus-visible`
+ * pseudo-classes that cannot be expressed inline.
+ */
+
+.surface {
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 160ms ease;
+}
+
+.surface[data-interactive='true'] {
+  cursor: pointer;
+}
+
+.surface[data-interactive='true']:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-hover);
+}
+
+.surface[data-interactive='true']:focus-visible {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--border-focus) 35%, transparent);
+}

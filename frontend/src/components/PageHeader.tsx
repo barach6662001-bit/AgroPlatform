@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import s from './PageHeader.module.css';
+import { Cluster, Heading, Stack, Text } from '../design-system';
 
 interface Props {
   title: string;
@@ -8,27 +8,41 @@ interface Props {
   breadcrumbs?: ReactNode;
 }
 
+/**
+ * Section / page header — title, optional subtitle, optional inline actions,
+ * optional breadcrumb slot above. Built entirely from design-system primitives;
+ * no local CSS, no hard-coded sizes or colors.
+ *
+ * Public API unchanged from the legacy implementation: every consumer that
+ * passes `{title, subtitle, actions, breadcrumbs}` keeps working as-is.
+ */
 export default function PageHeader({ title, subtitle, actions, breadcrumbs }: Props) {
   return (
-    <div>
-      {breadcrumbs && <div className={s.spaced}>{breadcrumbs}</div>}
-      <div className={s.flex_between}>
-        <div>
-          <h1 className={s.text22}>
-            {title}
-          </h1>
+    <Stack as="header" gap="3" style={{ marginBottom: 'var(--space-6)' }}>
+      {breadcrumbs}
+      <Cluster
+        align="start"
+        justify="between"
+        gap="4"
+        style={{
+          paddingBottom: 'var(--space-5)',
+          borderBottom: '1px solid var(--border)',
+        }}
+      >
+        <Stack gap="1">
+          <Heading level={1}>{title}</Heading>
           {subtitle && (
-            <p className={s.text13}>
+            <Text size="sm" tone="tertiary">
               {subtitle}
-            </p>
+            </Text>
           )}
-        </div>
+        </Stack>
         {actions && (
-          <div className={s.flex_center}>
+          <Cluster gap="2" align="center">
             {actions}
-          </div>
+          </Cluster>
         )}
-      </div>
-    </div>
+      </Cluster>
+    </Stack>
   );
 }
