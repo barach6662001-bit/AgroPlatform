@@ -5,8 +5,57 @@ Living document. Each PR collapses a slice of ТЗ into a shippable unit.
 ## Completed
 
 - PR #609 (merged as d30972e): tenant optional feature flags + budget gating (ТЗ #13).
+- PR #610 (merged as d208689): super-admin foundation — TOTP MFA, audit log, tenant admin UI (ТЗ #14, first half).
+- PR #611 (merged as d358a24): integration tests for super-admin auth + MFA + audit.
 
-## In flight — PR #610: super-admin foundation (ТЗ #14, first half)
+## In flight — PR #612: Season model (ТЗ #2, completes dashboard seasonal scope)
+
+Branch: `pr612-season-model`.
+
+### Why now
+
+Dashboard seasonal UI (PR #605/#607) currently uses a year-list derived from operation/cost/sale timestamps. This is semantically wrong for farms with non-calendar crop cycles (Ukraine convention: Aug 1 → Jul 31). Users see "Season 2025" rather than "Сезон 2025/2026: 1 серп. 2025 — 31 лип. 2026", and `‹ ›` navigation steps by integer year, not by real season. This PR promotes Season to a first-class, tenant-configurable entity.
+
+### Backend
+
+1. Domain entity `Season : AuditableEntity` with Code(16), Name(100), StartDate, EndDate, IsCurrent.
+2. Migration `AddSeasons`:
+   - Table + unique `(TenantId, Code)` + CHECK `EndDate > StartDate` + partial unique for `IsCurrent = true` per tenant.
+   - Idempotent data seed: for each existing tenant, create `Сезон 2023/2024`, `Сезон 2024/2025`, `Сезон 2025/2026` (current) if no seasons exist.
+3. `/api/seasons` response shape changes from `int[]` → `SeasonDto[]` (breaking; one frontend consumer).
+4. Tenant-scoped CRUD at `/api/seasons` (GET list, GET current, POST, PUT, DELETE, POST set-current). Admin-only for mutations.
+5. Super-admin CRUD at `/api/admin/tenants/{id}/seasons` — `[SuperAdminRequired]`, audited via `ISuperAdminAuditService`.
+6. `SetCurrent` is transactional (flips IsCurrent for the tenant).
+7. `Delete` safety net: rejects when cost / sale / operation rows fall inside the season's date window.
+
+### Frontend
+
+1. Types + `useTenantSeasons` hook return `SeasonDto[]`.
+2. Dashboard arrow navigation iterates through `SeasonDto[]` by StartDate, labels use real dates (`"Сезон 2025/2026: 1 серп. 2025 — 31 лип. 2026"`).
+3. New `/settings/seasons` for tenant admin (table + modals).
+4. New `/admin/tenants/:id/seasons` mirror for super-admin.
+5. i18n keys added to `uk.ts` + `en.ts`.
+
+### Tests (mandatory)
+
+1. Migration idempotency (run twice, no duplicates).
+2. SetCurrent transactional (exactly one IsCurrent after flip).
+3. Delete safety — blocked with linked data.
+4. `GET /api/seasons` as tenant-admin returns only own tenant's rows.
+5. Super-admin `POST /set-current` → 200 + exactly one new `SuperAdminAuditLog`.
+6. Same endpoint without super-admin claim → 403.
+
+### Out of scope
+
+- Tying AgroOperation/CostRecord/Sale rows to a `SeasonId` FK (separate PR — backfill strategy).
+- Per-crop cycle overrides.
+- E2E dashboard scroll test (deferred — no Playwright pipeline in CI today).
+
+### Deployment note
+
+Data migration auto-seeds 3 default seasons (Aug–Jul boundaries) for existing tenants. Review and adjust per tenant before PR #613 (planned: currency + historical FX), which will rely on accurate season boundaries for annual reports.
+
+## Archived — PR #610 scope (super-admin foundation, first half)
 
 Branch: `pr610-super-admin-foundation`. Single PR as agreed (no split).
 
@@ -87,6 +136,7 @@ Coexistence with the existing role-based super-admin:
 
 ## Upcoming
 
-- PR #611 — multi-tenant DNS / org-level routing.
-- PR #612 — billing + plan enforcement.
-- PR #613 — super-admin phase 2 (users, audit UI, billing, impersonation).
+- PR #613 — currency + historical FX (depends on Season boundaries from #612).
+- PR #614 — super-admin phase 2 (users, audit UI, impersonation).
+- PR #615 — tie `SeasonId` FK onto AgroOperation / CostRecord / Sale (depends on #612). Backfill by date-range.
+- Post-roadmap (no firm need yet) — multi-tenant DNS / org-level routing; billing + plan enforcement. Feature flags already demonstrate plan differentiation; billing deferred until monetization is a concrete goal.
