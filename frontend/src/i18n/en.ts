@@ -1098,6 +1098,7 @@ const en: Translations = {
     langEn: 'English',
     currency: 'Currency',
     currencyHint: 'Display currency. Data is stored in UAH; converted at NBU rate.',
+    currencyDisabledTooltip: 'Currency conversion is under repair and will be available shortly',
     currencyUah: 'Hryvnia (UAH)',
     currencyUsd: 'US Dollar (USD)',
     currencyEur: 'Euro (EUR)',
