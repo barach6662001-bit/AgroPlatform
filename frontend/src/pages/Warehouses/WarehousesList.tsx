@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import { Badge, message, Button, Space, Modal, Form, Input, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -109,7 +109,36 @@ export default function WarehousesList() {
           total: result?.totalCount ?? 0,
           onChange: (p, ps) => { setPage(p); setPageSize(ps); },
         }}
-        onRow={(record) => ({ onClick: () => navigate(`/warehouses/items?warehouse=${record.id}`) })}
+        onRow={(record) => {
+          // Phase 2g — keyboard accessibility for AntD <tr> rows.
+          // The visible row navigates to its warehouse balances; we
+          // mirror that intent onto the <tr> so keyboard and AT
+          // users get the same affordance the cursor:pointer hint
+          // already promised mouse users. AntD spreads this object
+          // onto the <tr> element directly.
+          const goToBalances = () => navigate(`/warehouses/items?warehouse=${record.id}`);
+
+          // Concise screen-reader name mirroring the visible cell
+          // contents (name, location-or-em-dash, type, status). The
+          // role="button" hint already telegraphs "this is
+          // activatable" so we do not append a verb.
+          const typeLabel = record.type === 1 ? t.warehouses.typeGrain : t.warehouses.typeGeneral;
+          const statusLabel = record.isActive ? t.warehouses.active : t.warehouses.inactive;
+          const ariaLabel = `${record.name}, ${record.location || '—'}, ${typeLabel}, ${statusLabel}`;
+
+          return {
+            role: 'button',
+            tabIndex: 0,
+            'aria-label': ariaLabel,
+            onClick: goToBalances,
+            onKeyDown: (e: KeyboardEvent<HTMLTableRowElement>) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                goToBalances();
+              }
+            },
+          };
+        }}
         rowClassName={() => 'clickable-row'}
       />
 
