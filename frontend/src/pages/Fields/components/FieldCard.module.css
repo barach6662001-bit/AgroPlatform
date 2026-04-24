@@ -8,6 +8,12 @@
  *   - overflow:hidden so the bleed-to-edge thumb clips against the radius
  *   - the lift + shadow hover transition
  *   - the descendant rule that fades the hover CTA in on hover
+ *   - a token-driven focus-visible ring for keyboard users (Phase 2b)
+ *
+ * The card receives keyboard focus via tabIndex={0} on the React side;
+ * Phase 2b also wires Enter/Space activation. The :focus-visible rule
+ * below intentionally does NOT trigger on mouse-driven focus, matching
+ * the platform-default focus model.
  */
 .card {
   overflow: hidden;
@@ -21,7 +27,15 @@
   box-shadow: var(--shadow-md);
 }
 
-.card:hover .hoverOverlay { opacity: 1; }
+.card:hover .hoverOverlay,
+.card:focus-visible .hoverOverlay { opacity: 1; }
+
+.card:focus { outline: none; }
+
+.card:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
 
 /* Thumbnail */
 .thumb {

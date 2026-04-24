@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import type { FieldDto } from '../../../types/field';
@@ -21,13 +22,18 @@ interface Props {
  * internal layout — a thumb that bleeds to the edges plus an info
  * block with its own padding. The local CSS module retains only the
  * tile-specific affordances (cursor, hover lift + shadow, the
- * absolutely-positioned hover overlay, and the inner thumb/info/
- * badge/pill rules).
+ * absolutely-positioned hover overlay, the focus-visible ring and
+ * the inner thumb/info/badge/pill rules).
  *
- * Behavior preserved verbatim from the legacy implementation,
- * including the existing `onClick` on a non-button element (an
- * accessibility debt that is intentionally out of scope for this
- * pure-surface migration).
+ * Phase 2b: pays down the accessibility debt left over from 2a.
+ * The clickable wrapper now exposes `role="button"`, `tabIndex={0}`
+ * and an explicit `onKeyDown` handler that activates on Enter and
+ * Space (matching native button semantics). An `aria-label` summarises
+ * the tile's primary content for assistive tech. The hover overlay's
+ * inner CTA was a real `<button>` nested inside a `role="button"`
+ * surface — invalid markup — and is now a non-interactive `<span>`
+ * styled identically (the parent surface is the activation target).
+ * Card / Surface API is unchanged; this is a pure FieldCard fix.
  */
 export default function FieldCard({ field }: Props) {
   const navigate = useNavigate();
@@ -43,6 +49,24 @@ export default function FieldCard({ field }: Props) {
     2: t.fields.ownershipShareLease,
   };
 
+  const goToField = () => navigate(`/fields/${field.id}`);
+  const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      goToField();
+    }
+  };
+
+  // Compact, screen-reader-friendly summary of the tile's primary content
+  // — name, area, and (when known) the current crop. Mirrors what a sighted
+  // user reads in the top-left of the card without duplicating the entire
+  // ownership / cadastral block. The `га` unit is used as a literal here to
+  // match the existing on-screen badge (`<span>{areaHectares.toFixed(1)} га</span>`)
+  // — i18n.fields has no `areaUnit` key and adding one is out of scope.
+  const ariaLabel = cropLabel
+    ? `${field.name}, ${field.areaHectares.toFixed(1)} га, ${cropLabel}`
+    : `${field.name}, ${field.areaHectares.toFixed(1)} га`;
+
   return (
     <Card
       as="div"
@@ -50,7 +74,11 @@ export default function FieldCard({ field }: Props) {
       p="0"
       gap="0"
       className={s.card}
-      onClick={() => navigate(`/fields/${field.id}`)}
+      role="button"
+      tabIndex={0}
+      aria-label={ariaLabel}
+      onClick={goToField}
+      onKeyDown={handleKeyDown}
     >
       {/* Polygon preview placeholder */}
       <div className={s.thumb}>
@@ -86,11 +114,13 @@ export default function FieldCard({ field }: Props) {
         </div>
       </div>
 
-      {/* Hover CTA */}
-      <div className={s.hoverOverlay}>
-        <button className={s.viewBtn}>
+      {/* Hover CTA — purely decorative (the parent Card is the
+          activation target). aria-hidden keeps it out of the AT tree
+          since the card's aria-label already describes the action. */}
+      <div className={s.hoverOverlay} aria-hidden="true">
+        <span className={s.viewBtn}>
           {t.fields.details} <ArrowRight size={12} />
-        </button>
+        </span>
       </div>
     </Card>
   );
