@@ -40,8 +40,14 @@ export const useCurrencyStore = create<CurrencyState>((set, get) => ({
       for (const r of rates as ExchangeRateDto[]) {
         if (r.code === 'USD' || r.code === 'EUR') next[r.code] = r.rateToUah;
       }
+      // HOTFIX (PR #628 follow-up): currency conversion is under repair — force UAH
+      // display for all users and reset any stale USD/EUR preference server-side so
+      // that numeric values are not mislabelled. See docs/ROADMAP.md "Currency".
+      if (prefs.preferredCurrency !== 'UAH') {
+        try { await updatePreferences('UAH'); } catch { /* ignore — will retry next login */ }
+      }
       set({
-        preferredCurrency: prefs.preferredCurrency,
+        preferredCurrency: 'UAH',
         rates: next,
         loaded: true,
         loading: false,
@@ -53,10 +59,13 @@ export const useCurrencyStore = create<CurrencyState>((set, get) => ({
   },
 
   setPreferredCurrency: async (c) => {
+    // HOTFIX: switcher is disabled in UI; always persist UAH.
+    const forced: SupportedCurrency = 'UAH';
     const prev = get().preferredCurrency;
-    set({ preferredCurrency: c });
+    set({ preferredCurrency: forced });
     try {
-      await updatePreferences(c);
+      await updatePreferences(forced);
+      void c;
     } catch (e) {
       set({ preferredCurrency: prev });
       throw e;

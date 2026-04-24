@@ -1095,6 +1095,7 @@ const uk = {
     langEn: 'English',
     currency: 'Валюта',
     currencyHint: 'Валюта відображення. Дані в базі зберігаються в UAH; конвертація за курсом НБУ.',
+    currencyDisabledTooltip: 'Валютна конвертація в розробці, буде доступна найближчим часом',
     currencyUah: 'Гривня (UAH)',
     currencyUsd: 'Долар США (USD)',
     currencyEur: 'Євро (EUR)',

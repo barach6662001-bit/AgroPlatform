@@ -1,4 +1,4 @@
-import { Card, Descriptions, Button, Space, Tag, Select, message } from 'antd';
+import { Card, Descriptions, Button, Space, Tag, Select, Tooltip, message } from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
 import { useEffect } from 'react';
 import PageHeader from '../../components/PageHeader';
@@ -112,17 +112,20 @@ export default function ProfilePage() {
           </Descriptions.Item>
           <Descriptions.Item label={t.profile.currency}>
             <Space direction="vertical" size={4} style={{ width: '100%' }}>
-              <Select<SupportedCurrency>
-                value={preferredCurrency}
-                onChange={handleCurrencyChange}
-                style={{ width: 240 }}
-                options={[
-                  { value: 'UAH', label: t.profile.currencyUah },
-                  { value: 'USD', label: t.profile.currencyUsd },
-                  { value: 'EUR', label: t.profile.currencyEur },
-                ]}
-              />
-              <span style={{ color: '#8B949E', fontSize: 12 }}>{t.profile.currencyHint}</span>
+              <Tooltip title={t.profile.currencyDisabledTooltip} placement="top">
+                <Select<SupportedCurrency>
+                  value={preferredCurrency}
+                  onChange={handleCurrencyChange}
+                  disabled
+                  style={{ width: 240 }}
+                  options={[
+                    { value: 'UAH', label: t.profile.currencyUah },
+                    { value: 'USD', label: t.profile.currencyUsd },
+                    { value: 'EUR', label: t.profile.currencyEur },
+                  ]}
+                />
+              </Tooltip>
+              <span style={{ color: '#8B949E', fontSize: 12 }}>{t.profile.currencyDisabledTooltip}</span>
             </Space>
           </Descriptions.Item>
         </Descriptions>
