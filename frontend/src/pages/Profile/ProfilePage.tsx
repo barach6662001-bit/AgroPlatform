@@ -1,14 +1,32 @@
-import { Card, Descriptions, Button, Space, Tag } from 'antd';
+import { Card, Descriptions, Button, Space, Tag, Select, message } from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
+import { useEffect } from 'react';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { useAuthStore } from '../../stores/authStore';
+import { useCurrencyStore } from '../../stores/currencyStore';
+import type { SupportedCurrency } from '../../api/me';
 
 export default function ProfilePage() {
   const { t, lang, setLang } = useTranslation();
   const { isAdmin, isManager, isWarehouseOperator, isAccountant } = useRole();
   const { token, email: storedEmail } = useAuthStore();
+  const preferredCurrency = useCurrencyStore((s) => s.preferredCurrency);
+  const loadCurrency = useCurrencyStore((s) => s.load);
+  const setPreferredCurrency = useCurrencyStore((s) => s.setPreferredCurrency);
+
+  useEffect(() => {
+    void loadCurrency();
+  }, [loadCurrency]);
+
+  const handleCurrencyChange = async (c: SupportedCurrency) => {
+    try {
+      await setPreferredCurrency(c);
+    } catch {
+      message.error(t.profile.currencySaveError);
+    }
+  };
 
   // Derive current role string from the hook flags
   const roleKey = isAdmin
@@ -90,6 +108,21 @@ export default function ProfilePage() {
               >
                 {t.profile.langEn}
               </Button>
+            </Space>
+          </Descriptions.Item>
+          <Descriptions.Item label={t.profile.currency}>
+            <Space direction="vertical" size={4} style={{ width: '100%' }}>
+              <Select<SupportedCurrency>
+                value={preferredCurrency}
+                onChange={handleCurrencyChange}
+                style={{ width: 240 }}
+                options={[
+                  { value: 'UAH', label: t.profile.currencyUah },
+                  { value: 'USD', label: t.profile.currencyUsd },
+                  { value: 'EUR', label: t.profile.currencyEur },
+                ]}
+              />
+              <span style={{ color: '#8B949E', fontSize: 12 }}>{t.profile.currencyHint}</span>
             </Space>
           </Descriptions.Item>
         </Descriptions>

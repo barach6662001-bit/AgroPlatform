@@ -76,8 +76,10 @@ public interface IAppDbContext
     DbSet<ApiKey> ApiKeys { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<UserMfaSettings> UserMfaSettings { get; }
+    DbSet<UserPreferences> UserPreferences { get; }
     DbSet<SuperAdminAuditLog> SuperAdminAuditLogs { get; }
     DbSet<Season> Seasons { get; }
+    DbSet<ExchangeRate> ExchangeRates { get; }
 
     // Approval workflow
     DbSet<ApprovalRule> ApprovalRules { get; }
