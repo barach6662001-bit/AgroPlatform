@@ -16,6 +16,7 @@ import OperationsTimeline from '../Dashboard/components/OperationsTimeline';
 import AlertsStrip from './components/AlertsStrip';
 import WarehouseSnapshot from './components/WarehouseSnapshot';
 import UpcomingPanel from './components/UpcomingPanel';
+import { Card } from '../../design-system';
 import s from './DashboardV2.module.css';
 
 export type DashboardPeriod = 'day' | 'week' | 'month' | 'season';
@@ -288,9 +289,15 @@ export default function DashboardV2({
       <motion.section id="bottom" className={`${s.row} ${s.twoCol}`} variants={fadeIn}>
         <div>
           <h2 className={s.sectionLabel}>{dash.warehouseSnapshot}</h2>
-          <div className={s.card}>
+          {/*
+            Phase 1d adoption: replaces the local `s.card` wrapper with the
+            design-system `<Card>` primitive. Visual contract preserved
+            (subtle bg, xl radius, 20px padding, hairline border) but now
+            sourced from tokens rather than magic numbers.
+          */}
+          <Card>
             <WarehouseSnapshot items={data.topStockItems} />
-          </div>
+          </Card>
         </div>
         <div>
           <h2 className={s.sectionLabel}>{dash.upcoming}</h2>

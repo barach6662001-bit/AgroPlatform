@@ -37,4 +37,27 @@ export {
   type TextAlign,
 } from './Text';
 
+/* ─── Surface system (Phase 1d) ──────────────────────────────────────── */
+export {
+  Surface,
+  type SurfaceProps,
+  type SurfaceVariant,
+  type SurfaceRadius,
+  type SurfaceElevation,
+} from './Surface';
+export {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  type CardProps,
+  type CardHeaderProps,
+  type CardTitleProps,
+  type CardDescriptionProps,
+  type CardContentProps,
+  type CardFooterProps,
+} from './Card';
+
 export { space, cx } from './utils';
