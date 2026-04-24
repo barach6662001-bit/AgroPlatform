@@ -106,7 +106,7 @@ export default function BudgetPage() {
           onChange={(v) => setPendingAmounts((p) => ({ ...p, [row.category]: v }))}
           disabled={!canEdit}
           formatter={(v) => (v ? `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : '')}
-          addonAfter={currencySymbol}
+          addonAfter="₴"
         />
       ),
     },

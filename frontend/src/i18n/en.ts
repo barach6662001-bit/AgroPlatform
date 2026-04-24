@@ -96,6 +96,7 @@ const en: Translations = {
     deactivate: 'Deactivate',
     export: 'Export',
     close: 'Close',
+    storedInUah: 'Amount is stored in hryvnia',
   },
   auditLog: {
     title: 'Audit Log',

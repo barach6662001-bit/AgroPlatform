@@ -208,7 +208,7 @@ export default function SalaryPage() {
             label={t.lease.paymentAmount}
             rules={[{ required: true, message: t.common.required }]}
           >
-            <InputNumber min={0.01} style={{ width: '100%' }} suffix={currencySymbol} />
+            <InputNumber min={0.01} style={{ width: '100%' }} suffix="₴" />
           </Form.Item>
           <Form.Item
             name="paymentDate"

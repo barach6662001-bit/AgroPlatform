@@ -851,7 +851,7 @@ export default function GrainBatchList() {
             ]} />
           </Form.Item>
           <Form.Item name="pricePerTon" label={t.grain.exportPrice}>
-            <InputNumber min={0} precision={2} addonAfter={`${currencySymbol}/т`} className={s.fullWidth} />
+            <InputNumber min={0} precision={2} addonAfter="₴/т" className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="buyerName" label={t.grain.buyer}>
             <Input placeholder="Назва покупця або отримувача" />

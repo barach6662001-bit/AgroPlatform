@@ -206,7 +206,7 @@ export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
             <InputNumber min={0} precision={2} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="totalCost" label={t.fields.totalCostLabel}>
-            <InputNumber min={0} precision={2} className={s.fullWidth} addonAfter={currencySymbol} />
+            <InputNumber min={0} precision={2} className={s.fullWidth} addonAfter="₴" />
           </Form.Item>
           <Form.Item name="applicationDate" label={t.fields.applicationDate} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker className={s.fullWidth} />
