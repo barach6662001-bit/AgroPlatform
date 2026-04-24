@@ -100,6 +100,24 @@
 
 .row:hover { background: var(--bg-hover); }
 
+/*
+ * Phase 2f keyboard-focus affordance — mirrors the FieldCard /
+ * OperationsTimeline / UpcomingPanel pattern from Phases 2b / 2c / 2d:
+ *
+ *   - .row:focus drops the platform-default outline so mouse focus
+ *     stays ring-free.
+ *   - .row:focus-visible draws a token-driven brand-coloured ring
+ *     and pairs it with the same hover background, so keyboard and
+ *     mouse focus look identical (preserves hover/focus parity).
+ */
+.row:focus { outline: none; }
+
+.row:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  background: var(--bg-hover);
+}
+
 .rowLeft {
   flex: 1;
   min-width: 0;
