@@ -17,11 +17,22 @@
 - [x] **PR #609** — tenant feature flags, `[RequireFeatureFlag]` middleware, `FeatureFlagGate`, Budget hidden by flag *(TZ 4, TZ 5)*
 - [x] **PR #610** — super-admin foundation: `IsSuperAdmin`, JWT claims (`is_super_admin`, `mfa_verified`), TOTP MFA, `AdminController` with `IgnoreQueryFilters()`, `/admin/tenants` + `/admin/tenants/:id` pages, audit log table *(TZ 14 foundation)*
 - [x] **PR #611** — super-admin integration tests (8 scenarios), `TestAuthHandler` extended with opt-in headers *(test debt from #610 closed)*
-- [x] **PR #612** — full Season model (Seasons table with StartDate/EndDate/IsCurrent, tenant-admin `/api/seasons/*` CRUD, super-admin `/api/admin/tenants/{id}/seasons/*` CRUD, partial unique index for single current season, 3 default seasons seeded per existing tenant, Dashboard consumes real season list via arrow navigation) *(TZ 2 closed)*
 
 ---
 
 ## In progress
+
+- [ ] **PR #612 — Full Season model** *(TZ 2 remainder)*
+  - Replace hardcoded year-list with `Seasons` table (Id, TenantId, Code, Name, StartDate, EndDate, IsCurrent)
+  - Data migration: seed 3 default seasons per existing tenant (2023/24, 2024/25, 2025/26)
+  - CRUD for super-admin (`/api/admin/tenants/{id}/seasons/*`) and tenant-admin (`/api/seasons/*`)
+  - Dashboard: season arrows iterate real Season list, label uses `StartDate/EndDate`
+  - Unique constraint: only one `IsCurrent=true` per tenant (partial index)
+  - Breaking change to `/api/seasons` response shape — update all frontend consumers in same PR
+
+---
+
+## Upcoming (in order — do not reorder without approval)
 
 - [ ] **PR #613 — Currency system** *(TZ 8.2)*
   - `UserPreferences.PreferredCurrency` (UAH/USD/EUR, default UAH)
@@ -30,10 +41,6 @@
   - `useFormatCurrency()` hook, settings UI in Профіль → Валюта
   - Fallback: last stored rate on NBU failure; weekend/holiday → previous business day
   - Exports: currency header with NBU rate on export date
-
----
-
-## Upcoming (in order — do not reorder without approval)
 
 - [ ] **PR #614 — Super-admin advanced + impersonation** *(TZ 14 remainder)*
   - Impersonation: 60min TTL, mandatory reason, red banner in UI, email to target user, rate limit 3/day per (admin, target) pair

@@ -31,13 +31,13 @@
 
 ---
 
-## ПУНКТ 2 — Перемикач періоду на дашборді показує конкретні дати  `[CLOSED in PR #605, #607, #612]`
+## ПУНКТ 2 — Перемикач періоду на дашборді показує конкретні дати  `[PARTIALLY CLOSED in PR #605, #607; full Season model in PR #612]`
 
 **Problem:** Dashboard buttons `День / Тиждень / Місяць / Сезон` didn't show which period was active.
 
 **Shipped in #605:** `?period=` URL query param on `/dashboard`; monospace label under segmented control shows resolved date range.
 **Shipped in #607:** `‹ ›` anchor-date stepping with keyboard shortcuts (`←`/`→`), boundary-aware disable via `/api/tenant/data-boundaries`.
-**Shipped in #612:** Full `Seasons` table (Id, TenantId, Code, Name, StartDate, EndDate, IsCurrent). Dashboard season arrows iterate the real season list per tenant, label uses the stored Season name, and arrow boundaries are driven by `StartDate`/`EndDate`. Legacy `/api/seasons` year-list endpoint replaced with tenant-admin CRUD; super-admin CRUD under `/api/admin/tenants/{tenantId}/seasons`. Data migration seeded 3 default seasons (2023/2024, 2024/2025, 2025/2026) per existing tenant.
+**Remaining for #612:** Full Season model with real StartDate/EndDate per tenant (currently uses hardcoded year-list for season boundaries — silent bug for non-standard crop cycles).
 
 ---
 
