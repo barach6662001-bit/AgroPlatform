@@ -24,6 +24,15 @@ export interface TenantDataBoundariesDto {
   maxOperationDate: string | null;
 }
 
+export interface SeasonDto {
+  id: string;
+  code: string;
+  name: string;
+  startDate: string; // ISO date (YYYY-MM-DD)
+  endDate: string;
+  isCurrent: boolean;
+}
+
 export const getTenants = () =>
   apiClient.get<TenantDto[]>('/api/tenants').then((r) => r.data);
 
@@ -37,4 +46,4 @@ export const getTenantDataBoundaries = () =>
   apiClient.get<TenantDataBoundariesDto>('/api/tenant/data-boundaries').then((r) => r.data);
 
 export const getSeasons = () =>
-  apiClient.get<number[]>('/api/seasons').then((r) => r.data);
+  apiClient.get<SeasonDto[]>('/api/seasons').then((r) => r.data);
