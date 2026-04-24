@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatUAH, formatNumber } from '../../utils/format';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 import { Card, Col, Row, Select, Statistic, Empty, message } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, DollarOutlined } from '@ant-design/icons';
 import {
@@ -40,6 +41,8 @@ const PIE_COLORS = chartPalette;
 
 export default function CostAnalytics() {
   const { t } = useTranslation();
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [data, setData] = useState<CostAnalyticsDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -100,8 +103,8 @@ export default function CostAnalytics() {
           <Card>
             <Statistic
               title={t.economics.totalCostsSum}
-              value={data?.totalCosts ?? 0}
-              suffix="UAH"
+              value={convert(data?.totalCosts ?? 0)}
+              suffix={currencySymbol}
               prefix={<ArrowDownOutlined />}
               valueStyle={{ color: 'var(--error)' }}
               loading={loading}
@@ -113,8 +116,8 @@ export default function CostAnalytics() {
           <Card>
             <Statistic
               title={t.economics.revenue}
-              value={data?.totalRevenue ?? 0}
-              suffix="UAH"
+              value={convert(data?.totalRevenue ?? 0)}
+              suffix={currencySymbol}
               prefix={<ArrowUpOutlined />}
               valueStyle={{ color: 'var(--success)' }}
               loading={loading}
@@ -126,8 +129,8 @@ export default function CostAnalytics() {
           <Card>
             <Statistic
               title={t.economics.netProfit}
-              value={(data?.totalRevenue ?? 0) - (data?.totalCosts ?? 0)}
-              suffix="UAH"
+              value={convert((data?.totalRevenue ?? 0) - (data?.totalCosts ?? 0))}
+              suffix={currencySymbol}
               prefix={<DollarOutlined />}
               valueStyle={{ color: ((data?.totalRevenue ?? 0) - (data?.totalCosts ?? 0)) >= 0 ? 'var(--success)' : 'var(--error)' }}
               loading={loading}

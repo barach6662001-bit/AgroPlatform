@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatUAH, formatNumber } from '../../utils/format';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 import { InputNumber, Button, Select, message, Space, Tag, Row, Col, Card, Statistic } from 'antd';
 import { SaveOutlined, DownloadOutlined, DollarOutlined, RiseOutlined, FallOutlined, PercentageOutlined } from '@ant-design/icons';
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts';
@@ -29,6 +30,8 @@ export default function BudgetPage() {
   const [pendingAmounts, setPendingAmounts] = useState<Record<string, number | null>>({});
   const { t } = useTranslation();
   const { hasRole } = useRole();
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
   const canEdit = hasRole(['CompanyAdmin', 'Accountant']);
 
   const load = () => {
@@ -103,7 +106,7 @@ export default function BudgetPage() {
           onChange={(v) => setPendingAmounts((p) => ({ ...p, [row.category]: v }))}
           disabled={!canEdit}
           formatter={(v) => (v ? `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : '')}
-          addonAfter="UAH"
+          addonAfter={currencySymbol}
         />
       ),
     },
@@ -182,10 +185,10 @@ export default function BudgetPage() {
           <Card>
             <Statistic
               title={t.economics.plTotalPlanned}
-              value={totalPlanned}
+              value={convert(totalPlanned)}
               precision={0}
               prefix={<DollarOutlined />}
-              suffix="UAH"
+              suffix={currencySymbol}
             />
           </Card>
         </Col>
@@ -193,10 +196,10 @@ export default function BudgetPage() {
           <Card>
             <Statistic
               title={t.economics.plTotalActual}
-              value={totalActual}
+              value={convert(totalActual)}
               precision={0}
               prefix={<RiseOutlined />}
-              suffix="UAH"
+              suffix={currencySymbol}
             />
           </Card>
         </Col>
@@ -204,10 +207,10 @@ export default function BudgetPage() {
           <Card>
             <Statistic
               title={t.economics.plVariance}
-              value={totalVariance}
+              value={convert(totalVariance)}
               precision={0}
               prefix={<FallOutlined />}
-              suffix="UAH"
+              suffix={currencySymbol}
               valueStyle={{ color: totalVariance >= 0 ? '#3f8600' : '#cf1322' }}
             />
           </Card>

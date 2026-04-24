@@ -7,6 +7,7 @@ import { getMaintenanceRecords, addMaintenanceRecord, exportMaintenanceRecords, 
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import { useFormatCurrency, useCurrencySymbol } from '../../hooks/useFormatCurrency';
 import { formatDate } from '../../utils/dateFormat';
 import s from './MaintenancePage.module.css';
 import DataTable from '../../components/ui/DataTable';
@@ -17,6 +18,8 @@ export default function MaintenancePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const fmt = useFormatCurrency();
+  const currencySymbol = useCurrencySymbol();
   const [records, setRecords] = useState<MaintenanceRecordDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -114,7 +117,7 @@ export default function MaintenancePage() {
       title: t.maintenance.cost,
       dataIndex: 'cost',
       key: 'cost',
-      render: (v: number) => (v ? `${v.toFixed(2)} UAH` : '—'),
+      render: (v: number) => (v ? fmt(v) : '—'),
     },
     {
       title: t.maintenance.hoursAtMaintenance,
@@ -176,7 +179,7 @@ export default function MaintenancePage() {
             <Input.TextArea rows={2} />
           </Form.Item>
           <Form.Item name="cost" label={t.maintenance.cost}>
-            <InputNumber min={0} step={100} className={s.fullWidth} addonAfter="UAH" />
+            <InputNumber min={0} step={100} className={s.fullWidth} addonAfter={currencySymbol} />
           </Form.Item>
           <Form.Item name="hoursAtMaintenance" label={t.maintenance.hoursAtMaintenance}>
             <InputNumber min={0} step={0.1} className={s.fullWidth} />

@@ -1,6 +1,7 @@
 import { Row, Col, Card, Statistic, Skeleton } from 'antd';
 import type { MaterialKpiItem } from '../../types/economics';
 import { formatUA } from '../../utils/numberFormat';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 import TotalCard from '../TotalCard';
 import s from './MaterialKpiCards.module.css';
 
@@ -34,6 +35,8 @@ interface Props {
  * Values are formatted with `formatUA` (тис. / млн suffixes) for consistency.
  */
 export default function MaterialKpiCards({ items, loading = false }: Props) {
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
   if (loading) {
     return (
       <Row gutter={[16, 16]} data-testid="material-kpi-cards-loading">
@@ -111,8 +114,8 @@ export default function MaterialKpiCards({ items, loading = false }: Props) {
 
               {/* Value */}
               <Statistic
-                value={formatUA(item.amount)}
-                suffix="UAH"
+                value={formatUA(convert(item.amount))}
+                suffix={currencySymbol}
                 valueStyle={valueStyle}
                 className={s.spaced}
               />

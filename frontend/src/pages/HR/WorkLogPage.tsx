@@ -14,6 +14,7 @@ import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { useFormatCurrency } from '../../hooks/useFormatCurrency';
 import EmptyState from '../../components/EmptyState';
 import DataTable from '../../components/ui/DataTable';
 
@@ -31,6 +32,7 @@ export default function WorkLogPage() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const { hasRole } = useRole();
+  const fmt = useFormatCurrency();
   const canWrite = hasRole(['CompanyAdmin', 'Manager']);
 
   const monthOptions = Array.from({ length: 12 }, (_, i) => ({
@@ -143,7 +145,7 @@ export default function WorkLogPage() {
       title: t.hr.accrued,
       dataIndex: 'accruedAmount',
       key: 'accruedAmount',
-      render: (v: number) => `${v.toFixed(2)} ₴`,
+      render: (v: number) => fmt(v),
     },
     {
       title: t.hr.workDescription,
@@ -247,7 +249,7 @@ export default function WorkLogPage() {
                 <strong>{t.hr.totalAccruedLabel}:</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={4}>
-                <strong style={{ color: '#3fb950' }}>{totalAccrued.toFixed(2)} ₴</strong>
+                <strong style={{ color: '#3fb950' }}>{fmt(totalAccrued)}</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={5} />
               <Table.Summary.Cell index={6} />

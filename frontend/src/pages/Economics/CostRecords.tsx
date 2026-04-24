@@ -15,6 +15,7 @@ import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { useFormatCurrency } from '../../hooks/useFormatCurrency';
 import { formatDate } from '../../utils/dateFormat';
 import apiClient from '../../api/axios';
 import { enqueueOperation } from '../../utils/offlineQueue';
@@ -52,6 +53,7 @@ export default function CostRecords() {
   const { t } = useTranslation();
   const { hasRole } = useRole();
   const isOnline = useOnlineStatus();
+  const fmt = useFormatCurrency();
 
   const canCreate = hasRole(['CompanyAdmin', 'Manager', 'Accountant']);
   const canDelete = hasRole(['CompanyAdmin', 'Manager', 'Accountant']);
@@ -240,7 +242,7 @@ export default function CostRecords() {
             <Table.Summary.Row>
               <Table.Summary.Cell index={0} colSpan={2}><strong>{t.economics.total}</strong></Table.Summary.Cell>
               <Table.Summary.Cell index={1}>
-                <strong style={{ color: '#f5222d' }}>{totalAmount.toFixed(2)} UAH</strong>
+                <strong style={{ color: '#f5222d' }}>{fmt(totalAmount)}</strong>
               </Table.Summary.Cell>
               <Table.Summary.Cell index={2} />
               <Table.Summary.Cell index={3} />

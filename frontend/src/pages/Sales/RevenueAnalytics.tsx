@@ -13,6 +13,7 @@ import type { SalesAnalyticsDto, ProductRevenueDto, BuyerRevenueDto, MonthlyReve
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 import s from './RevenueAnalytics.module.css';
 import DataTable from '../../components/ui/DataTable';
 
@@ -30,6 +31,8 @@ const PIE_COLORS = chartPalette;
 
 export default function RevenueAnalytics() {
   const { t, lang } = useTranslation();
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
   const navigate = useNavigate();
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [data, setData] = useState<SalesAnalyticsDto | null>(null);
@@ -167,8 +170,8 @@ export default function RevenueAnalytics() {
           <Card className={s.bg}>
             <Statistic
               title={<span className={s.colored1}>{t.sales.totalRevenue}</span>}
-              value={data?.totalRevenue ?? 0}
-              suffix="UAH"
+              value={convert(data?.totalRevenue ?? 0)}
+              suffix={currencySymbol}
               valueStyle={{ color: 'var(--success)' }}
               prefix={<DollarOutlined />}
               formatter={(v) => formatNumber(Number(v))}

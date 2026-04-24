@@ -10,6 +10,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import TableSkeleton from '../../components/TableSkeleton';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
+import { useCurrencySymbol } from '../../hooks/useFormatCurrency';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
 import PremiumTable from '../../components/PremiumTable/PremiumTable';
@@ -24,6 +25,7 @@ export default function EmployeeList() {
   const [salaryType, setSalaryType] = useState<string>('Hourly');
   const [editingEmployee, setEditingEmployee] = useState<EmployeeDto | null>(null);
   const { t } = useTranslation();
+  const currencySymbol = useCurrencySymbol();
   const { hasRole } = useRole();
   const canWrite = hasRole(['CompanyAdmin', 'Manager']);
 
@@ -118,8 +120,8 @@ export default function EmployeeList() {
       title: t.hr.hourlyRate,
       key: 'rate',
       render: (_: unknown, r: EmployeeDto) => {
-        if (r.salaryType === 'Hourly') return r.hourlyRate != null ? `${r.hourlyRate} ₴/год` : '—';
-        return r.pieceworkRate != null ? `${r.pieceworkRate} ₴/од` : '—';
+        if (r.salaryType === 'Hourly') return r.hourlyRate != null ? `${r.hourlyRate} ${currencySymbol}/год` : '—';
+        return r.pieceworkRate != null ? `${r.pieceworkRate} ${currencySymbol}/од` : '—';
       },
     },
     {

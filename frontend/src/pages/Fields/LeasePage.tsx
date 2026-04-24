@@ -12,6 +12,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import { useFormatCurrency, useCurrencySymbol } from '../../hooks/useFormatCurrency';
 import { useRole } from '../../hooks/useRole';
 import dayjs from 'dayjs';
 import s from './LeasePage.module.css';
@@ -46,6 +47,8 @@ export default function LeasePage() {
   const [editForm] = Form.useForm();
   const [payForm] = Form.useForm();
   const { t } = useTranslation();
+  const fmt = useFormatCurrency();
+  const currencySymbol = useCurrencySymbol();
   const { hasPermission } = useRole();
 
   const canWrite = hasPermission('fields', 'manage');
@@ -219,7 +222,7 @@ export default function LeasePage() {
         return (
           <div>
             <Progress percent={pct} size="small" strokeColor={pct >= 100 ? 'var(--success)' : pct > 0 ? 'var(--warning)' : 'var(--error)'} showInfo={false} />
-            <Text type="secondary" className={s.text11}>{paid.toLocaleString()} / {total.toLocaleString()} ₴</Text>
+            <Text type="secondary" className={s.text11}>{fmt(paid, { fractionDigits: 0 })} / {fmt(total, { fractionDigits: 0 })}</Text>
           </div>
         );
       },
@@ -309,7 +312,7 @@ export default function LeasePage() {
                 dataSource={payments}
                 columns={[
                   { title: 'Дата', dataIndex: 'paymentDate', render: (d: string) => dayjs(d).format('DD.MM.YYYY') },
-                  { title: 'Сума', dataIndex: 'amount', render: (v: number) => `${v.toLocaleString()} ₴` },
+                  { title: 'Сума', dataIndex: 'amount', render: (v: number) => fmt(v) },
                   { title: 'Спосіб', dataIndex: 'paymentMethod', render: (v: string) => v === 'Grain' ? 'Зерном' : 'Грошима' },
                   { title: 'Примітка', dataIndex: 'notes', render: (v: string) => v || '—' },
                 ]}
@@ -481,7 +484,7 @@ export default function LeasePage() {
                 <InputNumber
                   min={0}
                   precision={2}
-                  addonAfter="грн/т"
+                  addonAfter={`${currencySymbol}/т`}
                   className={s.fullWidth}
                   onChange={(price) => {
                     const qty = payForm.getFieldValue('grainQuantityTons');
@@ -492,7 +495,7 @@ export default function LeasePage() {
                 />
               </Form.Item>
               <Form.Item name="amount" label={t.lease.calculatedAmount}>
-                <InputNumber disabled addonAfter="грн" className={s.fullWidth} />
+                <InputNumber disabled addonAfter={currencySymbol} className={s.fullWidth} />
               </Form.Item>
             </>
           )}

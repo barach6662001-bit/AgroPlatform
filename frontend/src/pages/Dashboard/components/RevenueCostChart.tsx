@@ -3,6 +3,7 @@ import {
   Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import { formatUA } from '../../../utils/numberFormat';
+import { useCurrencySymbol, useConvertFromUah } from '../../../hooks/useFormatCurrency';
 import { useTranslation } from '../../../i18n';
 import s from './RevenueCostChart.module.css';
 
@@ -36,15 +37,19 @@ interface TooltipEntry {
    attributes — so the literals stay locked to the same palette as the rest
    of the dashboard. If a token changes, update both places. */
 
-/** Compact ₴ formatter: 1 250 000 → "1.25M ₴", 750 000 → "750k ₴" */
-function formatCompactUAH(v: number): string {
-  if (Math.abs(v) >= 1_000_000) return `${(v / 1_000_000).toFixed(1).replace('.0', '')}M ₴`;
-  if (Math.abs(v) >= 1_000)     return `${Math.round(v / 1_000)}k ₴`;
-  return `${formatUA(v)} ₴`;
+/** Compact money formatter using the user's currency symbol. */
+function makeCompactFormatter(symbol: string, convert: (v: number) => number) {
+  return (v: number): string => {
+    const c = convert(v);
+    if (Math.abs(c) >= 1_000_000) return `${(c / 1_000_000).toFixed(1).replace('.0', '')}M ${symbol}`;
+    if (Math.abs(c) >= 1_000)     return `${Math.round(c / 1_000)}k ${symbol}`;
+    return `${formatUA(c)} ${symbol}`;
+  };
 }
 
-const CustomTooltip = ({ active, payload, label, profitLabel }: {
+const CustomTooltip = ({ active, payload, label, profitLabel, currencySymbol, convert }: {
   active?: boolean; payload?: TooltipEntry[]; label?: string; profitLabel: string;
+  currencySymbol: string; convert: (v: number) => number;
 }) => {
   if (!active || !payload?.length) return null;
   const dp = payload[0]?.payload;
@@ -58,7 +63,7 @@ const CustomTooltip = ({ active, payload, label, profitLabel }: {
         <div key={i} className={s.tooltipRow}>
           <span className={s.tooltipDot} style={{ background: entry.color }} />
           <span className={s.tooltipName}>{entry.name}:</span>
-          <span className={s.tooltipValue}>{formatUA(entry.value)} ₴</span>
+          <span className={s.tooltipValue}>{formatUA(convert(entry.value))} {currencySymbol}</span>
         </div>
       ))}
       {profit !== null && (
@@ -68,7 +73,7 @@ const CustomTooltip = ({ active, payload, label, profitLabel }: {
             className={s.tooltipValue}
             style={{ color: profit >= 0 ? 'var(--success)' : 'var(--error)' }}
           >
-            {profit >= 0 ? '+' : ''}{formatUA(profit)} ₴
+            {profit >= 0 ? '+' : ''}{formatUA(convert(profit))} {currencySymbol}
           </span>
         </div>
       )}
@@ -78,6 +83,9 @@ const CustomTooltip = ({ active, payload, label, profitLabel }: {
 
 export default function RevenueCostChart({ data, title, costLabel, revenueLabel, onPointClick }: Props) {
   const { t } = useTranslation();
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
+  const formatCompact = makeCompactFormatter(currencySymbol, convert);
   const profitLabel = (t.dashboard as Record<string, string | undefined>).profitDelta ?? 'Profit';
   const handleClick = onPointClick
     ? (state: { activeLabel?: string } | null) => {
@@ -115,9 +123,9 @@ export default function RevenueCostChart({ data, title, costLabel, revenueLabel,
           <YAxis
             tick={{ fill: 'rgba(255,255,255,0.38)', fontSize: 11, fontFamily: 'var(--font-mono)' }}
             axisLine={false} tickLine={false} width={56}
-            tickFormatter={formatCompactUAH}
+            tickFormatter={formatCompact}
           />
-          <Tooltip content={<CustomTooltip profitLabel={profitLabel} />} />
+          <Tooltip content={<CustomTooltip profitLabel={profitLabel} currencySymbol={currencySymbol} convert={convert} />} />
           {revenueLabel && (
             <Area
               type="monotone" dataKey="revenue" stroke="#22C55E"

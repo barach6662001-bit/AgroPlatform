@@ -19,6 +19,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import { useFormatCurrency, useCurrencySymbol } from '../../hooks/useFormatCurrency';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
 import s from './GrainBatchList.module.css';
@@ -116,6 +117,8 @@ export default function GrainBatchList() {
   const [activeTab, setActiveTab] = useState<string>('batches');
 
   const { t } = useTranslation();
+  const fmt = useFormatCurrency();
+  const currencySymbol = useCurrencySymbol();
   const { hasPermission } = useRole();
   const canCreate = hasPermission('inventory', 'manage');
 
@@ -528,7 +531,7 @@ export default function GrainBatchList() {
         <Col span={8}>
           <Card size="small" className={s.bg}>
             <Text type="secondary" className={s.upper}>Загальна вартість</Text>
-            <div className={s.text24}>{totalValue.toLocaleString()} ₴</div>
+            <div className={s.text24}>{fmt(totalValue, { fractionDigits: 0 })}</div>
           </Card>
         </Col>
         <Col span={8}>
@@ -848,7 +851,7 @@ export default function GrainBatchList() {
             ]} />
           </Form.Item>
           <Form.Item name="pricePerTon" label={t.grain.exportPrice}>
-            <InputNumber min={0} precision={2} addonAfter="грн/т" className={s.fullWidth} />
+            <InputNumber min={0} precision={2} addonAfter={`${currencySymbol}/т`} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="buyerName" label={t.grain.buyer}>
             <Input placeholder="Назва покупця або отримувача" />

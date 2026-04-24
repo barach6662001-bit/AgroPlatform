@@ -9,6 +9,7 @@ import type { MarginalityRowDto, MarginalitySummaryDto } from '../../types/econo
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 import s from './MarginalityDashboard.module.css';
 import DataTable from '../../components/ui/DataTable';
 
@@ -21,6 +22,8 @@ const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
 
 export default function MarginalityDashboard() {
   const { t } = useTranslation();
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [data, setData] = useState<MarginalitySummaryDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -105,8 +108,8 @@ export default function MarginalityDashboard() {
           <Card>
             <Statistic
               title={t.economics.actualRevenue}
-              value={data?.totalRevenue ?? 0}
-              suffix="UAH"
+              value={convert(data?.totalRevenue ?? 0)}
+              suffix={currencySymbol}
               prefix={<DollarOutlined />}
               valueStyle={{ color: 'var(--success)' }}
               loading={loading}
@@ -118,8 +121,8 @@ export default function MarginalityDashboard() {
           <Card>
             <Statistic
               title={t.economics.totalCostsSum}
-              value={data?.totalCosts ?? 0}
-              suffix="UAH"
+              value={convert(data?.totalCosts ?? 0)}
+              suffix={currencySymbol}
               prefix={<ArrowDownOutlined />}
               valueStyle={{ color: 'var(--error)' }}
               loading={loading}
@@ -131,8 +134,8 @@ export default function MarginalityDashboard() {
           <Card>
             <Statistic
               title={t.economics.netProfit}
-              value={data?.margin ?? 0}
-              suffix="UAH"
+              value={convert(data?.margin ?? 0)}
+              suffix={currencySymbol}
               prefix={marginPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
               valueStyle={{ color: marginPositive ? 'var(--success)' : 'var(--error)' }}
               loading={loading}

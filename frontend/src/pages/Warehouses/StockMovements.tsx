@@ -8,6 +8,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import { useFormatCurrency } from '../../hooks/useFormatCurrency';
 import { formatDate } from '../../utils/dateFormat';
 import s from './StockMovements.module.css';
 import DataTable from '../../components/ui/DataTable';
@@ -33,6 +34,7 @@ export default function StockMovements() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const { t } = useTranslation();
+  const fmt = useFormatCurrency();
 
   useEffect(() => {
     getWarehouses({ pageSize: 100 })
@@ -114,7 +116,7 @@ export default function StockMovements() {
       title: t.warehouses.totalCost,
       dataIndex: 'totalCost',
       key: 'totalCost',
-      render: (v?: number) => v != null ? `${v.toFixed(2)} UAH` : '—',
+      render: (v?: number) => v != null ? fmt(v) : '—',
     },
   ];
 
