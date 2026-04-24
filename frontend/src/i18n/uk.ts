@@ -1093,6 +1093,12 @@ const uk = {
     language: 'Мова',
     langUk: 'Українська',
     langEn: 'English',
+    currency: 'Валюта',
+    currencyHint: 'Валюта відображення. Дані в базі зберігаються в UAH; конвертація за курсом НБУ.',
+    currencyUah: 'Гривня (UAH)',
+    currencyUsd: 'Долар США (USD)',
+    currencyEur: 'Євро (EUR)',
+    currencySaveError: 'Не вдалося зберегти валюту',
   },
   budget: {
     title: 'Планування бюджету',

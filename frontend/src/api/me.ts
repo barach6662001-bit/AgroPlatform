@@ -11,7 +11,10 @@ export interface MeResponse {
   isSuperAdmin: boolean;
   mfaEnabled: boolean;
   mfaRequired: boolean;
+  preferredCurrency: SupportedCurrency;
 }
+
+export type SupportedCurrency = 'UAH' | 'USD' | 'EUR';
 
 export const getMe = () =>
   apiClient.get<MeResponse>('/api/me').then((r) => r.data);
