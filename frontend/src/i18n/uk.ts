@@ -93,6 +93,7 @@ const uk = {
     deactivate: 'Деактивувати',
     export: 'Експорт',
     close: 'Закрити',
+    storedInUah: 'Сума зберігається в гривнях',
   },
   auditLog: {
     title: 'Журнал аудиту',

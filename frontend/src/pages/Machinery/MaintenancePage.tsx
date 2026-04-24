@@ -179,7 +179,7 @@ export default function MaintenancePage() {
             <Input.TextArea rows={2} />
           </Form.Item>
           <Form.Item name="cost" label={t.maintenance.cost}>
-            <InputNumber min={0} step={100} className={s.fullWidth} addonAfter={currencySymbol} />
+            <InputNumber min={0} step={100} className={s.fullWidth} addonAfter="₴" />
           </Form.Item>
           <Form.Item name="hoursAtMaintenance" label={t.maintenance.hoursAtMaintenance}>
             <InputNumber min={0} step={0.1} className={s.fullWidth} />
