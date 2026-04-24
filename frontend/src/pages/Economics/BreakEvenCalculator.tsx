@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatUAH, formatNumber } from '../../utils/format';
+import { useCurrencySymbol } from '../../hooks/useFormatCurrency';
 import { InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { chartConfig, chartColors } from '../../components/charts/chartTheme';
@@ -23,6 +24,7 @@ export default function BreakEvenCalculator() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [pricePerTonne, setPricePerTonne] = useState<number | null>(null);
   const { t } = useTranslation();
+  const currencySymbol = useCurrencySymbol();
 
   const load = () => {
     if (!pricePerTonne || pricePerTonne <= 0) {
@@ -130,7 +132,7 @@ export default function BreakEvenCalculator() {
           step={100}
           value={pricePerTonne}
           onChange={(v) => setPricePerTonne(v)}
-          placeholder="UAH/т"
+          placeholder={`${currencySymbol}/т`}
           className={s.block7}
         />
       </Space>

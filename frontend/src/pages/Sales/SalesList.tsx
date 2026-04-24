@@ -16,6 +16,7 @@ import KpiCard from '../../components/ui/KpiCard';
 import TotalCard from '../../components/TotalCard';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 import { formatDate } from '../../utils/dateFormat';
 import PremiumTable from '../../components/PremiumTable/PremiumTable';
 import DataTable from '../../components/ui/DataTable';
@@ -55,6 +56,8 @@ export default function SalesList() {
 
   const { t } = useTranslation();
   const { hasRole } = useRole();
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
 
   const canWrite = hasRole(['CompanyAdmin', 'Manager', 'Accountant']);
 
@@ -239,7 +242,7 @@ export default function SalesList() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 16 }}>
         <TotalCard label={t.sales.totalRevenue ?? 'Загальний дохід'} valueUah={totalRevenue} highlight />
         <KpiCard label={t.sales.totalSales} value={String(totalCount)} />
-        <KpiCard label={t.sales.avgDeal ?? 'Середній чек'} value={`${avgDeal.toLocaleString('uk-UA', { maximumFractionDigits: 0 })} ₴`} />
+        <KpiCard label={t.sales.avgDeal ?? 'Середній чек'} value={`${convert(avgDeal).toLocaleString('uk-UA', { maximumFractionDigits: 0 })} ${currencySymbol}`} />
         <KpiCard label={t.sales.totalQuantity} value={`${totalQuantity.toLocaleString('uk-UA', { maximumFractionDigits: 2 })} т`} />
       </div>
 

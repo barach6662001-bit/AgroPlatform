@@ -1,17 +1,18 @@
+import { useFormatCurrency } from '../../hooks/useFormatCurrency';
+
 interface Props {
+  /** Amount in UAH (base DB currency). Displayed in the user's preferred currency. */
   value: number;
-  currency?: string;
-  locale?: string;
+  /**
+   * Override display currency. Default: user preference.
+   * Note: the `value` itself is always a UAH amount regardless of this prop.
+   */
+  currency?: 'UAH' | 'USD' | 'EUR';
 }
 
-export default function CurrencyCell({ value, currency = 'UAH', locale = 'uk-UA' }: Props) {
-  const formatted = new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-
+export default function CurrencyCell({ value, currency }: Props) {
+  const fmt = useFormatCurrency();
+  const formatted = fmt(value, { target: currency });
   return (
     <span style={{
       fontFamily: 'var(--font-mono)',

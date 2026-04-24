@@ -17,6 +17,7 @@ import type { FieldEfficiencyDto } from '../../types/analytics';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import { useFormatCurrency } from '../../hooks/useFormatCurrency';
 import s from './FieldEfficiency.module.css';
 import DataTable from '../../components/ui/DataTable';
 
@@ -24,6 +25,7 @@ export default function FieldEfficiency() {
   const [data, setData] = useState<FieldEfficiencyDto[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const fmt = useFormatCurrency();
 
   useEffect(() => {
     getFieldEfficiency()
@@ -51,14 +53,14 @@ export default function FieldEfficiency() {
       title: t.analytics.totalCost,
       dataIndex: 'totalCosts',
       key: 'totalCosts',
-      render: (v: number) => `${v.toFixed(2)} UAH`,
+      render: (v: number) => fmt(v),
       sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.totalCosts - b.totalCosts,
     },
     {
       title: t.analytics.costPerHa,
       dataIndex: 'costPerHectare',
       key: 'costPerHectare',
-      render: (v: number) => `${v.toFixed(2)} UAH`,
+      render: (v: number) => fmt(v),
       sorter: (a: FieldEfficiencyDto, b: FieldEfficiencyDto) => a.costPerHectare - b.costPerHectare,
     },
     {
@@ -103,7 +105,7 @@ export default function FieldEfficiency() {
                 <CartesianGrid strokeDasharray={chartConfig.grid.strokeDasharray} stroke={chartConfig.grid.stroke} vertical={chartConfig.grid.vertical} />
                 <XAxis type="number" tick={{ fill: '#6b7b9a', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" width={110} tick={{ fill: '#6b7b9a', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} formatter={(v: number) => `${v.toFixed(2)} UAH`} />
+                <Tooltip contentStyle={chartConfig.tooltip.contentStyle} itemStyle={chartConfig.tooltip.itemStyle} cursor={chartConfig.tooltip.cursor} formatter={(v: number) => fmt(v)} />
                 <Legend />
                 <Bar dataKey={t.analytics.totalCost} fill="#14B8A6" radius={[0, 4, 4, 0]} />
               </BarChart>

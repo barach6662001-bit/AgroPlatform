@@ -12,6 +12,7 @@ import type { PaginatedResult } from '../../types/common';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import { useFormatCurrency, useCurrencySymbol } from '../../hooks/useFormatCurrency';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
 import s from './WarehouseItems.module.css';
@@ -45,6 +46,8 @@ export default function WarehouseItems() {
   const [editItemSaving, setEditItemSaving] = useState(false);
   const [editItemForm] = Form.useForm();
   const { t } = useTranslation();
+  const fmt = useFormatCurrency();
+  const currencySymbol = useCurrencySymbol();
   const { hasPermission } = useRole();
 
   const canManageItems = hasPermission('inventory', 'manage');
@@ -233,7 +236,7 @@ export default function WarehouseItems() {
       key: 'purchasePrice',
       render: (_: unknown, record: BalanceDto) => {
         const item = items.find((i) => i.id === record.itemId);
-        return item?.purchasePrice != null ? `${item.purchasePrice.toFixed(2)} UAH` : '—';
+        return item?.purchasePrice != null ? fmt(item.purchasePrice) : '—';
       },
     },
     {
@@ -376,12 +379,12 @@ export default function WarehouseItems() {
               min={0}
               step={0.01}
               precision={2}
-              addonAfter="UAH"
+              addonAfter={currencySymbol}
               className={s.fullWidth}
               onChange={(val) => {
                 const qty = receiptForm.getFieldValue('quantity');
                 if (val && qty) {
-                  message.info(`${t.warehouses.totalCost}: ${(Number(val) * Number(qty)).toFixed(2)} UAH`);
+                  message.info(`${t.warehouses.totalCost}: ${fmt(Number(val) * Number(qty))}`);
                 }
               }}
             />
@@ -505,7 +508,7 @@ export default function WarehouseItems() {
             <InputNumber min={0} step={0.001} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="purchasePrice" label={t.warehouses.purchasePrice}>
-            <InputNumber min={0} precision={4} className={s.fullWidth} addonAfter="UAH" />
+            <InputNumber min={0} precision={4} className={s.fullWidth} addonAfter={currencySymbol} />
           </Form.Item>
         </Form>
       </Modal>
@@ -607,7 +610,7 @@ export default function WarehouseItems() {
             <InputNumber min={0} step={0.001} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="purchasePrice" label={t.warehouses.purchasePrice}>
-            <InputNumber min={0} precision={4} className={s.fullWidth} addonAfter="UAH" />
+            <InputNumber min={0} precision={4} className={s.fullWidth} addonAfter={currencySymbol} />
           </Form.Item>
         </Form>
       </Modal>

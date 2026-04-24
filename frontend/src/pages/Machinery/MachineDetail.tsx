@@ -17,6 +17,7 @@ import type { FuelTransactionDto } from '../../types/fuel';
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import { useFormatCurrency, useCurrencySymbol } from '../../hooks/useFormatCurrency';
 import { useRole } from '../../hooks/useRole';
 import { formatDate } from '../../utils/dateFormat';
 import s from './MachineDetail.module.css';
@@ -42,6 +43,8 @@ export default function MachineDetail() {
   const [workForm] = Form.useForm();
   const [maintenanceForm] = Form.useForm();
   const { t } = useTranslation();
+  const fmt = useFormatCurrency();
+  const currencySymbol = useCurrencySymbol();
   const { hasPermission } = useRole();
   const canEdit = hasPermission('machinery', 'manage');
 
@@ -161,7 +164,7 @@ export default function MachineDetail() {
       },
     },
     { title: t.maintenance.description, dataIndex: 'description', key: 'description', render: (v: string) => v || '—' },
-    { title: t.maintenance.cost, dataIndex: 'cost', key: 'cost', render: (v: number) => v ? `${v.toFixed(2)} UAH` : '—' },
+    { title: t.maintenance.cost, dataIndex: 'cost', key: 'cost', render: (v: number) => v ? fmt(v) : '—' },
     { title: t.maintenance.hoursAtMaintenance, dataIndex: 'hoursAtMaintenance', key: 'hours', render: (v: number) => v ? v.toFixed(1) : '—' },
   ];
 
@@ -402,7 +405,7 @@ export default function MachineDetail() {
             <Input.TextArea rows={2} />
           </Form.Item>
           <Form.Item name="cost" label={t.maintenance.cost}>
-            <InputNumber min={0} step={100} className={s.fullWidth} addonAfter="UAH" />
+            <InputNumber min={0} step={100} className={s.fullWidth} addonAfter={currencySymbol} />
           </Form.Item>
           <Form.Item name="hoursAtMaintenance" label={t.maintenance.hoursAtMaintenance}>
             <InputNumber min={0} step={0.1} className={s.fullWidth} />

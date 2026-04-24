@@ -15,6 +15,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import FieldDrawMap from '../../components/Map/FieldDrawMap';
 import { useTranslation } from '../../i18n';
+import { useFormatCurrency } from '../../hooks/useFormatCurrency';
 import { useRole } from '../../hooks/useRole';
 import FieldSeedingTab from './FieldSeedingTab';
 import FieldFertilizerTab from './FieldFertilizerTab';
@@ -51,6 +52,7 @@ export default function FieldDetail() {
   const [payForm] = Form.useForm();
   const [pnl, setPnl] = useState<FieldPnlDto | null>(null);
   const { t } = useTranslation();
+  const fmt = useFormatCurrency();
   const { hasPermission } = useRole();
   const canWrite = hasPermission('fields', 'manage');
 
@@ -262,24 +264,24 @@ export default function FieldDetail() {
           <div className={s.fieldKpiCard}>
             <div className={s.fieldKpiLabel}>{t.fields.expenses}</div>
             <div className={`${s.fieldKpiValue} ${s.kpiExpenses}`}>
-              {(pnl.totalCosts || 0).toLocaleString()} ₴
+              {fmt(pnl.totalCosts || 0, { fractionDigits: 0 })}
             </div>
             {pnl.costPerHectare != null && pnl.costPerHectare > 0 && (
               <Typography.Text type="secondary" className={s.subValue}>
-                {pnl.costPerHectare.toLocaleString()} ₴/га
+                {fmt(pnl.costPerHectare, { fractionDigits: 0 })}/га
               </Typography.Text>
             )}
           </div>
           <div className={s.fieldKpiCard}>
             <div className={s.fieldKpiLabel}>{t.fields.revenue}</div>
             <div className={`${s.fieldKpiValue} ${s.kpiRevenue}`}>
-              {(pnl.estimatedRevenue || 0).toLocaleString()} ₴
+              {fmt(pnl.estimatedRevenue || 0, { fractionDigits: 0 })}
             </div>
           </div>
           <div className={s.fieldKpiCard}>
             <div className={s.fieldKpiLabel}>{t.fields.profit}</div>
             <div className={`${s.fieldKpiValue} ${(pnl.netProfit || 0) > 0 ? s.kpiRevenue : (pnl.netProfit || 0) < 0 ? s.kpiExpenses : ''}`}>
-              {(pnl.netProfit || 0).toLocaleString()} ₴
+              {fmt(pnl.netProfit || 0, { fractionDigits: 0 })}
             </div>
           </div>
           <div className={s.fieldKpiCard}>

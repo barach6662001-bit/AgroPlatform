@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatUAH, formatNumber } from '../../utils/format';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 import { Table, InputNumber, Select, message, Card, Row, Col, Statistic, Tag, Empty, Space, Button } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { chartConfig, chartColors } from '../../components/charts/chartTheme';
@@ -24,6 +25,8 @@ export default function FieldPnl() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [pricePerTonne, setPricePerTonne] = useState<number | null>(null);
   const { t } = useTranslation();
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
 
   const load = () => {
     setLoading(true);
@@ -103,7 +106,7 @@ export default function FieldPnl() {
       dataIndex: 'costPerHectare',
       key: 'costPerHectare',
       sorter: (a: FieldPnlDto, b: FieldPnlDto) => a.costPerHectare - b.costPerHectare,
-      render: (v: number) => `${v.toFixed(0)} UAH/га`,
+      render: (v: number) => `${v.toFixed(0)} ${currencySymbol}/га`,
     },
     {
       title: t.economics.revenue,
@@ -181,7 +184,7 @@ export default function FieldPnl() {
           step={100}
           value={pricePerTonne}
           onChange={(v) => setPricePerTonne(v)}
-          placeholder="UAH"
+          placeholder={currencySymbol}
           className={s.block14}
         />
         <Button icon={<PrinterOutlined />} onClick={() => printReport(t.economics.pnlTitle, `<table><thead><tr><th>Поле</th><th>Витрати</th><th>Дохід</th><th>Прибуток</th></tr></thead><tbody>${data.map(d => `<tr><td>${d.fieldName}</td><td>${d.totalCosts.toLocaleString()}</td><td>${(d.estimatedRevenue ?? 0).toLocaleString()}</td><td>${(d.netProfit ?? 0).toLocaleString()}</td></tr>`).join('')}</tbody></table>`)}>Друк</Button>
@@ -199,8 +202,8 @@ export default function FieldPnl() {
           <Card className={s.bg}>
             <Statistic
               title={<span className={s.colored1}>{t.economics.totalCostsSum}</span>}
-              value={totalCosts}
-              suffix="UAH"
+              value={convert(totalCosts)}
+              suffix={currencySymbol}
               valueStyle={{ color: 'var(--error)' }}
               prefix={<DollarOutlined />}
               formatter={(v) => Number(v).toLocaleString()}

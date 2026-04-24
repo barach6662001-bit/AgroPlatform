@@ -8,6 +8,7 @@ import type { FieldProtectionDto } from '../../types/field';
 import type { WarehouseItemDto } from '../../types/warehouse';
 import DeleteConfirmButton from '../../components/DeleteConfirmButton';
 import { useTranslation } from '../../i18n';
+import { useCurrencySymbol } from '../../hooks/useFormatCurrency';
 import { useRole } from '../../hooks/useRole';
 import EmptyState from '../../components/EmptyState';
 import s from './FieldProtectionTab.module.css';
@@ -20,6 +21,7 @@ interface Props {
 
 export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
   const { t } = useTranslation();
+  const currencySymbol = useCurrencySymbol();
   const { hasPermission } = useRole();
   const canWrite = hasPermission('fields', 'manage');
   const [data, setData] = useState<FieldProtectionDto[]>([]);
@@ -162,7 +164,7 @@ export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
               }
               options={warehouseItems.map((item) => ({
                 value: item.name,
-                label: `${item.name} (${item.purchasePrice != null ? item.purchasePrice + ' UAH/' + item.baseUnit : 'ціна не вказана'})`,
+                label: `${item.name} (${item.purchasePrice != null ? item.purchasePrice + ' ' + currencySymbol + '/' + item.baseUnit : 'ціна не вказана'})`,
               }))}
               onChange={(val) => {
                 const item = warehouseItems.find((i) => i.name === val);
@@ -204,7 +206,7 @@ export default function FieldProtectionTab({ fieldId, fieldArea }: Props) {
             <InputNumber min={0} precision={2} className={s.fullWidth} />
           </Form.Item>
           <Form.Item name="totalCost" label={t.fields.totalCostLabel}>
-            <InputNumber min={0} precision={2} className={s.fullWidth} addonAfter="грн" />
+            <InputNumber min={0} precision={2} className={s.fullWidth} addonAfter={currencySymbol} />
           </Form.Item>
           <Form.Item name="applicationDate" label={t.fields.applicationDate} rules={[{ required: true, message: t.common.required }]}>
             <DatePicker className={s.fullWidth} />
