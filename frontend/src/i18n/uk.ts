@@ -1175,6 +1175,8 @@ const uk = {
     resourceOverspend: 'Перевитрата ресурсу',
     loadError: 'Помилка завантаження сповіщень',
     markReadError: 'Помилка позначення',
+    read: 'прочитане',
+    unread: 'непрочитане',
     titleColumn: 'Заголовок',
     bodyColumn: 'Повідомлення',
     dateColumn: 'Дата',
