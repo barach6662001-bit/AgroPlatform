@@ -17,22 +17,12 @@
 - [x] **PR #609** — tenant feature flags, `[RequireFeatureFlag]` middleware, `FeatureFlagGate`, Budget hidden by flag *(TZ 4, TZ 5)*
 - [x] **PR #610** — super-admin foundation: `IsSuperAdmin`, JWT claims (`is_super_admin`, `mfa_verified`), TOTP MFA, `AdminController` with `IgnoreQueryFilters()`, `/admin/tenants` + `/admin/tenants/:id` pages, audit log table *(TZ 14 foundation)*
 - [x] **PR #611** — super-admin integration tests (8 scenarios), `TestAuthHandler` extended with opt-in headers *(test debt from #610 closed)*
+- [x] **PR #612** — full Season model with real StartDate/EndDate, idempotent data seed for existing tenants, tenant-admin + super-admin CRUD, dashboard arrows use real seasons *(TZ 2 remainder)*
+- [x] **PR #616** *(parallel design-system track)* — design-system foundation: TypeScript token source-of-truth, `scripts/build-tokens.ts`, `frontend/src/design-system/tokens/*`, `lightTheme.ts` as deadcode ThemeConfig. Zero breaking changes to existing CSS variable names.
 
 ---
 
 ## In progress
-
-- [ ] **PR #612 — Full Season model** *(TZ 2 remainder)*
-  - Replace hardcoded year-list with `Seasons` table (Id, TenantId, Code, Name, StartDate, EndDate, IsCurrent)
-  - Data migration: seed 3 default seasons per existing tenant (2023/24, 2024/25, 2025/26)
-  - CRUD for super-admin (`/api/admin/tenants/{id}/seasons/*`) and tenant-admin (`/api/seasons/*`)
-  - Dashboard: season arrows iterate real Season list, label uses `StartDate/EndDate`
-  - Unique constraint: only one `IsCurrent=true` per tenant (partial index)
-  - Breaking change to `/api/seasons` response shape — update all frontend consumers in same PR
-
----
-
-## Upcoming (in order — do not reorder without approval)
 
 - [ ] **PR #613 — Currency system** *(TZ 8.2)*
   - `UserPreferences.PreferredCurrency` (UAH/USD/EUR, default UAH)
@@ -41,6 +31,10 @@
   - `useFormatCurrency()` hook, settings UI in Профіль → Валюта
   - Fallback: last stored rate on NBU failure; weekend/holiday → previous business day
   - Exports: currency header with NBU rate on export date
+
+---
+
+## Upcoming (in order — do not reorder without approval)
 
 - [ ] **PR #614 — Super-admin advanced + impersonation** *(TZ 14 remainder)*
   - Impersonation: 60min TTL, mandatory reason, red banner in UI, email to target user, rate limit 3/day per (admin, target) pair
@@ -60,7 +54,7 @@
   - Completion creates `InventoryAdjustment` ledger entries per diff, invalidates `StockBalance` cache
   - Session history with read-only view after completion
 
-- [ ] **PR #616 — Notifications center** *(TZ 12)*
+- [ ] **PR #617 — Notifications center** *(TZ 12)*
   - Dropdown layout fix (min-width 400px, title inline)
   - dayjs relativeTime with `uk` locale, proper thresholds (`X хв тому`, `X дн. тому`, `12 берез.`, etc.)
   - Mark-all-read, clear-read working
@@ -70,7 +64,7 @@
   - Backend fix: `NotificationService` uses empty Identity Roles tables — migrate to enum role on `AppUser`
   - Triggers verified: overdue op, tech repair, low fuel, low/over storage, sale completed, job failure
 
-- [ ] **PR #617 — Demo seeder + Mobile + PWA** *(TZ 11, TZ 13)*
+- [ ] **PR #618 — Demo seeder + Mobile + PWA** *(TZ 11, TZ 13)*
   - `Tools/DemoSeeder` idempotent: fills all core modules with connected Ukrainian-realistic data (6–12 months history)
   - Auto-enables all optional feature flags for demo tenant after seed
   - Mobile audit via Playwright at 390×844 and 360×640 across all routes
@@ -80,9 +74,11 @@
   - Modals → bottom sheets on mobile
   - PWA: manifest, service worker (Workbox), stale-while-revalidate assets, offline read-only for cached API data
 
+> PR numbers after #613 may shift if parallel design-system or infra PRs take intermediate numbers from GitHub. That's expected; the feature order (Currency → Super-admin advanced → Warehouse → Notifications → Demo + Mobile) is what matters.
+
 ---
 
-## Decisions locked (do not re-discuss, do not override without explicit approval in chat)
+## Decisions locked (do not re-discuss, do not override silently — even in deadcode or scaffolding)
 
 **Currency**
 - NBU JSON API: `https://bank.gov.ua/NBU_Exchange/exchange_site?start=YYYYMMDD&end=YYYYMMDD&valcode=USD&json` (and EUR)
@@ -113,7 +109,7 @@
 - ToS clause required for tenants
 
 **Feature flags**
-- Per-tenant only, no per-user overrides
+- Per-tenant only, no per-user overrides, no beta testers list
 - Hardcoded enum of flag keys in code (not user-defined)
 - `TenantFeatureFlags (TenantId, FeatureKey, IsEnabled, UpdatedAt, UpdatedBy)`
 - IMemoryCache TTL 60s, invalidate on write
@@ -139,11 +135,15 @@ analytics.sales_analytics
 - Налаштування
 
 **Theme**
-- Dark mode only, light mode removed in PR #604
+- **Dark mode only in product UI.** Light mode was removed from the user-facing UI in PR #604 (no topbar toggle, no settings toggle, `themeStore` locked to `'dark'`, `ConfigProvider` always uses `darkTheme`).
+- `frontend/src/theme/lightTheme.ts` exists as **deadcode** after PR #616 design-system refactor. It is NOT imported anywhere in product UI and MUST NOT be wired into `ConfigProvider`, a topbar toggle, or a settings toggle.
+- Reviving light mode in product UI requires explicit discussion in chat and amending this section. Do not silently wire `lightTheme` into any user-facing code path from any PR (design-system, infra, or feature).
 
 **Season**
-- Real `Seasons` table with `StartDate`/`EndDate`, NOT hardcoded year-list (PR #612)
+- Real `Seasons` table with `StartDate`/`EndDate` per tenant (PR #612), not year-list
 - Each tenant can have custom seasonal boundaries (crops differ)
+- Partial unique index enforces one `IsCurrent=true` per tenant at DB level
+- CHECK constraint `EndDate > StartDate` at DB level
 
 ---
 
@@ -160,7 +160,9 @@ analytics.sales_analytics
 - **Feature flags legacy fallback**: current behavior is "no records = all enabled" (protects existing tenants from PR #609 migration). Before prod has paying clients: run backfill to write explicit `IsEnabled=true` for all tenants, then switch fallback to "no records = all disabled".
 - **MailKit 4.15.1** — moderate severity CVE (`GHSA-9j88-vvj5-vhgr`). Upgrade to latest in a chore PR.
 - **`.gitignore` has `.mcp.json` listed 3 times** — cosmetic, clean up when touching the file next.
-- **P.6 totals audit incomplete** — PR #607 migrated `/expenses` ВСЬОГО and `/sales` totalRevenue. Other pages not verified: `/rent-payments`, `/salary-fuel`, `/pnl-by-fields`. Schedule as chore PR or fold into PR #617 demo prep.
+- **P.6 totals audit incomplete** — PR #607 migrated `/expenses` ВСЬОГО and `/sales` totalRevenue. Other pages not verified: `/rent-payments`, `/salary-fuel`, `/pnl-by-fields`. Schedule as chore PR or fold into PR #618 demo prep.
+- **Season force-delete dual code path** — `SeasonsController.Delete` accepts super-admin `?force=true` and soft-deletes without audit emission; `AdminController` already has a proper audited season CRUD. Remove the `force && IsSuperAdmin` branch from `SeasonsController.Delete` so super-admin force-delete is only reachable via `AdminController` (which audits via `ISuperAdminAuditService`). Small chore PR, schedule after PR #613.
+- **`lightTheme.ts` deadcode** — exists after PR #616 but not imported anywhere. Either document intent clearly in the file's top comment ("intentional placeholder, not wired into product UI") or delete. Revisit when design-system PRs stabilise.
 
 ---
 
@@ -172,7 +174,16 @@ When starting a new PR:
 2. Verify `git log --oneline -20` on main matches the "Completed" section here.
 3. Start the PR listed under "In progress". Do not skip ahead. Do not redo closed work.
 4. If roadmap and codebase disagree, STOP and ask in chat — do not guess.
-5. Decisions in "Decisions locked" are final; do not re-discuss.
+5. Decisions in "Decisions locked" are final; do not re-discuss, do not override silently (even in deadcode or scaffolding).
 6. Squash-merge to main with a clean commit message.
 7. After merge: update this file — move completed item to "Completed", promote next item from "Upcoming" into "In progress". Update status markers in `docs/TZ.md` for affected points.
 8. Commit the roadmap update in the same PR or as first chore commit of the next PR.
+
+### Parallel tracks (design-system, infra chores)
+
+Design-system and infra PRs can run in parallel with feature PRs from the "Upcoming" list. Rules:
+
+- Parallel-track PRs are numbered by GitHub independently; after merge, add them to the "Completed" section with a `(parallel … track)` tag but do NOT promote the next item from "Upcoming" — that's only for feature PRs.
+- Parallel-track PRs MUST NOT violate "Decisions locked" even in deadcode or scaffolding. If a parallel PR needs to touch a locked area (add back a theme toggle, add SMS 2FA, add per-user feature flags, etc.), the author MUST ask in chat first.
+- If a parallel-track PR and a feature PR touch the same file, the feature PR rebases on main after the parallel PR merges.
+- Do not reorder the "Upcoming" feature list because of parallel work.
