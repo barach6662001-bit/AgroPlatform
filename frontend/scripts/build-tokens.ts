@@ -180,5 +180,4 @@ const css = banner + rootBlock + '\n' + darkBlock + '\n' + lightBlock;
 writeFileSync(outPath, css, 'utf8');
 
 const lineCount = css.split('\n').length;
-// eslint-disable-next-line no-console
 console.log(`✓ tokens.css regenerated (${lineCount} lines) → ${outPath}`);
