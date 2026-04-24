@@ -18,23 +18,12 @@
 - [x] **PR #610** — super-admin foundation: `IsSuperAdmin`, JWT claims (`is_super_admin`, `mfa_verified`), TOTP MFA, `AdminController` with `IgnoreQueryFilters()`, `/admin/tenants` + `/admin/tenants/:id` pages, audit log table *(TZ 14 foundation)*
 - [x] **PR #611** — super-admin integration tests (8 scenarios), `TestAuthHandler` extended with opt-in headers *(test debt from #610 closed)*
 - [x] **PR #612** — full Season model with real StartDate/EndDate, idempotent data seed for existing tenants, tenant-admin + super-admin CRUD, dashboard arrows use real seasons *(TZ 2 remainder)*
+- [x] **PR #613** — currency system: `ExchangeRate` table (composite PK), `UserPreferences.PreferredCurrency`, `NbuCurrencyService` with daily 06:00 Kyiv sync + previous-business-day fallback + last-stored-rate on NBU failure, `/api/currency/rates*` + `/api/currency/preferences` endpoints, frontend `useFormatCurrency` hook + Profile selector *(TZ 8.2)*
 - [x] **PR #616** *(parallel design-system track)* — design-system foundation: TypeScript token source-of-truth, `scripts/build-tokens.ts`, `frontend/src/design-system/tokens/*`, `lightTheme.ts` as deadcode ThemeConfig. Zero breaking changes to existing CSS variable names.
 
 ---
 
 ## In progress
-
-- [ ] **PR #613 — Currency system** *(TZ 8.2)*
-  - `UserPreferences.PreferredCurrency` (UAH/USD/EUR, default UAH)
-  - `ExchangeRate` table (Code, Date, RateToUah), PK (Code, Date)
-  - `NbuCurrencyService` + cron 06:00 Kyiv, backfill from 2024-01-01
-  - `useFormatCurrency()` hook, settings UI in Профіль → Валюта
-  - Fallback: last stored rate on NBU failure; weekend/holiday → previous business day
-  - Exports: currency header with NBU rate on export date
-
----
-
-## Upcoming (in order — do not reorder without approval)
 
 - [ ] **PR #614 — Super-admin advanced + impersonation** *(TZ 14 remainder)*
   - Impersonation: 60min TTL, mandatory reason, red banner in UI, email to target user, rate limit 3/day per (admin, target) pair
@@ -44,6 +33,14 @@
   - `/admin/system` (queue/jobs health, storage, connections)
   - `/admin/catalogs` (global reference data: crops, equipment types, units)
   - `/admin/broadcast` (notification to all/selected tenants)
+
+---
+
+## Upcoming (in order — do not reorder without approval)
+
+- [ ] **PR #617 — Export currency header** *(TZ 8.2 follow-up)*
+  - Add NBU rate on export date to CSV/PDF export headers where currency amounts appear (costs, revenue, grain)
+  - Tied to existing export helpers; deferred from PR #613 to keep that PR reviewable
 
 - [ ] **PR #615 — Warehouse: grain receipt + inventory** *(TZ 9, TZ 10)*
   - `/grain-storages` "Прийняти зерно" button: full form, creates GrainReceipt + GrainBatch + GrainBatchPlacement + StockLedgerEntry, recalculates StockBalance
