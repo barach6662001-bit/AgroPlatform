@@ -88,5 +88,5 @@ Coexistence with the existing role-based super-admin:
 ## Upcoming
 
 - PR #611 — multi-tenant DNS / org-level routing.
-- PR #612 — billing + plan enforcement.
+- PR #612 — **Season model (ТЗ #2)**: replace the legacy year-list `/api/seasons` endpoint with a real tenant-scoped `Season` entity (Code, Name, StartDate, EndDate, IsCurrent) so the dashboard navigates through actual crop cycles (Aug 1 → Jul 31) instead of calendar years. Adds tenant-admin CRUD at `/api/seasons/*` and super-admin CRUD at `/api/admin/tenants/{id}/seasons/*` (audited). Migration seeds three default seasons (2023/2024, 2024/2025, 2025/2026-current) per existing tenant, idempotent. Breaking API change for the frontend: response shape `int[]` → `SeasonDto[]`. Billing/plan enforcement is deferred (feature flags already differentiate plans — see PR #609).
 - PR #613 — super-admin phase 2 (users, audit UI, billing, impersonation).

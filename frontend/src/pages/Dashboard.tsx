@@ -116,11 +116,17 @@ export default function Dashboard() {
     return periodToRange(period);
   }, [period, resolvedWindow]);
 
-  const sortedSeasons = useMemo(() => (seasons ?? []).slice().sort((a, b) => a - b), [seasons]);
+  const sortedSeasons = useMemo(
+    () => (seasons ?? []).slice().sort((a, b) => a.startDate.localeCompare(b.startDate)),
+    [seasons]
+  );
 
   const resolvedRangeLabel = useMemo(() => {
     if (period === 'season') {
-      if (hasExplicitRange && fromDate) return String(fromDate.year());
+      const match = hasExplicitRange && fromDate
+        ? sortedSeasons.find((s) => dayjs(s.startDate).isSame(fromDate, 'day'))
+        : sortedSeasons.find((s) => s.isCurrent) ?? sortedSeasons[sortedSeasons.length - 1];
+      if (match) return match.name;
       return t.dashboard.allTime ?? 'Весь час';
     }
 
@@ -161,56 +167,54 @@ export default function Dashboard() {
     };
   }, [period, resolvedWindow]);
 
-  const currentSeasonYear = useMemo(() => {
-    if (period !== 'season') return null;
-    if (hasExplicitRange && fromDate) return fromDate.year();
-    if (sortedSeasons.length > 0) return sortedSeasons[sortedSeasons.length - 1];
-    return dayjs().year();
+  const activeSeason = useMemo(() => {
+    if (period !== 'season' || sortedSeasons.length === 0) return null;
+    if (hasExplicitRange && fromDate) {
+      const match = sortedSeasons.find((s) => dayjs(s.startDate).isSame(fromDate, 'day'));
+      if (match) return match;
+    }
+    return sortedSeasons.find((s) => s.isCurrent) ?? sortedSeasons[sortedSeasons.length - 1];
   }, [period, hasExplicitRange, fromDate, sortedSeasons]);
 
+  const activeSeasonIndex = useMemo(
+    () => (activeSeason ? sortedSeasons.findIndex((s) => s.id === activeSeason.id) : -1),
+    [activeSeason, sortedSeasons]
+  );
+
   const disableStepPrev = useMemo(() => {
-    if (!minBound) return true;
-
     if (period === 'season') {
-      if (!currentSeasonYear) return true;
-      const idx = sortedSeasons.indexOf(currentSeasonYear);
-      return idx <= 0;
+      return activeSeasonIndex <= 0;
     }
-
+    if (!minBound) return true;
     const prev = shiftWindow(-1);
     if (!prev) return true;
     return prev.from.isBefore(minBound);
-  }, [minBound, period, currentSeasonYear, sortedSeasons, shiftWindow]);
+  }, [minBound, period, activeSeasonIndex, shiftWindow]);
 
   const disableStepNext = useMemo(() => {
-    if (!maxBound) return true;
-
     if (period === 'season') {
-      if (!currentSeasonYear) return true;
-      const idx = sortedSeasons.indexOf(currentSeasonYear);
-      return idx < 0 || idx >= sortedSeasons.length - 1;
+      return activeSeasonIndex < 0 || activeSeasonIndex >= sortedSeasons.length - 1;
     }
-
+    if (!maxBound) return true;
     const next = shiftWindow(1);
     if (!next) return true;
     return next.to.isAfter(maxBound);
-  }, [maxBound, period, currentSeasonYear, sortedSeasons, shiftWindow]);
+  }, [maxBound, period, activeSeasonIndex, sortedSeasons.length, shiftWindow]);
 
   const stepPeriod = useCallback((step: -1 | 1) => {
     if (period === 'season') {
-      if (!currentSeasonYear || sortedSeasons.length === 0) return;
-      const currentIndex = sortedSeasons.indexOf(currentSeasonYear);
-      const nextIndex = currentIndex + step;
+      if (activeSeasonIndex < 0) return;
+      const nextIndex = activeSeasonIndex + step;
       if (nextIndex < 0 || nextIndex >= sortedSeasons.length) return;
-      const targetYear = sortedSeasons[nextIndex];
-      setRange(dayjs(`${targetYear}-01-01`), dayjs(`${targetYear}-12-31`));
+      const target = sortedSeasons[nextIndex];
+      setRange(dayjs(target.startDate), dayjs(target.endDate));
       return;
     }
 
     const next = shiftWindow(step);
     if (!next) return;
     setRange(next.from, next.to);
-  }, [period, currentSeasonYear, sortedSeasons, setRange, shiftWindow]);
+  }, [period, activeSeasonIndex, sortedSeasons, setRange, shiftWindow]);
 
   const handleStepPrev = useCallback(() => {
     if (disableStepPrev) return;
