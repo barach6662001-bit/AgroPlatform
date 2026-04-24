@@ -15,6 +15,23 @@
 
 .item:hover { background: var(--bg-hover); }
 
+/*
+ * Phase 2c keyboard-focus affordance — mirrors the FieldCard pattern:
+ *   - .item:focus resets the platform-default outline so mouse-driven
+ *     focus stays ring-free (matching the tile's hover affordance).
+ *   - .item:focus-visible draws a token-driven brand-coloured ring for
+ *     keyboard users only. The hover background is also surfaced on
+ *     focus-visible so keyboard users see the same row-highlight that
+ *     mouse users see on hover.
+ */
+.item:focus { outline: none; }
+
+.item:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  background: var(--bg-hover);
+}
+
 .iconWrap {
   display: flex;
   flex-direction: column;
