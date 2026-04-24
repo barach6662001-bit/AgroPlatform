@@ -12,6 +12,7 @@ import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
 import { useRole } from '../../hooks/useRole';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 
 const { Text } = Typography;
 
@@ -29,6 +30,8 @@ export default function SalaryPage() {
   const [payForm] = Form.useForm();
   const { t } = useTranslation();
   const { hasRole } = useRole();
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
   const canWrite = hasRole(['CompanyAdmin', 'Manager']);
 
   const monthOptions = Array.from({ length: 12 }, (_, i) => ({
@@ -134,27 +137,27 @@ export default function SalaryPage() {
                     <Col span={8}>
                       <Statistic
                         title={<span style={{ color: '#8b949e', fontSize: 11 }}>{t.hr.totalAccrued}</span>}
-                        value={s.totalAccrued}
+                        value={convert(s.totalAccrued)}
                         precision={2}
-                        suffix="₴"
+                        suffix={currencySymbol}
                         valueStyle={{ color: '#3fb950', fontSize: 14 }}
                       />
                     </Col>
                     <Col span={8}>
                       <Statistic
                         title={<span style={{ color: '#8b949e', fontSize: 11 }}>{t.hr.totalPaid}</span>}
-                        value={s.totalPaid}
+                        value={convert(s.totalPaid)}
                         precision={2}
-                        suffix="₴"
+                        suffix={currencySymbol}
                         valueStyle={{ color: '#60a5fa', fontSize: 14 }}
                       />
                     </Col>
                     <Col span={8}>
                       <Statistic
                         title={<span style={{ color: '#8b949e', fontSize: 11 }}>{t.hr.debt}</span>}
-                        value={s.debt}
+                        value={convert(s.debt)}
                         precision={2}
-                        suffix="₴"
+                        suffix={currencySymbol}
                         valueStyle={{ color: s.debt > 0 ? '#f85149' : '#3fb950', fontSize: 14 }}
                       />
                     </Col>
@@ -205,7 +208,7 @@ export default function SalaryPage() {
             label={t.lease.paymentAmount}
             rules={[{ required: true, message: t.common.required }]}
           >
-            <InputNumber min={0.01} style={{ width: '100%' }} suffix="₴" />
+            <InputNumber min={0.01} style={{ width: '100%' }} suffix={currencySymbol} />
           </Form.Item>
           <Form.Item
             name="paymentDate"

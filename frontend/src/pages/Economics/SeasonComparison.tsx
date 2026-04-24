@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatUAH, formatNumber } from '../../utils/format';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 import { Card, Col, Row, Select, Statistic, Empty, message, Tag } from 'antd';
 import {
   BarChart,
@@ -30,6 +31,8 @@ const YEAR_OPTIONS = Array.from({ length: 8 }, (_, i) => {
 
 export default function SeasonComparison() {
   const { t } = useTranslation();
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
   const [selectedYears, setSelectedYears] = useState<number[]>([CURRENT_YEAR - 1, CURRENT_YEAR]);
   const [data, setData] = useState<SeasonComparisonDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -159,8 +162,8 @@ export default function SeasonComparison() {
                 <Card>
                   <Statistic
                     title={t.economics.seasonRevenue}
-                    value={bestYear.totalRevenue}
-                    suffix="UAH"
+                    value={convert(bestYear.totalRevenue)}
+                    suffix={currencySymbol}
                     valueStyle={{ color: 'var(--success)' }}
                     loading={loading}
                     formatter={(v) => formatNumber(Number(v))}
@@ -171,8 +174,8 @@ export default function SeasonComparison() {
                 <Card>
                   <Statistic
                     title={t.economics.seasonMargin}
-                    value={bestYear.margin}
-                    suffix="UAH"
+                    value={convert(bestYear.margin)}
+                    suffix={currencySymbol}
                     valueStyle={{ color: bestYear.margin >= 0 ? 'var(--success)' : 'var(--error)' }}
                     loading={loading}
                     formatter={(v) => formatNumber(Number(v))}

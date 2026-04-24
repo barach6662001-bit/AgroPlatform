@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useCurrencyStore } from '../stores/currencyStore';
 import type { SupportedCurrency } from '../api/me';
+import { currencySymbolFor } from '../utils/format';
 
 export interface FormatCurrencyOptions {
   /** Override target currency; defaults to user's preferred. */
@@ -54,4 +55,44 @@ export function useFormatCurrency() {
     },
     [preferredCurrency, rates]
   );
+}
+
+/**
+ * Returns the symbol ("₴", "$", "€") for the user's current preferred currency.
+ * Reactive: consuming components re-render when the preference changes.
+ *
+ * Use for input suffixes / addonAfters where a short one-char unit is needed:
+ *   <InputNumber suffix={useCurrencySymbol()} />
+ */
+export function useCurrencySymbol(): string {
+  const preferredCurrency = useCurrencyStore((s) => s.preferredCurrency);
+  return currencySymbolFor(preferredCurrency);
+}
+
+/**
+ * Returns the resolved display currency code (matches what `useFormatCurrency`
+ * would render — falls back to UAH if the rate is not yet loaded).
+ */
+export function useDisplayCurrencyCode(): SupportedCurrency {
+  const preferredCurrency = useCurrencyStore((s) => s.preferredCurrency);
+  const rates = useCurrencyStore((s) => s.rates);
+  if (preferredCurrency === 'UAH') return 'UAH';
+  const rate = rates[preferredCurrency];
+  return rate && rate > 0 ? preferredCurrency : 'UAH';
+}
+
+/**
+ * Returns a numeric converter that turns a UAH amount into the user's preferred
+ * currency amount (without formatting). Use with compact formatters (`formatUA`)
+ * where the caller needs control over the symbol separately.
+ */
+export function useConvertFromUah(): (amountUah: number) => number {
+  const preferredCurrency = useCurrencyStore((s) => s.preferredCurrency);
+  const rates = useCurrencyStore((s) => s.rates);
+  return (amountUah: number) => {
+    if (preferredCurrency === 'UAH') return amountUah;
+    const rate = rates[preferredCurrency];
+    if (!rate || rate <= 0) return amountUah;
+    return amountUah / rate;
+  };
 }

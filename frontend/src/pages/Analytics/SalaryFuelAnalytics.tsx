@@ -17,6 +17,7 @@ import type { SalaryFuelAnalyticsDto, FuelByMachineDto, SalaryByEmployeeDto } fr
 import PageHeader from '../../components/PageHeader';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { useTranslation } from '../../i18n';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 import s from './SalaryFuelAnalytics.module.css';
 import DataTable from '../../components/ui/DataTable';
 
@@ -32,6 +33,8 @@ const fmtDec = (v: number) => v.toLocaleString('uk-UA', { maximumFractionDigits:
 
 export default function SalaryFuelAnalytics() {
   const { t } = useTranslation();
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [data, setData] = useState<SalaryFuelAnalyticsDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -106,8 +109,8 @@ export default function SalaryFuelAnalytics() {
           <Card>
             <Statistic
               title={t.analytics.totalSalary}
-              value={data?.totalSalary ?? 0}
-              suffix="UAH"
+              value={convert(data?.totalSalary ?? 0)}
+              suffix={currencySymbol}
               prefix={<DollarOutlined />}
               valueStyle={{ color: 'var(--success)' }}
               loading={loading}

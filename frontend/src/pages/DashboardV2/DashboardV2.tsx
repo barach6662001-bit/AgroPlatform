@@ -7,6 +7,7 @@ import type { FieldDto } from '../../types/field';
 import type { AgroOperationDto } from '../../types/operation';
 import { useTranslation } from '../../i18n';
 import { formatUA } from '../../utils/numberFormat';
+import { useCurrencySymbol, useConvertFromUah } from '../../hooks/useFormatCurrency';
 import { computeTrend } from '../../utils/computeTrend';
 import { formatPeriodRange } from '../../utils/formatPeriodRange';
 import KpiHeroRow from '../Dashboard/components/KpiHeroRow';
@@ -130,6 +131,9 @@ export default function DashboardV2({
     (op) => !op.isCompleted && op.plannedDate && op.plannedDate < today,
   ).length;
 
+  const currencySymbol = useCurrencySymbol();
+  const convert = useConvertFromUah();
+
   /* KPI items — single accent (white for area, amber kept for expense semantics,
      green for revenue + profit hero).  All deltas are computed, never hardcoded. */
   const kpiItems = [
@@ -142,7 +146,7 @@ export default function DashboardV2({
     },
     {
       label: periodLabel('expenses'),
-      value: `${formatUA(derived.expenses)} ₴`,
+      value: `${formatUA(convert(derived.expenses))} ${currencySymbol}`,
       accentColor: '#F59E0B',
       icon: <Banknote size={16} strokeWidth={1.6} />,
       trend: derived.expenses > 0 ? derived.expensesTrend : undefined,
@@ -150,7 +154,7 @@ export default function DashboardV2({
     },
     {
       label: periodLabel('revenue'),
-      value: `${formatUA(derived.revenue)} ₴`,
+      value: `${formatUA(convert(derived.revenue))} ${currencySymbol}`,
       accentColor: '#22C55E',
       icon: <Activity size={16} strokeWidth={1.6} />,
       trend: derived.revenue > 0 ? derived.revenueTrend : undefined,
@@ -158,7 +162,7 @@ export default function DashboardV2({
     },
     {
       label: periodLabel('profit'),
-      value: `${formatUA(derived.profit)} ₴`,
+      value: `${formatUA(convert(derived.profit))} ${currencySymbol}`,
       accentColor: '#22C55E',
       icon: <TrendingUp size={16} strokeWidth={1.6} />,
       hero: true,

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Card } from 'antd';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 
 interface TotalCardProps {
   valueUah: number;
@@ -8,10 +9,8 @@ interface TotalCardProps {
   highlight?: boolean;
 }
 
-const formatUah = (value: number) =>
-  `${new Intl.NumberFormat('uk-UA', { maximumFractionDigits: 0 }).format(value)} ₴`;
-
 export default function TotalCard({ valueUah, label, icon, highlight = false }: TotalCardProps) {
+  const fmt = useFormatCurrency();
   return (
     <Card
       data-testid="total-card"
@@ -43,7 +42,7 @@ export default function TotalCard({ valueUah, label, icon, highlight = false }: 
           fontWeight: 700,
         }}
       >
-        {formatUah(valueUah)}
+        {fmt(valueUah, { fractionDigits: 0 })}
       </div>
     </Card>
   );
