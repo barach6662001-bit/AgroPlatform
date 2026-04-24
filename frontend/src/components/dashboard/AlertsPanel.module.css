@@ -1,27 +1,11 @@
-.card {
-  position: relative;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px 20px 14px;
-  overflow: hidden;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(var(--accRgb), 0.35), transparent);
-  opacity: 0.6;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
+/* Alert-specific styling.
+ *
+ * The outer container (background, border, radius, padding) is now
+ * provided by the design-system <Card> primitive. This module owns
+ * only what's *unique* to the alerts panel: the eyebrow title style,
+ * the count badge, the row grid, the severity tints, and the
+ * "show all" footer button.
+ */
 
 .title {
   font-family: var(--fm);
@@ -30,6 +14,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-secondary);
+  margin: 0;
 }
 
 .totalCount {

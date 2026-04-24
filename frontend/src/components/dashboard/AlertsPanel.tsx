@@ -4,6 +4,7 @@ import {
   AlertTriangle, Clock, PackageMinus, Wrench, CheckCircle2, ChevronRight,
 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
+import { Card, Cluster } from '../../design-system';
 import s from './AlertsPanel.module.css';
 
 type Severity = 'critical' | 'warning' | 'info';
@@ -26,6 +27,17 @@ interface Props {
 
 const SEV_RANK: Record<Severity, number> = { critical: 0, warning: 1, info: 2 };
 
+/**
+ * Compact severity-tinted alerts panel for the dashboard.
+ *
+ * Phase 1e: outer container migrated from a local `s.card` rule to the
+ * design-system `<Card>` primitive. Header layout uses `<Cluster>`. The
+ * row grid, severity tints, count badge and "show all" footer button
+ * are alert-specific affordances and remain in the local CSS module.
+ *
+ * Public props, alert ordering, navigation routes and accessibility
+ * contract are preserved verbatim from the legacy implementation.
+ */
 export default function AlertsPanel({
   underRepairMachines,
   pendingOperations,
@@ -95,11 +107,12 @@ export default function AlertsPanel({
   const hasMore = rows.length > 5 && !expanded;
 
   return (
-    <section className={s.card} aria-label={dash.needsAttention}>
-      <header className={s.header}>
-        <span className={s.title}>{dash.needsAttention}</span>
+    <Card as="section" radius="lg" aria-label={dash.needsAttention}>
+      <Cluster as="header" justify="between" align="center" gap="2">
+        <h2 className={s.title}>{dash.needsAttention}</h2>
         <span className={s.totalCount}>{rows.length}</span>
-      </header>
+      </Cluster>
+
       <ul className={s.list}>
         {visible.map((row, i) => (
           <li key={i} className={s.listItem}>
@@ -117,11 +130,16 @@ export default function AlertsPanel({
           </li>
         ))}
       </ul>
+
       {hasMore && (
-        <button type="button" className={s.showAll} onClick={() => setExpanded(true)}>
+        <button
+          type="button"
+          className={s.showAll}
+          onClick={() => setExpanded(true)}
+        >
           {dash.showAll ?? 'Показати всі'} ({rows.length})
         </button>
       )}
-    </section>
+    </Card>
   );
 }
