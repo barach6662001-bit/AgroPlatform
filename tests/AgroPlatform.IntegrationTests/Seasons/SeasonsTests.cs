@@ -31,6 +31,10 @@ public sealed class SeasonsTests : IntegrationTestBase
 
     private HttpClient CreateSuperAdminClient()
     {
+        // The [SuperAdminRequired] filter also requires a UserMfaSettings row with
+        // IsEnabled=true for the authenticated user id. Seed it once per test run.
+        EnsureTestUserMfaEnabledAsync().GetAwaiter().GetResult();
+
         var client = Factory.CreateClient();
         client.DefaultRequestHeaders.Add("X-Tenant-Id", TenantId.ToString());
         client.DefaultRequestHeaders.Add("X-Test-Role", "SuperAdmin");
@@ -39,14 +43,68 @@ public sealed class SeasonsTests : IntegrationTestBase
         return client;
     }
 
+    private async Task EnsureTestUserMfaEnabledAsync()
+    {
+        using var scope = CreateScope();
+        var db = GetDbContext(scope);
+        var userId = TestAuthHandler.TestUserId.ToString();
+
+        // FK requires a real AspNetUsers row before we can add UserMfaSettings.
+        var userExists = await db.Users.IgnoreQueryFilters().AnyAsync(u => u.Id == userId);
+        if (!userExists)
+        {
+            db.Users.Add(new AppUser
+            {
+                Id = userId,
+                UserName = "test-super@example.com",
+                NormalizedUserName = "TEST-SUPER@EXAMPLE.COM",
+                Email = "test-super@example.com",
+                NormalizedEmail = "TEST-SUPER@EXAMPLE.COM",
+                EmailConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                FirstName = "Test",
+                LastName = "SuperAdmin",
+                Role = UserRole.SuperAdmin,
+                TenantId = Guid.Empty,
+                IsActive = true,
+                IsSuperAdmin = true,
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var existing = await db.UserMfaSettings.FirstOrDefaultAsync(x => x.UserId == userId);
+        if (existing is not null)
+        {
+            if (!existing.IsEnabled)
+            {
+                existing.IsEnabled = true;
+                await db.SaveChangesAsync();
+            }
+            return;
+        }
+        db.UserMfaSettings.Add(new AgroPlatform.Domain.Users.UserMfaSettings
+        {
+            UserId = userId,
+            SecretKey = "JBSWY3DPEHPK3PXP", // any valid base32; not exercised by SuperAdminRequiredFilter.
+            IsEnabled = true,
+            BackupCodes = "[]",
+            EnabledAt = DateTime.UtcNow,
+        });
+        await db.SaveChangesAsync();
+    }
+
     private async Task<Guid> SeedSeasonAsync(Guid tenantId, string code, DateOnly start, DateOnly end, bool isCurrent)
     {
         using var scope = CreateScope();
         var db = GetDbContext(scope);
         // If setting current, clear any existing current first to satisfy partial unique index.
+        // IgnoreQueryFilters because test scopes have no HTTP context → DbContext's
+        // global tenant filter would otherwise hide every season row from this read.
         if (isCurrent)
         {
-            var curr = await db.Seasons.Where(s => s.TenantId == tenantId && s.IsCurrent).ToListAsync();
+            var curr = await db.Seasons.IgnoreQueryFilters()
+                .Where(s => s.TenantId == tenantId && s.IsCurrent && !s.IsDeleted).ToListAsync();
             foreach (var c in curr) c.IsCurrent = false;
             if (curr.Count > 0) await db.SaveChangesAsync();
         }
@@ -102,10 +160,11 @@ public sealed class SeasonsTests : IntegrationTestBase
 
         using var scope = CreateScope();
         var db = GetDbContext(scope);
-        var currents = await db.Seasons.Where(s => s.TenantId == TenantId && s.IsCurrent).ToListAsync();
+        var currents = await db.Seasons.IgnoreQueryFilters()
+            .Where(s => s.TenantId == TenantId && s.IsCurrent && !s.IsDeleted).ToListAsync();
         currents.Should().ContainSingle().Which.Id.Should().Be(b);
 
-        var aReloaded = await db.Seasons.FirstAsync(s => s.Id == a);
+        var aReloaded = await db.Seasons.IgnoreQueryFilters().FirstAsync(s => s.Id == a);
         aReloaded.IsCurrent.Should().BeFalse();
     }
 
