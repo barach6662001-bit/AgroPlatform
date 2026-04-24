@@ -279,9 +279,16 @@ export default function DashboardV2({
         </div>
         <div>
           <h2 className={s.sectionLabel}>{t.dashboard.recentOperations}</h2>
-          <div className={s.card}>
+          {/*
+            Phase 1f adoption: same migration as the warehouse snapshot
+            below — replaces the local `s.card` wrapper with the design-
+            system `<Card>` primitive. `<Card>` defaults (variant=subtle,
+            radius=xl=16px, padding=5=20px, bordered) are an exact drop-in
+            for the legacy `.card` rule, so no visual hierarchy changes.
+          */}
+          <Card>
             <OperationsTimeline operations={operations.slice(0, 7)} />
-          </div>
+          </Card>
         </div>
       </motion.section>
 
@@ -301,9 +308,10 @@ export default function DashboardV2({
         </div>
         <div>
           <h2 className={s.sectionLabel}>{dash.upcoming}</h2>
-          <div className={s.card}>
+          {/* Phase 1f adoption — see OperationsTimeline above for rationale. */}
+          <Card>
             <UpcomingPanel operations={operations} weather={weather} />
-          </div>
+          </Card>
         </div>
       </motion.section>
     </motion.div>
