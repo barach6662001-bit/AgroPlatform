@@ -15,9 +15,32 @@
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  /*
+   * Phase 2d migrated this from an inline `style={{cursor: 'pointer'}}`
+   * on the JSX so the focus-visible rule below can live alongside it
+   * without a runtime style override fight.
+   */
+  cursor: pointer;
 }
 
 .item:last-child { border-bottom: 0; }
+
+/*
+ * Phase 2d keyboard-focus affordance — mirrors the FieldCard / Phase 2c
+ * OperationsTimeline pattern:
+ *   - .item:focus resets the platform-default outline so mouse-driven
+ *     focus stays ring-free (the row has no hover background to begin
+ *     with — there is nothing to "preserve parity" with, so the ring
+ *     stands alone for keyboard users only).
+ *   - .item:focus-visible draws a token-driven brand-coloured ring.
+ *     2px outset is enough to clear the row's bottom-border divider.
+ */
+.item:focus { outline: none; }
+
+.item:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
 
 .dateChip {
   font-family: var(--fm);
