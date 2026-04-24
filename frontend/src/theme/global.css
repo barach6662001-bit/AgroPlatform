@@ -485,6 +485,32 @@ a, button, [role="button"],
   background: var(--brand-muted) !important;
 }
 
+/*
+ * Phase 2g — keyboard-focus affordance for AntD clickable rows.
+ *
+ *  - :focus drops the platform-default outline so mouse focus stays
+ *    ring-free (matches the FieldCard / OperationsTimeline /
+ *    UpcomingPanel / FieldStatusCard pattern from Phases 2b–2f).
+ *  - :focus-visible draws a token-driven brand-coloured ring. The
+ *    offset is **negative** (-2px) on purpose: AntD's table
+ *    container has overflow:hidden + border-radius, and a
+ *    positive-offset outline gets clipped on the leftmost / outer
+ *    columns. Insetting the ring keeps it visible on every row.
+ *  - The hover background (var(--brand-muted)) is mirrored on
+ *    :focus-visible cells so keyboard and mouse focus look
+ *    identical (preserves hover/focus parity).
+ */
+.ant-table-tbody > tr.clickable-row:focus { outline: none; }
+
+.ant-table-tbody > tr.clickable-row:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+}
+
+.ant-table-tbody > tr.clickable-row:focus-visible > td {
+  background: var(--brand-muted) !important;
+}
+
 /* Menu item padding via CSS (no inline styles) */
 .ant-menu-dark .ant-menu-item {
   padding: 4px 8px !important;
@@ -503,8 +529,16 @@ a, button, [role="button"],
 .alert-card.error { border-left-color: var(--error); }
 .alert-card.success { border-left-color: var(--success); }
 
-/* Clickable table rows */
-.clickable-row { cursor: pointer !important; }
+/*
+ * Phase 2g cleanup — removed dead duplicate rule:
+ *   .clickable-row { cursor: pointer !important; }
+ * The only consumer of the .clickable-row className in src/ is the
+ * AntD <tr> in pages/Warehouses/WarehousesList.tsx, and that case
+ * is already fully covered by the scoped rule above
+ * (.ant-table-tbody > tr.clickable-row { cursor: pointer; }), which
+ * does not need !important. Repo-wide grep for "clickable-row"
+ * confirmed zero other consumers before deletion.
+ */
 
 /* Mobile table */
 @media (max-width: 767px) {
