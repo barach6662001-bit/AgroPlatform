@@ -44,3 +44,24 @@
 .padded {
   padding: 4px 8px;
 }
+
+/*
+ * Phase 2h — keyboard-focus affordance for clickable notification
+ * items inside the bell Popover. Mirrors the FieldCard /
+ * OperationsTimeline / UpcomingPanel / FieldStatusCard pattern
+ * (Phases 2b / 2c / 2d / 2f) — token-driven brand ring on
+ * :focus-visible only, paired with a hover-equivalent background
+ * so keyboard and mouse focus look identical.
+ *
+ * The Popover content is portalled outside the bell button, so
+ * the inline styles on the <List.Item> (cursor:pointer, opacity,
+ * borderLeft) are preserved verbatim and this rule only adds the
+ * focus ring + focus-visible background.
+ */
+.item:focus { outline: none; }
+
+.item:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  background: var(--bg-hover);
+}
