@@ -86,4 +86,25 @@ public class CurrentUserService : ICurrentUserService
             return string.Equals(verified, "true", StringComparison.OrdinalIgnoreCase);
         }
     }
+
+    /// <summary>
+    /// True when the current token carries the <c>impersonated_by_user_id</c> claim.
+    /// </summary>
+    public bool IsImpersonating
+    {
+        get
+        {
+            var claim = _httpContextAccessor.HttpContext?.User?.FindFirstValue("impersonated_by_user_id");
+            return !string.IsNullOrWhiteSpace(claim);
+        }
+    }
+
+    public string? ImpersonatedByUserId
+    {
+        get
+        {
+            var claim = _httpContextAccessor.HttpContext?.User?.FindFirstValue("impersonated_by_user_id");
+            return string.IsNullOrWhiteSpace(claim) ? null : claim;
+        }
+    }
 }

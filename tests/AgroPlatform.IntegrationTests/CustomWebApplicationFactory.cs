@@ -164,6 +164,18 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
             claims.Add(new Claim("scope", scope.ToString()));
         }
 
+        // Impersonation test override (PR #614). When set, the request looks
+        // like it carries an impersonation token issued by the named super-admin.
+        if (Request.Headers.TryGetValue("X-Test-ImpersonatedBy", out var impBy)
+            && !string.IsNullOrWhiteSpace(impBy.ToString()))
+        {
+            claims.Add(new Claim("impersonated_by_user_id", impBy.ToString()));
+            // Per JWT contract, an active impersonation token always carries
+            // is_super_admin=false (set explicitly below if not already present).
+            if (!claims.Any(c => c.Type == "is_super_admin"))
+                claims.Add(new Claim("is_super_admin", "false"));
+        }
+
         var identity = new ClaimsIdentity(claims, "Test");
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, "Test");

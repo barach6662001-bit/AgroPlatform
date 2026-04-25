@@ -20,6 +20,27 @@ interface AuthState {
   // Short-lived token issued when login detects a super-admin with MFA enabled.
   // While this is set (and `isAuthenticated` is still false), the SPA routes to /mfa-verify.
   mfaPendingToken: string | null;
+  // Active super-admin impersonation session (PR #614). When non-null the SPA
+  // renders the persistent red banner and the API uses the impersonation token.
+  // `originalToken` is the super-admin's pre-impersonation JWT so we can
+  // restore identity on End without a re-login round trip.
+  impersonation: {
+    impersonatedBy: string;        // super-admin user id
+    targetUserId: string;
+    targetEmail: string;
+    targetFirstName: string;
+    targetLastName: string;
+    targetTenantId: string;
+    targetTenantName: string;
+    reason: string;
+    expiresAtUtc: string;          // ISO timestamp
+    originalToken: string;
+    originalTenantId: string;
+    originalEmail: string;
+    originalFirstName: string;
+    originalLastName: string;
+    originalRole: string;
+  } | null;
   setAuth: (
     token: string,
     email: string,
@@ -37,6 +58,8 @@ interface AuthState {
   setHasCompletedOnboarding: (value: boolean) => void;
   setIsSuperAdmin: (value: boolean) => void;
   setMfaPendingToken: (token: string | null) => void;
+  setImpersonation: (impersonation: AuthState['impersonation']) => void;
+  clearImpersonation: () => void;
   logout: () => void;
 }
 
@@ -55,6 +78,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isSuperAdmin: false,
       mfaPendingToken: null,
+      impersonation: null,
       setAuth: (token, email, role, tenantId, requirePasswordChange, hasCompletedOnboarding, firstName, lastName, refreshToken, isSuperAdmin) =>
         set({
           token,
@@ -79,6 +103,8 @@ export const useAuthStore = create<AuthState>()(
       setHasCompletedOnboarding: (value) => set({ hasCompletedOnboarding: value }),
       setIsSuperAdmin: (value) => set({ isSuperAdmin: value }),
       setMfaPendingToken: (token) => set({ mfaPendingToken: token }),
+      setImpersonation: (impersonation) => set({ impersonation }),
+      clearImpersonation: () => set({ impersonation: null }),
       logout: () => {
         usePermissionsStore.getState().reset();
         localStorage.removeItem('auth-storage');
@@ -95,6 +121,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
           isSuperAdmin: false,
           mfaPendingToken: null,
+          impersonation: null,
         });
       },
     }),

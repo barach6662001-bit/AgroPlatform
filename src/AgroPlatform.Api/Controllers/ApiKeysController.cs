@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using AgroPlatform.Api.SuperAdmin;
 using AgroPlatform.Application.Users.Queries.GetApiKeys;
 using AgroPlatform.Application.Users.Commands.CreateApiKey;
 using AgroPlatform.Application.Users.Commands.RevokeApiKey;
@@ -37,6 +38,7 @@ public class ApiKeysController : ControllerBase
 
     /// <summary>Create a new API key.</summary>
     [HttpPost]
+    [ForbiddenDuringImpersonation]
     public async Task<ActionResult<CreateApiKeyResult>> CreateApiKey(CreateApiKeyCommand command)
     {
         var tenantId = HttpContext.Items["TenantId"] as Guid?
@@ -58,6 +60,7 @@ public class ApiKeysController : ControllerBase
 
     /// <summary>Revoke an API key.</summary>
     [HttpPost("{apiKeyId:guid}/revoke")]
+    [ForbiddenDuringImpersonation]
     public async Task<IActionResult> RevokeApiKey(Guid apiKeyId)
     {
         var tenantId = HttpContext.Items["TenantId"] as Guid?
