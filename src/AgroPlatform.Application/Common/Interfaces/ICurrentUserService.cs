@@ -18,8 +18,8 @@ public interface ICurrentUserService
     /// impersonated target user, while <see cref="ImpersonatedByUserId"/> identifies
     /// the super-admin acting on their behalf.
     /// </summary>
-    bool IsImpersonating { get; }
+    bool IsImpersonating => false;
 
     /// <summary>Super-admin who initiated the active impersonation, or null.</summary>
-    string? ImpersonatedByUserId { get; }
+    string? ImpersonatedByUserId => null;
 }
