@@ -45,3 +45,85 @@ export const updateAdminTenantFeatures = (
   apiClient
     .put<{ features: AdminFeature[] }>(`/api/admin/tenants/${id}/features`, { features })
     .then((r) => r.data.features);
+
+// =============================================================================================
+// Global users (PR #614). Returned by GET /api/admin/users.
+// =============================================================================================
+export interface AdminUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  isActive: boolean;
+  isSuperAdmin: boolean;
+  tenantId: string;
+  tenantName: string;
+}
+
+export const listAdminUsers = (
+  params: { search?: string; tenantId?: string; page?: number; pageSize?: number } = {},
+) =>
+  apiClient
+    .get<PagedResult<AdminUser>>('/api/admin/users', { params })
+    .then((r) => r.data);
+
+// =============================================================================================
+// Audit log (PR #614). Returned by GET /api/admin/audit-log.
+// =============================================================================================
+export interface SuperAdminAuditEntry {
+  id: string;
+  adminUserId: string;
+  action: string;
+  targetType: string;
+  targetId: string | null;
+  before: string | null;
+  after: string | null;
+  ipAddress: string | null;
+  userAgent: string | null;
+  occurredAt: string;
+}
+
+export const listAdminAuditLog = (
+  params: {
+    action?: string;
+    adminUserId?: string;
+    tenantId?: string;
+    fromUtc?: string;
+    toUtc?: string;
+    page?: number;
+    pageSize?: number;
+  } = {},
+) =>
+  apiClient
+    .get<PagedResult<SuperAdminAuditEntry>>('/api/admin/audit-log', { params })
+    .then((r) => r.data);
+
+// =============================================================================================
+// Impersonation (PR #614).
+// =============================================================================================
+export interface ImpersonationStartResponse {
+  token: string;
+  expiresAtUtc: string;
+  targetUserId: string;
+  targetEmail: string;
+  targetFirstName: string;
+  targetLastName: string;
+  targetTenantId: string;
+  targetTenantName: string;
+}
+
+export interface ImpersonationEndResponse {
+  token: string;
+  expiresAtUtc: string;
+}
+
+export const startImpersonation = (targetUserId: string, reason: string) =>
+  apiClient
+    .post<ImpersonationStartResponse>('/api/admin/impersonate', { targetUserId, reason })
+    .then((r) => r.data);
+
+export const endImpersonation = () =>
+  apiClient
+    .post<ImpersonationEndResponse>('/api/admin/impersonate/end')
+    .then((r) => r.data);

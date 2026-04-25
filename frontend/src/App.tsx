@@ -46,6 +46,9 @@ import WorkLogPage from './pages/HR/WorkLogPage';
 import SalaryPage from './pages/HR/SalaryPage';
 import UsersPage from './pages/Settings/UsersPage';
 import AdminAuditLogPage from './pages/Admin/AuditLogPage';
+import SuperAdminUsersPage from './pages/Admin/SuperAdminUsersPage';
+import SuperAdminAuditLogPage from './pages/Admin/SuperAdminAuditLogPage';
+import ImpersonationBanner from './components/Impersonation/ImpersonationBanner';
 import ApiKeysPage from './pages/Admin/ApiKeysPage';
 import RolePermissionsPage from './pages/Admin/RolePermissionsPage';
 import PendingApprovalsPage from './pages/Admin/PendingApprovalsPage';
@@ -136,6 +139,7 @@ export default function App() {
       <ErrorBoundary>
       <BrowserRouter>
         <DevBypassBanner />
+        <ImpersonationBanner />
         {isPublicDemoMode && !demoReady ? (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -280,6 +284,8 @@ export default function App() {
             <Route path="/hr/salary" element={<SalaryPage />} />
             <Route path="/settings/users" element={<UsersPage />} />
             <Route path="/admin/audit" element={<AdminAuditLogPage />} />
+            <Route path="/admin/users" element={<SuperAdminUsersPage />} />
+            <Route path="/admin/audit-log" element={<SuperAdminAuditLogPage />} />
             <Route path="/admin/api-keys" element={<ApiKeysPage />} />
             <Route path="/admin/role-permissions" element={<RolePermissionsPage />} />
             <Route path="/admin/approvals" element={<PendingApprovalsPage />} />
