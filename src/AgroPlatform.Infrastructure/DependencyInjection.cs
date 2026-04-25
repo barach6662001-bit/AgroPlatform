@@ -57,6 +57,7 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IMfaService, MfaService>();
         services.AddScoped<ISuperAdminAuditService, SuperAdminAuditService>();
+        services.AddScoped<IImpersonationService, ImpersonationService>();
 
         // Currency (NBU)
         services.AddHttpClient<INbuCurrencyService, NbuCurrencyService>(c =>

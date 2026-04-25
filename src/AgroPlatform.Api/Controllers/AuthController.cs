@@ -1,3 +1,4 @@
+using AgroPlatform.Api.SuperAdmin;
 using AgroPlatform.Application.Auth.Commands.ChangePassword;
 using AgroPlatform.Application.Auth.Commands.CompleteOnboarding;
 using AgroPlatform.Application.Auth.Commands.Login;
@@ -64,9 +65,11 @@ public class AuthController : ControllerBase
     /// <summary>Changes the current user's password. Returns a new JWT token.</summary>
     [HttpPost("change-password")]
     [Authorize]
+    [ForbiddenDuringImpersonation]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command, CancellationToken cancellationToken)
     {
         var result = await _sender.Send(command, cancellationToken);

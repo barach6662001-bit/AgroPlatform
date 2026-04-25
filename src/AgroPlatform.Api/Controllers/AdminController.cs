@@ -196,14 +196,25 @@ public sealed class AdminController : ControllerBase
     public async Task<IActionResult> ListAuditLog(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 50,
+        [FromQuery] string? action = null,
+        [FromQuery] string? adminUserId = null,
+        [FromQuery] Guid? tenantId = null,
+        [FromQuery] DateTime? fromUtc = null,
+        [FromQuery] DateTime? toUtc = null,
         CancellationToken ct = default)
     {
         page = Math.Max(page, 1);
         pageSize = Math.Clamp(pageSize, 1, 200);
 
-        var query = _db.SuperAdminAuditLogs.AsNoTracking().OrderByDescending(x => x.OccurredAt);
-        var total = await query.CountAsync(ct);
-        var items = await query
+        var query = _db.SuperAdminAuditLogs.AsNoTracking().AsQueryable();
+        if (!string.IsNullOrWhiteSpace(action)) query = query.Where(x => x.Action == action);
+        if (!string.IsNullOrWhiteSpace(adminUserId)) query = query.Where(x => x.AdminUserId == adminUserId);
+        if (fromUtc.HasValue) query = query.Where(x => x.OccurredAt >= fromUtc.Value);
+        if (toUtc.HasValue) query = query.Where(x => x.OccurredAt <= toUtc.Value);
+
+        var ordered = query.OrderByDescending(x => x.OccurredAt);
+        var total = await ordered.CountAsync(ct);
+        var items = await ordered
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(x => new
@@ -213,7 +224,88 @@ public sealed class AdminController : ControllerBase
             })
             .ToListAsync(ct);
 
+        // tenantId filter is post-projection because audit rows store TargetId as
+        // string (could be a season id, user id, or tenant id depending on action).
+        if (tenantId.HasValue)
+        {
+            var tid = tenantId.Value.ToString();
+            items = items.Where(x => x.TargetId == tid).ToList();
+            total = items.Count;
+        }
+
         return Ok(new { items, total, page, pageSize });
+    }
+
+    // =============================================================================================
+    // Global users search (PR #614). Returns users across ALL tenants with their tenant name.
+    // =============================================================================================
+
+    public record AdminUserListItem(
+        string Id,
+        string Email,
+        string FirstName,
+        string LastName,
+        string Role,
+        bool IsActive,
+        bool IsSuperAdmin,
+        Guid TenantId,
+        string TenantName);
+
+    [HttpGet("users")]
+    public async Task<IActionResult> ListUsers(
+        [FromQuery] string? search,
+        [FromQuery] Guid? tenantId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 25,
+        CancellationToken ct = default)
+    {
+        page = Math.Max(page, 1);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var usersQ = _db.Users.IgnoreQueryFilters().AsNoTracking();
+        if (tenantId.HasValue) usersQ = usersQ.Where(u => u.TenantId == tenantId.Value);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+            usersQ = usersQ.Where(u =>
+                (u.Email != null && u.Email.ToLower().Contains(term)) ||
+                (u.FirstName != null && u.FirstName.ToLower().Contains(term)) ||
+                (u.LastName != null && u.LastName.ToLower().Contains(term)));
+        }
+
+        var total = await usersQ.CountAsync(ct);
+
+        var page1 = await usersQ
+            .OrderBy(u => u.Email)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(u => new
+            {
+                u.Id, u.Email, u.FirstName, u.LastName, u.Role, u.IsActive, u.IsSuperAdmin, u.TenantId,
+            })
+            .ToListAsync(ct);
+
+        var tenantIds = page1.Select(u => u.TenantId).Distinct().ToList();
+        var tenantsMap = await _db.Tenants
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .Where(t => tenantIds.Contains(t.Id))
+            .Select(t => new { t.Id, t.Name })
+            .ToListAsync(ct);
+
+        var items = page1.Select(u => new AdminUserListItem(
+            u.Id,
+            u.Email ?? string.Empty,
+            u.FirstName ?? string.Empty,
+            u.LastName ?? string.Empty,
+            u.Role.ToString(),
+            u.IsActive,
+            u.IsSuperAdmin,
+            u.TenantId,
+            tenantsMap.FirstOrDefault(t => t.Id == u.TenantId)?.Name ?? string.Empty)).ToList();
+
+        return Ok(new PagedResult<AdminUserListItem>(items, total, page, pageSize));
     }
 
     // =============================================================================================

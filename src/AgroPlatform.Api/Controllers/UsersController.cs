@@ -1,3 +1,4 @@
+using AgroPlatform.Api.SuperAdmin;
 using AgroPlatform.Application.Companies.Commands.ResetUserPassword;
 using AgroPlatform.Application.Users.Commands.UpdateUserRole;
 using AgroPlatform.Application.Users.Queries.GetUsers;
@@ -39,6 +40,7 @@ public class UsersController : ControllerBase
     /// <param name="command">The new role.</param>
     [HttpPut("{id}/role")]
     [Authorize(Policy = Permissions.Admin.Manage)]
+    [ForbiddenDuringImpersonation]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -54,6 +56,7 @@ public class UsersController : ControllerBase
     /// <summary>Resets a user's password. Sets RequirePasswordChange = true.</summary>
     [HttpPut("{userId}/reset-password")]
     [Authorize(Policy = Permissions.Admin.Manage)]
+    [ForbiddenDuringImpersonation]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
