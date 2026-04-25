@@ -204,7 +204,7 @@
 
 ---
 
-## ПУНКТ 14 — Супер-адмін має бути реально супер-адміном  `[FOUNDATION CLOSED in PR #610; advanced features in PR #614]`
+## ПУНКТ 14 — Супер-адмін має бути реально супер-адміном  `[FOUNDATION CLOSED in PR #610; CORE advanced (impersonation, /admin/users, /admin/audit-log) IN PROGRESS in PR #614; /admin/system in #614a; /admin/catalogs in #614b; /admin/broadcast in #614c]`
 
 **Problem:** Previous "super-admin" role was tenant-scoped, couldn't see other tenants.
 

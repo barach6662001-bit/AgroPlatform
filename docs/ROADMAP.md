@@ -28,18 +28,40 @@
 
 ## In progress
 
-- [ ] **PR #614 — Super-admin advanced + impersonation** *(TZ 14 remainder)*
-  - Impersonation: 60min TTL, mandatory reason, red banner in UI, email to target user, rate limit 3/day per (admin, target) pair
-  - Forbidden actions in impersonation: password/email change, API keys write scope, billing ops, tenant export
-  - `/admin/users` global search, impersonate action
-  - `/admin/audit-log` global view with filters (tenant, user, action type, period)
-  - `/admin/system` (queue/jobs health, storage, connections)
-  - `/admin/catalogs` (global reference data: crops, equipment types, units)
-  - `/admin/broadcast` (notification to all/selected tenants)
+- [ ] **PR #614 — Super-admin core: impersonation + global users + audit log** *(TZ 14 remainder, core)*
+  - Impersonation engine: `POST /api/admin/impersonate` with mandatory `reason` (min 10 chars), 60min TTL, not renewable, returns short-lived JWT carrying `impersonating_user_id` + `impersonated_by_user_id` + `original_tenant_id` + `reason` claims
+  - `POST /api/admin/impersonate/end` returns the super-admin's restored token and writes `impersonate.end` audit
+  - Rate limit: 3 sessions per (admin, target) per 24h, enforced by query against `SuperAdminAuditLog` filtered by `Action = 'impersonate.start'`. Backed by a **partial composite index** on `(admin_user_id, target_id, occurred_at DESC) WHERE action = 'impersonate.start'`
+  - Forbidden-action filter in impersonation: blocks password change, email change, API keys write scope, billing, full data export. Returns **403 AND** writes a separate audit entry of type `impersonate.forbidden_attempt` with the attempted route
+  - Audit: every mutation while impersonating tagged `impersonated_by` + `acted_as` (extension to existing `ISuperAdminAuditService`)
+  - **In-app notification** to target user (via `Notification` entity, severity `warning`, title "Сесія імперсонації", body "Адміністратор {full_name} увійшов під вашим акаунтом {timestamp_kyiv}. Причина: {reason}."), independent of SMTP availability
+  - Best-effort `IEmailService.SendAsync` call as well (silently no-ops if SMTP unconfigured)
+  - `/admin/users` page — global search across tenants, impersonate button → reason modal → token swap → redirect to `/`
+  - `/admin/audit-log` page — global view with filters (tenant, user, action type, period); CSV export deferred to #614a
+  - **Red persistent banner** during impersonation: not closable, not dismissable, z-index 9999, full viewport width, shows target user + tenant + remaining TTL countdown + "Вийти з режиму" button. No localStorage opt-out
+  - 6 integration tests required (non-super-admin → 403, no-MFA → 403+header, valid start → 200+audit+notification, reason<10 → 400, rate-limit 4th → 429, forbidden action → 403+forbidden-attempt audit). `TestAuthHandler` extended in this PR if needed
 
 ---
 
 ## Upcoming (in order — do not reorder without approval)
+
+- [ ] **PR #614a — Super-admin: system health page** *(TZ 14 follow-up)*
+  - `/admin/system` page (read-only dashboard)
+  - Backend: `GET /api/admin/system/health` aggregates Hangfire queue depth + failed-jobs count, DB connection pool usage, storage volume usage, active SignalR connections (when notification hub lands), background-job last-run-at per recurring job
+  - Auto-refresh every 30s, severity colours (green/amber/red) per metric
+  - CSV export added to `/admin/audit-log` here as well
+
+- [ ] **PR #614b — Super-admin: global catalogs CRUD** *(TZ 14 follow-up)*
+  - `/admin/catalogs` page with tabs: Crops, Equipment types, Units, Document types
+  - Global reference data is shared across all tenants — soft-delete only (existing tenant data must keep referencing the row)
+  - Backend: `/api/admin/catalogs/{type}` CRUD with audit on every mutation (`catalog.crop.create`, etc.), validation that a row in use cannot be hard-deleted
+  - Bulk import CSV (deferred until concrete request)
+
+- [ ] **PR #614c — Super-admin: broadcast notifications** *(TZ 14 follow-up)*
+  - `/admin/broadcast` page: composer (title, body, severity) + audience picker (all tenants / selected tenants / by feature flag)
+  - Backend: `POST /api/admin/broadcast` fans out to `Notification` rows per target tenant; rate-limited to 1 broadcast per minute per super-admin
+  - History view of past broadcasts with reach count per broadcast
+  - Depends on Notifications fixes in PR #617 (per-user routing) — order: ship #614a, then #617, then #614b/c
 
 - [ ] **PR #617 — Export currency header** *(TZ 8.2 follow-up)*
   - Add NBU rate on export date to CSV/PDF export headers where currency amounts appear (costs, revenue, grain)
