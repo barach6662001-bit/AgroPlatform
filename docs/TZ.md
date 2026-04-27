@@ -110,7 +110,7 @@
 
 ---
 
-## ПУНКТ 9 — Кнопка "Прийняти зерно" на /grain-storages  `[PLANNED for PR #615]`
+## ПУНКТ 9 — Кнопка "Прийняти зерно" на /grain-storages  `[IN PROGRESS in PR #615]`
 
 **Problem:** "Прийняти зерно" button does nothing on click.
 
@@ -123,7 +123,7 @@
 
 ---
 
-## ПУНКТ 10 — Фікс модуля /inventory (Інвентаризація)  `[PLANNED for PR #615]`
+## ПУНКТ 10 — Фікс модуля /inventory (Інвентаризація)  `[IN PROGRESS in PR #615]`
 
 **Problem:** Inventory module doesn't work end-to-end. Counted/Difference columns empty, progress shows garbage, session can't be completed.
 
