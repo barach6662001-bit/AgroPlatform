@@ -23,27 +23,54 @@
 - [x] **PR #631** — **hotfix**: temporarily disable the Profile currency switcher with a tooltip and force-reset any stored non-UAH user preference to UAH on next login. Prevents the mixed-label regression where `/expenses` showed `1000.00 USD` rows alongside `1 000,00 грн` totals *(safety net; blocks #632 until it is solved)*
 - [x] **PR #634** — currency conversion v2: rewrite `useFormatCurrency` with the signature `(uahValue, date?)` and proper math (`uah / rateToUah`), null-safe rendering (`—`), warn-once fallback when the rate table is empty; introduce the single-source `<Money/>` component; lock all monetary input addons to hardcoded `₴` (Variant B) and show a "Сума зберігається в гривнях" helper text; unit tests (7 cases) + Playwright regression test for the mixed-label bug. Switcher re-enabled as the last commit. *(TZ 8.2, conversion layer)*
 - [x] **PR #616** *(parallel design-system track)* — design-system foundation: TypeScript token source-of-truth, `scripts/build-tokens.ts`, `frontend/src/design-system/tokens/*`, `lightTheme.ts` as deadcode ThemeConfig. Zero breaking changes to existing CSS variable names.
+- [x] **PR #614** — Super-admin core: impersonation + global users + audit log *(TZ 14 remainder, core)* — Impersonation engine (`POST /api/admin/impersonate` with 60min TTL, rate-limited 3/24h per admin-target pair, index-backed query on SuperAdminAuditLog), forbidden-action filter (403 + `impersonate.forbidden_attempt` audit), in-app notification to target (severity warning, title "Сесія імперсонації", Ukrainian body with timestamp), `/admin/users` global search + impersonate modal, `/admin/audit-log` filtered view, red persistent non-closable z-index-9999 banner during session. 6 integration tests required / all pass. Merged as PR #640 (commit b029b0c).
 
 ---
 
 ## In progress
 
-- [ ] **PR #614 — Super-admin core: impersonation + global users + audit log** *(TZ 14 remainder, core)*
-  - Impersonation engine: `POST /api/admin/impersonate` with mandatory `reason` (min 10 chars), 60min TTL, not renewable, returns short-lived JWT carrying `impersonating_user_id` + `impersonated_by_user_id` + `original_tenant_id` + `reason` claims
-  - `POST /api/admin/impersonate/end` returns the super-admin's restored token and writes `impersonate.end` audit
-  - Rate limit: 3 sessions per (admin, target) per 24h, enforced by query against `SuperAdminAuditLog` filtered by `Action = 'impersonate.start'`. Backed by a **partial composite index** on `(admin_user_id, target_id, occurred_at DESC) WHERE action = 'impersonate.start'`
-  - Forbidden-action filter in impersonation: blocks password change, email change, API keys write scope, billing, full data export. Returns **403 AND** writes a separate audit entry of type `impersonate.forbidden_attempt` with the attempted route
-  - Audit: every mutation while impersonating tagged `impersonated_by` + `acted_as` (extension to existing `ISuperAdminAuditService`)
-  - **In-app notification** to target user (via `Notification` entity, severity `warning`, title "Сесія імперсонації", body "Адміністратор {full_name} увійшов під вашим акаунтом {timestamp_kyiv}. Причина: {reason}."), independent of SMTP availability
-  - Best-effort `IEmailService.SendAsync` call as well (silently no-ops if SMTP unconfigured)
-  - `/admin/users` page — global search across tenants, impersonate button → reason modal → token swap → redirect to `/`
-  - `/admin/audit-log` page — global view with filters (tenant, user, action type, period); CSV export deferred to #614a
-  - **Red persistent banner** during impersonation: not closable, not dismissable, z-index 9999, full viewport width, shows target user + tenant + remaining TTL countdown + "Вийти з режиму" button. No localStorage opt-out
-  - 6 integration tests required (non-super-admin → 403, no-MFA → 403+header, valid start → 200+audit+notification, reason<10 → 400, rate-limit 4th → 429, forbidden action → 403+forbidden-attempt audit). `TestAuthHandler` extended in this PR if needed
+- [ ] **PR #615 — Warehouse: grain receipt + inventory** *(TZ 9, TZ 10)*
+  - `/grain-storages` "Прийняти зерно" button: full form (date, crop, warehouse, batch, qty, moisture/trash %, source, driver/TTN), validation (qty>0, warehouse capacity, field in season if source=Field), atomically creates GrainReceipt + GrainBatch + GrainBatchPlacement + StockLedgerEntry, recalculates StockBalance
+  - Verify `TransferGrainHandler` updates `GrainBatchPlacement` (known bug)
+  - `/inventory` full cycle: Draft → InProgress → Completed/Cancelled, inline Counted editing with auto Difference, color-coded (red/amber/neutral), comment dropdown (Недостача/Списання/etc), progress bar "Підраховано X з Y", completion creates InventoryAdjustment ledger entries, invalidates StockBalance cache, cancellation without ledger changes
+  - Integration tests (receipt creates 4 entities, capacity validation, inventory completion ledger, inventory cancellation no-ledger)
+  - Playwright e2e (grain receipt form fill+submit)
 
 ---
 
 ## Upcoming (in order — do not reorder without approval)
+
+- [ ] **PR #616 — Notifications center** *(TZ 12)*
+  - Dropdown layout fix (min-width 400px, title inline)
+  - dayjs relativeTime with `uk` locale, proper thresholds (`X хв тому`, `X дн. тому`, `12 берез.`, etc.)
+  - Mark-all-read, clear-read working
+  - Deep-link click → navigates to target + marks read
+  - `/notifications` full page with filters (type, status, period), infinite scroll
+  - SignalR `NotificationHub` for real-time push
+  - Backend fix: `NotificationService` uses empty Identity Roles tables — migrate to enum role on `AppUser`
+  - Triggers verified: overdue op, tech repair, low fuel, low/over storage, sale completed, job failure
+
+- [ ] **PR #617 — Export currency header** *(TZ 8.2 follow-up)*
+  - Add NBU rate on export date to CSV/PDF export headers where currency amounts appear (costs, revenue, grain)
+  - Tied to existing export helpers; deferred from PR #613 to keep that PR reviewable
+
+- [ ] **PR #618 — Demo seeder + Mobile + PWA** *(TZ 11, TZ 13)*
+  - `Tools/DemoSeeder` idempotent: fills all core modules with connected Ukrainian-realistic data (6–12 months history)
+  - Auto-enables all optional feature flags for demo tenant after seed
+  - Mobile audit via Playwright at 390×844 and 360×640 across all routes
+  - Drawer sidebar, bottom nav (Головна / Поля / Склад / Техніка / Ще)
+  - Tables → Cards on fields, tech, operations, grain-storages, grain-batches, expenses, sales, personnel, rent-payments
+  - Forms: proper input types, sticky submit, 48px buttons
+  - Modals → bottom sheets on mobile
+  - PWA: manifest, service worker (Workbox), stale-while-revalidate assets, offline read-only for cached API data
+
+> PR numbers after #613 may shift if parallel design-system or infra PRs take intermediate numbers from GitHub. That's expected; the feature order (Currency → Super-admin advanced → Warehouse → Notifications → Demo + Mobile) is what matters.
+
+---
+
+## Deferred (post-core, before Phase B)
+
+These are super-admin follow-ups that depend on PR #614 core being stable. They will ship after warehouse/notifications/demo work.
 
 - [ ] **PR #614a — Super-admin: system health page** *(TZ 14 follow-up)*
   - `/admin/system` page (read-only dashboard)
@@ -62,41 +89,6 @@
   - Backend: `POST /api/admin/broadcast` fans out to `Notification` rows per target tenant; rate-limited to 1 broadcast per minute per super-admin
   - History view of past broadcasts with reach count per broadcast
   - Depends on Notifications fixes in PR #617 (per-user routing) — order: ship #614a, then #617, then #614b/c
-
-- [ ] **PR #617 — Export currency header** *(TZ 8.2 follow-up)*
-  - Add NBU rate on export date to CSV/PDF export headers where currency amounts appear (costs, revenue, grain)
-  - Tied to existing export helpers; deferred from PR #613 to keep that PR reviewable
-
-- [ ] **PR #615 — Warehouse: grain receipt + inventory** *(TZ 9, TZ 10)*
-  - `/grain-storages` "Прийняти зерно" button: full form, creates GrainReceipt + GrainBatch + GrainBatchPlacement + StockLedgerEntry, recalculates StockBalance
-  - Verify `TransferGrainHandler` updates `GrainBatchPlacement` (known bug)
-  - `/inventory` full cycle: Draft → InProgress → Completed/Cancelled
-  - Inline editing of Counted column, auto-calculated Difference with color coding
-  - Progress indicator: "Підраховано X з Y (Z%)"
-  - Completion creates `InventoryAdjustment` ledger entries per diff, invalidates `StockBalance` cache
-  - Session history with read-only view after completion
-
-- [ ] **PR #617 — Notifications center** *(TZ 12)*
-  - Dropdown layout fix (min-width 400px, title inline)
-  - dayjs relativeTime with `uk` locale, proper thresholds (`X хв тому`, `X дн. тому`, `12 берез.`, etc.)
-  - Mark-all-read, clear-read working
-  - Deep-link click → navigates to target + marks read
-  - `/notifications` full page with filters (type, status, period), infinite scroll
-  - SignalR `NotificationHub` for real-time push
-  - Backend fix: `NotificationService` uses empty Identity Roles tables — migrate to enum role on `AppUser`
-  - Triggers verified: overdue op, tech repair, low fuel, low/over storage, sale completed, job failure
-
-- [ ] **PR #618 — Demo seeder + Mobile + PWA** *(TZ 11, TZ 13)*
-  - `Tools/DemoSeeder` idempotent: fills all core modules with connected Ukrainian-realistic data (6–12 months history)
-  - Auto-enables all optional feature flags for demo tenant after seed
-  - Mobile audit via Playwright at 390×844 and 360×640 across all routes
-  - Drawer sidebar, bottom nav (Головна / Поля / Склад / Техніка / Ще)
-  - Tables → Cards on fields, tech, operations, grain-storages, grain-batches, expenses, sales, personnel, rent-payments
-  - Forms: proper input types, sticky submit, 48px buttons
-  - Modals → bottom sheets on mobile
-  - PWA: manifest, service worker (Workbox), stale-while-revalidate assets, offline read-only for cached API data
-
-> PR numbers after #613 may shift if parallel design-system or infra PRs take intermediate numbers from GitHub. That's expected; the feature order (Currency → Super-admin advanced → Warehouse → Notifications → Demo + Mobile) is what matters.
 
 ---
 
